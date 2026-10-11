@@ -1,5 +1,5 @@
 var Restriction_8cpp =
 [
-    [ "Restriction::isSatisfied< BPMNOS::SharedValues >", "Restriction_8cpp.html#aa5bb62e6f446d939068bda53c0dabb51", null ],
-    [ "Restriction::isSatisfied< BPMNOS::Values >", "Restriction_8cpp.html#ae9b9d4c4af56097f9038cac5ba69abec", null ]
+    [ "Restriction::isSatisfied< BPMNOS::Data >", "Restriction_8cpp.html#a5717859935d21563f493eb95218864f4", null ],
+    [ "Restriction::isSatisfied< BPMNOS::SharedData >", "Restriction_8cpp.html#a4d9811c52137d85014041f1fefe99db0", null ]
 ];

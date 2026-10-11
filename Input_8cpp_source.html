@@ -1,0 +1,258 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.15.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<!-- BEGIN opengraph metadata -->
+<meta property="og:title" content="Doxygen Awesome" />
+<meta property="og:image" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta property="og:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+<!-- END opengraph metadata -->
+<!-- BEGIN twitter metadata -->
+<meta name="twitter:image:src" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta name="twitter:title" content="Doxygen Awesome" />
+<meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<!-- END twitter metadata -->
+<title>BPMN-OS: model/bpmnos/src/Input.cpp Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="doxygen-awesome-tabs.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeParagraphLink.init()
+    DoxygenAwesomeInteractiveToc.init()
+    DoxygenAwesomeTabs.init()
+</script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/bpmn-os/bpmnos-engine" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="BPMNOS.svg"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">BPMN-OS
+   </div>
+   <div id="projectbrief">BPMN for optimization and simulation</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.15.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',true);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(function(){initNavTree('Input_8cpp_source.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">Input.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Input_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Input_8h.html">Input.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="CSVReader_8h.html">model/utility/src/CSVReader.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="ObjectRegistry_8h.html">model/utility/src/ObjectRegistry.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">using namespace </span><a class="code hl_namespace" href="namespaceBPMNOS_1_1Model.html">BPMNOS::Model</a>;</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="foldopen" id="foldopen00007" data-start="{" data-end="}">
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Model_1_1Input.html#ac20f066d77255b0920ebad89b2b273f8">    7</a></span><a class="code hl_function" href="classBPMNOS_1_1Model_1_1Input.html#ac20f066d77255b0920ebad89b2b273f8">Input::Input</a>(std::string <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Input.html#a2d0ea53e9eeacf417643f8b9f2c1df26">name</a>, <a class="code hl_enumeration" href="classBPMNOS_1_1Model_1_1Input.html#a14b910c07a9c4c5c4829a241eb8caa8b">Type</a> <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Input.html#aa9f51296a7e02b90e332fe1325f95c3d">type</a>, <a class="code hl_struct" href="structBPMNOS_1_1Model_1_1Schema.html">Schema</a> <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Input.html#a75e99d070bf58abaa852552d6a4b7442">schema</a>, <span class="keyword">const</span> std::string&amp; content)</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>  : <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Input.html#a2d0ea53e9eeacf417643f8b9f2c1df26">name</a>(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Input.html#a2d0ea53e9eeacf417643f8b9f2c1df26">name</a>))</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>  , <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Input.html#aa9f51296a7e02b90e332fe1325f95c3d">type</a>(<a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Input.html#aa9f51296a7e02b90e332fe1325f95c3d">type</a>)</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>  , <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Input.html#a75e99d070bf58abaa852552d6a4b7442">schema</a>(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Input.html#a75e99d070bf58abaa852552d6a4b7442">schema</a>))</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>{</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>  <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordflow">if</span> ( this-&gt;type == <a class="code hl_enumvalue" href="classBPMNOS_1_1Model_1_1Input.html#a14b910c07a9c4c5c4829a241eb8caa8ba38ef5fe49a654647519ee8c498c49664">Type::MATRIX</a> ) {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>      <span class="keywordtype">object</span> = readMatrix(content);</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    }</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( this-&gt;type == <a class="code hl_enumvalue" href="classBPMNOS_1_1Model_1_1Input.html#a14b910c07a9c4c5c4829a241eb8caa8ba8eee8e217391199668cbac89472ace53">Type::OBJECT</a> ) {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>      <span class="keywordtype">object</span> = this-&gt;schema.<a class="code hl_function" href="structBPMNOS_1_1Model_1_1Schema.html#a54e3f61f0d9f83f9a80a5cca3fc44b06">fromJSON</a>(content);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    }</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>  }</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>  <span class="keywordflow">catch</span> ( <span class="keyword">const</span> std::exception&amp; error ) {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Input: illegal content of input &#39;&quot;</span> + this-&gt;name + <span class="stringliteral">&quot;&#39;.\n&quot;</span> + error.what());</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>  }</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}</div>
+</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>std::shared_ptr&lt;const BPMNOS::Object&gt; Input::readMatrix(<span class="keyword">const</span> std::string&amp; content)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>  <span class="keywordflow">if</span> ( <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Input.html#a75e99d070bf58abaa852552d6a4b7442">schema</a>.<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1Schema.html#a8f67857a1ca62395e0e19c1b44cc597a">dimensions</a>.size() != 2 ) {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Input: matrix &#39;&quot;</span> + <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Input.html#a2d0ea53e9eeacf417643f8b9f2c1df26">name</a> + <span class="stringliteral">&quot;&#39; requires a schema with two dimensions, not &#39;&quot;</span> + <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Input.html#a75e99d070bf58abaa852552d6a4b7442">schema</a>.<a class="code hl_function" href="structBPMNOS_1_1Model_1_1Schema.html#ae10176137d7493b0a97737a4dafe8c15">stringify</a>() + <span class="stringliteral">&quot;&#39;&quot;</span>);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>  }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>  <span class="comment">// the content is read as content, which a single line without a line break would not be</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>  <a class="code hl_class" href="classBPMNOS_1_1CSVReader.html">BPMNOS::CSVReader</a> reader( content.ends_with(<span class="charliteral">&#39;\n&#39;</span>) ? content : content + <span class="stringliteral">&quot;\n&quot;</span> );</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>  <span class="keyword">auto</span> table = reader.read();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>  <span class="keyword">auto</span>&amp; types = reader.types();</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>  <span class="comment">// the base of the schema, of which every cell holds one value or literal</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>  <a class="code hl_struct" href="structBPMNOS_1_1Model_1_1Schema.html">Schema</a> base = <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Input.html#a75e99d070bf58abaa852552d6a4b7442">schema</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>  base.<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1Schema.html#a8f67857a1ca62395e0e19c1b44cc597a">dimensions</a>.clear();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>  <span class="keywordtype">size_t</span> columns = table.empty() ? 0 : table.front().size();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>  <a class="code hl_struct" href="structBPMNOS_1_1Object_1_1Layout.html">BPMNOS::Object::Layout</a> cellLayout;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>  std::vector&lt; std::shared_ptr&lt;const BPMNOS::Object&gt; &gt; cells;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>  <span class="keywordflow">for</span> ( <span class="keywordtype">size_t</span> i = 0; i &lt; table.size(); i++ ) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">if</span> ( table[i].size() != columns ) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>      <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Input: row &quot;</span> + std::to_string(i + 1) + <span class="stringliteral">&quot; of matrix &#39;&quot;</span> + <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Input.html#a2d0ea53e9eeacf417643f8b9f2c1df26">name</a> + <span class="stringliteral">&quot;&#39; has &quot;</span> + std::to_string(table[i].size()) + <span class="stringliteral">&quot; cells instead of &quot;</span> + std::to_string(columns));</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    }</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">for</span> ( <span class="keywordtype">size_t</span> j = 0; j &lt; columns; j++ ) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>      <span class="keyword">auto</span> <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Input.html#aa9f51296a7e02b90e332fe1325f95c3d">type</a> = types[i][j];</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>      <span class="keyword">auto</span> where = <span class="stringliteral">&quot;cell &quot;</span> + std::to_string(j + 1) + <span class="stringliteral">&quot; of row &quot;</span> + std::to_string(i + 1) + <span class="stringliteral">&quot; of matrix &#39;&quot;</span> + <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Input.html#a2d0ea53e9eeacf417643f8b9f2c1df26">name</a> + <span class="stringliteral">&quot;&#39;&quot;</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>      <span class="keywordflow">if</span> ( base.<a class="code hl_function" href="structBPMNOS_1_1Model_1_1Schema.html#a9d43c1b423c3eafdd84ab0f16f6fdc41">isScalar</a>() ) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordtype">bool</span> fits = ( base.<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1Schema.html#a6afbcb2e639977b6a50e6ef94777d225">scalar</a>.value() == <a class="code hl_enumvalue" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681a420dd3a823baacf2ff185343271e216a">BPMNOS::ValueType::STRING</a> ? <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Input.html#aa9f51296a7e02b90e332fe1325f95c3d">type</a> == <a class="code hl_enumvalue" href="classBPMNOS_1_1CSVReader.html#a089c016a3f1ed7f4fea9a4af711a3c8fa63b588d5559f64f89a416e656880b949">BPMNOS::CSVReader::Type::STRING</a> : <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Input.html#aa9f51296a7e02b90e332fe1325f95c3d">type</a> == <a class="code hl_enumvalue" href="classBPMNOS_1_1CSVReader.html#a089c016a3f1ed7f4fea9a4af711a3c8fa34f55eca38e0605a84f169ff61a2a396">BPMNOS::CSVReader::Type::NUMBER</a> );</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordflow">if</span> ( !fits ) {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>          <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Input: &quot;</span> + where + <span class="stringliteral">&quot; is no &quot;</span> + base.<a class="code hl_function" href="structBPMNOS_1_1Model_1_1Schema.html#ae10176137d7493b0a97737a4dafe8c15">stringify</a>());</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        }</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>      }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>      <span class="keywordflow">if</span> ( <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Input.html#aa9f51296a7e02b90e332fe1325f95c3d">type</a> != <a class="code hl_enumvalue" href="classBPMNOS_1_1CSVReader.html#a089c016a3f1ed7f4fea9a4af711a3c8fa8eee8e217391199668cbac89472ace53">BPMNOS::CSVReader::Type::OBJECT</a> ) {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Input: &quot;</span> + where + <span class="stringliteral">&quot; is no &quot;</span> + base.<a class="code hl_function" href="structBPMNOS_1_1Model_1_1Schema.html#ae10176137d7493b0a97737a4dafe8c15">stringify</a>());</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>      }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>      <span class="keyword">auto</span> cell = base.<a class="code hl_function" href="structBPMNOS_1_1Model_1_1Schema.html#a7ea9a098f348721e676e857ed61682a9">conform</a>( <a class="code hl_variable" href="ObjectRegistry_8cpp.html#a69118303275981fc7a36707935fcd538">objectRegistry</a>[(<span class="keywordtype">size_t</span>)std::get&lt;BPMNOS::number&gt;(table[i][j])] );</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>      <span class="keywordflow">if</span> ( cells.empty() ) {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        cellLayout = *cell-&gt;layout;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>      }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>      <span class="keywordflow">else</span> <span class="keywordflow">if</span> ( !( *cell-&gt;layout == cellLayout ) ) {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Input: &quot;</span> + where + <span class="stringliteral">&quot; differs in its lengths from the first cell&quot;</span>);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>      }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>      cells.push_back(std::move(cell));</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>  }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>  <span class="comment">// the cells stand one after the other in the order of the rows</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>  <span class="keyword">auto</span> matrix = std::make_shared&lt;BPMNOS::Object&gt;();</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>  BPMNOS::Object::Layout layout;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>  <span class="keywordflow">if</span> ( base.<a class="code hl_function" href="structBPMNOS_1_1Model_1_1Schema.html#a9d43c1b423c3eafdd84ab0f16f6fdc41">isScalar</a>() ) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    layout.<a class="code hl_variable" href="structBPMNOS_1_1Object_1_1Layout.html#a38e6da28974facfbac5b54229f20bac9">scalar</a> = base.<a class="code hl_variable" href="structBPMNOS_1_1Model_1_1Schema.html#a6afbcb2e639977b6a50e6ef94777d225">scalar</a>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>  }</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>  <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    layout = cellLayout;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    layout.<a class="code hl_variable" href="structBPMNOS_1_1Object_1_1Layout.html#a74f26e7a621394ad80f339d750e68939">fixed</a>.clear();</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>  }</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>  layout.<a class="code hl_variable" href="structBPMNOS_1_1Object_1_1Layout.html#aa608312affa5c2160172efda37d69f1c">dimensions</a> = { table.size(), columns };</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>  matrix-&gt;layout = std::make_shared&lt;const BPMNOS::Object::Layout&gt;(layout);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>  matrix-&gt;values.reserve( layout.<a class="code hl_function" href="structBPMNOS_1_1Object_1_1Layout.html#a2bf3230889af0a907559b2a08f113b62">size</a>() );</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>  <span class="keywordflow">for</span> ( <span class="keywordtype">size_t</span> i = 0; i &lt; table.size(); i++ ) {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">for</span> ( <span class="keywordtype">size_t</span> j = 0; j &lt; columns; j++ ) {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>      <span class="keywordflow">if</span> ( base.<a class="code hl_function" href="structBPMNOS_1_1Model_1_1Schema.html#a9d43c1b423c3eafdd84ab0f16f6fdc41">isScalar</a>() ) {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        matrix-&gt;values.push_back( std::get&lt;BPMNOS::number&gt;(table[i][j]) );</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>      }</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>      <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keyword">auto</span>&amp; values = cells[i * columns + j]-&gt;values;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        matrix-&gt;values.insert( matrix-&gt;values.end(), values.begin(), values.end() );</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>      }</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    }</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>  }</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>  <span class="comment">// fixed dimensions are padded, open ones take the size of the matrix</span></div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="classBPMNOS_1_1Model_1_1Input.html#a75e99d070bf58abaa852552d6a4b7442">schema</a>.conform(matrix);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}</div>
+<div class="ttc" id="aCSVReader_8h_html"><div class="ttname"><a href="CSVReader_8h.html">CSVReader.h</a></div></div>
+<div class="ttc" id="aInput_8h_html"><div class="ttname"><a href="Input_8h.html">Input.h</a></div></div>
+<div class="ttc" id="aObjectRegistry_8cpp_html_a69118303275981fc7a36707935fcd538"><div class="ttname"><a href="ObjectRegistry_8cpp.html#a69118303275981fc7a36707935fcd538">objectRegistry</a></div><div class="ttdeci">ObjectRegistry objectRegistry</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00086">ObjectRegistry.cpp:86</a></div></div>
+<div class="ttc" id="aObjectRegistry_8h_html"><div class="ttname"><a href="ObjectRegistry_8h.html">ObjectRegistry.h</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1CSVReader_html"><div class="ttname"><a href="classBPMNOS_1_1CSVReader.html">BPMNOS::CSVReader</a></div><div class="ttdef"><b>Definition</b> <a href="CSVReader_8h_source.html#l00012">CSVReader.h:12</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1CSVReader_html_a089c016a3f1ed7f4fea9a4af711a3c8fa34f55eca38e0605a84f169ff61a2a396"><div class="ttname"><a href="classBPMNOS_1_1CSVReader.html#a089c016a3f1ed7f4fea9a4af711a3c8fa34f55eca38e0605a84f169ff61a2a396">BPMNOS::CSVReader::Type::NUMBER</a></div><div class="ttdeci">@ NUMBER</div><div class="ttdef"><b>Definition</b> <a href="CSVReader_8h_source.html#l00017">CSVReader.h:17</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1CSVReader_html_a089c016a3f1ed7f4fea9a4af711a3c8fa63b588d5559f64f89a416e656880b949"><div class="ttname"><a href="classBPMNOS_1_1CSVReader.html#a089c016a3f1ed7f4fea9a4af711a3c8fa63b588d5559f64f89a416e656880b949">BPMNOS::CSVReader::Type::STRING</a></div><div class="ttdeci">@ STRING</div><div class="ttdef"><b>Definition</b> <a href="CSVReader_8h_source.html#l00017">CSVReader.h:17</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1CSVReader_html_a089c016a3f1ed7f4fea9a4af711a3c8fa8eee8e217391199668cbac89472ace53"><div class="ttname"><a href="classBPMNOS_1_1CSVReader.html#a089c016a3f1ed7f4fea9a4af711a3c8fa8eee8e217391199668cbac89472ace53">BPMNOS::CSVReader::Type::OBJECT</a></div><div class="ttdeci">@ OBJECT</div><div class="ttdef"><b>Definition</b> <a href="CSVReader_8h_source.html#l00017">CSVReader.h:17</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Input_html_a14b910c07a9c4c5c4829a241eb8caa8b"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Input.html#a14b910c07a9c4c5c4829a241eb8caa8b">BPMNOS::Model::Input::Type</a></div><div class="ttdeci">Type</div><div class="ttdef"><b>Definition</b> <a href="Input_8h_source.html#l00023">Input.h:23</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Input_html_a14b910c07a9c4c5c4829a241eb8caa8ba38ef5fe49a654647519ee8c498c49664"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Input.html#a14b910c07a9c4c5c4829a241eb8caa8ba38ef5fe49a654647519ee8c498c49664">BPMNOS::Model::Input::Type::MATRIX</a></div><div class="ttdeci">@ MATRIX</div><div class="ttdef"><b>Definition</b> <a href="Input_8h_source.html#l00023">Input.h:23</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Input_html_a14b910c07a9c4c5c4829a241eb8caa8ba8eee8e217391199668cbac89472ace53"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Input.html#a14b910c07a9c4c5c4829a241eb8caa8ba8eee8e217391199668cbac89472ace53">BPMNOS::Model::Input::Type::OBJECT</a></div><div class="ttdeci">@ OBJECT</div><div class="ttdef"><b>Definition</b> <a href="Input_8h_source.html#l00023">Input.h:23</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Input_html_a2d0ea53e9eeacf417643f8b9f2c1df26"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Input.html#a2d0ea53e9eeacf417643f8b9f2c1df26">BPMNOS::Model::Input::name</a></div><div class="ttdeci">const std::string name</div><div class="ttdef"><b>Definition</b> <a href="Input_8h_source.html#l00026">Input.h:26</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Input_html_a75e99d070bf58abaa852552d6a4b7442"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Input.html#a75e99d070bf58abaa852552d6a4b7442">BPMNOS::Model::Input::schema</a></div><div class="ttdeci">const Schema schema</div><div class="ttdef"><b>Definition</b> <a href="Input_8h_source.html#l00028">Input.h:28</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Input_html_aa9f51296a7e02b90e332fe1325f95c3d"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Input.html#aa9f51296a7e02b90e332fe1325f95c3d">BPMNOS::Model::Input::type</a></div><div class="ttdeci">const Type type</div><div class="ttdef"><b>Definition</b> <a href="Input_8h_source.html#l00027">Input.h:27</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Model_1_1Input_html_ac20f066d77255b0920ebad89b2b273f8"><div class="ttname"><a href="classBPMNOS_1_1Model_1_1Input.html#ac20f066d77255b0920ebad89b2b273f8">BPMNOS::Model::Input::Input</a></div><div class="ttdeci">Input(std::string name, Type type, Schema schema, const std::string &amp;content)</div><div class="ttdoc">Constructs an input from the content of its source.</div><div class="ttdef"><b>Definition</b> <a href="#l00007">Input.cpp:7</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_1_1Model_html"><div class="ttname"><a href="namespaceBPMNOS_1_1Model.html">BPMNOS::Model</a></div><div class="ttdef"><b>Definition</b> <a href="DecisionTask_8h_source.html#l00010">DecisionTask.h:10</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_html_abd0d3034519d54779b4df3e9754cd681a420dd3a823baacf2ff185343271e216a"><div class="ttname"><a href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681a420dd3a823baacf2ff185343271e216a">BPMNOS::STRING</a></div><div class="ttdeci">@ STRING</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00016">Value.h:16</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdoc">STL namespace.</div></div>
+<div class="ttc" id="astructBPMNOS_1_1Model_1_1Schema_html"><div class="ttname"><a href="structBPMNOS_1_1Model_1_1Schema.html">BPMNOS::Model::Schema</a></div><div class="ttdoc">The shape of an attribute, as stated by its type.</div><div class="ttdef"><b>Definition</b> <a href="Schema_8h_source.html#l00024">Schema.h:24</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Model_1_1Schema_html_a54e3f61f0d9f83f9a80a5cca3fc44b06"><div class="ttname"><a href="structBPMNOS_1_1Model_1_1Schema.html#a54e3f61f0d9f83f9a80a5cca3fc44b06">BPMNOS::Model::Schema::fromJSON</a></div><div class="ttdeci">std::shared_ptr&lt; const BPMNOS::Object &gt; fromJSON(const std::string &amp;text) const</div><div class="ttdoc">Returns an object of this schema holding the values of the given JSON text.</div><div class="ttdef"><b>Definition</b> <a href="Schema_8cpp_source.html#l00539">Schema.cpp:539</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Model_1_1Schema_html_a6afbcb2e639977b6a50e6ef94777d225"><div class="ttname"><a href="structBPMNOS_1_1Model_1_1Schema.html#a6afbcb2e639977b6a50e6ef94777d225">BPMNOS::Model::Schema::scalar</a></div><div class="ttdeci">std::optional&lt; ValueType &gt; scalar</div><div class="ttdoc">The scalar type of the base, or nullopt if the base is an object.</div><div class="ttdef"><b>Definition</b> <a href="Schema_8h_source.html#l00025">Schema.h:25</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Model_1_1Schema_html_a7ea9a098f348721e676e857ed61682a9"><div class="ttname"><a href="structBPMNOS_1_1Model_1_1Schema.html#a7ea9a098f348721e676e857ed61682a9">BPMNOS::Model::Schema::conform</a></div><div class="ttdeci">std::shared_ptr&lt; const BPMNOS::Object &gt; conform(const std::shared_ptr&lt; const BPMNOS::Object &gt; &amp;constant) const</div><div class="ttdoc">Returns an object of this schema holding the values of the given constant object.</div><div class="ttdef"><b>Definition</b> <a href="Schema_8cpp_source.html#l00381">Schema.cpp:381</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Model_1_1Schema_html_a8f67857a1ca62395e0e19c1b44cc597a"><div class="ttname"><a href="structBPMNOS_1_1Model_1_1Schema.html#a8f67857a1ca62395e0e19c1b44cc597a">BPMNOS::Model::Schema::dimensions</a></div><div class="ttdeci">std::vector&lt; std::optional&lt; size_t &gt; &gt; dimensions</div><div class="ttdoc">The sizes of the dimensions in index order, nullopt if open.</div><div class="ttdef"><b>Definition</b> <a href="Schema_8h_source.html#l00027">Schema.h:27</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Model_1_1Schema_html_a9d43c1b423c3eafdd84ab0f16f6fdc41"><div class="ttname"><a href="structBPMNOS_1_1Model_1_1Schema.html#a9d43c1b423c3eafdd84ab0f16f6fdc41">BPMNOS::Model::Schema::isScalar</a></div><div class="ttdeci">bool isScalar() const</div><div class="ttdoc">Returns true if the schema describes a scalar attribute.</div><div class="ttdef"><b>Definition</b> <a href="Schema_8h_source.html#l00032">Schema.h:32</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Model_1_1Schema_html_ae10176137d7493b0a97737a4dafe8c15"><div class="ttname"><a href="structBPMNOS_1_1Model_1_1Schema.html#ae10176137d7493b0a97737a4dafe8c15">BPMNOS::Model::Schema::stringify</a></div><div class="ttdeci">std::string stringify() const</div><div class="ttdoc">Returns the text of the type in its canonical form.</div><div class="ttdef"><b>Definition</b> <a href="Schema_8cpp_source.html#l00151">Schema.cpp:151</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_1_1Layout_html"><div class="ttname"><a href="structBPMNOS_1_1Object_1_1Layout.html">BPMNOS::Object::Layout</a></div><div class="ttdoc">The shape of an object with the sizes of its dimensions known.</div><div class="ttdef"><b>Definition</b> <a href="Object_8h_source.html#l00030">Object.h:30</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_1_1Layout_html_a2bf3230889af0a907559b2a08f113b62"><div class="ttname"><a href="structBPMNOS_1_1Object_1_1Layout.html#a2bf3230889af0a907559b2a08f113b62">BPMNOS::Object::Layout::size</a></div><div class="ttdeci">size_t size() const</div><div class="ttdoc">Returns the number of values of an object of this layout.</div><div class="ttdef"><b>Definition</b> <a href="Object_8cpp_source.html#l00011">Object.cpp:11</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_1_1Layout_html_a38e6da28974facfbac5b54229f20bac9"><div class="ttname"><a href="structBPMNOS_1_1Object_1_1Layout.html#a38e6da28974facfbac5b54229f20bac9">BPMNOS::Object::Layout::scalar</a></div><div class="ttdeci">std::optional&lt; ValueType &gt; scalar</div><div class="ttdoc">The scalar type of the base, or nullopt if the base has fields.</div><div class="ttdef"><b>Definition</b> <a href="Object_8h_source.html#l00032">Object.h:32</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_1_1Layout_html_a74f26e7a621394ad80f339d750e68939"><div class="ttname"><a href="structBPMNOS_1_1Object_1_1Layout.html#a74f26e7a621394ad80f339d750e68939">BPMNOS::Object::Layout::fixed</a></div><div class="ttdeci">std::vector&lt; bool &gt; fixed</div><div class="ttdef"><b>Definition</b> <a href="Object_8h_source.html#l00039">Object.h:39</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_1_1Layout_html_aa608312affa5c2160172efda37d69f1c"><div class="ttname"><a href="structBPMNOS_1_1Object_1_1Layout.html#aa608312affa5c2160172efda37d69f1c">BPMNOS::Object::Layout::dimensions</a></div><div class="ttdeci">std::vector&lt; size_t &gt; dimensions</div><div class="ttdoc">The sizes of the dimensions, in index order.</div><div class="ttdef"><b>Definition</b> <a href="Object_8h_source.html#l00034">Object.h:34</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"; mermaid.initialize({ startOnLoad: true, theme: "neutral" });</script></body></html>

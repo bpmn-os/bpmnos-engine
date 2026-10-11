@@ -137,7 +137,7 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class representing a choice to be made within a <a class="el" href="classBPMNOS_1_1Model_1_1DecisionTask.html">BPMNOS::Model::DecisionTask</a>.  <a href="classBPMNOS_1_1Model_1_1Choice.html#details">More...</a><br /></td></tr>
 <tr class="memitem:Conditions" id="r_Conditions"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Conditions.html">Conditions</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class holding extension elements representing conditions for sequence flows and conditional events.  <a href="classBPMNOS_1_1Model_1_1Conditions.html#details">More...</a><br /></td></tr>
-<tr class="memitem:Content" id="r_Content"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Content.html">Content</a></td></tr>
+<tr class="memitem:ContentDefinition" id="r_ContentDefinition"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1ContentDefinition.html">ContentDefinition</a></td></tr>
 <tr class="memitem:Expression" id="r_Expression"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Expression.html">Expression</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class representing a mathematical expression.  <a href="classBPMNOS_1_1Model_1_1Expression.html#details">More...</a><br /></td></tr>
 <tr class="memitem:ExtensionElements" id="r_ExtensionElements"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1ExtensionElements.html">ExtensionElements</a></td></tr>
@@ -150,10 +150,14 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class representing an operator allowing to manipulate attribute values.  <a href="classBPMNOS_1_1Model_1_1Operator.html#details">More...</a><br /></td></tr>
 <tr class="memitem:Parameter" id="r_Parameter"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Parameter.html">Parameter</a></td></tr>
 <tr class="memitem:Restriction" id="r_Restriction"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Restriction.html">Restriction</a></td></tr>
+<tr class="memitem:Schema" id="r_Schema"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">Schema</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The shape of an attribute, as stated by its <span class="tt">type</span>.  <a href="structBPMNOS_1_1Model_1_1Schema.html#details">More...</a><br /></td></tr>
 <tr class="memitem:SignalDefinition" id="r_SignalDefinition"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1SignalDefinition.html">SignalDefinition</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class holding extension elements representing the definition of signal events.  <a href="classBPMNOS_1_1Model_1_1SignalDefinition.html#details">More...</a><br /></td></tr>
 <tr class="memitem:Timer" id="r_Timer"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Timer.html">Timer</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class holding extension elements representing the trigger of timer events.  <a href="classBPMNOS_1_1Model_1_1Timer.html#details">More...</a><br /></td></tr>
+<tr class="memitem:Input" id="r_Input"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Input.html">Input</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An input a data store declares: data that is given once for a run and only read.  <a href="classBPMNOS_1_1Model_1_1Input.html#details">More...</a><br /></td></tr>
 <tr class="memitem:LookupTable" id="r_LookupTable"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1LookupTable.html">LookupTable</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Class generating a lookup table from a CSV file.  <a href="classBPMNOS_1_1Model_1_1LookupTable.html#details">More...</a><br /></td></tr>
 <tr class="memitem:Model" id="r_Model"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Model_1_1Model.html">Model</a></td></tr>
@@ -163,23 +167,24 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-typedef-members" class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a603d366d0bdb8002b19ca0cd32b8a452" id="r_a603d366d0bdb8002b19ca0cd32b8a452"><td class="memItemLeft" align="right" valign="top">typedef std::unordered_map&lt; std::string, std::unique_ptr&lt; <a class="el" href="classBPMNOS_1_1Model_1_1Content.html">Content</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a603d366d0bdb8002b19ca0cd32b8a452">ContentMap</a></td></tr>
+<tr class="memitem:af1c8a160fc1cf0f816a015fdac22f43f" id="r_af1c8a160fc1cf0f816a015fdac22f43f"><td class="memItemLeft" align="right" valign="top">typedef std::unordered_map&lt; std::string, std::unique_ptr&lt; <a class="el" href="classBPMNOS_1_1Model_1_1ContentDefinition.html">ContentDefinition</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af1c8a160fc1cf0f816a015fdac22f43f">ContentDefinitionMap</a></td></tr>
+<tr class="memdesc:af1c8a160fc1cf0f816a015fdac22f43f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The definitions of the content of a message or signal, by their keys.  <br /></td></tr>
 <tr class="memitem:a3afc968f97816dc421cdc353ade49dca" id="r_a3afc968f97816dc421cdc353ade49dca"><td class="memItemLeft" align="right" valign="top">typedef std::unordered_map&lt; std::string, std::unique_ptr&lt; <a class="el" href="classBPMNOS_1_1Model_1_1Parameter.html">Parameter</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3afc968f97816dc421cdc353ade49dca">ParameterMap</a></td></tr>
 </table>
 <a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Typedef Documentation</h2>
-<a id="a603d366d0bdb8002b19ca0cd32b8a452" name="a603d366d0bdb8002b19ca0cd32b8a452"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a603d366d0bdb8002b19ca0cd32b8a452">&#9670;&#160;</a></span>ContentMap</h2>
+<a id="af1c8a160fc1cf0f816a015fdac22f43f" name="af1c8a160fc1cf0f816a015fdac22f43f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1c8a160fc1cf0f816a015fdac22f43f">&#9670;&#160;</a></span>ContentDefinitionMap</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef std::unordered_map&lt; std::string, std::unique_ptr&lt;<a class="el" href="classBPMNOS_1_1Model_1_1Content.html">Content</a>&gt; &gt; <a class="el" href="#a603d366d0bdb8002b19ca0cd32b8a452">BPMNOS::Model::ContentMap</a></td>
+          <td class="memname">typedef std::unordered_map&lt; std::string, std::unique_ptr&lt;<a class="el" href="classBPMNOS_1_1Model_1_1ContentDefinition.html">ContentDefinition</a>&gt; &gt; <a class="el" href="#af1c8a160fc1cf0f816a015fdac22f43f">BPMNOS::Model::ContentDefinitionMap</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Content_8h_source.html#l00027">27</a> of file <a class="el" href="Content_8h_source.html">Content.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ContentDefinition_8h_source.html#l00028">28</a> of file <a class="el" href="ContentDefinition_8h_source.html">ContentDefinition.h</a>.</p>
 
 </div>
 </div>

@@ -16,7 +16,7 @@
 <meta name="twitter:title" content="Doxygen Awesome" />
 <meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
 <!-- END twitter metadata -->
-<title>BPMN-OS: model/utility/src/ExpectedValueFactory.cpp Source File</title>
+<title>BPMN-OS: execution/data/src/ExpectedValueFactory.cpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -127,14 +127,14 @@ $(function(){initNavTree('ExpectedValueFactory_8cpp_source.html','',''); });
 </div><!--header-->
 <div class="contents">
 <a href="ExpectedValueFactory_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="ExpectedValueFactory_8h.html">ExpectedValueFactory.h</a>&quot;</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="CollectionRegistry_8h.html">CollectionRegistry.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="ObjectRegistry_8h.html">model/utility/src/ObjectRegistry.h</a>&quot;</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">using namespace </span><a class="code hl_namespace" href="namespaceBPMNOS.html">BPMNOS</a>;</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">using namespace </span><a class="code hl_namespace" href="namespaceBPMNOS_1_1Execution.html">BPMNOS::Execution</a>;</div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
 <div class="foldopen" id="foldopen00008" data-start="{" data-end="}">
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1ExpectedValueFactory.html#ab11f44313efe7a2d6b92918e7c6ce1c2">    8</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classBPMNOS_1_1ExpectedValueFactory.html#ab11f44313efe7a2d6b92918e7c6ce1c2">ExpectedValueFactory::registerFunctions</a>(LIMEX::Handle&lt;double&gt;&amp; handle) {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1ExpectedValueFactory.html#ab11f44313efe7a2d6b92918e7c6ce1c2">    8</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classBPMNOS_1_1Execution_1_1ExpectedValueFactory.html#ab11f44313efe7a2d6b92918e7c6ce1c2">ExpectedValueFactory::registerFunctions</a>(LIMEX::Handle&lt;double&gt;&amp; handle) {</div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>  <span class="keyword">auto</span> nameExists = [&amp;](<span class="keyword">const</span> std::string&amp; name) {</div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keywordflow">return</span> std::ranges::contains(handle.getFunctionNames(), name) ||</div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>           std::ranges::contains(handle.getAggregatorNames(), name);</div>
@@ -259,8 +259,8 @@ $(function(){initNavTree('ExpectedValueFactory_8cpp_source.html','',''); });
 <div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>      <span class="keywordtype">size_t</span> valuesIndex = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(args[0]);</div>
 <div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>      <span class="keywordtype">size_t</span> probsIndex = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(args[1]);</div>
 <div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>      <span class="keyword">const</span> <span class="keyword">auto</span>&amp; values = <a class="code hl_variable" href="CollectionRegistry_8cpp.html#a4df1f4374f341a4c8d159809dece3378">collectionRegistry</a>[valuesIndex];</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>      <span class="keyword">const</span> <span class="keyword">auto</span>&amp; probs = <a class="code hl_variable" href="CollectionRegistry_8cpp.html#a4df1f4374f341a4c8d159809dece3378">collectionRegistry</a>[probsIndex];</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>      <span class="keyword">auto</span> values = <a class="code hl_function" href="namespaceBPMNOS.html#a8c9337d0b6b5dda40248ff9cc1917f40">to_vector</a>( *<a class="code hl_variable" href="ObjectRegistry_8cpp.html#a69118303275981fc7a36707935fcd538">objectRegistry</a>[valuesIndex] );</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>      <span class="keyword">auto</span> probs = <a class="code hl_function" href="namespaceBPMNOS.html#a8c9337d0b6b5dda40248ff9cc1917f40">to_vector</a>( *<a class="code hl_variable" href="ObjectRegistry_8cpp.html#a69118303275981fc7a36707935fcd538">objectRegistry</a>[probsIndex] );</div>
 <div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
 <div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>      <span class="keywordflow">if</span> (values.size() != probs.size()) {</div>
 <div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;discrete: values and probabilities must have the same size&quot;</span>);</div>
@@ -276,11 +276,12 @@ $(function(){initNavTree('ExpectedValueFactory_8cpp_source.html','',''); });
 <div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>  }</div>
 <div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>}</div>
 </div>
-<div class="ttc" id="aCollectionRegistry_8cpp_html_a4df1f4374f341a4c8d159809dece3378"><div class="ttname"><a href="CollectionRegistry_8cpp.html#a4df1f4374f341a4c8d159809dece3378">collectionRegistry</a></div><div class="ttdeci">CollectionRegistry collectionRegistry</div><div class="ttdef"><b>Definition</b> <a href="CollectionRegistry_8cpp_source.html#l00060">CollectionRegistry.cpp:60</a></div></div>
-<div class="ttc" id="aCollectionRegistry_8h_html"><div class="ttname"><a href="CollectionRegistry_8h.html">CollectionRegistry.h</a></div></div>
 <div class="ttc" id="aExpectedValueFactory_8h_html"><div class="ttname"><a href="ExpectedValueFactory_8h.html">ExpectedValueFactory.h</a></div></div>
-<div class="ttc" id="aclassBPMNOS_1_1ExpectedValueFactory_html_ab11f44313efe7a2d6b92918e7c6ce1c2"><div class="ttname"><a href="classBPMNOS_1_1ExpectedValueFactory.html#ab11f44313efe7a2d6b92918e7c6ce1c2">BPMNOS::ExpectedValueFactory::registerFunctions</a></div><div class="ttdeci">void registerFunctions(LIMEX::Handle&lt; double &gt; &amp;handle)</div><div class="ttdoc">Register all expected value functions with the given LIMEX handle.</div><div class="ttdef"><b>Definition</b> <a href="#l00008">ExpectedValueFactory.cpp:8</a></div></div>
-<div class="ttc" id="anamespaceBPMNOS_html"><div class="ttname"><a href="namespaceBPMNOS.html">BPMNOS</a></div><div class="ttdef"><b>Definition</b> <a href="DecisionTask_8h_source.html#l00010">DecisionTask.h:10</a></div></div>
+<div class="ttc" id="aObjectRegistry_8cpp_html_a69118303275981fc7a36707935fcd538"><div class="ttname"><a href="ObjectRegistry_8cpp.html#a69118303275981fc7a36707935fcd538">objectRegistry</a></div><div class="ttdeci">ObjectRegistry objectRegistry</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00086">ObjectRegistry.cpp:86</a></div></div>
+<div class="ttc" id="aObjectRegistry_8h_html"><div class="ttname"><a href="ObjectRegistry_8h.html">ObjectRegistry.h</a></div></div>
+<div class="ttc" id="aclassBPMNOS_1_1Execution_1_1ExpectedValueFactory_html_ab11f44313efe7a2d6b92918e7c6ce1c2"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1ExpectedValueFactory.html#ab11f44313efe7a2d6b92918e7c6ce1c2">BPMNOS::Execution::ExpectedValueFactory::registerFunctions</a></div><div class="ttdeci">void registerFunctions(LIMEX::Handle&lt; double &gt; &amp;handle)</div><div class="ttdoc">Register all expected value functions with the given LIMEX handle.</div><div class="ttdef"><b>Definition</b> <a href="#l00008">ExpectedValueFactory.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_1_1Execution_html"><div class="ttname"><a href="namespaceBPMNOS_1_1Execution.html">BPMNOS::Execution</a></div><div class="ttdef"><b>Definition</b> <a href="CachedCandidates_8h_source.html#l00017">CachedCandidates.h:17</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_html_a8c9337d0b6b5dda40248ff9cc1917f40"><div class="ttname"><a href="namespaceBPMNOS.html#a8c9337d0b6b5dda40248ff9cc1917f40">BPMNOS::to_vector</a></div><div class="ttdeci">std::vector&lt; double &gt; to_vector(const Object &amp;object)</div><div class="ttdoc">Returns the values of an array of scalar values with a single dimension as decimals,...</div><div class="ttdef"><b>Definition</b> <a href="Object_8cpp_source.html#l00259">Object.cpp:259</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->

@@ -1,10 +1,12 @@
 var bpmnos =
 [
     [ "BPMN model", "bpmnos.html#bpmn-model", null ],
+    [ "Objects and inputs", "bpmnos.html#objects-and-inputs", null ],
     [ "Scenario", "bpmnos.html#scenario", null ],
     [ "Static data provider", "bpmnos.html#static-data-provider", [
       [ "CSV Format", "bpmnos.html#csv-format", null ],
       [ "Example", "bpmnos.html#example", null ],
+      [ "Objects", "bpmnos.html#objects-1", null ],
       [ "Global Attributes", "bpmnos.html#global-attributes-1", null ],
       [ "Expressions", "bpmnos.html#expressions", null ]
     ] ],
@@ -50,6 +52,7 @@ var bpmnos =
     ] ],
     [ "BPMN extension", "extension.html", [
       [ "Attributes", "extension.html#attributes", [
+        [ "Objects", "extension.html#objects", null ],
         [ "Global attributes", "extension.html#global-attributes", null ],
         [ "Data attributes", "extension.html#data-attributes", null ],
         [ "Status attributes", "extension.html#status-attributes", null ]
@@ -58,12 +61,14 @@ var bpmnos =
         [ "Node restrictions", "extension.html#node-restrictions", null ],
         [ "Gatekeeper restrictions", "extension.html#gatekeeper-restrictions", null ]
       ] ],
-      [ "Operators", "extension.html#operators", null ],
+      [ "Operators", "extension.html#operators", [
+        [ "Writing objects", "extension.html#writing-objects", null ]
+      ] ],
       [ "Choices", "extension.html#choices", null ],
       [ "Messages", "extension.html#messages", null ],
       [ "Signals", "extension.html#signals", null ],
       [ "Timer", "extension.html#timer", null ],
-      [ "Lookup tables", "extension.html#lookup-tables", null ],
+      [ "Inputs", "extension.html#inputs", null ],
       [ "Loop parameters", "extension.html#loop-parameters", null ]
     ] ]
 ];

@@ -143,7 +143,7 @@ Inheritance diagram for BPMNOS::Execution::CompletionEvent:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6e2442a80f2cb9d006639f292cc0634d" id="r_a6e2442a80f2cb9d006639f292cc0634d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6e2442a80f2cb9d006639f292cc0634d">CompletionEvent</a> (const <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> *<a class="el" href="structBPMNOS_1_1Execution_1_1Event.html#a16eec176bbb59718ddf96f9c88e3b46b">token</a>, <a class="el" href="structBPMNOS_1_1Values.html">Values</a> <a class="el" href="#a3fe75a4ab0d729fc372a120430d29605">status</a>)</td></tr>
+<tr class="memitem:a66bd08228c6216d84224cc1904735b8e" id="r_a66bd08228c6216d84224cc1904735b8e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a66bd08228c6216d84224cc1904735b8e">CompletionEvent</a> (const <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> *<a class="el" href="structBPMNOS_1_1Execution_1_1Event.html#a16eec176bbb59718ddf96f9c88e3b46b">token</a>, <a class="el" href="structBPMNOS_1_1Status.html">Status</a> <a class="el" href="#a10f931bd4d2eec60d6678b99390df961">status</a>)</td></tr>
 <tr class="memitem:ad8d670e95572d0491a0f1e35e5a0bbf3" id="r_ad8d670e95572d0491a0f1e35e5a0bbf3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad8d670e95572d0491a0f1e35e5a0bbf3">processBy</a> (<a class="el" href="classBPMNOS_1_1Execution_1_1Engine.html">Engine</a> *engine) const override</td></tr>
 <tr class="memitem:a25f4ad901e9b2b2c5184021bcd2f7abf" id="r_a25f4ad901e9b2b2c5184021bcd2f7abf"><td class="memItemLeft" align="right" valign="top">nlohmann::ordered_json&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a25f4ad901e9b2b2c5184021bcd2f7abf">jsonify</a> () const override</td></tr>
 <tr class="inherit_header pub_methods_structBPMNOS_1_1Execution_1_1Event"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_structBPMNOS_1_1Execution_1_1Event')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="structBPMNOS_1_1Execution_1_1Event.html">BPMNOS::Execution::Event</a></td></tr>
@@ -160,7 +160,7 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a3fe75a4ab0d729fc372a120430d29605" id="r_a3fe75a4ab0d729fc372a120430d29605"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structBPMNOS_1_1Values.html">Values</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3fe75a4ab0d729fc372a120430d29605">status</a></td></tr>
+<tr class="memitem:a10f931bd4d2eec60d6678b99390df961" id="r_a10f931bd4d2eec60d6678b99390df961"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structBPMNOS_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a10f931bd4d2eec60d6678b99390df961">status</a></td></tr>
 <tr class="inherit_header pub_attribs_structBPMNOS_1_1Execution_1_1Event"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_structBPMNOS_1_1Execution_1_1Event')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="structBPMNOS_1_1Execution_1_1Event.html">BPMNOS::Execution::Event</a></td></tr>
 <tr class="memitem:a16eec176bbb59718ddf96f9c88e3b46b inherit pub_attribs_structBPMNOS_1_1Execution_1_1Event" id="r_a16eec176bbb59718ddf96f9c88e3b46b"><td class="memItemLeft" align="right" valign="top">std::weak_ptr&lt; const <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Execution_1_1Event.html#a16eec176bbb59718ddf96f9c88e3b46b">token</a></td></tr>
 <tr class="memdesc:a16eec176bbb59718ddf96f9c88e3b46b inherit pub_attribs_structBPMNOS_1_1Execution_1_1Event"><td class="mdescLeft">&#160;</td><td class="mdescRight">Weak reference to the token; empty for token-less events (clock tick, termination).  <br /></td></tr>
@@ -189,8 +189,8 @@ Additional Inherited Members</h2></td></tr>
  }</td></tr>
 </table>
 <a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a6e2442a80f2cb9d006639f292cc0634d" name="a6e2442a80f2cb9d006639f292cc0634d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6e2442a80f2cb9d006639f292cc0634d">&#9670;&#160;</a></span>CompletionEvent()</h2>
+<a id="a66bd08228c6216d84224cc1904735b8e" name="a66bd08228c6216d84224cc1904735b8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66bd08228c6216d84224cc1904735b8e">&#9670;&#160;</a></span>CompletionEvent()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -203,7 +203,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Values.html">Values</a></td>          <td class="paramname"><span class="paramname"><em>status</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Status.html">Status</a></td>          <td class="paramname"><span class="paramname"><em>status</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -272,14 +272,14 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
-<a id="a3fe75a4ab0d729fc372a120430d29605" name="a3fe75a4ab0d729fc372a120430d29605"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3fe75a4ab0d729fc372a120430d29605">&#9670;&#160;</a></span>status</h2>
+<a id="a10f931bd4d2eec60d6678b99390df961" name="a10f931bd4d2eec60d6678b99390df961"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10f931bd4d2eec60d6678b99390df961">&#9670;&#160;</a></span>status</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structBPMNOS_1_1Values.html">Values</a> BPMNOS::Execution::CompletionEvent::status</td>
+          <td class="memname"><a class="el" href="structBPMNOS_1_1Status.html">Status</a> BPMNOS::Execution::CompletionEvent::status</td>
         </tr>
       </table>
 </div><div class="memdoc">

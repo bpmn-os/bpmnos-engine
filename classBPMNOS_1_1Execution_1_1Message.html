@@ -128,7 +128,7 @@ $(function(){initNavTree('classBPMNOS_1_1Execution_1_1Message.html','','classBPM
 <div class="contents">
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="Message_8h_source.html#l00020">20</a> of file <a class="el" href="Message_8h_source.html">Message.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Message_8h_source.html#l00021">21</a> of file <a class="el" href="Message_8h_source.html">Message.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="Message_8h_source.html">Message.h</a>&gt;</code></p>
 <div class="dynheader">
@@ -170,11 +170,11 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad35704d4d542ea99530e67caecca6f96" id="r_ad35704d4d542ea99530e67caecca6f96"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad35704d4d542ea99530e67caecca6f96">Message</a> (<a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> *token)</td></tr>
 <tr class="memitem:aea764f03e333c32fab6de0fc69d8741a" id="r_aea764f03e333c32fab6de0fc69d8741a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aea764f03e333c32fab6de0fc69d8741a">Message</a> (const Message *other, <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> *<a class="el" href="#a77ce338b86d627f22910cdc3a2ee5dc2">waitingToken</a>=nullptr)</td></tr>
 <tr class="memdesc:aea764f03e333c32fab6de0fc69d8741a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy constructor.  <br /></td></tr>
-<tr class="memitem:a0d8d7d1292d7c35d2a61a20b54ccbf40" id="r_a0d8d7d1292d7c35d2a61a20b54ccbf40"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0d8d7d1292d7c35d2a61a20b54ccbf40">matches</a> (const <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &amp;otherHeader) const</td></tr>
+<tr class="memitem:a0d8d7d1292d7c35d2a61a20b54ccbf40" id="r_a0d8d7d1292d7c35d2a61a20b54ccbf40"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0d8d7d1292d7c35d2a61a20b54ccbf40">matches</a> (const <a class="el" href="namespaceBPMNOS.html#a792ed6c9042145e1386a3bec477063c4">BPMNOS::Values</a> &amp;otherHeader) const</td></tr>
 <tr class="memdesc:a0d8d7d1292d7c35d2a61a20b54ccbf40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if headers have the same size and all values that are defined are the same.  <br /></td></tr>
-<tr class="memitem:aa507a9142012303404a87b319edb5d97" id="r_aa507a9142012303404a87b319edb5d97"><td class="memTemplParams" colspan="2">template&lt;typename DataType&gt; </td></tr>
-<tr class="memitem:aa507a9142012303404a87b319edb5d97 template"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa507a9142012303404a87b319edb5d97">apply</a> (const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1FlowNode.html">BPMN::FlowNode</a> *node, const <a class="el" href="classBPMNOS_1_1Model_1_1AttributeRegistry.html">BPMNOS::Model::AttributeRegistry</a> &amp;attributeRegistry, <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &amp;status, DataType &amp;data) const</td></tr>
-<tr class="memdesc:aa507a9142012303404a87b319edb5d97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the status at a node based on the message content and returns the change of the objective.  <br /></td></tr>
+<tr class="memitem:affbdbebc3d5423187bf33fe93483485c" id="r_affbdbebc3d5423187bf33fe93483485c"><td class="memTemplParams" colspan="2">template&lt;typename DataType&gt; </td></tr>
+<tr class="memitem:affbdbebc3d5423187bf33fe93483485c template"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#affbdbebc3d5423187bf33fe93483485c">apply</a> (const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1FlowNode.html">BPMN::FlowNode</a> *node, const <a class="el" href="classBPMNOS_1_1Model_1_1AttributeRegistry.html">BPMNOS::Model::AttributeRegistry</a> &amp;attributeRegistry, <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, DataType &amp;data) const</td></tr>
+<tr class="memdesc:affbdbebc3d5423187bf33fe93483485c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the status at a node based on the message content and returns the change of the objective.  <br /></td></tr>
 <tr class="memitem:a0da4f446fa48034b9b5b37e3882f2c1f" id="r_a0da4f446fa48034b9b5b37e3882f2c1f"><td class="memItemLeft" align="right" valign="top">nlohmann::ordered_json&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0da4f446fa48034b9b5b37e3882f2c1f">jsonify</a> () const</td></tr>
 <tr class="inherit_header pub_methods_structBPMNOS_1_1Execution_1_1Observable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_structBPMNOS_1_1Execution_1_1Observable')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html">BPMNOS::Execution::Observable</a></td></tr>
 <tr class="memitem:a35e882074daf62166c874fa8d60a19ee inherit pub_methods_structBPMNOS_1_1Execution_1_1Observable" id="r_a35e882074daf62166c874fa8d60a19ee"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a35e882074daf62166c874fa8d60a19ee">~Observable</a> ()=default</td></tr>
@@ -185,8 +185,8 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:abc3b1786a82f2842620607ae71610acd" id="r_abc3b1786a82f2842620607ae71610acd"><td class="memItemLeft" align="right" valign="top">const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1FlowNode.html">BPMN::FlowNode</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abc3b1786a82f2842620607ae71610acd">origin</a></td></tr>
 <tr class="memitem:a77ce338b86d627f22910cdc3a2ee5dc2" id="r_a77ce338b86d627f22910cdc3a2ee5dc2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a77ce338b86d627f22910cdc3a2ee5dc2">waitingToken</a></td></tr>
 <tr class="memitem:a83bed704f52ab4c6e431bd2093ff3aed" id="r_a83bed704f52ab4c6e431bd2093ff3aed"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a83bed704f52ab4c6e431bd2093ff3aed">recipient</a></td></tr>
-<tr class="memitem:aeeff0e30a5f9465b58a837afae88fbbc" id="r_aeeff0e30a5f9465b58a837afae88fbbc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeeff0e30a5f9465b58a837afae88fbbc">header</a></td></tr>
-<tr class="memitem:a1c1f908b2b1e58f16a3c0208d43bdc15" id="r_a1c1f908b2b1e58f16a3c0208d43bdc15"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a8154a7afba82997850e7db218281c8e0">VariedValueMap</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1c1f908b2b1e58f16a3c0208d43bdc15">contentValueMap</a></td></tr>
+<tr class="memitem:aeeff0e30a5f9465b58a837afae88fbbc" id="r_aeeff0e30a5f9465b58a837afae88fbbc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a792ed6c9042145e1386a3bec477063c4">BPMNOS::Values</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeeff0e30a5f9465b58a837afae88fbbc">header</a></td></tr>
+<tr class="memitem:a0f9df5eea258441b0c343f9fd728669c" id="r_a0f9df5eea258441b0c343f9fd728669c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS_1_1Execution.html#afa4e3833f49e8f1f292c8dbc6a9f85b2">ContentMap</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0f9df5eea258441b0c343f9fd728669c">contentValueMap</a></td></tr>
 </table>
 <a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Member Enumeration Documentation</h2>
 <a id="a8cfd940f3553766aad62774987301c0f" name="a8cfd940f3553766aad62774987301c0f"></a>
@@ -214,7 +214,7 @@ Public Attributes</h2></td></tr>
 <tr><td class="fieldname"><a id="a8cfd940f3553766aad62774987301c0fa15f20da2a811c696726c7187065cd6d2" name="a8cfd940f3553766aad62774987301c0fa15f20da2a811c696726c7187065cd6d2"></a>WITHDRAWN&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="Message_8h_source.html#l00025">25</a> of file <a class="el" href="Message_8h_source.html">Message.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Message_8h_source.html#l00026">26</a> of file <a class="el" href="Message_8h_source.html">Message.h</a>.</p>
 
 </div>
 </div>
@@ -262,8 +262,8 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="aa507a9142012303404a87b319edb5d97" name="aa507a9142012303404a87b319edb5d97"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa507a9142012303404a87b319edb5d97">&#9670;&#160;</a></span>apply()</h2>
+<a id="affbdbebc3d5423187bf33fe93483485c" name="affbdbebc3d5423187bf33fe93483485c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affbdbebc3d5423187bf33fe93483485c">&#9670;&#160;</a></span>apply()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -283,7 +283,7 @@ template&lt;typename DataType&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
+          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -293,7 +293,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Message_8cpp_source.html#l00101">101</a> of file <a class="el" href="Message_8cpp_source.html">Message.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Message_8cpp_source.html#l00112">112</a> of file <a class="el" href="Message_8cpp_source.html">Message.cpp</a>.</p>
 
 </div>
 </div>
@@ -322,7 +322,7 @@ template&lt;typename DataType&gt; </div>
 
 <p>Implements <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#ac4ef9f23fb39b38cf961872f741979b9">BPMNOS::Execution::Observable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Message_8h_source.html#l00022">22</a> of file <a class="el" href="Message_8h_source.html">Message.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Message_8h_source.html#l00023">23</a> of file <a class="el" href="Message_8h_source.html">Message.h</a>.</p>
 
 </div>
 </div>
@@ -341,7 +341,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Message_8cpp_source.html#l00054">54</a> of file <a class="el" href="Message_8cpp_source.html">Message.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Message_8cpp_source.html#l00061">61</a> of file <a class="el" href="Message_8cpp_source.html">Message.cpp</a>.</p>
 
 </div>
 </div>
@@ -354,30 +354,30 @@ template&lt;typename DataType&gt; </div>
         <tr>
           <td class="memname">bool Message::matches </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>otherHeader</em></span></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="namespaceBPMNOS.html#a792ed6c9042145e1386a3bec477063c4">BPMNOS::Values</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>otherHeader</em></span></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Message_8cpp_source.html#l00040">40</a> of file <a class="el" href="Message_8cpp_source.html">Message.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Message_8cpp_source.html#l00047">47</a> of file <a class="el" href="Message_8cpp_source.html">Message.cpp</a>.</p>
 
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
-<a id="a1c1f908b2b1e58f16a3c0208d43bdc15" name="a1c1f908b2b1e58f16a3c0208d43bdc15"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1c1f908b2b1e58f16a3c0208d43bdc15">&#9670;&#160;</a></span>contentValueMap</h2>
+<a id="a0f9df5eea258441b0c343f9fd728669c" name="a0f9df5eea258441b0c343f9fd728669c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f9df5eea258441b0c343f9fd728669c">&#9670;&#160;</a></span>contentValueMap</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespaceBPMNOS.html#a8154a7afba82997850e7db218281c8e0">VariedValueMap</a> BPMNOS::Execution::Message::contentValueMap</td>
+          <td class="memname"><a class="el" href="namespaceBPMNOS_1_1Execution.html#afa4e3833f49e8f1f292c8dbc6a9f85b2">ContentMap</a> BPMNOS::Execution::Message::contentValueMap</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Message_8h_source.html#l00034">34</a> of file <a class="el" href="Message_8h_source.html">Message.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Message_8h_source.html#l00035">35</a> of file <a class="el" href="Message_8h_source.html">Message.h</a>.</p>
 
 </div>
 </div>
@@ -388,12 +388,12 @@ template&lt;typename DataType&gt; </div>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> BPMNOS::Execution::Message::header</td>
+          <td class="memname"><a class="el" href="namespaceBPMNOS.html#a792ed6c9042145e1386a3bec477063c4">BPMNOS::Values</a> BPMNOS::Execution::Message::header</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Message_8h_source.html#l00033">33</a> of file <a class="el" href="Message_8h_source.html">Message.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Message_8h_source.html#l00034">34</a> of file <a class="el" href="Message_8h_source.html">Message.h</a>.</p>
 
 </div>
 </div>
@@ -409,7 +409,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Message_8h_source.html#l00030">30</a> of file <a class="el" href="Message_8h_source.html">Message.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Message_8h_source.html#l00031">31</a> of file <a class="el" href="Message_8h_source.html">Message.h</a>.</p>
 
 </div>
 </div>
@@ -425,7 +425,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Message_8h_source.html#l00032">32</a> of file <a class="el" href="Message_8h_source.html">Message.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Message_8h_source.html#l00033">33</a> of file <a class="el" href="Message_8h_source.html">Message.h</a>.</p>
 
 </div>
 </div>
@@ -441,7 +441,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Message_8h_source.html#l00029">29</a> of file <a class="el" href="Message_8h_source.html">Message.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Message_8h_source.html#l00030">30</a> of file <a class="el" href="Message_8h_source.html">Message.h</a>.</p>
 
 </div>
 </div>
@@ -457,7 +457,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Message_8h_source.html#l00031">31</a> of file <a class="el" href="Message_8h_source.html">Message.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Message_8h_source.html#l00032">32</a> of file <a class="el" href="Message_8h_source.html">Message.h</a>.</p>
 
 </div>
 </div>

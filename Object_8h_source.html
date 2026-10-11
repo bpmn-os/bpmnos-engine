@@ -1,0 +1,279 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.15.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<!-- BEGIN opengraph metadata -->
+<meta property="og:title" content="Doxygen Awesome" />
+<meta property="og:image" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta property="og:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+<!-- END opengraph metadata -->
+<!-- BEGIN twitter metadata -->
+<meta name="twitter:image:src" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta name="twitter:title" content="Doxygen Awesome" />
+<meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<!-- END twitter metadata -->
+<title>BPMN-OS: model/utility/src/Object.h Source File</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="doxygen-awesome-tabs.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeParagraphLink.init()
+    DoxygenAwesomeInteractiveToc.init()
+    DoxygenAwesomeTabs.init()
+</script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/bpmn-os/bpmnos-engine" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="BPMNOS.svg"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">BPMN-OS
+   </div>
+   <div id="projectbrief">BPMN for optimization and simulation</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.15.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',true);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(function(){initNavTree('Object_8h_source.html','',''); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">Object.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Object_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef BPMNOS_Model_Object_H</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define BPMNOS_Model_Object_H</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="Value_8h.html">Value.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;nlohmann/json.hpp&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceBPMNOS.html">BPMNOS</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment"></span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment">/**</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment"> * @brief An object, i.e. an array or a structured value, stored flat.</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment"> * The values of an object are held in one vector, and its layout states where each of them is: an element is</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment"> * one slot at an offset computed from the layout. An object is shared copy-on-write wherever it is held, as a</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment"> * `std::shared_ptr&lt;const Object&gt;`, so that copying a status or data copies no values.</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment"> */</span></div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1Object.html">   20</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structBPMNOS_1_1Object.html">Object</a> {<span class="comment"></span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment">  /**</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment">   * @brief The shape of an object with the sizes of its dimensions known.</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment">   *</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment">   * A layout is a base followed by its dimensions, read from left to right in the order of the indices. The</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment">   * base is a scalar type or a list of fields, each with a layout of its own, stored one after the other within</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment">   * an element. The elements of an array are uniform, so that they share their layout and are a stride apart:</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment">   * the element at the indices `i_1, ..., i_k`, counting from zero, begins at</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="comment">   * `((i_1 * d_2 + i_2) * d_3 + ... + i_k) * stride`.</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="comment">   */</span></div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="};">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1Object_1_1Layout.html">   30</a></span>  <span class="keyword">struct </span><a class="code hl_struct" href="structBPMNOS_1_1Object_1_1Layout.html">Layout</a> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">struct </span><a class="code hl_struct" href="structBPMNOS_1_1Object_1_1Layout_1_1Field.html">Field</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1Object_1_1Layout.html#a38e6da28974facfbac5b54229f20bac9">   32</a></span>    std::optional&lt;ValueType&gt; <a class="code hl_variable" href="structBPMNOS_1_1Object_1_1Layout.html#a38e6da28974facfbac5b54229f20bac9">scalar</a>; <span class="comment">///&lt; The scalar type of the base, or nullopt if the base has fields</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1Object_1_1Layout.html#a05a83b66706da99c685e847ca67850e7">   33</a></span>    std::vector&lt;Field&gt; <a class="code hl_variable" href="structBPMNOS_1_1Object_1_1Layout.html#a05a83b66706da99c685e847ca67850e7">fields</a>; <span class="comment">///&lt; The fields of the base, in declaration order</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1Object_1_1Layout.html#aa608312affa5c2160172efda37d69f1c">   34</a></span>    std::vector&lt;size_t&gt; <a class="code hl_variable" href="structBPMNOS_1_1Object_1_1Layout.html#aa608312affa5c2160172efda37d69f1c">dimensions</a>; <span class="comment">///&lt; The sizes of the dimensions, in index order</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1Object_1_1Layout.html#a18de3655e73a2450643f8bc6b65a269b">   35</a></span>    <span class="keywordtype">size_t</span> <a class="code hl_variable" href="structBPMNOS_1_1Object_1_1Layout.html#a18de3655e73a2450643f8bc6b65a269b">stride</a> = 1; <span class="comment">///&lt; The number of values of one element of the base</span><span class="comment"></span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="comment">    /// For each dimension whether its size is fixed, by the type or a size declaration, so that an assignment</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="comment">    /// pads a shorter value and rejects a longer one, whereas an open dimension takes the length of the value;</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="comment">    /// empty for a constant object</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1Object_1_1Layout.html#a74f26e7a621394ad80f339d750e68939">   39</a></span>    std::vector&lt;bool&gt; <a class="code hl_variable" href="structBPMNOS_1_1Object_1_1Layout.html#a74f26e7a621394ad80f339d750e68939">fixed</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="comment"></span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="comment">    /// @brief Returns the number of values of an object of this layout.</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">size_t</span> <a class="code hl_function" href="structBPMNOS_1_1Object_1_1Layout.html#a2bf3230889af0a907559b2a08f113b62">size</a>() <span class="keyword">const</span>;<span class="comment"></span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="comment">    /// @brief Returns the type the layout states, in the syntax of attribute types.</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    std::string <a class="code hl_function" href="structBPMNOS_1_1Object_1_1Layout.html#a9c7cd4d84c21f2c30aaa1a6267533587">stringify</a>() <span class="keyword">const</span>;<span class="comment"></span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="comment">    /// @brief Recomputes the offsets of the fields and the stride from the layouts of the fields.</span></div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="structBPMNOS_1_1Object_1_1Layout.html#ae8729d00c76df56f134ee8382cabc575">arrange</a>();</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="structBPMNOS_1_1Object_1_1Layout.html#ab8a31fe91fa681ff40317c7e3f5e5546">operator==</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Object_1_1Layout.html">Layout</a>&amp; other) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  };</div>
+</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1Object.html#a1747a728fc8a11cbaa68f0f274c91cf7">   50</a></span>  std::shared_ptr&lt;const Layout&gt; <a class="code hl_variable" href="structBPMNOS_1_1Object.html#a1747a728fc8a11cbaa68f0f274c91cf7">layout</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1Object.html#a90c090db3261c036c4740683f231a4e4">   51</a></span>  std::vector&lt;Value&gt; <a class="code hl_variable" href="structBPMNOS_1_1Object.html#a90c090db3261c036c4740683f231a4e4">values</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="comment"></span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="comment">  /// @brief Returns true if the object is an array of scalar values with a single dimension.</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1Object.html#a9e375b81422b16a4cb1e97f7114832f9">   54</a></span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="structBPMNOS_1_1Object.html#a9e375b81422b16a4cb1e97f7114832f9">isVector</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="structBPMNOS_1_1Object.html#a1747a728fc8a11cbaa68f0f274c91cf7">layout</a>-&gt;scalar.has_value() &amp;&amp; <a class="code hl_variable" href="structBPMNOS_1_1Object.html#a1747a728fc8a11cbaa68f0f274c91cf7">layout</a>-&gt;dimensions.size() == 1; }</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>};</div>
+</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="};">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1Object_1_1Layout_1_1Field.html">   57</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structBPMNOS_1_1Object_1_1Layout_1_1Field.html">Object::Layout::Field</a> {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1Object_1_1Layout_1_1Field.html#aa20b65ca085a92dea8a448a44b166a1c">   58</a></span>  std::string <a class="code hl_variable" href="structBPMNOS_1_1Object_1_1Layout_1_1Field.html#aa20b65ca085a92dea8a448a44b166a1c">name</a>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1Object_1_1Layout_1_1Field.html#adf3f227d4ae8b819a2ad9ec91356febf">   59</a></span>  <span class="keywordtype">size_t</span> <a class="code hl_variable" href="structBPMNOS_1_1Object_1_1Layout_1_1Field.html#adf3f227d4ae8b819a2ad9ec91356febf">offset</a>; <span class="comment">///&lt; The position of the field&#39;s first value within an element of the base</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1Object_1_1Layout_1_1Field.html#ac1f36b8fcb3c94007d69c9b7f349a9f6">   60</a></span>  <a class="code hl_struct" href="structBPMNOS_1_1Object_1_1Layout.html">Layout</a> <a class="code hl_variable" href="structBPMNOS_1_1Object_1_1Layout_1_1Field.html#ac1f36b8fcb3c94007d69c9b7f349a9f6">layout</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1Object_1_1Layout_1_1Field.html#a6dff9395b0fc208c12a45d3d0068179e">   61</a></span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="structBPMNOS_1_1Object_1_1Layout_1_1Field.html#a6dff9395b0fc208c12a45d3d0068179e">operator==</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Object_1_1Layout_1_1Field.html">Field</a>&amp; other) <span class="keyword">const</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>};</div>
+</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="comment"></span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="comment">/**</span></div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="comment"> * @brief Renders an object as a literal, `[ ... ]` for an array and `{ name := value, ... }` for a value with</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="comment"> * fields, strings quoted and undefined values written `undefined`.</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>std::string <a class="code hl_function" href="namespaceBPMNOS.html#a269154d20cdd420046fe720f2a988566">to_string</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Object.html">Object</a>&amp; <span class="keywordtype">object</span>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="comment"></span> </div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="comment">/**</span></div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="comment"> * @brief Renders an object as JSON: a dimension as an array, fields as an object keyed by their names in their</span></div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="comment"> * order, a truth value, integer or decimal as a number of its type, a string as text, and an undefined value as</span></div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="comment"> * `null`.</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>nlohmann::ordered_json <a class="code hl_function" href="namespaceBPMNOS.html#a3b31673cd24317fd318c8c651fd4c445">to_json</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Object.html">Object</a>&amp; <span class="keywordtype">object</span>);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="comment"></span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="comment">/**</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="comment"> * @brief Returns the object a slot holds for modification, replacing it by a copy first if anyone else holds it,</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="comment"> * so that a modification is seen by the slot alone.</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="comment"> * Every object held by more than one status or data, and every constant object, is copied once when it is first</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="comment"> * written, whereas an object held by the slot alone is modified in place.</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span><a class="code hl_struct" href="structBPMNOS_1_1Object.html">Object</a>&amp; <a class="code hl_function" href="namespaceBPMNOS.html#a31ded7e82f735fa37b5acd8117b662ff">modifiable</a>(std::shared_ptr&lt;const Object&gt;&amp; slot);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="comment"></span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="comment">/**</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="comment"> * @brief Returns a copy of an object in which a dimension has the given length.</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span><span class="comment"> * The dimension is the dimension with the given position of the base, if no fields are given, or of the field</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><span class="comment"> * the given fields name one within the other. All elements of an array being uniform, the dimension of a field</span></div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><span class="comment"> * changes in every element. Elements beyond the new length are dropped, and elements added are undefined. The</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="comment"> * dimension keeps its flag.</span></div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>std::shared_ptr&lt;Object&gt; <a class="code hl_function" href="namespaceBPMNOS.html#a8f51d54f73e8012997cb6713af679542">resized</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Object.html">Object</a>&amp; <span class="keywordtype">object</span>, <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; <a class="code hl_variable" href="structBPMNOS_1_1Object_1_1Layout.html#a05a83b66706da99c685e847ca67850e7">fields</a>, <span class="keywordtype">size_t</span> dimension, <span class="keywordtype">size_t</span> length);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="comment"></span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="comment">/**</span></div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span><span class="comment"> * @brief Returns the merge of objects of the same schema, held by the statuses merged at a join.</span></div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="comment"> *</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="comment"> * Every dimension takes the largest length the objects have, and each value is merged from the objects</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="comment"> * holding it, an object whose length a dimension exceeds holding no value there: values that agree are kept,</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="comment"> * an undefined value is no conflict, and a conflict makes the value undefined. Objects that are all the same</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="comment"> * are returned as they are.</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>std::shared_ptr&lt;const Object&gt; <a class="code hl_function" href="namespaceBPMNOS.html#a83c908033921add3ea28fdb2a7155c7f">merge</a>(<span class="keyword">const</span> std::vector&lt; std::shared_ptr&lt;const Object&gt; &gt;&amp; objects);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="comment"></span> </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><span class="comment">/**</span></div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><span class="comment"> * @brief Returns the values of an array of scalar values with a single dimension as decimals, an undefined</span></div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span><span class="comment"> * value as a quiet NaN, throwing an error for any other object.</span></div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span><span class="comment"> */</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>std::vector&lt;double&gt; <a class="code hl_function" href="namespaceBPMNOS.html#a8c9337d0b6b5dda40248ff9cc1917f40">to_vector</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structBPMNOS_1_1Object.html">Object</a>&amp; <span class="keywordtype">object</span>);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>} <span class="comment">// namespace BPMNOS</span></div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="preprocessor">#endif </span><span class="comment">// BPMNOS_Model_Object_H</span></div>
+<div class="ttc" id="aValue_8h_html"><div class="ttname"><a href="Value_8h.html">Value.h</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_html"><div class="ttname"><a href="namespaceBPMNOS.html">BPMNOS</a></div><div class="ttdef"><b>Definition</b> <a href="DecisionTask_8h_source.html#l00010">DecisionTask.h:10</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_html_a269154d20cdd420046fe720f2a988566"><div class="ttname"><a href="namespaceBPMNOS.html#a269154d20cdd420046fe720f2a988566">BPMNOS::to_string</a></div><div class="ttdeci">std::string to_string(number numericValue, const ValueType &amp;type)</div><div class="ttdoc">Converts a number to a string.</div><div class="ttdef"><b>Definition</b> <a href="Number_8cpp_source.html#l00087">Number.cpp:87</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_html_a31ded7e82f735fa37b5acd8117b662ff"><div class="ttname"><a href="namespaceBPMNOS.html#a31ded7e82f735fa37b5acd8117b662ff">BPMNOS::modifiable</a></div><div class="ttdeci">Object &amp; modifiable(std::shared_ptr&lt; const Object &gt; &amp;slot)</div><div class="ttdoc">Returns the object a slot holds for modification, replacing it by a copy first if anyone else holds i...</div><div class="ttdef"><b>Definition</b> <a href="Object_8cpp_source.html#l00147">Object.cpp:147</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_html_a3b31673cd24317fd318c8c651fd4c445"><div class="ttname"><a href="namespaceBPMNOS.html#a3b31673cd24317fd318c8c651fd4c445">BPMNOS::to_json</a></div><div class="ttdeci">nlohmann::ordered_json to_json(const Object &amp;object)</div><div class="ttdoc">Renders an object as JSON: a dimension as an array, fields as an object keyed by their names in their...</div><div class="ttdef"><b>Definition</b> <a href="Object_8cpp_source.html#l00255">Object.cpp:255</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_html_a83c908033921add3ea28fdb2a7155c7f"><div class="ttname"><a href="namespaceBPMNOS.html#a83c908033921add3ea28fdb2a7155c7f">BPMNOS::merge</a></div><div class="ttdeci">std::shared_ptr&lt; const Object &gt; merge(const std::vector&lt; std::shared_ptr&lt; const Object &gt; &gt; &amp;objects)</div><div class="ttdoc">Returns the merge of objects of the same schema, held by the statuses merged at a join.</div><div class="ttdef"><b>Definition</b> <a href="Object_8cpp_source.html#l00180">Object.cpp:180</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_html_a8c9337d0b6b5dda40248ff9cc1917f40"><div class="ttname"><a href="namespaceBPMNOS.html#a8c9337d0b6b5dda40248ff9cc1917f40">BPMNOS::to_vector</a></div><div class="ttdeci">std::vector&lt; double &gt; to_vector(const Object &amp;object)</div><div class="ttdoc">Returns the values of an array of scalar values with a single dimension as decimals,...</div><div class="ttdef"><b>Definition</b> <a href="Object_8cpp_source.html#l00259">Object.cpp:259</a></div></div>
+<div class="ttc" id="anamespaceBPMNOS_html_a8f51d54f73e8012997cb6713af679542"><div class="ttname"><a href="namespaceBPMNOS.html#a8f51d54f73e8012997cb6713af679542">BPMNOS::resized</a></div><div class="ttdeci">std::shared_ptr&lt; Object &gt; resized(const Object &amp;object, const std::vector&lt; std::string &gt; &amp;fields, size_t dimension, size_t length)</div><div class="ttdoc">Returns a copy of an object in which a dimension has the given length.</div><div class="ttdef"><b>Definition</b> <a href="Object_8cpp_source.html#l00155">Object.cpp:155</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_1_1Layout_1_1Field_html"><div class="ttname"><a href="structBPMNOS_1_1Object_1_1Layout_1_1Field.html">BPMNOS::Object::Layout::Field</a></div><div class="ttdef"><b>Definition</b> <a href="#l00057">Object.h:57</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_1_1Layout_1_1Field_html_a6dff9395b0fc208c12a45d3d0068179e"><div class="ttname"><a href="structBPMNOS_1_1Object_1_1Layout_1_1Field.html#a6dff9395b0fc208c12a45d3d0068179e">BPMNOS::Object::Layout::Field::operator==</a></div><div class="ttdeci">bool operator==(const Field &amp;other) const =default</div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_1_1Layout_1_1Field_html_aa20b65ca085a92dea8a448a44b166a1c"><div class="ttname"><a href="structBPMNOS_1_1Object_1_1Layout_1_1Field.html#aa20b65ca085a92dea8a448a44b166a1c">BPMNOS::Object::Layout::Field::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="#l00058">Object.h:58</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_1_1Layout_1_1Field_html_ac1f36b8fcb3c94007d69c9b7f349a9f6"><div class="ttname"><a href="structBPMNOS_1_1Object_1_1Layout_1_1Field.html#ac1f36b8fcb3c94007d69c9b7f349a9f6">BPMNOS::Object::Layout::Field::layout</a></div><div class="ttdeci">Layout layout</div><div class="ttdef"><b>Definition</b> <a href="#l00060">Object.h:60</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_1_1Layout_1_1Field_html_adf3f227d4ae8b819a2ad9ec91356febf"><div class="ttname"><a href="structBPMNOS_1_1Object_1_1Layout_1_1Field.html#adf3f227d4ae8b819a2ad9ec91356febf">BPMNOS::Object::Layout::Field::offset</a></div><div class="ttdeci">size_t offset</div><div class="ttdoc">The position of the field&#39;s first value within an element of the base.</div><div class="ttdef"><b>Definition</b> <a href="#l00059">Object.h:59</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_1_1Layout_html"><div class="ttname"><a href="structBPMNOS_1_1Object_1_1Layout.html">BPMNOS::Object::Layout</a></div><div class="ttdoc">The shape of an object with the sizes of its dimensions known.</div><div class="ttdef"><b>Definition</b> <a href="#l00030">Object.h:30</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_1_1Layout_html_a05a83b66706da99c685e847ca67850e7"><div class="ttname"><a href="structBPMNOS_1_1Object_1_1Layout.html#a05a83b66706da99c685e847ca67850e7">BPMNOS::Object::Layout::fields</a></div><div class="ttdeci">std::vector&lt; Field &gt; fields</div><div class="ttdoc">The fields of the base, in declaration order.</div><div class="ttdef"><b>Definition</b> <a href="#l00033">Object.h:33</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_1_1Layout_html_a18de3655e73a2450643f8bc6b65a269b"><div class="ttname"><a href="structBPMNOS_1_1Object_1_1Layout.html#a18de3655e73a2450643f8bc6b65a269b">BPMNOS::Object::Layout::stride</a></div><div class="ttdeci">size_t stride</div><div class="ttdef"><b>Definition</b> <a href="#l00035">Object.h:35</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_1_1Layout_html_a2bf3230889af0a907559b2a08f113b62"><div class="ttname"><a href="structBPMNOS_1_1Object_1_1Layout.html#a2bf3230889af0a907559b2a08f113b62">BPMNOS::Object::Layout::size</a></div><div class="ttdeci">size_t size() const</div><div class="ttdoc">Returns the number of values of an object of this layout.</div><div class="ttdef"><b>Definition</b> <a href="Object_8cpp_source.html#l00011">Object.cpp:11</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_1_1Layout_html_a38e6da28974facfbac5b54229f20bac9"><div class="ttname"><a href="structBPMNOS_1_1Object_1_1Layout.html#a38e6da28974facfbac5b54229f20bac9">BPMNOS::Object::Layout::scalar</a></div><div class="ttdeci">std::optional&lt; ValueType &gt; scalar</div><div class="ttdoc">The scalar type of the base, or nullopt if the base has fields.</div><div class="ttdef"><b>Definition</b> <a href="#l00032">Object.h:32</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_1_1Layout_html_a74f26e7a621394ad80f339d750e68939"><div class="ttname"><a href="structBPMNOS_1_1Object_1_1Layout.html#a74f26e7a621394ad80f339d750e68939">BPMNOS::Object::Layout::fixed</a></div><div class="ttdeci">std::vector&lt; bool &gt; fixed</div><div class="ttdef"><b>Definition</b> <a href="#l00039">Object.h:39</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_1_1Layout_html_a9c7cd4d84c21f2c30aaa1a6267533587"><div class="ttname"><a href="structBPMNOS_1_1Object_1_1Layout.html#a9c7cd4d84c21f2c30aaa1a6267533587">BPMNOS::Object::Layout::stringify</a></div><div class="ttdeci">std::string stringify() const</div><div class="ttdoc">Returns the type the layout states, in the syntax of attribute types.</div><div class="ttdef"><b>Definition</b> <a href="Object_8cpp_source.html#l00019">Object.cpp:19</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_1_1Layout_html_aa608312affa5c2160172efda37d69f1c"><div class="ttname"><a href="structBPMNOS_1_1Object_1_1Layout.html#aa608312affa5c2160172efda37d69f1c">BPMNOS::Object::Layout::dimensions</a></div><div class="ttdeci">std::vector&lt; size_t &gt; dimensions</div><div class="ttdoc">The sizes of the dimensions, in index order.</div><div class="ttdef"><b>Definition</b> <a href="#l00034">Object.h:34</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_1_1Layout_html_ab8a31fe91fa681ff40317c7e3f5e5546"><div class="ttname"><a href="structBPMNOS_1_1Object_1_1Layout.html#ab8a31fe91fa681ff40317c7e3f5e5546">BPMNOS::Object::Layout::operator==</a></div><div class="ttdeci">bool operator==(const Layout &amp;other) const</div><div class="ttdef"><b>Definition</b> <a href="Object_8cpp_source.html#l00055">Object.cpp:55</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_1_1Layout_html_ae8729d00c76df56f134ee8382cabc575"><div class="ttname"><a href="structBPMNOS_1_1Object_1_1Layout.html#ae8729d00c76df56f134ee8382cabc575">BPMNOS::Object::Layout::arrange</a></div><div class="ttdeci">void arrange()</div><div class="ttdoc">Recomputes the offsets of the fields and the stride from the layouts of the fields.</div><div class="ttdef"><b>Definition</b> <a href="Object_8cpp_source.html#l00042">Object.cpp:42</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_html"><div class="ttname"><a href="structBPMNOS_1_1Object.html">BPMNOS::Object</a></div><div class="ttdoc">An object, i.e. an array or a structured value, stored flat.</div><div class="ttdef"><b>Definition</b> <a href="#l00020">Object.h:20</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_html_a1747a728fc8a11cbaa68f0f274c91cf7"><div class="ttname"><a href="structBPMNOS_1_1Object.html#a1747a728fc8a11cbaa68f0f274c91cf7">BPMNOS::Object::layout</a></div><div class="ttdeci">std::shared_ptr&lt; const Layout &gt; layout</div><div class="ttdef"><b>Definition</b> <a href="#l00050">Object.h:50</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_html_a90c090db3261c036c4740683f231a4e4"><div class="ttname"><a href="structBPMNOS_1_1Object.html#a90c090db3261c036c4740683f231a4e4">BPMNOS::Object::values</a></div><div class="ttdeci">std::vector&lt; Value &gt; values</div><div class="ttdef"><b>Definition</b> <a href="#l00051">Object.h:51</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Object_html_a9e375b81422b16a4cb1e97f7114832f9"><div class="ttname"><a href="structBPMNOS_1_1Object.html#a9e375b81422b16a4cb1e97f7114832f9">BPMNOS::Object::isVector</a></div><div class="ttdeci">bool isVector() const</div><div class="ttdoc">Returns true if the object is an array of scalar values with a single dimension.</div><div class="ttdef"><b>Definition</b> <a href="#l00054">Object.h:54</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+</div><!-- doc-content -->
+</div><!-- container -->
+<script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"; mermaid.initialize({ startOnLoad: true, theme: "neutral" });</script></body></html>

@@ -197,8 +197,8 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:abd427ef822150d0ee61cc38679e4781d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map holding the token waiting for the exit of an instantiation of a multi-instance (or loop) activity.  <br /></td></tr>
 <tr class="memitem:a03f2f20b5543a8d9313e5fb8bd06e209" id="r_a03f2f20b5543a8d9313e5fb8bd06e209"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> *, std::vector&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> * &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a03f2f20b5543a8d9313e5fb8bd06e209">tokensAtActivityInstance</a></td></tr>
 <tr class="memdesc:a03f2f20b5543a8d9313e5fb8bd06e209"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map holding all tokens representing an active instance of a multi-instance (or loop) activity for each token waiting at the multi-instance (or loop) activity.  <br /></td></tr>
-<tr class="memitem:afe6eb2739d3097a6ca7c9420fdb6eb96" id="r_afe6eb2739d3097a6ca7c9420fdb6eb96"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> *, std::vector&lt; <a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afe6eb2739d3097a6ca7c9420fdb6eb96">exitStatusAtActivityInstance</a></td></tr>
-<tr class="memdesc:afe6eb2739d3097a6ca7c9420fdb6eb96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map holding the exit status of all instances of a multi-instance (or loop) activity for each token waiting at the multi-instance (or loop) activity.  <br /></td></tr>
+<tr class="memitem:ac6b94afca7da246094b5fe7a30b89a69" id="r_ac6b94afca7da246094b5fe7a30b89a69"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> *, std::vector&lt; <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac6b94afca7da246094b5fe7a30b89a69">exitStatusAtActivityInstance</a></td></tr>
+<tr class="memdesc:ac6b94afca7da246094b5fe7a30b89a69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map holding the exit status of all instances of a multi-instance (or loop) activity for each token waiting at the multi-instance (or loop) activity.  <br /></td></tr>
 <tr class="memitem:ab007fd862323cd5b635dc99ab2a5110b" id="r_ab007fd862323cd5b635dc99ab2a5110b"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> *, <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab007fd862323cd5b635dc99ab2a5110b">tokenAtEventBasedGateway</a></td></tr>
 <tr class="memdesc:ab007fd862323cd5b635dc99ab2a5110b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map holding the token at the relevant event-based gateway.  <br /></td></tr>
 <tr class="memitem:aacfe96143421595d6f175451b82b0860" id="r_aacfe96143421595d6f175451b82b0860"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> *, std::vector&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> * &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aacfe96143421595d6f175451b82b0860">tokensAwaitingEvent</a></td></tr>
@@ -539,14 +539,14 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="afe6eb2739d3097a6ca7c9420fdb6eb96" name="afe6eb2739d3097a6ca7c9420fdb6eb96"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afe6eb2739d3097a6ca7c9420fdb6eb96">&#9670;&#160;</a></span>exitStatusAtActivityInstance</h2>
+<a id="ac6b94afca7da246094b5fe7a30b89a69" name="ac6b94afca7da246094b5fe7a30b89a69"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6b94afca7da246094b5fe7a30b89a69">&#9670;&#160;</a></span>exitStatusAtActivityInstance</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::unordered_map&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a>*, std::vector&lt;<a class="el" href="structBPMNOS_1_1Values.html">BPMNOS::Values</a>&gt; &gt; BPMNOS::Execution::SystemState::exitStatusAtActivityInstance</td>
+          <td class="memname">std::unordered_map&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a>*, std::vector&lt;<a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a>&gt; &gt; BPMNOS::Execution::SystemState::exitStatusAtActivityInstance</td>
         </tr>
       </table>
 </div><div class="memdoc">

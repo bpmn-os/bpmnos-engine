@@ -131,10 +131,10 @@ $(function(){initNavTree('classBPMNOS_1_1Execution_1_1Signal.html','','classBPMN
  <a href="#details">More...</a></p>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The counterpart of <a class="el" href="classBPMNOS_1_1Execution_1_1Message.html">Message</a> for signals, and deliberately far smaller. A message is an object with a lifetime: it is owned by <a class="el" href="classBPMNOS_1_1Execution_1_1SystemState.html#a64ceec1f752fa8e44d6877a341bbe7d0">SystemState::messages</a>, referred to weakly by the containers that route it, and moves from <a class="el" href="classBPMNOS_1_1Execution_1_1Message.html#a8cfd940f3553766aad62774987301c0fa98690bf632c29c17c9e4c5a64069903c">Message::State::CREATED</a> to delivery or withdrawal. A signal has none of that. It is broadcast to whoever is listening, kept nowhere, and over once it has been delivered, so it is a value that exists for the duration of its broadcast, as a <a class="el" href="structBPMNOS_1_1Execution_1_1DataUpdate.html">DataUpdate</a> is.</p>
-<p>It holds no sender. A signal is broadcast without correlation, which is what distinguishes it from a message, and a model that wants the thrower known declares it as part of the <a class="el" href="#ae3e6b753d2df6eae0cf89e98a43f32ac">content</a>.</p>
+<p>It holds no sender. A signal is broadcast without correlation, which is what distinguishes it from a message, and a model that wants the thrower known declares it as part of the <a class="el" href="#aed8f2320ed1339cd44f9f289a74904ae">content</a>.</p>
 <p>The content is fixed when the signal arises and is never read again from whoever raised it, so that a recipient writing a global cannot change what a later recipient obtains. </p>
 
-<p class="definition">Definition at line <a class="el" href="Signal_8h_source.html#l00025">25</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Signal_8h_source.html#l00026">26</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="Signal_8h_source.html">Signal.h</a>&gt;</code></p>
 <div class="dynheader">
@@ -146,7 +146,7 @@ Inheritance diagram for BPMNOS::Execution::Signal:</div>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a6885da89b4ab2aeebfe40368b250be8e" id="r_a6885da89b4ab2aeebfe40368b250be8e"><td class="memItemLeft" align="right" valign="top">constexpr <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355e">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6885da89b4ab2aeebfe40368b250be8e">getObservableType</a> () const override</td></tr>
-<tr class="memitem:a7a7649d80356d0e5e80e3173037ef9b4" id="r_a7a7649d80356d0e5e80e3173037ef9b4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7a7649d80356d0e5e80e3173037ef9b4">Signal</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> <a class="el" href="#a0f3b429fa860ebf51138e8cd41b3e1f9">name</a>, <a class="el" href="namespaceBPMNOS.html#a8154a7afba82997850e7db218281c8e0">BPMNOS::VariedValueMap</a> <a class="el" href="#ae3e6b753d2df6eae0cf89e98a43f32ac">content</a>)</td></tr>
+<tr class="memitem:a4dee34d41ce5164d444dfb12fcf60904" id="r_a4dee34d41ce5164d444dfb12fcf60904"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4dee34d41ce5164d444dfb12fcf60904">Signal</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> <a class="el" href="#a0f3b429fa860ebf51138e8cd41b3e1f9">name</a>, <a class="el" href="namespaceBPMNOS_1_1Execution.html#afa4e3833f49e8f1f292c8dbc6a9f85b2">ContentMap</a> <a class="el" href="#aed8f2320ed1339cd44f9f289a74904ae">content</a>)</td></tr>
 <tr class="memitem:aa40bc0517e3eb7083f8c22af77cd9658" id="r_aa40bc0517e3eb7083f8c22af77cd9658"><td class="memItemLeft" align="right" valign="top">nlohmann::ordered_json&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa40bc0517e3eb7083f8c22af77cd9658">jsonify</a> () const</td></tr>
 <tr class="inherit_header pub_methods_structBPMNOS_1_1Execution_1_1Observable"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_structBPMNOS_1_1Execution_1_1Observable')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html">BPMNOS::Execution::Observable</a></td></tr>
 <tr class="memitem:a35e882074daf62166c874fa8d60a19ee inherit pub_methods_structBPMNOS_1_1Execution_1_1Observable" id="r_a35e882074daf62166c874fa8d60a19ee"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a35e882074daf62166c874fa8d60a19ee">~Observable</a> ()=default</td></tr>
@@ -155,8 +155,8 @@ Public Member Functions</h2></td></tr>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a0f3b429fa860ebf51138e8cd41b3e1f9" id="r_a0f3b429fa860ebf51138e8cd41b3e1f9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0f3b429fa860ebf51138e8cd41b3e1f9">name</a></td></tr>
 <tr class="memdesc:a0f3b429fa860ebf51138e8cd41b3e1f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signal name.  <br /></td></tr>
-<tr class="memitem:ae3e6b753d2df6eae0cf89e98a43f32ac" id="r_ae3e6b753d2df6eae0cf89e98a43f32ac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a8154a7afba82997850e7db218281c8e0">BPMNOS::VariedValueMap</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae3e6b753d2df6eae0cf89e98a43f32ac">content</a></td></tr>
-<tr class="memdesc:ae3e6b753d2df6eae0cf89e98a43f32ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Content the signal carries.  <br /></td></tr>
+<tr class="memitem:aed8f2320ed1339cd44f9f289a74904ae" id="r_aed8f2320ed1339cd44f9f289a74904ae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS_1_1Execution.html#afa4e3833f49e8f1f292c8dbc6a9f85b2">ContentMap</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aed8f2320ed1339cd44f9f289a74904ae">content</a></td></tr>
+<tr class="memdesc:aed8f2320ed1339cd44f9f289a74904ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Content the signal carries.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -182,8 +182,8 @@ Additional Inherited Members</h2></td></tr>
  }</td></tr>
 </table>
 <a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a7a7649d80356d0e5e80e3173037ef9b4" name="a7a7649d80356d0e5e80e3173037ef9b4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7a7649d80356d0e5e80e3173037ef9b4">&#9670;&#160;</a></span>Signal()</h2>
+<a id="a4dee34d41ce5164d444dfb12fcf60904" name="a4dee34d41ce5164d444dfb12fcf60904"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4dee34d41ce5164d444dfb12fcf60904">&#9670;&#160;</a></span>Signal()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -196,7 +196,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a8154a7afba82997850e7db218281c8e0">BPMNOS::VariedValueMap</a></td>          <td class="paramname"><span class="paramname"><em>content</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS_1_1Execution.html#afa4e3833f49e8f1f292c8dbc6a9f85b2">ContentMap</a></td>          <td class="paramname"><span class="paramname"><em>content</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -231,7 +231,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#ac4ef9f23fb39b38cf961872f741979b9">BPMNOS::Execution::Observable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Signal_8h_source.html#l00027">27</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Signal_8h_source.html#l00028">28</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
 </div>
 </div>
@@ -255,19 +255,19 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
-<a id="ae3e6b753d2df6eae0cf89e98a43f32ac" name="ae3e6b753d2df6eae0cf89e98a43f32ac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae3e6b753d2df6eae0cf89e98a43f32ac">&#9670;&#160;</a></span>content</h2>
+<a id="aed8f2320ed1339cd44f9f289a74904ae" name="aed8f2320ed1339cd44f9f289a74904ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed8f2320ed1339cd44f9f289a74904ae">&#9670;&#160;</a></span>content</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespaceBPMNOS.html#a8154a7afba82997850e7db218281c8e0">BPMNOS::VariedValueMap</a> BPMNOS::Execution::Signal::content</td>
+          <td class="memname"><a class="el" href="namespaceBPMNOS_1_1Execution.html#afa4e3833f49e8f1f292c8dbc6a9f85b2">ContentMap</a> BPMNOS::Execution::Signal::content</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Signal_8h_source.html#l00031">31</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Signal_8h_source.html#l00032">32</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
 </div>
 </div>
@@ -283,7 +283,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Signal_8h_source.html#l00030">30</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Signal_8h_source.html#l00031">31</a> of file <a class="el" href="Signal_8h_source.html">Signal.h</a>.</p>
 
 </div>
 </div>

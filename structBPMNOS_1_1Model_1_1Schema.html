@@ -1,0 +1,439 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.15.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<!-- BEGIN opengraph metadata -->
+<meta property="og:title" content="Doxygen Awesome" />
+<meta property="og:image" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta property="og:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<meta property="og:url" content="https://jothepro.github.io/doxygen-awesome-css/" />
+<!-- END opengraph metadata -->
+<!-- BEGIN twitter metadata -->
+<meta name="twitter:image:src" content="https://repository-images.githubusercontent.com/348492097/4f16df80-88fb-11eb-9d31-4015ff22c452" />
+<meta name="twitter:title" content="Doxygen Awesome" />
+<meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
+<!-- END twitter metadata -->
+<title>BPMN-OS: BPMNOS::Model::Schema Struct Reference</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript" src="doxygen-awesome-interactive-toc.js"></script>
+<script type="text/javascript" src="doxygen-awesome-tabs.js"></script>
+<script type="text/javascript" src="toggle-alternative-theme.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeParagraphLink.init()
+    DoxygenAwesomeInteractiveToc.init()
+    DoxygenAwesomeTabs.init()
+</script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="custom.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only.css" rel="stylesheet" type="text/css"/>
+<link href="doxygen-awesome-sidebar-only-darkmode-toggle.css" rel="stylesheet" type="text/css"/>
+<link href="custom-alternative.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<!-- https://tholman.com/github-corners/ -->
+<a href="https://github.com/bpmn-os/bpmnos-engine" class="github-corner" title="View source on GitHub" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 250 250" width="40" height="40" style="position: absolute; top: 0; border: 0; right: 0; z-index: 99;" aria-hidden="true">
+    <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="BPMNOS.svg"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">BPMN-OS
+   </div>
+   <div id="projectbrief">BPMN for optimization and simulation</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.15.0 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+</script>
+<script type="text/javascript">
+$(function() { codefold.init(); });
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+$(function() {
+  initMenu('',true,false,'search.php','Search',true);
+  $(function() { init_search(); });
+});
+</script>
+<div id="main-nav"></div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(function(){initNavTree('structBPMNOS_1_1Model_1_1Schema.html','','structBPMNOS_1_1Model_1_1Schema-members'); });
+</script>
+<div id="container">
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="header">
+  <div class="headertitle"><div class="title">BPMNOS::Model::Schema Struct Reference</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>The shape of an attribute, as stated by its <span class="tt">type</span>.  
+ <a href="#details">More...</a></p>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A type is a base followed by its dimensions, <span class="tt">type := base dimension*</span>. The base is a scalar type, one of <span class="tt">boolean</span>, <span class="tt">integer</span>, <span class="tt">decimal</span> and <span class="tt">string</span>, or an object <span class="tt">{ name: type, ... }</span> whose fields have types of their own. A dimension is written <span class="tt">[n]</span> if its size is fixed and <span class="tt">[]</span> if it is open, and the dimensions are read from left to right in the order of the indices: <span class="tt">boolean[3][4]</span> has 3 elements, each a <span class="tt">boolean[4]</span>, accessed as <span class="tt">x[i][j]</span> with <span class="tt">i &lt;= 3</span> and <span class="tt">j &lt;= 4</span>. A schema without dimensions whose base is a scalar type describes a scalar attribute; every other schema describes an object. </p>
+
+<p class="definition">Definition at line <a class="el" href="Schema_8h_source.html#l00024">24</a> of file <a class="el" href="Schema_8h_source.html">Schema.h</a>.</p>
+</div>
+<p><code>#include &lt;<a class="el" href="Schema_8h_source.html">Schema.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a9d43c1b423c3eafdd84ab0f16f6fdc41" id="r_a9d43c1b423c3eafdd84ab0f16f6fdc41"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9d43c1b423c3eafdd84ab0f16f6fdc41">isScalar</a> () const</td></tr>
+<tr class="memdesc:a9d43c1b423c3eafdd84ab0f16f6fdc41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the schema describes a scalar attribute.  <br /></td></tr>
+<tr class="memitem:ae10176137d7493b0a97737a4dafe8c15" id="r_ae10176137d7493b0a97737a4dafe8c15"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae10176137d7493b0a97737a4dafe8c15">stringify</a> () const</td></tr>
+<tr class="memdesc:ae10176137d7493b0a97737a4dafe8c15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the text of the type in its canonical form.  <br /></td></tr>
+<tr class="memitem:aef42695c99b3cdb8484b8ce699330aa2" id="r_aef42695c99b3cdb8484b8ce699330aa2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aef42695c99b3cdb8484b8ce699330aa2">declareSizes</a> (const std::string &amp;steps)</td></tr>
+<tr class="memdesc:aef42695c99b3cdb8484b8ce699330aa2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fixes the sizes a size declaration states, given as the text following the name of the attribute.  <br /></td></tr>
+<tr class="memitem:a5be6e35d5e2c5479f27eacf9906322fc" id="r_a5be6e35d5e2c5479f27eacf9906322fc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5be6e35d5e2c5479f27eacf9906322fc">isFixed</a> () const</td></tr>
+<tr class="memdesc:a5be6e35d5e2c5479f27eacf9906322fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if every dimension, also of the fields, has a fixed size.  <br /></td></tr>
+<tr class="memitem:a81d76029f32af8923f0fb8fb18b8992d" id="r_a81d76029f32af8923f0fb8fb18b8992d"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a81d76029f32af8923f0fb8fb18b8992d">undefinedObject</a> () const</td></tr>
+<tr class="memdesc:a81d76029f32af8923f0fb8fb18b8992d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an object of this schema with every value undefined, an open dimension having no elements.  <br /></td></tr>
+<tr class="memitem:a7ea9a098f348721e676e857ed61682a9" id="r_a7ea9a098f348721e676e857ed61682a9"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7ea9a098f348721e676e857ed61682a9">conform</a> (const std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; &amp;constant) const</td></tr>
+<tr class="memdesc:a7ea9a098f348721e676e857ed61682a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an object of this schema holding the values of the given constant object.  <br /></td></tr>
+<tr class="memitem:a54e3f61f0d9f83f9a80a5cca3fc44b06" id="r_a54e3f61f0d9f83f9a80a5cca3fc44b06"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a54e3f61f0d9f83f9a80a5cca3fc44b06">fromJSON</a> (const std::string &amp;text) const</td></tr>
+<tr class="memdesc:a54e3f61f0d9f83f9a80a5cca3fc44b06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an object of this schema holding the values of the given JSON text.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a81e50e87e0abe7119bcb3b262a24409c" id="r_a81e50e87e0abe7119bcb3b262a24409c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">Schema</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a81e50e87e0abe7119bcb3b262a24409c">parse</a> (const std::string &amp;text)</td></tr>
+<tr class="memdesc:a81e50e87e0abe7119bcb3b262a24409c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses the text of a type, throwing an error describing the first violation of the grammar.  <br /></td></tr>
+<tr class="memitem:a47e79376abef9d53ae84cda5456e13aa" id="r_a47e79376abef9d53ae84cda5456e13aa"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">Schema</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a47e79376abef9d53ae84cda5456e13aa">of</a> (const <a class="el" href="structBPMNOS_1_1Object_1_1Layout.html">BPMNOS::Object::Layout</a> &amp;layout, bool element)</td></tr>
+<tr class="memdesc:a47e79376abef9d53ae84cda5456e13aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the schema an object of the given layout imposes on a value assigned to it.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a6afbcb2e639977b6a50e6ef94777d225" id="r_a6afbcb2e639977b6a50e6ef94777d225"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6afbcb2e639977b6a50e6ef94777d225">scalar</a></td></tr>
+<tr class="memdesc:a6afbcb2e639977b6a50e6ef94777d225"><td class="mdescLeft">&#160;</td><td class="mdescRight">The scalar type of the base, or nullopt if the base is an object.  <br /></td></tr>
+<tr class="memitem:a43f54662f55faa1c0fe229b87980f25b" id="r_a43f54662f55faa1c0fe229b87980f25b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; std::string, <a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">Schema</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a43f54662f55faa1c0fe229b87980f25b">fields</a></td></tr>
+<tr class="memdesc:a43f54662f55faa1c0fe229b87980f25b"><td class="mdescLeft">&#160;</td><td class="mdescRight">The fields of an object base, in declaration order.  <br /></td></tr>
+<tr class="memitem:a8f67857a1ca62395e0e19c1b44cc597a" id="r_a8f67857a1ca62395e0e19c1b44cc597a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::optional&lt; size_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8f67857a1ca62395e0e19c1b44cc597a">dimensions</a></td></tr>
+<tr class="memdesc:a8f67857a1ca62395e0e19c1b44cc597a"><td class="mdescLeft">&#160;</td><td class="mdescRight">The sizes of the dimensions in index order, nullopt if open.  <br /></td></tr>
+</table>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a7ea9a098f348721e676e857ed61682a9" name="a7ea9a098f348721e676e857ed61682a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ea9a098f348721e676e857ed61682a9">&#9670;&#160;</a></span>conform()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; Schema::conform </td>
+          <td>(</td>
+          <td class="paramtype">const std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>constant</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The constant object must have as many dimensions as the schema at the base and at every field, its scalar values must be convertible to the types of the schema, and its fields must be fields of the schema. A dimension of fixed size is padded with undefined values and must not be exceeded, an open dimension takes the length of the constant object, and a field it lacks is undefined. If the constant object has exactly the layout of the schema, it is returned itself, so that it is shared. </p>
+
+<p class="definition">Definition at line <a class="el" href="Schema_8cpp_source.html#l00381">381</a> of file <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aef42695c99b3cdb8484b8ce699330aa2" name="aef42695c99b3cdb8484b8ce699330aa2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef42695c99b3cdb8484b8ce699330aa2">&#9670;&#160;</a></span>declareSizes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Schema::declareSizes </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>steps</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The text is a path of dimensions and fields, e.g. <span class="tt">[6].flags[3]</span>, in which every number in brackets is the size of the next dimension of the base or field it follows and <span class="tt">[]</span> leaves that dimension as it is. A size contradicting a size fixed before, more dimensions than the type has, and an unknown field are errors. </p>
+
+<p class="definition">Definition at line <a class="el" href="Schema_8cpp_source.html#l00174">174</a> of file <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a54e3f61f0d9f83f9a80a5cca3fc44b06" name="a54e3f61f0d9f83f9a80a5cca3fc44b06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54e3f61f0d9f83f9a80a5cca3fc44b06">&#9670;&#160;</a></span>fromJSON()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; Schema::fromJSON </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>text</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>An array is a dimension, whose elements have equal lengths at an open dimension and at most the declared length at a fixed one, an object is a value with fields, whose keys must be fields of the schema, and a number, truth value or string is a value of the type the schema states, <span class="tt">null</span> being undefined. A fixed dimension is padded with undefined values, an open dimension takes the length of the JSON array, and a field the JSON lacks is undefined. </p>
+
+<p class="definition">Definition at line <a class="el" href="Schema_8cpp_source.html#l00539">539</a> of file <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a5be6e35d5e2c5479f27eacf9906322fc" name="a5be6e35d5e2c5479f27eacf9906322fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5be6e35d5e2c5479f27eacf9906322fc">&#9670;&#160;</a></span>isFixed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Schema::isFixed </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Schema_8cpp_source.html#l00242">242</a> of file <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a9d43c1b423c3eafdd84ab0f16f6fdc41" name="a9d43c1b423c3eafdd84ab0f16f6fdc41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d43c1b423c3eafdd84ab0f16f6fdc41">&#9670;&#160;</a></span>isScalar()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool BPMNOS::Model::Schema::isScalar </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Schema_8h_source.html#l00032">32</a> of file <a class="el" href="Schema_8h_source.html">Schema.h</a>.</p>
+
+</div>
+</div>
+<a id="a47e79376abef9d53ae84cda5456e13aa" name="a47e79376abef9d53ae84cda5456e13aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47e79376abef9d53ae84cda5456e13aa">&#9670;&#160;</a></span>of()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">Schema</a> Schema::of </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Object_1_1Layout.html">BPMNOS::Object::Layout</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>layout</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>element</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>A value assigned to the whole object keeps the sizes of the fixed dimensions and takes those of the open ones. A value assigned to an element keeps every size, except a size zero of an open dimension, which the value determines. </p>
+
+<p class="definition">Definition at line <a class="el" href="Schema_8cpp_source.html#l00398">398</a> of file <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a81e50e87e0abe7119bcb3b262a24409c" name="a81e50e87e0abe7119bcb3b262a24409c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81e50e87e0abe7119bcb3b262a24409c">&#9670;&#160;</a></span>parse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">Schema</a> Schema::parse </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>text</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Schema_8cpp_source.html#l00144">144</a> of file <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ae10176137d7493b0a97737a4dafe8c15" name="ae10176137d7493b0a97737a4dafe8c15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae10176137d7493b0a97737a4dafe8c15">&#9670;&#160;</a></span>stringify()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Schema::stringify </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Schema_8cpp_source.html#l00151">151</a> of file <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a81d76029f32af8923f0fb8fb18b8992d" name="a81d76029f32af8923f0fb8fb18b8992d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81d76029f32af8923f0fb8fb18b8992d">&#9670;&#160;</a></span>undefinedObject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; Schema::undefinedObject </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Schema_8cpp_source.html#l00370">370</a> of file <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a>.</p>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a8f67857a1ca62395e0e19c1b44cc597a" name="a8f67857a1ca62395e0e19c1b44cc597a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f67857a1ca62395e0e19c1b44cc597a">&#9670;&#160;</a></span>dimensions</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::optional&lt;size_t&gt; &gt; BPMNOS::Model::Schema::dimensions</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Schema_8h_source.html#l00027">27</a> of file <a class="el" href="Schema_8h_source.html">Schema.h</a>.</p>
+
+</div>
+</div>
+<a id="a43f54662f55faa1c0fe229b87980f25b" name="a43f54662f55faa1c0fe229b87980f25b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43f54662f55faa1c0fe229b87980f25b">&#9670;&#160;</a></span>fields</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::pair&lt;std::string, <a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">Schema</a>&gt; &gt; BPMNOS::Model::Schema::fields</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Schema_8h_source.html#l00026">26</a> of file <a class="el" href="Schema_8h_source.html">Schema.h</a>.</p>
+
+</div>
+</div>
+<a id="a6afbcb2e639977b6a50e6ef94777d225" name="a6afbcb2e639977b6a50e6ef94777d225"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6afbcb2e639977b6a50e6ef94777d225">&#9670;&#160;</a></span>scalar</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;<a class="el" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a>&gt; BPMNOS::Model::Schema::scalar</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Schema_8h_source.html#l00025">25</a> of file <a class="el" href="Schema_8h_source.html">Schema.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following files:<ul>
+<li>model/bpmnos/src/extensionElements/<a class="el" href="Schema_8h_source.html">Schema.h</a></li>
+<li>model/bpmnos/src/extensionElements/<a class="el" href="Schema_8cpp_source.html">Schema.cpp</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
+</div><!-- container -->
+<script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"; mermaid.initialize({ startOnLoad: true, theme: "neutral" });</script></body></html>

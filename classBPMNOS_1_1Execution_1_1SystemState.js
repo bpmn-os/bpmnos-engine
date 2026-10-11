@@ -12,7 +12,7 @@ var classBPMNOS_1_1Execution_1_1SystemState =
     [ "Token", "classBPMNOS_1_1Execution_1_1SystemState.html#a48f5c1ca47af8dc65eca7e0274de96e2", null ],
     [ "archive", "classBPMNOS_1_1Execution_1_1SystemState.html#a925c5188bf305cd7844fd044367d00eb", null ],
     [ "currentTime", "classBPMNOS_1_1Execution_1_1SystemState.html#a139c50b3da551a3a44f1905fcda097eb", null ],
-    [ "exitStatusAtActivityInstance", "classBPMNOS_1_1Execution_1_1SystemState.html#afe6eb2739d3097a6ca7c9420fdb6eb96", null ],
+    [ "exitStatusAtActivityInstance", "classBPMNOS_1_1Execution_1_1SystemState.html#ac6b94afca7da246094b5fe7a30b89a69", null ],
     [ "inbox", "classBPMNOS_1_1Execution_1_1SystemState.html#a670a78a31e0a66e4fc66f1a8ffd7e96c", null ],
     [ "messageAwaitingDelivery", "classBPMNOS_1_1Execution_1_1SystemState.html#ade9c9bade1009bfa05bbe613fd9ff1f2", null ],
     [ "messages", "classBPMNOS_1_1Execution_1_1SystemState.html#a64ceec1f752fa8e44d6877a341bbe7d0", null ],

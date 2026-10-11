@@ -32,7 +32,9 @@ var namespaceBPMNOS_1_1Execution =
     [ "DataProvider", "classBPMNOS_1_1Execution_1_1DataProvider.html", "classBPMNOS_1_1Execution_1_1DataProvider" ],
     [ "DynamicDataProvider", "classBPMNOS_1_1Execution_1_1DynamicDataProvider.html", "classBPMNOS_1_1Execution_1_1DynamicDataProvider" ],
     [ "ExpectedValueDataProvider", "classBPMNOS_1_1Execution_1_1ExpectedValueDataProvider.html", "classBPMNOS_1_1Execution_1_1ExpectedValueDataProvider" ],
+    [ "ExpectedValueFactory", "classBPMNOS_1_1Execution_1_1ExpectedValueFactory.html", "classBPMNOS_1_1Execution_1_1ExpectedValueFactory" ],
     [ "InstanceDataReader", "classBPMNOS_1_1Execution_1_1InstanceDataReader.html", "classBPMNOS_1_1Execution_1_1InstanceDataReader" ],
+    [ "RandomDistributionFactory", "classBPMNOS_1_1Execution_1_1RandomDistributionFactory.html", "classBPMNOS_1_1Execution_1_1RandomDistributionFactory" ],
     [ "Scenario", "classBPMNOS_1_1Execution_1_1Scenario.html", "classBPMNOS_1_1Execution_1_1Scenario" ],
     [ "StaticDataProvider", "classBPMNOS_1_1Execution_1_1StaticDataProvider.html", "classBPMNOS_1_1Execution_1_1StaticDataProvider" ],
     [ "StochasticDataProvider", "classBPMNOS_1_1Execution_1_1StochasticDataProvider.html", "classBPMNOS_1_1Execution_1_1StochasticDataProvider" ],
@@ -79,8 +81,11 @@ var namespaceBPMNOS_1_1Execution =
     [ "CandidateElement", "conceptBPMNOS_1_1Execution_1_1CandidateElement.html", null ],
     [ "CandidateCollection", "conceptBPMNOS_1_1Execution_1_1CandidateCollection.html", null ],
     [ "TupleComparator", "conceptBPMNOS_1_1Execution_1_1TupleComparator.html", null ],
+    [ "ContentMap", "namespaceBPMNOS_1_1Execution.html#afa4e3833f49e8f1f292c8dbc6a9f85b2", null ],
     [ "EventQueue", "namespaceBPMNOS_1_1Execution.html#af0a8c22a6083269eb5259dca0328efec", null ],
     [ "Messages", "namespaceBPMNOS_1_1Execution.html#a2864b447c1d139500bb2362bac8d0322", null ],
+    [ "RandomDistribution", "namespaceBPMNOS_1_1Execution.html#a6b42a448f59c7baa481d24373cb7043f", null ],
+    [ "RandomGenerator", "namespaceBPMNOS_1_1Execution.html#a9b5c499fd90230ff06958fb9ce96a32f", null ],
     [ "StateMachines", "namespaceBPMNOS_1_1Execution.html#ad98f556d6ed417172ef01fc7d0e88658", null ],
     [ "Tokens", "namespaceBPMNOS_1_1Execution.html#aecc76732c42d9421b8b0d48ec878c527", null ],
     [ "Outcome", "namespaceBPMNOS_1_1Execution.html#adb8bb72fa058d4b49ebdab0f8c795e48", [
@@ -94,5 +99,9 @@ var namespaceBPMNOS_1_1Execution =
     [ "erase_ptr", "namespaceBPMNOS_1_1Execution.html#aa58c9256c112963fdffe650de131529f", null ],
     [ "erase_ptr", "namespaceBPMNOS_1_1Execution.html#ab007867f8950a69182c677f91772f2f9", null ],
     [ "expired", "namespaceBPMNOS_1_1Execution.html#a633bb82285d8bb5d7d49388b3c1712b5", null ],
+    [ "make_distribution", "namespaceBPMNOS_1_1Execution.html#a4866e9f81af35fb6d41a9c5046dc246f", null ],
+    [ "make_distribution", "namespaceBPMNOS_1_1Execution.html#abe930e110641512ebfef7570878e6ba8", null ],
+    [ "make_distribution_impl", "namespaceBPMNOS_1_1Execution.html#a36e006e87e514bc255b450b730571200", null ],
+    [ "receiveContent", "namespaceBPMNOS_1_1Execution.html#afeed7e4f9a9afd83d23ca13c1648c17d", null ],
     [ "outcome", "namespaceBPMNOS_1_1Execution.html#a9cbd31179ee05a68ce9fb58409d7d8b7", null ]
 ];

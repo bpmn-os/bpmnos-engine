@@ -12,12 +12,13 @@ var searchData=
   ['_7eeventdispatcher_9',['~EventDispatcher',['../classBPMNOS_1_1Execution_1_1EventDispatcher.html#afd2a1dcf3635b45a05e2fbca8e32f277',1,'BPMNOS::Execution::EventDispatcher']]],
   ['_7emodel_10',['~Model',['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#a92b12f5b3a10b3e6c74923b52dd84e1a',1,'BPMN::Model']]],
   ['_7enotifier_11',['~Notifier',['../classBPMNOS_1_1Execution_1_1Notifier.html#ae7e9ed40f0ff3d047f19ca2d7f35bd67',1,'BPMNOS::Execution::Notifier']]],
-  ['_7eobservable_12',['~Observable',['../structBPMNOS_1_1Execution_1_1Observable.html#a35e882074daf62166c874fa8d60a19ee',1,'BPMNOS::Execution::Observable']]],
-  ['_7eobserver_13',['~Observer',['../classBPMNOS_1_1Execution_1_1Observer.html#ad693c7067f849b46756ade408803771e',1,'BPMNOS::Execution::Observer']]],
-  ['_7erecorder_14',['~Recorder',['../classBPMNOS_1_1Execution_1_1Recorder.html#a6b3c569577fcdc298d8d4a6a2b96e9a9',1,'BPMNOS::Execution::Recorder']]],
-  ['_7escenario_15',['~Scenario',['../classBPMNOS_1_1Execution_1_1Scenario.html#ab2656c0e7f31b6ad3a3aa55792beab64',1,'BPMNOS::Execution::Scenario']]],
-  ['_7estatemachine_16',['~StateMachine',['../classBPMNOS_1_1Execution_1_1StateMachine.html#a93d66cb2a89b186789d655a08b02674e',1,'BPMNOS::Execution::StateMachine']]],
-  ['_7esystemstate_17',['~SystemState',['../classBPMNOS_1_1Execution_1_1SystemState.html#ab4c21aebd95542b0f0afc18b9b8bf413',1,'BPMNOS::Execution::SystemState']]],
-  ['_7etoken_18',['~Token',['../classBPMNOS_1_1Execution_1_1Token.html#a3d7d59eaac1535df1433357d5d372f84',1,'BPMNOS::Execution::Token']]],
-  ['_7exmlobject_19',['~XMLObject',['https://bpmn-os.github.io/bpmnpp/classXML_1_1XMLObject.html#ad6f32e93c4bef6da3da7bc90072cb9c6',1,'XML::XMLObject']]]
+  ['_7eobjectregistry_12',['~ObjectRegistry',['../structBPMNOS_1_1ObjectRegistry.html#a0272a5d568ba81c5e2427bea6841382d',1,'BPMNOS::ObjectRegistry']]],
+  ['_7eobservable_13',['~Observable',['../structBPMNOS_1_1Execution_1_1Observable.html#a35e882074daf62166c874fa8d60a19ee',1,'BPMNOS::Execution::Observable']]],
+  ['_7eobserver_14',['~Observer',['../classBPMNOS_1_1Execution_1_1Observer.html#ad693c7067f849b46756ade408803771e',1,'BPMNOS::Execution::Observer']]],
+  ['_7erecorder_15',['~Recorder',['../classBPMNOS_1_1Execution_1_1Recorder.html#a6b3c569577fcdc298d8d4a6a2b96e9a9',1,'BPMNOS::Execution::Recorder']]],
+  ['_7escenario_16',['~Scenario',['../classBPMNOS_1_1Execution_1_1Scenario.html#ab2656c0e7f31b6ad3a3aa55792beab64',1,'BPMNOS::Execution::Scenario']]],
+  ['_7estatemachine_17',['~StateMachine',['../classBPMNOS_1_1Execution_1_1StateMachine.html#a93d66cb2a89b186789d655a08b02674e',1,'BPMNOS::Execution::StateMachine']]],
+  ['_7esystemstate_18',['~SystemState',['../classBPMNOS_1_1Execution_1_1SystemState.html#ab4c21aebd95542b0f0afc18b9b8bf413',1,'BPMNOS::Execution::SystemState']]],
+  ['_7etoken_19',['~Token',['../classBPMNOS_1_1Execution_1_1Token.html#a3d7d59eaac1535df1433357d5d372f84',1,'BPMNOS::Execution::Token']]],
+  ['_7exmlobject_20',['~XMLObject',['https://bpmn-os.github.io/bpmnpp/classXML_1_1XMLObject.html#ad6f32e93c4bef6da3da7bc90072cb9c6',1,'XML::XMLObject']]]
 ];

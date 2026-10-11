@@ -1,5 +1,5 @@
 var DecisionTask_8cpp =
 [
-    [ "DecisionTask::enumerateAlternatives< BPMNOS::SharedValues >", "DecisionTask_8cpp.html#a629ab24e800e25a66c79abb7d9e42cf9", null ],
-    [ "DecisionTask::enumerateAlternatives< BPMNOS::Values >", "DecisionTask_8cpp.html#afe936123bb4ce109937d50aeae32185d", null ]
+    [ "DecisionTask::enumerateAlternatives< BPMNOS::Data >", "DecisionTask_8cpp.html#a5a322b04f6d3297937468f816e841257", null ],
+    [ "DecisionTask::enumerateAlternatives< BPMNOS::SharedData >", "DecisionTask_8cpp.html#a27a2d82e70650a420916944b25195185", null ]
 ];

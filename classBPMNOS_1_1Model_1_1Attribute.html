@@ -128,7 +128,7 @@ $(function(){initNavTree('classBPMNOS_1_1Model_1_1Attribute.html','','classBPMNO
 <div class="contents">
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00021">21</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00022">22</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="Attribute_8h_source.html">Attribute.h</a>&gt;</code></p>
 <table class="memberdecls">
@@ -141,21 +141,31 @@ Public Types</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ad855c1b6042d629e042714ae5a7919e1" id="r_ad855c1b6042d629e042714ae5a7919e1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad855c1b6042d629e042714ae5a7919e1">Attribute</a> (<a class="el" href="classXML_1_1bpmnos_1_1tAttribute.html">XML::bpmnos::tAttribute</a> *attribute, <a class="el" href="#aae591f2dba868c00d93ef926d42bf145">Attribute::Category</a> <a class="el" href="#a1ee7d0aa9c8aa5eed633b96bf5b96e0a">category</a>, <a class="el" href="classBPMNOS_1_1Model_1_1AttributeRegistry.html">AttributeRegistry</a> &amp;attributeRegistry)</td></tr>
+<tr class="memitem:a184c6e7d804a2617caf26920ee5765d0" id="r_a184c6e7d804a2617caf26920ee5765d0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a184c6e7d804a2617caf26920ee5765d0">isObject</a> () const</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a8eb1fcf257615811b0bde19883af7470" id="r_a8eb1fcf257615811b0bde19883af7470"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classXML_1_1bpmnos_1_1tAttribute.html">XML::bpmnos::tAttribute</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8eb1fcf257615811b0bde19883af7470">element</a></td></tr>
 <tr class="memitem:a1ee7d0aa9c8aa5eed633b96bf5b96e0a" id="r_a1ee7d0aa9c8aa5eed633b96bf5b96e0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#aae591f2dba868c00d93ef926d42bf145">Category</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1ee7d0aa9c8aa5eed633b96bf5b96e0a">category</a></td></tr>
 <tr class="memitem:abf105720196b9757cc88d55a3cfce98f" id="r_abf105720196b9757cc88d55a3cfce98f"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abf105720196b9757cc88d55a3cfce98f">index</a></td></tr>
-<tr class="memdesc:abf105720196b9757cc88d55a3cfce98f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Index of attribute (is automatically set by attribute registry).  <br /></td></tr>
+<tr class="memitem:a28add65097efff77d4f89205ee172627" id="r_a28add65097efff77d4f89205ee172627"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a28add65097efff77d4f89205ee172627">declaration</a> = 0</td></tr>
 <tr class="memitem:a2b6347767756cbbefb784c7451901fa7" id="r_a2b6347767756cbbefb784c7451901fa7"><td class="memItemLeft" align="right" valign="top">std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2b6347767756cbbefb784c7451901fa7">id</a></td></tr>
+<tr class="memitem:a2cba0df767ab2f8581424dec40e60668" id="r_a2cba0df767ab2f8581424dec40e60668"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; const <a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">Schema</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2cba0df767ab2f8581424dec40e60668">schema</a></td></tr>
+<tr class="memdesc:a2cba0df767ab2f8581424dec40e60668"><td class="mdescLeft">&#160;</td><td class="mdescRight">The shape of an object attribute, stated by its type; nullptr for a scalar attribute.  <br /></td></tr>
+<tr class="memitem:a924d469c16a404eb3b7ea4934c485da1" id="r_a924d469c16a404eb3b7ea4934c485da1"><td class="memItemLeft" align="right" valign="top">std::optional&lt; size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a924d469c16a404eb3b7ea4934c485da1">initialObject</a></td></tr>
+<tr class="memdesc:a924d469c16a404eb3b7ea4934c485da1"><td class="mdescLeft">&#160;</td><td class="mdescRight">The index in the object registry of the literal an object is initialised with, if the model gives one.  <br /></td></tr>
+<tr class="memitem:aec1f08b7c76574071c01cfe9d7cb8c94" id="r_aec1f08b7c76574071c01cfe9d7cb8c94"><td class="memItemLeft" align="right" valign="top">std::optional&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec1f08b7c76574071c01cfe9d7cb8c94">initialExpression</a></td></tr>
+<tr class="memdesc:aec1f08b7c76574071c01cfe9d7cb8c94"><td class="mdescLeft">&#160;</td><td class="mdescRight">The assignment an object is initialised with if the model gives one other than a literal, such as a lookup.  <br /></td></tr>
 <tr class="memitem:a4c3dbc016c148d4d91658789caf5901f" id="r_a4c3dbc016c148d4d91658789caf5901f"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Expression.html">Expression</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4c3dbc016c148d4d91658789caf5901f">expression</a></td></tr>
 <tr class="memitem:aaa2f7e4ec65c31c445de3272c43bf550" id="r_aaa2f7e4ec65c31c445de3272c43bf550"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaa2f7e4ec65c31c445de3272c43bf550">name</a></td></tr>
 <tr class="memitem:a373e9bc4fe265aacc4051a201930facb" id="r_a373e9bc4fe265aacc4051a201930facb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a373e9bc4fe265aacc4051a201930facb">type</a></td></tr>
+<tr class="memdesc:a373e9bc4fe265aacc4051a201930facb"><td class="mdescLeft">&#160;</td><td class="mdescRight">The type of a scalar attribute; for an object, the scalar type of its base, or decimal for an object base.  <br /></td></tr>
 <tr class="memitem:a2278499c8feceadeb7cd13a2c120b6d9" id="r_a2278499c8feceadeb7cd13a2c120b6d9"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2278499c8feceadeb7cd13a2c120b6d9">weight</a></td></tr>
 <tr class="memdesc:a2278499c8feceadeb7cd13a2c120b6d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Weight to be used for objective (assuming maximization).  <br /></td></tr>
 <tr class="memitem:af1334d5ee239fa37ca74f2d55add7b24" id="r_af1334d5ee239fa37ca74f2d55add7b24"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af1334d5ee239fa37ca74f2d55add7b24">isImmutable</a></td></tr>
 <tr class="memdesc:af1334d5ee239fa37ca74f2d55add7b24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag indicating whether attribute value may be changed by operator, choice, or intermediate catch event.  <br /></td></tr>
+<tr class="memitem:a0b3fd64f580e521313755ec90a3002ee" id="r_a0b3fd64f580e521313755ec90a3002ee"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0b3fd64f580e521313755ec90a3002ee">isGlobal</a> = false</td></tr>
+<tr class="memdesc:a0b3fd64f580e521313755ec90a3002ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag indicating whether the attribute is global, i.e. declared by a data store, whether it is a scalar attribute or an object.  <br /></td></tr>
 </table>
 <a name="doc-enum-members" id="doc-enum-members"></a><h2 id="header-doc-enum-members" class="groupheader">Member Enumeration Documentation</h2>
 <a id="aae591f2dba868c00d93ef926d42bf145" name="aae591f2dba868c00d93ef926d42bf145"></a>
@@ -182,7 +192,7 @@ Public Attributes</h2></td></tr>
 <tr><td class="fieldname"><a id="aae591f2dba868c00d93ef926d42bf145ae44f9e348e41cb272efa87387728571b" name="aae591f2dba868c00d93ef926d42bf145ae44f9e348e41cb272efa87387728571b"></a>DATA&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00023">23</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00024">24</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
 
 </div>
 </div>
@@ -211,7 +221,36 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Attribute_8cpp_source.html#l00010">10</a> of file <a class="el" href="Attribute_8cpp_source.html">Attribute.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Attribute_8cpp_source.html#l00012">12</a> of file <a class="el" href="Attribute_8cpp_source.html">Attribute.cpp</a>.</p>
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a184c6e7d804a2617caf26920ee5765d0" name="a184c6e7d804a2617caf26920ee5765d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a184c6e7d804a2617caf26920ee5765d0">&#9670;&#160;</a></span>isObject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool BPMNOS::Model::Attribute::isObject </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Returns true if the attribute is an object, i.e. an array or a structured value, numbered separately from the scalar attributes. </p>
+
+<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00048">48</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
 
 </div>
 </div>
@@ -228,7 +267,24 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00027">27</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00028">28</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
+
+</div>
+</div>
+<a id="a28add65097efff77d4f89205ee172627" name="a28add65097efff77d4f89205ee172627"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28add65097efff77d4f89205ee172627">&#9670;&#160;</a></span>declaration</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t BPMNOS::Model::Attribute::declaration = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Position of the attribute among the attributes, scalar and object alike, in the order of their declaration, outer scopes first (set by the attribute registry), by which an outside view orders them </p>
+
+<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00032">32</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
 
 </div>
 </div>
@@ -244,7 +300,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00025">25</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00026">26</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
 
 </div>
 </div>
@@ -260,7 +316,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00031">31</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00041">41</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
 
 </div>
 </div>
@@ -276,7 +332,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00030">30</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00034">34</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
 
 </div>
 </div>
@@ -291,8 +347,57 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Index of attribute (is automatically set by attribute registry). </p>
 
-<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00028">28</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00029">29</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
+
+</div>
+</div>
+<a id="aec1f08b7c76574071c01cfe9d7cb8c94" name="aec1f08b7c76574071c01cfe9d7cb8c94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec1f08b7c76574071c01cfe9d7cb8c94">&#9670;&#160;</a></span>initialExpression</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;std::string&gt; BPMNOS::Model::Attribute::initialExpression</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00040">40</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
+
+</div>
+</div>
+<a id="a924d469c16a404eb3b7ea4934c485da1" name="a924d469c16a404eb3b7ea4934c485da1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a924d469c16a404eb3b7ea4934c485da1">&#9670;&#160;</a></span>initialObject</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;size_t&gt; BPMNOS::Model::Attribute::initialObject</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00038">38</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
+
+</div>
+</div>
+<a id="a0b3fd64f580e521313755ec90a3002ee" name="a0b3fd64f580e521313755ec90a3002ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b3fd64f580e521313755ec90a3002ee">&#9670;&#160;</a></span>isGlobal</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool BPMNOS::Model::Attribute::isGlobal = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00053">53</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
 
 </div>
 </div>
@@ -308,7 +413,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00038">38</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00052">52</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
 
 </div>
 </div>
@@ -324,7 +429,23 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00032">32</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00042">42</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
+
+</div>
+</div>
+<a id="a2cba0df767ab2f8581424dec40e60668" name="a2cba0df767ab2f8581424dec40e60668"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cba0df767ab2f8581424dec40e60668">&#9670;&#160;</a></span>schema</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;const <a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">Schema</a>&gt; BPMNOS::Model::Attribute::schema</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00036">36</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
 
 </div>
 </div>
@@ -340,7 +461,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00034">34</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00045">45</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
 
 </div>
 </div>
@@ -356,7 +477,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00036">36</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Attribute_8h_source.html#l00050">50</a> of file <a class="el" href="Attribute_8h_source.html">Attribute.h</a>.</p>
 
 </div>
 </div>

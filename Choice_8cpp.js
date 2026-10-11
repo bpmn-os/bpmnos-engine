@@ -1,7 +1,7 @@
 var Choice_8cpp =
 [
-    [ "Choice::getBounds< BPMNOS::SharedValues >", "Choice_8cpp.html#a189492937719facbde1bc5999b1ed428", null ],
-    [ "Choice::getBounds< BPMNOS::Values >", "Choice_8cpp.html#adf3f9acf5a38703f405a476fc8077d14", null ],
-    [ "Choice::getEnumeration< BPMNOS::SharedValues >", "Choice_8cpp.html#af24fc7d1d8f6f32d97a30e37ad87739c", null ],
-    [ "Choice::getEnumeration< BPMNOS::Values >", "Choice_8cpp.html#a5e74b31b5dd5a6cc626c3b167a428eab", null ]
+    [ "Choice::getBounds< BPMNOS::Data >", "Choice_8cpp.html#a56dc7b2649a44a4a907741ec6690541a", null ],
+    [ "Choice::getBounds< BPMNOS::SharedData >", "Choice_8cpp.html#a31e167f35c96b4d2e4f5cbe9c6e03de7", null ],
+    [ "Choice::getEnumeration< BPMNOS::Data >", "Choice_8cpp.html#a84027a20bba6927daf6bae6b337b9742", null ],
+    [ "Choice::getEnumeration< BPMNOS::SharedData >", "Choice_8cpp.html#ad837a5aecec97f5ff16501712fe6c9cd", null ]
 ];

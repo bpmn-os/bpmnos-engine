@@ -1,8 +1,8 @@
 var classBPMNOS_1_1Model_1_1Choice =
 [
     [ "Choice", "classBPMNOS_1_1Model_1_1Choice.html#a49afee900793fbef07dd51cbbbc8126c", null ],
-    [ "getBounds", "classBPMNOS_1_1Model_1_1Choice.html#a4b94dfc11ea1d31bdd96d8ca4620c669", null ],
-    [ "getEnumeration", "classBPMNOS_1_1Model_1_1Choice.html#a5496afdf17cbcf028220c78e8127c1a4", null ],
+    [ "getBounds", "classBPMNOS_1_1Model_1_1Choice.html#aa1773cbab7905e4a8c153a49d8d6da00", null ],
+    [ "getEnumeration", "classBPMNOS_1_1Model_1_1Choice.html#ac72de679762c18a0ea50e2261d465bf0", null ],
     [ "attribute", "classBPMNOS_1_1Model_1_1Choice.html#a9939161f60d5f0c9b3a1f6d0939b5672", null ],
     [ "attributeRegistry", "classBPMNOS_1_1Model_1_1Choice.html#a9edcc0fc07a09fb5b7da2190565e1dd1", null ],
     [ "dependencies", "classBPMNOS_1_1Model_1_1Choice.html#a490d5ef87ed2259bbadf1f228ef64cfd", null ],

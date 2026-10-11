@@ -128,7 +128,7 @@ $(function(){initNavTree('classBPMNOS_1_1Model_1_1AttributeRegistry.html','','cl
 <div class="contents">
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8h_source.html#l00015">15</a> of file <a class="el" href="AttributeRegistry_8h_source.html">AttributeRegistry.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8h_source.html#l00017">17</a> of file <a class="el" href="AttributeRegistry_8h_source.html">AttributeRegistry.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="AttributeRegistry_8h_source.html">AttributeRegistry.h</a>&gt;</code></p>
 <table class="memberdecls">
@@ -138,19 +138,37 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7a373180f7860254941e886df8bbe179" id="r_a7a373180f7860254941e886df8bbe179"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7a373180f7860254941e886df8bbe179">operator[]</a> (const std::string &amp;name) const</td></tr>
 <tr class="memitem:a1b0e0fbb6ea1f2b5179f41679d85043a" id="r_a1b0e0fbb6ea1f2b5179f41679d85043a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1b0e0fbb6ea1f2b5179f41679d85043a">contains</a> (const std::string &amp;name) const</td></tr>
 <tr class="memitem:a36386903b0d29154b989f7464ae7553b" id="r_a36386903b0d29154b989f7464ae7553b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a36386903b0d29154b989f7464ae7553b">contains</a> (const <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> *attribute) const</td></tr>
-<tr class="memitem:a466eac291a176ef6c2c74c16f064ce91" id="r_a466eac291a176ef6c2c74c16f064ce91"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a466eac291a176ef6c2c74c16f064ce91">getValue</a> (const <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> *attribute, const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;status, const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;data) const</td></tr>
-<tr class="memitem:a91560fb18b5d16c48a5781162d65d6c4" id="r_a91560fb18b5d16c48a5781162d65d6c4"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a91560fb18b5d16c48a5781162d65d6c4">getValue</a> (const <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> *attribute, const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;status, const <a class="el" href="structBPMNOS_1_1SharedValues.html">SharedValues</a> &amp;data) const</td></tr>
-<tr class="memitem:abcb388bd7d47d4ffe144f03bb2c92f17" id="r_abcb388bd7d47d4ffe144f03bb2c92f17"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abcb388bd7d47d4ffe144f03bb2c92f17">setValue</a> (const <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> *attribute, <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;status, <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;data, std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; value) const</td></tr>
-<tr class="memdesc:abcb388bd7d47d4ffe144f03bb2c92f17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method setting the value of an attribute and returning the change of the objective, which is the change of the value times the weight of the attribute for a data attribute and zero for a status attribute, the previous value being available here and nowhere later.  <br /></td></tr>
-<tr class="memitem:a1fc883d1392c76a89a980ccc38482b41" id="r_a1fc883d1392c76a89a980ccc38482b41"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1fc883d1392c76a89a980ccc38482b41">setValue</a> (const <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> *attribute, <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;status, <a class="el" href="structBPMNOS_1_1SharedValues.html">SharedValues</a> &amp;data, std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; value) const</td></tr>
-<tr class="memdesc:a1fc883d1392c76a89a980ccc38482b41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method setting the value of an attribute and returning the change of the objective, which is the change of the value times the weight of the attribute for a data attribute and zero for a status attribute, the previous value being available here and nowhere later.     <br /></td></tr>
+<tr class="memitem:aa45c58604f185903673520008feae2e1" id="r_aa45c58604f185903673520008feae2e1"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa45c58604f185903673520008feae2e1">getValue</a> (const <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> *attribute, const <a class="el" href="structBPMNOS_1_1Status.html">Status</a> &amp;status, const <a class="el" href="structBPMNOS_1_1Data.html">Data</a> &amp;data) const</td></tr>
+<tr class="memitem:a8838f9a99a648a1c2512e4e3f2f63559" id="r_a8838f9a99a648a1c2512e4e3f2f63559"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8838f9a99a648a1c2512e4e3f2f63559">getValue</a> (const <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> *attribute, const <a class="el" href="structBPMNOS_1_1Status.html">Status</a> &amp;status, const <a class="el" href="structBPMNOS_1_1SharedData.html">SharedData</a> &amp;data) const</td></tr>
+<tr class="memitem:ac67c31e78023f7088f7a2e030481b1bd" id="r_ac67c31e78023f7088f7a2e030481b1bd"><td class="memItemLeft" align="right" valign="top">const std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">Object</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac67c31e78023f7088f7a2e030481b1bd">getObject</a> (const <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> *object, const <a class="el" href="structBPMNOS_1_1Status.html">Status</a> &amp;status, const <a class="el" href="structBPMNOS_1_1Data.html">Data</a> &amp;data) const</td></tr>
+<tr class="memdesc:ac67c31e78023f7088f7a2e030481b1bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the object an object attribute holds in the status or data.  <br /></td></tr>
+<tr class="memitem:aa2e1d7e03c7c1afe054743142cc79fd9" id="r_aa2e1d7e03c7c1afe054743142cc79fd9"><td class="memItemLeft" align="right" valign="top">const std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">Object</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa2e1d7e03c7c1afe054743142cc79fd9">getObject</a> (const <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> *object, const <a class="el" href="structBPMNOS_1_1Status.html">Status</a> &amp;status, const <a class="el" href="structBPMNOS_1_1SharedData.html">SharedData</a> &amp;data) const</td></tr>
+<tr class="memdesc:aa2e1d7e03c7c1afe054743142cc79fd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the object an object attribute holds in the status or data.     <br /></td></tr>
+<tr class="memitem:a64e3a23f5b1f25ae676ad5bb0fa1b9b3" id="r_a64e3a23f5b1f25ae676ad5bb0fa1b9b3"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">Object</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a64e3a23f5b1f25ae676ad5bb0fa1b9b3">getObjectSlot</a> (const <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> *object, <a class="el" href="structBPMNOS_1_1Status.html">Status</a> &amp;status, <a class="el" href="structBPMNOS_1_1Data.html">Data</a> &amp;data) const</td></tr>
+<tr class="memdesc:a64e3a23f5b1f25ae676ad5bb0fa1b9b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the slot holding the object of an object attribute in the status or data, for writing it.  <br /></td></tr>
+<tr class="memitem:ad52b8c5ada48e2da7d0a01db8dad7542" id="r_ad52b8c5ada48e2da7d0a01db8dad7542"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">Object</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad52b8c5ada48e2da7d0a01db8dad7542">getObjectSlot</a> (const <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> *object, <a class="el" href="structBPMNOS_1_1Status.html">Status</a> &amp;status, <a class="el" href="structBPMNOS_1_1SharedData.html">SharedData</a> &amp;data) const</td></tr>
+<tr class="memdesc:ad52b8c5ada48e2da7d0a01db8dad7542"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the slot holding the object of an object attribute in the status or data, for writing it.     <br /></td></tr>
+<tr class="memitem:a9c4458fbc4ce8938932c18d5de4ca30e" id="r_a9c4458fbc4ce8938932c18d5de4ca30e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9c4458fbc4ce8938932c18d5de4ca30e">setObject</a> (const <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> *object, <a class="el" href="structBPMNOS_1_1Status.html">Status</a> &amp;status, <a class="el" href="structBPMNOS_1_1Data.html">Data</a> &amp;data, const std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">Object</a> &gt; &amp;value) const</td></tr>
+<tr class="memdesc:a9c4458fbc4ce8938932c18d5de4ca30e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method assigning an array or object to an object attribute as a whole.  <br /></td></tr>
+<tr class="memitem:a54bfad096e06d8729d164ed0feeb55fc" id="r_a54bfad096e06d8729d164ed0feeb55fc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a54bfad096e06d8729d164ed0feeb55fc">setObject</a> (const <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> *object, <a class="el" href="structBPMNOS_1_1Status.html">Status</a> &amp;status, <a class="el" href="structBPMNOS_1_1SharedData.html">SharedData</a> &amp;data, const std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">Object</a> &gt; &amp;value) const</td></tr>
+<tr class="memdesc:a54bfad096e06d8729d164ed0feeb55fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method assigning an array or object to an object attribute as a whole.     <br /></td></tr>
+<tr class="memitem:a3b6e6a3a1af24690922016d464870b90" id="r_a3b6e6a3a1af24690922016d464870b90"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3b6e6a3a1af24690922016d464870b90">setValue</a> (const <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> *attribute, <a class="el" href="structBPMNOS_1_1Status.html">Status</a> &amp;status, <a class="el" href="structBPMNOS_1_1Data.html">Data</a> &amp;data, std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; value) const</td></tr>
+<tr class="memdesc:a3b6e6a3a1af24690922016d464870b90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method setting the value of an attribute and returning the change of the objective, which is the change of the value times the weight of the attribute for a data attribute and zero for a status attribute, the previous value being available here and nowhere later.  <br /></td></tr>
+<tr class="memitem:a9c10872dde7de01e8c11117d72a001d1" id="r_a9c10872dde7de01e8c11117d72a001d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9c10872dde7de01e8c11117d72a001d1">setValue</a> (const <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> *attribute, <a class="el" href="structBPMNOS_1_1Status.html">Status</a> &amp;status, <a class="el" href="structBPMNOS_1_1SharedData.html">SharedData</a> &amp;data, std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; value) const</td></tr>
+<tr class="memdesc:a9c10872dde7de01e8c11117d72a001d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method setting the value of an attribute and returning the change of the objective, which is the change of the value times the weight of the attribute for a data attribute and zero for a status attribute, the previous value being available here and nowhere later.     <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a2214824616b85d62e31cf746ae1968bf" id="r_a2214824616b85d62e31cf746ae1968bf"><td class="memItemLeft" align="right" valign="top">const LIMEX::Handle&lt; double &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2214824616b85d62e31cf746ae1968bf">limexHandle</a></td></tr>
 <tr class="memitem:aa1049df1347afadcb5f64fa8b4b36723" id="r_aa1049df1347afadcb5f64fa8b4b36723"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa1049df1347afadcb5f64fa8b4b36723">statusAttributes</a></td></tr>
+<tr class="memdesc:aa1049df1347afadcb5f64fa8b4b36723"><td class="mdescLeft">&#160;</td><td class="mdescRight">The scalar status attributes, numbered by their position.  <br /></td></tr>
 <tr class="memitem:ab670ee4451dd8b0ebe5ceb4e81932249" id="r_ab670ee4451dd8b0ebe5ceb4e81932249"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab670ee4451dd8b0ebe5ceb4e81932249">dataAttributes</a></td></tr>
-<tr class="memdesc:ab670ee4451dd8b0ebe5ceb4e81932249"><td class="mdescLeft">&#160;</td><td class="mdescRight">The data attributes, the global attributes of the model first.  <br /></td></tr>
+<tr class="memdesc:ab670ee4451dd8b0ebe5ceb4e81932249"><td class="mdescLeft">&#160;</td><td class="mdescRight">The scalar data attributes, the global attributes of the model first.  <br /></td></tr>
+<tr class="memitem:a4527995440450579047d16bc4f7a789d" id="r_a4527995440450579047d16bc4f7a789d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4527995440450579047d16bc4f7a789d">statusObjects</a></td></tr>
+<tr class="memdesc:a4527995440450579047d16bc4f7a789d"><td class="mdescLeft">&#160;</td><td class="mdescRight">The status objects, numbered by their position, separately from scalars.  <br /></td></tr>
+<tr class="memitem:ae9ef06029babc419b1f8b2c5c34f6a97" id="r_ae9ef06029babc419b1f8b2c5c34f6a97"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae9ef06029babc419b1f8b2c5c34f6a97">dataObjects</a></td></tr>
+<tr class="memitem:a6cb8b1af1ce98bcebc3c3e60c1f2a995" id="r_a6cb8b1af1ce98bcebc3c3e60c1f2a995"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, const <a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">Schema</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6cb8b1af1ce98bcebc3c3e60c1f2a995">arrayLookups</a></td></tr>
+<tr class="memitem:a9e4463a265e6c3a15f6d925b2c023e3d" id="r_a9e4463a265e6c3a15f6d925b2c023e3d"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, const <a class="el" href="classBPMNOS_1_1Model_1_1Input.html">Input</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9e4463a265e6c3a15f6d925b2c023e3d">inputs</a></td></tr>
 <tr class="memitem:aba5c8d06b17ab21a37359e1797cb90d5" id="r_aba5c8d06b17ab21a37359e1797cb90d5"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aba5c8d06b17ab21a37359e1797cb90d5">statusMap</a></td></tr>
 <tr class="memitem:a310116f7395e93e82501461570768132" id="r_a310116f7395e93e82501461570768132"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a310116f7395e93e82501461570768132">dataMap</a></td></tr>
 </table><table class="memberdecls">
@@ -194,7 +212,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8cpp_source.html#l00049">49</a> of file <a class="el" href="AttributeRegistry_8cpp_source.html">AttributeRegistry.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8cpp_source.html#l00059">59</a> of file <a class="el" href="AttributeRegistry_8cpp_source.html">AttributeRegistry.cpp</a>.</p>
 
 </div>
 </div>
@@ -213,12 +231,124 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8cpp_source.html#l00045">45</a> of file <a class="el" href="AttributeRegistry_8cpp_source.html">AttributeRegistry.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8cpp_source.html#l00055">55</a> of file <a class="el" href="AttributeRegistry_8cpp_source.html">AttributeRegistry.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a91560fb18b5d16c48a5781162d65d6c4" name="a91560fb18b5d16c48a5781162d65d6c4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a91560fb18b5d16c48a5781162d65d6c4">&#9670;&#160;</a></span>getValue() <span class="overload">[1/2]</span></h2>
+<a id="ac67c31e78023f7088f7a2e030481b1bd" name="ac67c31e78023f7088f7a2e030481b1bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac67c31e78023f7088f7a2e030481b1bd">&#9670;&#160;</a></span>getObject() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; &amp; AttributeRegistry::getObject </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> *</td>          <td class="paramname"><span class="paramname"><em>object</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Status.html">Status</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Data.html">Data</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8cpp_source.html#l00099">99</a> of file <a class="el" href="AttributeRegistry_8cpp_source.html">AttributeRegistry.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aa2e1d7e03c7c1afe054743142cc79fd9" name="aa2e1d7e03c7c1afe054743142cc79fd9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2e1d7e03c7c1afe054743142cc79fd9">&#9670;&#160;</a></span>getObject() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; &amp; AttributeRegistry::getObject </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> *</td>          <td class="paramname"><span class="paramname"><em>object</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Status.html">Status</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1SharedData.html">SharedData</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8cpp_source.html#l00109">109</a> of file <a class="el" href="AttributeRegistry_8cpp_source.html">AttributeRegistry.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a64e3a23f5b1f25ae676ad5bb0fa1b9b3" name="a64e3a23f5b1f25ae676ad5bb0fa1b9b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64e3a23f5b1f25ae676ad5bb0fa1b9b3">&#9670;&#160;</a></span>getObjectSlot() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; &amp; AttributeRegistry::getObjectSlot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> *</td>          <td class="paramname"><span class="paramname"><em>object</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Status.html">Status</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Data.html">Data</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8cpp_source.html#l00119">119</a> of file <a class="el" href="AttributeRegistry_8cpp_source.html">AttributeRegistry.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ad52b8c5ada48e2da7d0a01db8dad7542" name="ad52b8c5ada48e2da7d0a01db8dad7542"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad52b8c5ada48e2da7d0a01db8dad7542">&#9670;&#160;</a></span>getObjectSlot() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; &amp; AttributeRegistry::getObjectSlot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> *</td>          <td class="paramname"><span class="paramname"><em>object</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Status.html">Status</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structBPMNOS_1_1SharedData.html">SharedData</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8cpp_source.html#l00129">129</a> of file <a class="el" href="AttributeRegistry_8cpp_source.html">AttributeRegistry.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aa45c58604f185903673520008feae2e1" name="aa45c58604f185903673520008feae2e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa45c58604f185903673520008feae2e1">&#9670;&#160;</a></span>getValue() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -231,22 +361,22 @@ Friends</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Status.html">Status</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1SharedValues.html">SharedValues</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;) const</td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Data.html">Data</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;) const</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8cpp_source.html#l00072">72</a> of file <a class="el" href="AttributeRegistry_8cpp_source.html">AttributeRegistry.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8cpp_source.html#l00073">73</a> of file <a class="el" href="AttributeRegistry_8cpp_source.html">AttributeRegistry.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a466eac291a176ef6c2c74c16f064ce91" name="a466eac291a176ef6c2c74c16f064ce91"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a466eac291a176ef6c2c74c16f064ce91">&#9670;&#160;</a></span>getValue() <span class="overload">[2/2]</span></h2>
+<a id="a8838f9a99a648a1c2512e4e3f2f63559" name="a8838f9a99a648a1c2512e4e3f2f63559"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8838f9a99a648a1c2512e4e3f2f63559">&#9670;&#160;</a></span>getValue() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -259,17 +389,17 @@ Friends</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Status.html">Status</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;) const</td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1SharedData.html">SharedData</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;) const</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8cpp_source.html#l00061">61</a> of file <a class="el" href="AttributeRegistry_8cpp_source.html">AttributeRegistry.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8cpp_source.html#l00086">86</a> of file <a class="el" href="AttributeRegistry_8cpp_source.html">AttributeRegistry.cpp</a>.</p>
 
 </div>
 </div>
@@ -288,12 +418,80 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8cpp_source.html#l00027">27</a> of file <a class="el" href="AttributeRegistry_8cpp_source.html">AttributeRegistry.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8cpp_source.html#l00037">37</a> of file <a class="el" href="AttributeRegistry_8cpp_source.html">AttributeRegistry.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a1fc883d1392c76a89a980ccc38482b41" name="a1fc883d1392c76a89a980ccc38482b41"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1fc883d1392c76a89a980ccc38482b41">&#9670;&#160;</a></span>setValue() <span class="overload">[1/2]</span></h2>
+<a id="a9c4458fbc4ce8938932c18d5de4ca30e" name="a9c4458fbc4ce8938932c18d5de4ca30e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c4458fbc4ce8938932c18d5de4ca30e">&#9670;&#160;</a></span>setObject() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AttributeRegistry::setObject </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> *</td>          <td class="paramname"><span class="paramname"><em>object</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Status.html">Status</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Data.html">Data</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">Object</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>value</em></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The object keeps the lengths of its fixed dimensions, a shorter value being padded with undefined values and a longer one being an error, and takes the lengths of its open ones. A value of the very layout is shared. </p>
+
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8cpp_source.html#l00153">153</a> of file <a class="el" href="AttributeRegistry_8cpp_source.html">AttributeRegistry.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a54bfad096e06d8729d164ed0feeb55fc" name="a54bfad096e06d8729d164ed0feeb55fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54bfad096e06d8729d164ed0feeb55fc">&#9670;&#160;</a></span>setObject() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AttributeRegistry::setObject </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a> *</td>          <td class="paramname"><span class="paramname"><em>object</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Status.html">Status</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structBPMNOS_1_1SharedData.html">SharedData</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">Object</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>value</em></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The object keeps the lengths of its fixed dimensions, a shorter value being padded with undefined values and a longer one being an error, and takes the lengths of its open ones. A value of the very layout is shared.    </p>
+
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8cpp_source.html#l00158">158</a> of file <a class="el" href="AttributeRegistry_8cpp_source.html">AttributeRegistry.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a3b6e6a3a1af24690922016d464870b90" name="a3b6e6a3a1af24690922016d464870b90"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b6e6a3a1af24690922016d464870b90">&#9670;&#160;</a></span>setValue() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -306,12 +504,12 @@ Friends</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
+          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Status.html">Status</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structBPMNOS_1_1SharedValues.html">SharedValues</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
+          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Data.html">Data</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -321,12 +519,12 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8cpp_source.html#l00098">98</a> of file <a class="el" href="AttributeRegistry_8cpp_source.html">AttributeRegistry.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8cpp_source.html#l00163">163</a> of file <a class="el" href="AttributeRegistry_8cpp_source.html">AttributeRegistry.cpp</a>.</p>
 
 </div>
 </div>
-<a id="abcb388bd7d47d4ffe144f03bb2c92f17" name="abcb388bd7d47d4ffe144f03bb2c92f17"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abcb388bd7d47d4ffe144f03bb2c92f17">&#9670;&#160;</a></span>setValue() <span class="overload">[2/2]</span></h2>
+<a id="a9c10872dde7de01e8c11117d72a001d1" name="a9c10872dde7de01e8c11117d72a001d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c10872dde7de01e8c11117d72a001d1">&#9670;&#160;</a></span>setValue() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -339,12 +537,12 @@ Friends</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
+          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Status.html">Status</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Values.html">Values</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
+          <td class="paramtype"><a class="el" href="structBPMNOS_1_1SharedData.html">SharedData</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -354,7 +552,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8cpp_source.html#l00083">83</a> of file <a class="el" href="AttributeRegistry_8cpp_source.html">AttributeRegistry.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8cpp_source.html#l00180">180</a> of file <a class="el" href="AttributeRegistry_8cpp_source.html">AttributeRegistry.cpp</a>.</p>
 
 </div>
 </div>
@@ -379,11 +577,28 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8h_source.html#l00037">37</a> of file <a class="el" href="AttributeRegistry_8h_source.html">AttributeRegistry.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8h_source.html#l00065">65</a> of file <a class="el" href="AttributeRegistry_8h_source.html">AttributeRegistry.h</a>.</p>
 
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a6cb8b1af1ce98bcebc3c3e60c1f2a995" name="a6cb8b1af1ce98bcebc3c3e60c1f2a995"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cb8b1af1ce98bcebc3c3e60c1f2a995">&#9670;&#160;</a></span>arrayLookups</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt; std::string, const <a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">Schema</a>*&gt; BPMNOS::Model::AttributeRegistry::arrayLookups</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The schema of the result of each lookup returning an array, by its name, which an expression may only assign to an array </p>
+
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8h_source.html#l00028">28</a> of file <a class="el" href="AttributeRegistry_8h_source.html">AttributeRegistry.h</a>.</p>
+
+</div>
+</div>
 <a id="ab670ee4451dd8b0ebe5ceb4e81932249" name="ab670ee4451dd8b0ebe5ceb4e81932249"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab670ee4451dd8b0ebe5ceb4e81932249">&#9670;&#160;</a></span>dataAttributes</h2>
 
@@ -396,7 +611,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8h_source.html#l00021">21</a> of file <a class="el" href="AttributeRegistry_8h_source.html">AttributeRegistry.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8h_source.html#l00023">23</a> of file <a class="el" href="AttributeRegistry_8h_source.html">AttributeRegistry.h</a>.</p>
 
 </div>
 </div>
@@ -412,7 +627,41 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8h_source.html#l00023">23</a> of file <a class="el" href="AttributeRegistry_8h_source.html">AttributeRegistry.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8h_source.html#l00033">33</a> of file <a class="el" href="AttributeRegistry_8h_source.html">AttributeRegistry.h</a>.</p>
+
+</div>
+</div>
+<a id="ae9ef06029babc419b1f8b2c5c34f6a97" name="ae9ef06029babc419b1f8b2c5c34f6a97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9ef06029babc419b1f8b2c5c34f6a97">&#9670;&#160;</a></span>dataObjects</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a>*&gt; BPMNOS::Model::AttributeRegistry::dataObjects</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The data objects, the global objects of the model first </p>
+
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8h_source.html#l00025">25</a> of file <a class="el" href="AttributeRegistry_8h_source.html">AttributeRegistry.h</a>.</p>
+
+</div>
+</div>
+<a id="a9e4463a265e6c3a15f6d925b2c023e3d" name="a9e4463a265e6c3a15f6d925b2c023e3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e4463a265e6c3a15f6d925b2c023e3d">&#9670;&#160;</a></span>inputs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt; std::string, const <a class="el" href="classBPMNOS_1_1Model_1_1Input.html">Input</a>*&gt; BPMNOS::Model::AttributeRegistry::inputs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The matrices and objects the inputs of the model provide, by their names, which expressions read as constant objects and never write </p>
+
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8h_source.html#l00031">31</a> of file <a class="el" href="AttributeRegistry_8h_source.html">AttributeRegistry.h</a>.</p>
 
 </div>
 </div>
@@ -428,7 +677,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8h_source.html#l00018">18</a> of file <a class="el" href="AttributeRegistry_8h_source.html">AttributeRegistry.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8h_source.html#l00020">20</a> of file <a class="el" href="AttributeRegistry_8h_source.html">AttributeRegistry.h</a>.</p>
 
 </div>
 </div>
@@ -444,7 +693,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8h_source.html#l00020">20</a> of file <a class="el" href="AttributeRegistry_8h_source.html">AttributeRegistry.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8h_source.html#l00022">22</a> of file <a class="el" href="AttributeRegistry_8h_source.html">AttributeRegistry.h</a>.</p>
 
 </div>
 </div>
@@ -460,7 +709,23 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8h_source.html#l00022">22</a> of file <a class="el" href="AttributeRegistry_8h_source.html">AttributeRegistry.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8h_source.html#l00032">32</a> of file <a class="el" href="AttributeRegistry_8h_source.html">AttributeRegistry.h</a>.</p>
+
+</div>
+</div>
+<a id="a4527995440450579047d16bc4f7a789d" name="a4527995440450579047d16bc4f7a789d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4527995440450579047d16bc4f7a789d">&#9670;&#160;</a></span>statusObjects</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="#abd4bab8f7ee748d7ea63f7f9b6248611">Attribute</a>*&gt; BPMNOS::Model::AttributeRegistry::statusObjects</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="AttributeRegistry_8h_source.html#l00024">24</a> of file <a class="el" href="AttributeRegistry_8h_source.html">AttributeRegistry.h</a>.</p>
 
 </div>
 </div>

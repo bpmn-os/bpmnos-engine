@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['objective_0',['Objective',['../structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea40b796b77b40775e1361ce398a9a783c',1,'BPMNOS::Execution::Observable']]],
-  ['other_1',['OTHER',['../classBPMNOS_1_1Model_1_1Expression.html#a1c6c51e0e04397036812c3e83434344ea03570470bad94692ce93e32700d2e1cb',1,'BPMNOS::Model::Expression']]]
+  ['name_0',['Name',['../classBPMNOS_1_1Model_1_1MessageDefinition.html#a68c605294c66b84c79c77ad12983568aaef8d70bd87b396e0093b597aaf2d8b17',1,'BPMNOS::Model::MessageDefinition']]],
+  ['number_1',['NUMBER',['../classBPMNOS_1_1CSVReader.html#a089c016a3f1ed7f4fea9a4af711a3c8fa34f55eca38e0605a84f169ff61a2a396',1,'BPMNOS::CSVReader']]]
 ];
