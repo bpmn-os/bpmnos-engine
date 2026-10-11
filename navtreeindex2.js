@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"bin_packing_problem.html#collaboration-bin_packing_problem":[6,3,0],
 "bin_packing_problem.html#completion-restrictions":[6,3,0,7,4],
 "bin_packing_problem.html#completion-restrictions-1":[6,3,0,8,4],
 "bin_packing_problem.html#completion-restrictions-10":[6,3,0,17,4],
@@ -248,6 +249,5 @@ var NAVTREEINDEX2 =
 "classBPMNOS_1_1Execution_1_1Candidates.html#aebc0cc7b8a299b74536090155d58b3ee":[7,2,1,2,2,2],
 "classBPMNOS_1_1Execution_1_1Color_1_1Modifier.html":[7,0,0,1,0,0],
 "classBPMNOS_1_1Execution_1_1Color_1_1Modifier.html":[7,2,1,2,0,0],
-"classBPMNOS_1_1Execution_1_1Color_1_1Modifier.html#aa9337870966b4cd9739f0face0c7264f":[7,0,0,1,0,0,0],
-"classBPMNOS_1_1Execution_1_1Color_1_1Modifier.html#aa9337870966b4cd9739f0face0c7264f":[7,2,1,2,0,0,0]
+"classBPMNOS_1_1Execution_1_1Color_1_1Modifier.html#aa9337870966b4cd9739f0face0c7264f":[7,0,0,1,0,0,0]
 };

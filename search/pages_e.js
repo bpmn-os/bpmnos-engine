@@ -2,7 +2,7 @@ var searchData=
 [
   ['includeitemactivity_0',['Task (IncludeItemActivity)',['../knapsack_problem.html#task-includeitemactivity',1,'']]],
   ['initialization_20and_20modification_1',['Attribute Initialization and Modification',['../bpmnos.html#attribute-initialization-and-modification',1,'']]],
-  ['inputs_2',['Inputs',['../extension.html#inputs',1,'']]],
+  ['inputs_2',['Inputs',['../extension.html#inputs',1,'Inputs'],['../assignment_problem.html#inputs-1',1,'Inputs'],['../earliest_arrival_problem.html#inputs-2',1,'Inputs'],['../pickup_delivery_problem.html#inputs-3',1,'Inputs'],['../travelling_salesperson_problem.html#inputs-4',1,'Inputs'],['../vehicle_routing_problem.html#inputs-5',1,'Inputs']]],
   ['inputs_3',['Objects and inputs',['../bpmnos.html#objects-and-inputs',1,'']]],
   ['instance_4',['instance',['../job_shop_scheduling_problem.html#multi-instance',1,'Multi-instance'],['../travelling_salesperson_problem.html#multi-instance-1',1,'Multi-instance'],['../truck_driver_scheduling_problem.html#multi-instance-2',1,'Multi-instance']]],
   ['instance_20activities_5',['Multi-instance activities',['../token_flow_logic_multi_instance_activities.html',1,'execution_logic']]],

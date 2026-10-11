@@ -1,5 +1,7 @@
 var NAVTREEINDEX12 =
 {
+"elements.html#ref-bpmnmessageflow-message-flows":[2,7,7],
+"elements.html#ref-bpmnprocess-processes":[2,7,0],
 "elements.html#ref-bpmnsequenceflow-sequence-flows":[2,7,6],
 "elements.html#ref-bpmnsubprocess-subprocesses":[2,7,1,1],
 "elements.html#ref-bpmntask-tasks":[2,7,1,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX12 =
 "knapsack_problem.html#status-75":[6,2,0,17,0],
 "knapsack_problem.html#status-76":[6,2,0,18,0],
 "knapsack_problem.html#status-77":[6,2,0,19,0],
-"knapsack_problem.html#status-78":[6,2,0,20,0],
-"knapsack_problem.html#status-79":[6,2,0,21,0],
-"knapsack_problem.html#status-80":[6,2,0,22,0]
+"knapsack_problem.html#status-78":[6,2,0,20,0]
 };

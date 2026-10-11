@@ -46,7 +46,7 @@ var searchData=
   ['inputencoder_2ecpp_43',['InputEncoder.cpp',['../InputEncoder_8cpp.html',1,'']]],
   ['inputencoder_2eh_44',['InputEncoder.h',['../InputEncoder_8h.html',1,'']]],
   ['inputfolders_45',['inputFolders',['../classBPMNOS_1_1Model_1_1Model.html#af18d49a6848dc6562460933d6fc7cff5',1,'BPMNOS::Model::Model']]],
-  ['inputs_46',['Inputs',['../extension.html#inputs',1,'']]],
+  ['inputs_46',['Inputs',['../extension.html#inputs',1,'Inputs'],['../assignment_problem.html#inputs-1',1,'Inputs'],['../earliest_arrival_problem.html#inputs-2',1,'Inputs'],['../pickup_delivery_problem.html#inputs-3',1,'Inputs'],['../travelling_salesperson_problem.html#inputs-4',1,'Inputs'],['../vehicle_routing_problem.html#inputs-5',1,'Inputs']]],
   ['inputs_47',['inputs',['../classXML_1_1bpmnos_1_1inputs.html',1,'XML::bpmnos::inputs'],['../classBPMNOS_1_1Model_1_1AttributeRegistry.html#a9e4463a265e6c3a15f6d925b2c023e3d',1,'BPMNOS::Model::AttributeRegistry::inputs'],['../classBPMNOS_1_1Model_1_1Expression.html#a4f9331b8471e529082709ed10835055c',1,'BPMNOS::Model::Expression::inputs'],['../classBPMNOS_1_1Model_1_1Model.html#a701d9e7a7c06bbeb13a60ca192a24107',1,'BPMNOS::Model::Model::inputs'],['../classXML_1_1bpmnos_1_1inputs.html#ae41fc610d7d52b9dc462f3475e6833d2',1,'XML::bpmnos::inputs::inputs()'],['../bpmnos.html#objects-and-inputs',1,'Objects and inputs']]],
   ['inputs_2ecpp_48',['inputs.cpp',['../inputs_8cpp.html',1,'']]],
   ['inputs_2eh_49',['inputs.h',['../inputs_8h.html',1,'']]],

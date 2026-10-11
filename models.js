@@ -5,6 +5,7 @@ var models =
         [ "Diagram", "earliest_arrival_problem.html#diagram-2", null ],
         [ "Status", "earliest_arrival_problem.html#status-29", null ],
         [ "Data", "earliest_arrival_problem.html#data-29", null ],
+        [ "Inputs", "earliest_arrival_problem.html#inputs-2", null ],
         [ "StartEvent (StartEvent_1)", "earliest_arrival_problem.html#startevent-startevent_1", [
           [ "Status", "earliest_arrival_problem.html#status-30", null ],
           [ "Data", "earliest_arrival_problem.html#data-30", null ]
@@ -56,6 +57,7 @@ var models =
     [ "Assignment problem", "assignment_problem.html", [
       [ "Collaboration (Assignment_problem)", "assignment_problem.html#collaboration-assignment_problem", [
         [ "Diagram", "assignment_problem.html#diagram", null ],
+        [ "Inputs", "assignment_problem.html#inputs-1", null ],
         [ "Client process (ClientProcess)", "assignment_problem.html#client-process-clientprocess", [
           [ "Status", "assignment_problem.html#status", null ],
           [ "Data", "assignment_problem.html#data", null ]
@@ -563,6 +565,7 @@ var models =
       [ "Collaboration (VehicleRoutingProblem)", "vehicle_routing_problem.html#collaboration-vehicleroutingproblem", [
         [ "Diagram", "vehicle_routing_problem.html#diagram-10", null ],
         [ "Globals", "vehicle_routing_problem.html#globals-79", null ],
+        [ "Inputs", "vehicle_routing_problem.html#inputs-5", null ],
         [ "Customer process (CustomerProcess)", "vehicle_routing_problem.html#customer-process-customerprocess-1", [
           [ "Status", "vehicle_routing_problem.html#status-163", null ],
           [ "Data", "vehicle_routing_problem.html#data-163", null ],
@@ -742,6 +745,7 @@ var models =
       [ "Collaboration (PickupDeliveryProblem)", "pickup_delivery_problem.html#collaboration-pickupdeliveryproblem", [
         [ "Diagram", "pickup_delivery_problem.html#diagram-5", null ],
         [ "Globals", "pickup_delivery_problem.html#globals-42", null ],
+        [ "Inputs", "pickup_delivery_problem.html#inputs-3", null ],
         [ "Customer process (CustomerProcess)", "pickup_delivery_problem.html#customer-process-customerprocess", [
           [ "Status", "pickup_delivery_problem.html#status-82", null ],
           [ "Data", "pickup_delivery_problem.html#data-82", null ],
@@ -1001,6 +1005,7 @@ var models =
         [ "Diagram", "travelling_salesperson_problem.html#diagram-6", null ],
         [ "Status", "travelling_salesperson_problem.html#status-118", null ],
         [ "Data", "travelling_salesperson_problem.html#data-118", null ],
+        [ "Inputs", "travelling_salesperson_problem.html#inputs-4", null ],
         [ "StartEvent (StartEvent_1)", "travelling_salesperson_problem.html#startevent-startevent_1-1", [
           [ "Status", "travelling_salesperson_problem.html#status-119", null ],
           [ "Data", "travelling_salesperson_problem.html#data-119", null ]

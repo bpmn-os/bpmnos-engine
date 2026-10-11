@@ -1,5 +1,6 @@
 var NAVTREEINDEX4 =
 {
+"classBPMNOS_1_1Execution_1_1EventDispatcher.html#ab9dfeb9aa1d4c42db4c2331384f5a16e":[7,2,1,2,44,1],
 "classBPMNOS_1_1Execution_1_1EventDispatcher.html#afd2a1dcf3635b45a05e2fbca8e32f277":[7,0,0,1,44,0],
 "classBPMNOS_1_1Execution_1_1EventDispatcher.html#afd2a1dcf3635b45a05e2fbca8e32f277":[7,2,1,2,44,0],
 "classBPMNOS_1_1Execution_1_1EventListener.html":[7,0,0,1,45],
@@ -248,6 +249,5 @@ var NAVTREEINDEX4 =
 "classBPMNOS_1_1Execution_1_1Message.html#aea764f03e333c32fab6de0fc69d8741a":[7,2,1,2,59,2],
 "classBPMNOS_1_1Execution_1_1Message.html#aeeff0e30a5f9465b58a837afae88fbbc":[7,0,0,1,59,8],
 "classBPMNOS_1_1Execution_1_1Message.html#aeeff0e30a5f9465b58a837afae88fbbc":[7,2,1,2,59,8],
-"classBPMNOS_1_1Execution_1_1Message.html#affbdbebc3d5423187bf33fe93483485c":[7,0,0,1,59,3],
-"classBPMNOS_1_1Execution_1_1Message.html#affbdbebc3d5423187bf33fe93483485c":[7,2,1,2,59,3]
+"classBPMNOS_1_1Execution_1_1Message.html#affbdbebc3d5423187bf33fe93483485c":[7,0,0,1,59,3]
 };
