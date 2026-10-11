@@ -29,7 +29,7 @@ typedef std::unordered_map< std::string, std::variant< Value, std::string, std::
  * value sent to an object attribute, are errors.
  */
 template <typename DataType>
-BPMNOS::number applyContent(const BPMNOS::Model::AttributeRegistry& attributeRegistry, const std::string& key, const BPMNOS::Model::Attribute* attribute, const ContentMap::mapped_type* content, BPMNOS::Status& status, DataType& data);
+BPMNOS::number receiveContent(const BPMNOS::Model::AttributeRegistry& attributeRegistry, const std::string& key, const BPMNOS::Model::Attribute* attribute, const ContentMap::mapped_type* content, BPMNOS::Status& status, DataType& data);
 
 } // namespace BPMNOS::Execution
 

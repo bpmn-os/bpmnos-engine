@@ -25,7 +25,7 @@ Expression::Expression(const LIMEX::Handle<double>& handle, const InputEncoder& 
   , compiled(getExpression(expression))
   , type(getType())
 {
-  resize = ( withoutResize(expression) != expression );
+  resize = ( preprocess(expression) != expression );
   auto& assignment = std::get< LIMEX::Node<double> >(compiled.getRoot().operands[0]);
   compound = ( (int)assignment.type > (int)LIMEX::Type::assign );
   if ( auto name = compiled.getTarget(); name.has_value() ) {
@@ -56,7 +56,7 @@ Expression::Expression(const LIMEX::Handle<double>& handle, const InputEncoder& 
     analyseTarget(encoder.objects());
   }
 
-  determineUses();
+  bindPaths();
 
   for ( auto& name : compiled.getVariables() ) {
     if ( auto input = attributeRegistry.inputs.find(name); input != attributeRegistry.inputs.end() ) {
@@ -78,11 +78,6 @@ Expression::Expression(const LIMEX::Handle<double>& handle, const InputEncoder& 
   }
   auto& pathDescriptions = compiled.getPaths();
   for ( size_t path = 0; path < pathDescriptions.size(); path++ ) {
-    // the target written and the source of an object assigned have been bound by the analysis of the target
-    bool written = ( objectTarget && !compound && compiled.getTargetPath() == path );
-    if ( !written && sourcePath != path ) {
-      bind(path);
-    }
     if ( auto input = attributeRegistry.inputs.find(pathDescriptions[path].name); input != attributeRegistry.inputs.end() ) {
       // an input never changes, so that no expression depends on it
       paths.push_back(nullptr);
@@ -198,12 +193,22 @@ const BPMNOS::Object* objectOf(const AttributeRegistry& attributeRegistry, const
 
 } // namespace
 
-void Expression::determineUses() {
-  pathUses.resize( compiled.getPaths().size() );
+void Expression::bindPaths() {
+  skipsUndefined.assign( compiled.getPaths().size(), false );
+  readsLengthOnly.assign( compiled.getPaths().size(), false );
   auto& aggregatorNames = handle.getAggregatorNames();
-  std::function<void(const LIMEX::Node<double>&, bool, bool)> visit = [&](const LIMEX::Node<double>& node, bool aggregated, bool sizeArgument) {
+  // every path is checked against the schema for the way it is read, which only its position in the syntax tree
+  // tells: as an array or a value, as the argument of `size`, and inside an aggregation over an expression
+  std::function<void(const LIMEX::Node<double>&, bool, bool)> visit = [&](const LIMEX::Node<double>& node, bool aggregated, bool lengthOnly) {
     if ( node.type == LIMEX::Type::path || node.type == LIMEX::Type::array_path ) {
-      pathUses[ std::get<size_t>(node.operands[0]) ] = Use{ node.type == LIMEX::Type::array_path, sizeArgument, aggregated };
+      size_t path = std::get<size_t>(node.operands[0]);
+      skipsUndefined[path] = aggregated;
+      readsLengthOnly[path] = lengthOnly;
+      // the target written and the source of an object assigned are bound by the analysis of the target
+      bool written = ( objectTarget && !compound && compiled.getTargetPath() == path );
+      if ( !written && sourcePath != path ) {
+        bind(path, node.type == LIMEX::Type::array_path, lengthOnly);
+      }
     }
     if ( node.type == LIMEX::Type::function_call && &node != sourceCall ) {
       // a lookup returning an array may only be the entire value of an assignment to an array
@@ -212,11 +217,11 @@ void Expression::determineUses() {
         throw std::runtime_error("Expression: lookup '" + name + "' returns an array, which may only be assigned to an array, in '" + expression + "'");
       }
     }
-    bool sizeChild = ( node.type == LIMEX::Type::aggregation && aggregatorNames[ std::get<size_t>(node.operands[0]) ] == "size" );
+    bool lengthOnlyChild = ( node.type == LIMEX::Type::aggregation && aggregatorNames[ std::get<size_t>(node.operands[0]) ] == "size" );
     bool aggregatedChild = aggregated || node.type == LIMEX::Type::aggregation_over;
     for ( auto& operand : node.operands ) {
       if ( std::holds_alternative< LIMEX::Node<double> >(operand) ) {
-        visit( std::get< LIMEX::Node<double> >(operand), aggregatedChild, sizeChild );
+        visit( std::get< LIMEX::Node<double> >(operand), aggregatedChild, lengthOnlyChild );
       }
     }
   };
@@ -262,20 +267,19 @@ Expression::Step Expression::walk(size_t path) const {
   return result;
 }
 
-void Expression::bind(size_t path) const {
-  auto& use = pathUses[path];
+void Expression::bind(size_t path, bool asArray, bool lengthOnly) const {
   auto& description = compiled.getPaths()[path];
   auto text = pathText(description);
   if ( description.steps.empty() && !schemaOf(description.name) ) {
     throw std::runtime_error("Expression: '" + description.name + "' is not an array in '" + expression +"'");
   }
   auto [schema, dimension, _] = walk(path);
-  if ( use.sizeOnly ) {
+  if ( lengthOnly ) {
     if ( dimension == schema->dimensions.size() ) {
       throw std::runtime_error("Expression: '" + text + "' is not an array in '" + expression +"'");
     }
   }
-  else if ( use.array ) {
+  else if ( asArray ) {
     if ( !schema->scalar.has_value() || schema->dimensions.size() != dimension + 1 ) {
       throw std::runtime_error("Expression: '" + text + "' is not an array of values with a single dimension in '" + expression +"'");
     }
@@ -363,7 +367,7 @@ void Expression::analyseTarget(const std::vector<size_t>& literals) {
   }
 }
 
-std::string Expression::withoutResize(const std::string& text) {
+std::string Expression::preprocess(const std::string& text) {
   // 'resize(path) := n' is read as the assignment 'path := n' of the length of the dimension the path addresses
   static const std::regex form(R"(^\s*resize\s*\((.*)\)\s*:=(.*)$)");
   std::smatch match;
@@ -394,7 +398,7 @@ public:
     }
     catch ( const Undefined& ) {
       // an aggregation skips an undefined value, which elsewhere makes the expression undefined
-      if ( owner.pathUses[path].aggregated ) {
+      if ( owner.skipsUndefined[path] ) {
         return std::numeric_limits<double>::quiet_NaN();
       }
       throw;
@@ -403,7 +407,7 @@ public:
   LIMEX::View<double> array(size_t path, const std::vector<double>& indices) const override {
     auto location = locate(*objects[path], owner.compiled.getPaths()[path], indices);
     auto& layout = *location.layout;
-    if ( owner.pathUses[path].sizeOnly ) {
+    if ( owner.readsLengthOnly[path] ) {
       return lengthOf(layout.dimensions[location.dimension]);
     }
     return valuesOf(objects[path], location.offset, layout.dimensions[location.dimension], span(layout, location.dimension));
@@ -431,7 +435,7 @@ std::optional<double> Expression::evaluate(const std::vector<double>& variableVa
 LIMEX::Expression<double> Expression::getExpression(const std::string& input) const {
   try {
     // the text has been scanned by the caller, so that every literal in it is a number already
-    return LIMEX::Expression<double>(withoutResize(input), handle);
+    return LIMEX::Expression<double>(preprocess(input), handle);
   }
   catch ( const std::exception& error ) {
     throw std::runtime_error("Expression: illegal expression '" + input + "'.\n" + error.what());
@@ -519,7 +523,7 @@ std::optional<double> Expression::execute(const BPMNOS::Status& status, const Da
 
   std::vector<double> variableValues;
   std::vector<const BPMNOS::Object*> pathObjects;
-  if ( !gather(status, data, variableValues, pathObjects, false) ) {
+  if ( !setValues(status, data, variableValues, pathObjects, false) ) {
     // return nullopt because a required value is not given
     return std::nullopt;
   }
@@ -528,12 +532,12 @@ std::optional<double> Expression::execute(const BPMNOS::Status& status, const Da
     return evaluate(variableValues,pathObjects);
   }
   catch (const std::runtime_error& e) {
-    throw std::runtime_error(std::format("Expression: failed to evaluate '{}' with {}\n{}", expression, arguments(status, data), e.what()));
+    throw std::runtime_error(std::format("Expression: failed to evaluate '{}' with {}\n{}", expression, stringify(status, data), e.what()));
   }
 }
 
 template <typename DataType>
-std::string Expression::arguments(const BPMNOS::Status& status, const DataType& data) const {
+std::string Expression::stringify(const BPMNOS::Status& status, const DataType& data) const {
   std::string result;
   for ( auto attribute : variables ) {
     if ( !attribute || attribute->isObject() ) {
@@ -547,7 +551,7 @@ std::string Expression::arguments(const BPMNOS::Status& status, const DataType& 
 }
 
 template <typename DataType>
-bool Expression::gather(const BPMNOS::Status& status, const DataType& data, std::vector<double>& variableValues, std::vector<const BPMNOS::Object*>& pathObjects, bool undefinedAsNaN) const {
+bool Expression::setValues(const BPMNOS::Status& status, const DataType& data, std::vector<double>& variableValues, std::vector<const BPMNOS::Object*>& pathObjects, bool undefinedAsNaN) const {
   for ( auto attribute : variables ) {
     if ( !attribute || attribute->isObject() ) {
       // the object assigned, which LIMEX reads as a variable whose value is not used
@@ -571,11 +575,11 @@ bool Expression::gather(const BPMNOS::Status& status, const DataType& data, std:
 }
 
 template <typename DataType>
-void Expression::write(BPMNOS::Status& status, DataType& data) const {
+void Expression::writeToObject(BPMNOS::Status& status, DataType& data) const {
   assert( objectTarget );
   std::vector<double> variableValues;
   std::vector<const BPMNOS::Object*> pathObjects;
-  if ( !gather(status, data, variableValues, pathObjects, true) ) {
+  if ( !setValues(status, data, variableValues, pathObjects, true) ) {
     throw std::runtime_error("Expression: '" + expression + "' reads an array without a value");
   }
   auto& slot = attributeRegistry.getObjectSlot(target.value(), status, data);
@@ -700,12 +704,12 @@ void Expression::write(BPMNOS::Status& status, DataType& data) const {
     std::ranges::copy(value->values, values.begin() + (long)location.offset);
   }
   catch ( const std::runtime_error& error ) {
-    throw std::runtime_error(std::format("Expression: failed to evaluate '{}' with {}\n{}", expression, arguments(status, data), error.what()));
+    throw std::runtime_error(std::format("Expression: failed to evaluate '{}' with {}\n{}", expression, stringify(status, data), error.what()));
   }
 }
 
 template std::optional<double> Expression::execute<BPMNOS::Data>(const BPMNOS::Status& status, const BPMNOS::Data& data) const;
 template std::optional<double> Expression::execute<BPMNOS::SharedData>(const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;
-template void Expression::write<BPMNOS::Data>(BPMNOS::Status& status, BPMNOS::Data& data) const;
-template void Expression::write<BPMNOS::SharedData>(BPMNOS::Status& status, BPMNOS::SharedData& data) const;
+template void Expression::writeToObject<BPMNOS::Data>(BPMNOS::Status& status, BPMNOS::Data& data) const;
+template void Expression::writeToObject<BPMNOS::SharedData>(BPMNOS::Status& status, BPMNOS::SharedData& data) const;
 

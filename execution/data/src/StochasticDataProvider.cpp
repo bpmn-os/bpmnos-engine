@@ -71,7 +71,7 @@ std::unique_ptr<BPMNOS::Model::Expression> StochasticDataProvider::compileStatus
   if ( !compiled->target.has_value() || compiled->target.value()->category != BPMNOS::Model::Attribute::Category::STATUS ) {
     throw std::runtime_error("StochasticDataProvider: the " + column + " expression of '" + row.node->id + "' must assign a status attribute");
   }
-  if ( compiled->writesObject() ) {
+  if ( compiled->writesToObject() ) {
     throw std::runtime_error("StochasticDataProvider: the " + column + " expression of '" + row.node->id + "' must not assign an object");
   }
   return compiled;

@@ -192,20 +192,20 @@ TEST_CASE( "Content is applied to the receiving attribute", "[execution][message
 
   SECTION( "Text raised from outside the model states an array as a literal" ) {
     Execution::ContentMap::mapped_type content = std::string("[4, 5]");
-    Execution::applyContent(registry, "Route", stops, &content, status, data);
+    Execution::receiveContent(registry, "Route", stops, &content, status, data);
     REQUIRE( to_string(*status.objects[stops->index]) == "[ 4, 5 ]" );
   }
   SECTION( "Text that is no literal is refused for an object" ) {
     Execution::ContentMap::mapped_type content = std::string("4");
-    REQUIRE_THROWS_WITH( Execution::applyContent(registry, "Route", stops, &content, status, data), Catch::Matchers::ContainsSubstring("is no literal") );
+    REQUIRE_THROWS_WITH( Execution::receiveContent(registry, "Route", stops, &content, status, data), Catch::Matchers::ContainsSubstring("is no literal") );
   }
   SECTION( "A value is refused for an object" ) {
     Execution::ContentMap::mapped_type content = BPMNOS::Value(BPMNOS::number(4));
-    REQUIRE_THROWS_WITH( Execution::applyContent(registry, "Route", stops, &content, status, data), Catch::Matchers::ContainsSubstring("a value is sent") );
+    REQUIRE_THROWS_WITH( Execution::receiveContent(registry, "Route", stops, &content, status, data), Catch::Matchers::ContainsSubstring("a value is sent") );
   }
   SECTION( "An object the content does not mention keeps its value" ) {
     auto before = status.objects[stops->index];
-    Execution::applyContent<BPMNOS::Data>(registry, "Route", stops, nullptr, status, data);
+    Execution::receiveContent<BPMNOS::Data>(registry, "Route", stops, nullptr, status, data);
     REQUIRE( status.objects[stops->index] == before );
   }
 }

@@ -63,7 +63,9 @@ public:
   template <typename DataType>
   std::optional<double> execute(const BPMNOS::Status& status, const DataType& data) const;
   /// Returns true if the expression assigns an object, a part of one, or the length of one of its dimensions.
-  bool writesObject() const { return objectTarget; }
+  bool writesToObject() const { return objectTarget; }
+  /// Returns true if the expression is `resize(path) := n`, which changes the length of a dimension of an array.
+  bool isResize() const { return resize; }
   /**
    * @brief Writes what an assignment to an object states: a value or an array or object to an element, an array
    * or object to the whole object, or the length of a dimension.
@@ -74,17 +76,15 @@ public:
    * the lengths of its open ones.
    */
   template <typename DataType>
-  void write(BPMNOS::Status& status, DataType& data) const;
+  void writeToObject(BPMNOS::Status& status, DataType& data) const;
 private:
   LIMEX::Expression<double> getExpression(const std::string& input) const;
   Type getType() const;
-  /// How a path is used: as a value or as an array, as the argument of `size`, and within an aggregation.
-  struct Use {
-    bool array = false;
-    bool sizeOnly = false;
-    bool aggregated = false;
-  };
-  std::vector<Use> pathUses; ///< The use of each path
+  /// For each path, true if it stands inside an aggregation over an expression, so that an undefined value it reads
+  /// is skipped instead of making the expression undefined
+  std::vector<bool> skipsUndefined;
+  /// For each path, true if it is the argument of `size`, so that only the length of the array it addresses is read
+  std::vector<bool> readsLengthOnly;
   bool objectTarget = false; ///< True if the target is an object
   bool resize = false; ///< True for `resize(path) := n`, which assigns the length of a dimension
   bool compound = false; ///< True for a compound assignment, such as `+=`
@@ -104,18 +104,23 @@ private:
     size_t dimension;
     std::vector<std::string> fields;
   };
-  void determineUses();
+  /// Checks every path against the schema for the way it is read and records `skipsUndefined` and `readsLengthOnly`.
+  void bindPaths();
   /// Returns the schema of the object an attribute or input of the given name holds, nullptr for a scalar attribute.
   const Schema* schemaOf(const std::string& name) const;
   Step walk(size_t path) const;
-  void bind(size_t path) const;
+  /// Checks that a path addresses a value, an array of values with a single dimension if it is read as an array, or an
+  /// array if only its length is read.
+  void bind(size_t path, bool asArray, bool lengthOnly) const;
   void analyseTarget(const std::vector<size_t>& literals);
-  static std::string withoutResize(const std::string& text);
+  /// Returns the text in a form LIMEX accepts: `resize(path) := n` becomes the assignment `path := n`, and any other
+  /// text is returned unchanged.
+  static std::string preprocess(const std::string& text);
   class PathResolver; ///< Resolves the paths of the expression in the objects they address
   template <typename DataType>
-  bool gather(const BPMNOS::Status& status, const DataType& data, std::vector<double>& variableValues, std::vector<const BPMNOS::Object*>& pathObjects, bool undefinedAsNaN) const;
+  bool setValues(const BPMNOS::Status& status, const DataType& data, std::vector<double>& variableValues, std::vector<const BPMNOS::Object*>& pathObjects, bool undefinedAsNaN) const;
   template <typename DataType>
-  std::string arguments(const BPMNOS::Status& status, const DataType& data) const;
+  std::string stringify(const BPMNOS::Status& status, const DataType& data) const;
 };
 
 } // namespace BPMNOS::Model

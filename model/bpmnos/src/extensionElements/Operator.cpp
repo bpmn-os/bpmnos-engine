@@ -15,9 +15,9 @@ Operator::Operator(XML::bpmnos::tOperator* operator_, const AttributeRegistry& a
 
 template <typename DataType>
 BPMNOS::number Operator::apply(BPMNOS::Status& status, DataType& data) const {
-  if ( expression.writesObject() ) {
+  if ( expression.writesToObject() ) {
     // an object carries no objective
-    expression.write(status, data);
+    expression.writeToObject(status, data);
     return 0;
   }
   return attributeRegistry.setValue( attribute, status, data, BPMNOS::to_value( expression.execute(status,data) ) );

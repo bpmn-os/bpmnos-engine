@@ -1446,7 +1446,7 @@ void Token::setSignalContent(ContentMap& sourceMap) {
   size_t counter = 0;
   for (auto& [key,contentValue] : sourceMap) {
     if ( auto it = signalDefinition->contentMap.find(key); it != signalDefinition->contentMap.end() ) {
-      objectiveChange += applyContent(attributeRegistry, key, it->second->attribute, &contentValue, status, *data);
+      objectiveChange += receiveContent(attributeRegistry, key, it->second->attribute, &contentValue, status, *data);
     }
     else {
       // key in signal content, but not in recipient content
@@ -1459,7 +1459,7 @@ void Token::setSignalContent(ContentMap& sourceMap) {
     for (auto& [key,definition] : signalDefinition->contentMap) {
       if ( !sourceMap.contains(key) ) {
         // key in recipient content, but not in message content
-        objectiveChange += applyContent(attributeRegistry, key, definition->attribute, nullptr, status, *data);
+        objectiveChange += receiveContent(attributeRegistry, key, definition->attribute, nullptr, status, *data);
       }
     }
   }

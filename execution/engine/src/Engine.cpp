@@ -259,7 +259,7 @@ void Engine::triggerInstance(const BPMN::Process* process, ContentMap content) {
   for ( auto& [key,definition] : *contentMap ) {
     // a key in the content of the start event, but not in the content of the trigger, is given nothing
     auto it = content.find(key);
-    objectiveChange += applyContent(attributeRegistry, key, definition->attribute, it == content.end() ? nullptr : &it->second, token->status, *token->data);
+    objectiveChange += receiveContent(attributeRegistry, key, definition->attribute, it == content.end() ? nullptr : &it->second, token->status, *token->data);
   }
 
   addToObjective(objectiveChange);

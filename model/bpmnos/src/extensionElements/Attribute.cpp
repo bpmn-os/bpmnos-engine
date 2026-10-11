@@ -36,7 +36,7 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category cat
     catch ( const std::exception& error ) {
       throw std::runtime_error("Attribute: illegal initial value of object '" + id + "'.\n" + error.what());
     }
-    if ( !expression->writesObject() ) {
+    if ( !expression->writesToObject() ) {
       throw std::runtime_error("Attribute: illegal initial value of object '" + id + "'");
     }
   }

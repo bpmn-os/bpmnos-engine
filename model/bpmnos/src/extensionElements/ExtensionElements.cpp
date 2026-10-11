@@ -424,7 +424,7 @@ BPMNOS::number ExtensionElements::computeInitialValues(BPMNOS::number currentTim
   for ( auto objects : { &statusObjects, &dataObjects } ) {
     for ( auto& object : *objects ) {
       if ( object->expression ) {
-        object->expression->write(status,data);
+        object->expression->writeToObject(status,data);
       }
     }
   }

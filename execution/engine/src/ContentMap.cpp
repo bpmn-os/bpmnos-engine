@@ -5,7 +5,7 @@
 using namespace BPMNOS::Execution;
 
 template <typename DataType>
-BPMNOS::number BPMNOS::Execution::applyContent(const BPMNOS::Model::AttributeRegistry& attributeRegistry, const std::string& key, const BPMNOS::Model::Attribute* attribute, const ContentMap::mapped_type* content, BPMNOS::Status& status, DataType& data) {
+BPMNOS::number BPMNOS::Execution::receiveContent(const BPMNOS::Model::AttributeRegistry& attributeRegistry, const std::string& key, const BPMNOS::Model::Attribute* attribute, const ContentMap::mapped_type* content, BPMNOS::Status& status, DataType& data) {
   if ( attribute->isObject() ) {
     if ( !content ) {
       // an object the content does not mention keeps its value
@@ -44,5 +44,5 @@ BPMNOS::number BPMNOS::Execution::applyContent(const BPMNOS::Model::AttributeReg
   throw std::runtime_error("Content: an array or object is sent for key '" + key + "', which attribute '" + attribute->name + "' receives");
 }
 
-template BPMNOS::number BPMNOS::Execution::applyContent<BPMNOS::Data>(const BPMNOS::Model::AttributeRegistry& attributeRegistry, const std::string& key, const BPMNOS::Model::Attribute* attribute, const ContentMap::mapped_type* content, BPMNOS::Status& status, BPMNOS::Data& data);
-template BPMNOS::number BPMNOS::Execution::applyContent<BPMNOS::SharedData>(const BPMNOS::Model::AttributeRegistry& attributeRegistry, const std::string& key, const BPMNOS::Model::Attribute* attribute, const ContentMap::mapped_type* content, BPMNOS::Status& status, BPMNOS::SharedData& data);
+template BPMNOS::number BPMNOS::Execution::receiveContent<BPMNOS::Data>(const BPMNOS::Model::AttributeRegistry& attributeRegistry, const std::string& key, const BPMNOS::Model::Attribute* attribute, const ContentMap::mapped_type* content, BPMNOS::Status& status, BPMNOS::Data& data);
+template BPMNOS::number BPMNOS::Execution::receiveContent<BPMNOS::SharedData>(const BPMNOS::Model::AttributeRegistry& attributeRegistry, const std::string& key, const BPMNOS::Model::Attribute* attribute, const ContentMap::mapped_type* content, BPMNOS::Status& status, BPMNOS::SharedData& data);

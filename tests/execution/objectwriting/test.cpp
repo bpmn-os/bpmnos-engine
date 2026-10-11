@@ -104,8 +104,8 @@ TEST_CASE( "Write objects, elements and lengths", "[execution][objects][writing]
 
   auto write = [&](const std::string& text) {
     Model::Expression expression(InputEncoder(text), registry);
-    REQUIRE( expression.writesObject() );
-    expression.write(status, data);
+    REQUIRE( expression.writesToObject() );
+    expression.writeToObject(status, data);
   };
   auto read = [&](const std::string& text) {
     Model::Expression expression(InputEncoder(text), registry);
@@ -187,19 +187,19 @@ TEST_CASE( "Write objects, elements and lengths", "[execution][objects][writing]
     auto copy = status;
     REQUIRE( copy.objects[0].get() == status.objects[0].get() );
     Model::Expression expression(InputEncoder("route[1] := 8"), registry);
-    expression.write(copy, data);
+    expression.writeToObject(copy, data);
     REQUIRE( to_string(*copy.objects[0]) == "[ 8, 2 ]" );
     REQUIRE( render("route") == "[ 1, 2 ]" );
     // an object held by no one else is written in place
     auto written = copy.objects[0].get();
-    expression.write(copy, data);
+    expression.writeToObject(copy, data);
     REQUIRE( copy.objects[0].get() == written );
   }
 
   SECTION( "A write through a data chain changes the data of the scope" ) {
     SharedData chain(data);
     Model::Expression expression(InputEncoder("visits[1] := 3"), registry);
-    expression.write(status, chain);
+    expression.writeToObject(status, chain);
     REQUIRE( render("visits") == "[ 3 ]" );
   }
 }

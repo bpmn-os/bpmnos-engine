@@ -116,7 +116,7 @@ BPMNOS::number Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::A
   size_t counter = 0;
   for (auto& [key,contentValue] : contentValueMap) {
     if ( auto it = targetContentDefinition.find(key); it != targetContentDefinition.end() ) {
-      objectiveChange += applyContent(attributeRegistry, key, it->second->attribute, &contentValue, status, data);
+      objectiveChange += receiveContent(attributeRegistry, key, it->second->attribute, &contentValue, status, data);
     }
     else {
       // key in message content, but not in recipient content
@@ -129,7 +129,7 @@ BPMNOS::number Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::A
     for (auto& [key,definition] : targetContentDefinition) {
       if ( !contentValueMap.contains(key) ) {
         // key in recipient content, but not in message content
-        objectiveChange += applyContent<DataType>(attributeRegistry, key, definition->attribute, nullptr, status, data);
+        objectiveChange += receiveContent<DataType>(attributeRegistry, key, definition->attribute, nullptr, status, data);
       }
     }
   }
