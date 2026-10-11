@@ -111,7 +111,7 @@ private:
   void bind(size_t path) const;
   void analyseTarget(const std::vector<size_t>& literals);
   static std::string withoutResize(const std::string& text);
-  LIMEX::Resolver<double> resolverOf(const std::vector<const BPMNOS::Object*>& pathObjects) const;
+  class PathResolver; ///< Resolves the paths of the expression in the objects they address
   template <typename DataType>
   bool gather(const BPMNOS::Status& status, const DataType& data, std::vector<double>& variableValues, std::vector<const BPMNOS::Object*>& pathObjects, bool undefinedAsNaN) const;
   template <typename DataType>

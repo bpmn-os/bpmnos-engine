@@ -202,8 +202,8 @@ void Expression::determineUses() {
   pathUses.resize( compiled.getPaths().size() );
   auto& aggregatorNames = handle.getAggregatorNames();
   std::function<void(const LIMEX::Node<double>&, bool, bool)> visit = [&](const LIMEX::Node<double>& node, bool aggregated, bool sizeArgument) {
-    if ( node.type == LIMEX::Type::path || node.type == LIMEX::Type::collection_path ) {
-      pathUses[ std::get<size_t>(node.operands[0]) ] = Use{ node.type == LIMEX::Type::collection_path, sizeArgument, aggregated };
+    if ( node.type == LIMEX::Type::path || node.type == LIMEX::Type::array_path ) {
+      pathUses[ std::get<size_t>(node.operands[0]) ] = Use{ node.type == LIMEX::Type::array_path, sizeArgument, aggregated };
     }
     if ( node.type == LIMEX::Type::function_call && &node != sourceCall ) {
       // a lookup returning an array may only be the entire value of an assignment to an array
@@ -373,13 +373,20 @@ std::string Expression::withoutResize(const std::string& text) {
   return text;
 }
 
-LIMEX::Resolver<double> Expression::resolverOf(const std::vector<const BPMNOS::Object*>& pathObjects) const {
-  auto& descriptions = compiled.getPaths();
-  LIMEX::Resolver<double> resolver;
-  resolver.value = [this, &descriptions, &pathObjects](size_t path, const std::vector<double>& indices) -> double {
+/**
+ * @brief Resolves the paths of an expression in the objects they address, the object of each path given by its
+ * position.
+ *
+ * A resolver is constructed on the stack for one evaluation and refers to the objects of that evaluation, so that
+ * resolving allocates nothing.
+ */
+class Expression::PathResolver : public LIMEX::Resolver<double> {
+public:
+  PathResolver(const Expression& owner, const std::vector<const BPMNOS::Object*>& objects) : owner(owner), objects(objects) {}
+  double value(size_t path, const std::vector<double>& indices) const override {
     try {
-      auto location = locate(*pathObjects[path], descriptions[path], indices);
-      auto& value = pathObjects[path]->values[location.offset];
+      auto location = locate(*objects[path], owner.compiled.getPaths()[path], indices);
+      auto& value = objects[path]->values[location.offset];
       if ( !value.has_value() ) {
         throw Undefined{};
       }
@@ -387,26 +394,28 @@ LIMEX::Resolver<double> Expression::resolverOf(const std::vector<const BPMNOS::O
     }
     catch ( const Undefined& ) {
       // an aggregation skips an undefined value, which elsewhere makes the expression undefined
-      if ( pathUses[path].aggregated ) {
+      if ( owner.pathUses[path].aggregated ) {
         return std::numeric_limits<double>::quiet_NaN();
       }
       throw;
     }
-  };
-  resolver.collection = [this, &descriptions, &pathObjects](size_t path, const std::vector<double>& indices) -> LIMEX::View<double> {
-    auto location = locate(*pathObjects[path], descriptions[path], indices);
+  }
+  LIMEX::View<double> array(size_t path, const std::vector<double>& indices) const override {
+    auto location = locate(*objects[path], owner.compiled.getPaths()[path], indices);
     auto& layout = *location.layout;
-    if ( pathUses[path].sizeOnly ) {
+    if ( owner.pathUses[path].sizeOnly ) {
       return lengthOf(layout.dimensions[location.dimension]);
     }
-    return valuesOf(pathObjects[path], location.offset, layout.dimensions[location.dimension], span(layout, location.dimension));
-  };
-  return resolver;
-}
+    return valuesOf(objects[path], location.offset, layout.dimensions[location.dimension], span(layout, location.dimension));
+  }
+private:
+  const Expression& owner;
+  const std::vector<const BPMNOS::Object*>& objects;
+};
 
 std::optional<double> Expression::evaluate(const std::vector<double>& variableValues, const std::vector<const BPMNOS::Object*>& pathObjects) const {
   assert( pathObjects.size() == paths.size() );
-  auto resolver = resolverOf(pathObjects);
+  PathResolver resolver(*this, pathObjects);
   try {
     auto value = compiled.evaluate(variableValues, resolver);
     if ( std::isnan(value) ) {
@@ -572,7 +581,7 @@ void Expression::write(BPMNOS::Status& status, DataType& data) const {
   auto& slot = attributeRegistry.getObjectSlot(target.value(), status, data);
   auto targetPath = compiled.getTargetPath();
   try {
-    auto resolver = resolverOf(pathObjects);
+    PathResolver resolver(*this, pathObjects);
     // the indices of the target, all of which must be defined
     std::vector<double> indices;
     try {
@@ -634,19 +643,26 @@ void Expression::write(BPMNOS::Status& status, DataType& data) const {
       source = sourceInput->object;
     }
     else {
-      // the indices of the source path are those LIMEX evaluates for the value of the assignment
-      std::vector<double> sourceIndices;
-      auto capturing = resolver;
-      capturing.value = [&, inner = resolver.value](size_t path, const std::vector<double>& pathIndices) -> double {
-        if ( path == sourcePath.value() ) {
-          sourceIndices = pathIndices;
-          return 0;
+      // the indices of the source path are those LIMEX evaluates for the value of the assignment, which a
+      // resolver records instead of resolving the source path
+      class SourceResolver : public PathResolver {
+      public:
+        SourceResolver(const Expression& owner, const std::vector<const BPMNOS::Object*>& objects, size_t position) : PathResolver(owner, objects), position(position) {}
+        double value(size_t path, const std::vector<double>& pathIndices) const override {
+          if ( path == position ) {
+            sourceIndices = pathIndices;
+            return 0;
+          }
+          return PathResolver::value(path, pathIndices);
         }
-        return inner(path, pathIndices);
+        mutable std::vector<double> sourceIndices; ///< The indices of the source path
+      private:
+        size_t position; ///< The position of the source path
       };
+      SourceResolver capturing(*this, pathObjects, sourcePath.value());
       try {
         compiled.evaluate(variableValues, capturing);
-        source = part(*pathObjects[sourcePath.value()], locate(*pathObjects[sourcePath.value()], compiled.getPaths()[sourcePath.value()], sourceIndices));
+        source = part(*pathObjects[sourcePath.value()], locate(*pathObjects[sourcePath.value()], compiled.getPaths()[sourcePath.value()], capturing.sourceIndices));
       }
       catch ( const Undefined& ) {
         throw std::runtime_error("Expression: undefined index");
