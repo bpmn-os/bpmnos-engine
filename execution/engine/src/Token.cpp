@@ -146,18 +146,17 @@ Token::~Token() {
       }
 
       if ( activity->loopCharacteristics.has_value() &&
+        activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard &&
         !activity->isForCompensation
       ) {
-        if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard ) {
-          if ( state == State::WAITING ) {
-            systemState->tokensAtActivityInstance.erase(this);
-            systemState->exitStatusAtActivityInstance.erase(this);
-          }
-          else {
-            systemState->tokenAtMultiInstanceActivity.erase(this);
-            if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::MultiInstanceSequential ) {
-              systemState->tokenAwaitingMultiInstanceExit.erase(this);
-            }
+        if ( state == State::WAITING ) {
+          systemState->tokensAtActivityInstance.erase(this);
+          systemState->exitStatusAtActivityInstance.erase(this);
+        }
+        else {
+          systemState->tokenAtMultiInstanceActivity.erase(this);
+          if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::MultiInstanceSequential ) {
+            systemState->tokenAwaitingMultiInstanceExit.erase(this);
           }
         }
       }
@@ -339,17 +338,16 @@ void Token::advanceToReady() {
 
   if ( auto activity = node->represents<BPMN::Activity>();
     activity &&
-    activity->loopCharacteristics.has_value()
+    activity->loopCharacteristics.has_value() &&
+    activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard
   ) {
-    if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard ) {
-      // The main token of a multi-instance activity does not enter the READY state; it
-      // delegates creation of the instance token copies to the owner and then advances
-      // directly to WAITING (see StateMachine::createMultiInstanceActivityTokens).
-      auto stateMachine = const_cast<StateMachine*>(owner);
-      auto engine = const_cast<Engine*>(owner->systemState->engine);
-      engine->commands.emplace_back(std::bind(&StateMachine::createMultiInstanceActivityTokens,stateMachine,this), this);
-      return;
-    }
+    // The main token of a multi-instance activity does not enter the READY state; it
+    // delegates creation of the instance token copies to the owner and then advances
+    // directly to WAITING (see StateMachine::createMultiInstanceActivityTokens).
+    auto stateMachine = const_cast<StateMachine*>(owner);
+    auto engine = const_cast<Engine*>(owner->systemState->engine);
+    engine->commands.emplace_back(std::bind(&StateMachine::createMultiInstanceActivityTokens,stateMachine,this), this);
+    return;
   }
 
   update(State::READY);
@@ -380,37 +378,35 @@ void Token::advanceToEntered() {
 
     computeInitialValues( extensionElements );
   }
-  else {
-    if ( auto activity = node->represents<BPMN::Activity>() ) {
-      auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-      assert( extensionElements );
+  else if ( auto activity = node->represents<BPMN::Activity>() ) {
+    auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
+    assert( extensionElements );
 
-      if ( 
-        activity->loopCharacteristics.has_value() && 
-        activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
-      ) {
+    if (
+      activity->loopCharacteristics.has_value() &&
+      activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
+    ) {
 //std::cerr << "initialize or increment loop index for standard loop" << std::endl;
-        // initialize or increment loop index for standard loop
-        if ( extensionElements->loopIndex.has_value() && extensionElements->loopIndex.value()->expression ) {
-          auto& attributeRegistry = getAttributeRegistry();
-          auto attribute = extensionElements->loopIndex.value()->expression->isAttribute();
-          if ( auto index = attributeRegistry.getValue( attribute, status, *data); index.has_value() ) {
-            // increment existing value 
-            const_cast<Engine*>(owner->systemState->engine)->addToObjective( attributeRegistry.setValue(attribute, status, *data, (unsigned int)index.value() + 1) );
-          }
-          else {
-            // initialize non-existing value 
-            const_cast<Engine*>(owner->systemState->engine)->addToObjective( attributeRegistry.setValue(attribute, status, *data, 1) );
-          }
+      // initialize or increment loop index for standard loop
+      if ( extensionElements->loopIndex.has_value() && extensionElements->loopIndex.value()->expression ) {
+        auto& attributeRegistry = getAttributeRegistry();
+        auto attribute = extensionElements->loopIndex.value()->expression->isAttribute();
+        if ( auto index = attributeRegistry.getValue( attribute, status, *data); index.has_value() ) {
+          // increment existing value
+          const_cast<Engine*>(owner->systemState->engine)->addToObjective( attributeRegistry.setValue(attribute, status, *data, (unsigned int)index.value() + 1) );
         }
-        else if ( extensionElements->loopMaximum.has_value() ) {
-          throw std::runtime_error("Token: no attribute provided for loop index parameter of standard loop activity '" + node->id +"' with loop maximum" );
+        else {
+          // initialize non-existing value
+          const_cast<Engine*>(owner->systemState->engine)->addToObjective( attributeRegistry.setValue(attribute, status, *data, 1) );
         }
       }
-      
-      computeInitialValues( extensionElements );
+      else if ( extensionElements->loopMaximum.has_value() ) {
+        throw std::runtime_error("Token: no attribute provided for loop index parameter of standard loop activity '" + node->id +"' with loop maximum" );
+      }
+    }
+
+    computeInitialValues( extensionElements );
 //std::cerr << jsonify() << std::endl;
-    }    
   }
 
   
@@ -422,8 +418,7 @@ void Token::advanceToEntered() {
     const_cast<SystemState*>(owner->systemState)->archive[ (long unsigned int)owned->instance.value() ] = owned->weak_from_this();
     owned->registerRecipient();
   }
-
-  if ( const BPMN::Activity* activity = node->represents<BPMN::Activity>();
+  else if ( const BPMN::Activity* activity = node->represents<BPMN::Activity>();
     activity && 
     activity->loopCharacteristics.has_value() &&
     owned
@@ -489,17 +484,12 @@ void Token::advanceToEntered() {
     // starts are applied where every scope applies them
     engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), this);
   }
-  else if ( node->represents<BPMN::EventBasedGateway>() ) {
-    // tokens entering an event-based gateway automatically
-    // advance to busy state
-    engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), this);
-  }
-  else if ( node->represents<BPMN::ErrorEndEvent>() ) {
-    engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
-    return;
-  }
-  else {
-    if ( node->represents<BPMN::EscalationThrowEvent>() ) {
+  else if ( node->represents<BPMN::ThrowEvent>() ) {
+    if ( node->represents<BPMN::ErrorEndEvent>() ) {
+      engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
+      return;
+    }
+    else if ( node->represents<BPMN::EscalationThrowEvent>() ) {
       // update status and delegate control to state machine
       // if applicable, control will be delgated back to token
       engine->commands.emplace_back(std::bind(&StateMachine::handleEscalation,const_cast<StateMachine*>(owner),this), this);
@@ -546,7 +536,22 @@ void Token::advanceToEntered() {
       // nothing to compensate, continue with token flow
     }
 
-    // tokens entering any other node automatically advance to done or
+    // tokens at a throw event automatically advance to done or departed state
+    if ( node->as<BPMN::FlowNode>()->outgoing.empty() ) {
+      engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), this);
+      return;
+    }
+    advanceToDeparting();
+  }
+  else if ( node->represents<BPMN::Gateway>() ) {
+    if ( node->represents<BPMN::EventBasedGateway>() ) {
+      // tokens entering an event-based gateway automatically
+      // advance to busy state
+      engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), this);
+      return;
+    }
+
+    // tokens entering any other gateway automatically advance to done or
     // departed state
     if ( node->as<BPMN::FlowNode>()->outgoing.empty() ) {
       engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), this);
