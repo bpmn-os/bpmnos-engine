@@ -1,11 +1,14 @@
 #ifndef BPMNOS_InputEncoder_H
 #define BPMNOS_InputEncoder_H
 
+#include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "Value.h"
+#include "Object.h"
 
 namespace BPMNOS {
 
@@ -46,11 +49,16 @@ namespace BPMNOS {
  * closed, an array without members, a member without a value, a member that is neither a truth value nor a
  * number nor a literal, members that are not uniform, and a field without a name, without `:=` or stated
  * twice.
+ *
+ * A text may be scanned admitting object initializers, as the instance data are, where an object is given a
+ * literal whose members may be expressions. A literal with an expression member is then neither registered nor
+ * refused but copied unchanged, so that it is read by @ref ObjectInitializer where it initialises an object,
+ * and its span tells a reader splitting the text that no delimiter within it separates anything.
  */
 class InputEncoder {
 public:
-  /// Constructor scanning the given text.
-  InputEncoder(const std::string& input);
+  /// Constructor scanning the given text, admitting object initializers if requested.
+  InputEncoder(const std::string& input, bool initializers = false);
 
   /// Returns the text with every literal replaced by the number encoding it.
   const std::string& text() const { return encoded; }
@@ -61,12 +69,13 @@ public:
   const std::optional<size_t>& object() const { return literalObject; }
 
   /// Where a literal stands in the text with every literal replaced: the positions of the first character of
-  /// the number encoding it and of the character following it, and whether it is an array or value with fields
-  /// rather than a quoted string.
+  /// the number encoding it, or of an object initializer copied unchanged, and of the character following it, and
+  /// what it is.
   struct Span {
+    enum class Type { STRING, OBJECT, INITIALIZER };
     size_t begin;
     size_t end;
-    bool object;
+    Type type;
   };
 
   /// Returns where each literal stands in the text with every literal replaced, in their order, so that a
@@ -82,6 +91,15 @@ public:
   /// No type is stated, a part of a text being no literal of its own.
   static InputEncoder fragment(std::string text);
 
+  /// The syntax tree of a literal as it is read, before it is registered as a constant object or instantiated: a
+  /// scalar, an expression member of an object initializer, an array, or a value with fields. The types are
+  /// defined where literals are read, so that no other code builds or inspects a tree.
+  struct Literal;
+  struct Scalar;
+  struct Expression;
+  struct Array;
+  struct Fields;
+
 private:
   /// Constructor adopting text that has been scanned already.
   InputEncoder(std::string text, std::nullopt_t);
@@ -90,6 +108,47 @@ private:
   std::optional<size_t> literalObject;
   std::vector<size_t> literalObjects;
   std::vector<Span> literalSpans;
+};
+
+/**
+ * @brief An object literal whose members may be expressions, stating the value an object is initialised with.
+ *
+ * The literal is read by the rules of the literals of @ref InputEncoder, except that a member that is neither a
+ * quoted string, a truth value, a number nor a literal is an expression. It reaches to the next comma, closing
+ * bracket or closing brace standing outside every parenthesis, bracket, brace and quote, and its text is scanned
+ * as the text of any expression. An object is instantiated by giving every expression member a value, whose type
+ * is that of the attribute the object is given to at the position of the member, so that the members of an array
+ * are uniform once their values are known. An initializer without expression members states a constant object.
+ */
+class ObjectInitializer {
+public:
+  /// Constructor reading the given text, which states one literal and nothing besides whitespace.
+  ObjectInitializer(const std::string& text);
+  /// Constructor for a constant object, which has no expression members.
+  ObjectInitializer(std::shared_ptr<const Object> constant);
+
+  /// A step of the path from the object to a member: the name of a field, or an empty name for an element of an
+  /// array.
+  using Path = std::vector<std::string>;
+
+  /// An expression member: where it stands in the literal, and the text of its expression.
+  struct Member {
+    Path path;
+    std::string expression;
+  };
+
+  /// Returns the expression members in the order in which they are written.
+  const std::vector<Member>& members() const { return expressionMembers; }
+
+  /// Returns the object the literal states, each expression member having the value given at its position in
+  /// @ref members, with its type; the value of a string is its index in the string registry.
+  std::shared_ptr<const Object> instantiate(const std::vector<std::pair<double, ValueType>>& values) const;
+
+private:
+  std::string text;
+  std::shared_ptr<const InputEncoder::Literal> literal;
+  std::shared_ptr<const Object> constant;
+  std::vector<Member> expressionMembers;
 };
 
 } // namespace BPMNOS

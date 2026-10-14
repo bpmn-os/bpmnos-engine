@@ -178,3 +178,38 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
     }
   }
 }
+
+SCENARIO( "Object initializers", "[model][encoder]" ) {
+  GIVEN( "A line admitting object initializers" ) {
+    std::string line = R"(Instance_1; Process_1; depot := { x := uniform(1, 3), name := "Depot;A" }; [ 1, 2 ])";
+    InputEncoder encoder(line, true);
+
+    THEN( "A literal with an expression member is copied unchanged and a constant literal is registered" ) {
+      REQUIRE( encoder.text().contains(R"({ x := uniform(1, 3), name := "Depot;A" })") );
+      REQUIRE( encoder.spans().size() == 2 );
+      REQUIRE( encoder.spans()[0].type == InputEncoder::Span::Type::INITIALIZER );
+      REQUIRE( encoder.spans()[1].type == InputEncoder::Span::Type::OBJECT );
+    }
+  }
+
+  GIVEN( "An object initializer" ) {
+    ObjectInitializer initializer(R"({ x := uniform(1, 3), name := "Depot", flags := [ true, flip() ] })");
+
+    THEN( "Its expression members are found with their paths in the order in which they are written" ) {
+      REQUIRE( initializer.members().size() == 2 );
+      REQUIRE( initializer.members()[0].path == ObjectInitializer::Path{ "x" } );
+      REQUIRE( initializer.members()[0].expression == "uniform(1, 3)" );
+      REQUIRE( initializer.members()[1].path == ObjectInitializer::Path{ "flags", "" } );
+    }
+    THEN( "It is instantiated with the values of its expression members" ) {
+      auto object = initializer.instantiate({ { 2.5, DECIMAL }, { 0, BOOLEAN } });
+      REQUIRE( BPMNOS::to_string(*object) == R"({ x := 2.5, name := "Depot", flags := [ true, false ] })" );
+    }
+  }
+
+  GIVEN( "A text without object initializers admitted" ) {
+    THEN( "A literal with an expression member is refused" ) {
+      REQUIRE_THROWS( InputEncoder("[ uniform(1, 3) ]") );
+    }
+  }
+}

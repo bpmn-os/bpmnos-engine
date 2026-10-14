@@ -217,15 +217,4 @@ TEST_CASE( "Refuse illegal sizes and values of objects", "[data][objects]" ) {
   SECTION( "A ragged literal" ) {
     REQUIRE_THROWS( provide(valid + "Instance_1; Process_1; facilities := [ { cost := 1, flags := [ true ] }, { cost := 2, flags := [ true, false ] } ]\n") );
   }
-  SECTION( "A disclosure of an object" ) {
-    REQUIRE_THROWS_WITH(
-      std::make_shared<Execution::DynamicDataProvider>(model,
-        "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE\n"
-        "; Process_1; facilities[2];\n"
-        "; Process_1; route[2];\n"
-        "Instance_1; Process_1; facilities := [ { cost := 1 } ]; 3\n"
-      ),
-      Catch::Matchers::ContainsSubstring("known from the start")
-    );
-  }
 }

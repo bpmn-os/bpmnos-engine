@@ -102,6 +102,9 @@ protected:
   /// @brief Method returning the values of the attributes of an instance, which are those read.
   virtual const std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::number>& getInstanceValues(const Scenario& scenario, size_t instanceId) const;
 
+  /// @brief Method returning the objects the instance data give an instance, which are those read.
+  virtual const std::unordered_map<const BPMNOS::Model::Attribute*, std::shared_ptr<const BPMNOS::Object>>& getInstanceObjects(const Scenario& scenario, size_t instanceId) const;
+
   /// @brief Method returning the time at which an instance becomes known, which is the start of the run.
   virtual BPMNOS::number getKnownTime(const Scenario& scenario, size_t instanceId) const;
 
@@ -155,7 +158,7 @@ protected:
   };
 
   /// @brief Method returning the object an object attribute of an instance holds.
-  const std::shared_ptr<const BPMNOS::Object>& getObject(size_t instanceId, const BPMNOS::Model::Attribute* object) const;
+  const std::shared_ptr<const BPMNOS::Object>& getObject(const Scenario& scenario, size_t instanceId, const BPMNOS::Model::Attribute* object) const;
   /// @brief Method returning the object attributes of the scopes of a process, or of every process and the global
   /// objects if no process is given.
   std::vector<const BPMNOS::Model::Attribute*> objectsOf(const BPMN::Process* process = nullptr) const;

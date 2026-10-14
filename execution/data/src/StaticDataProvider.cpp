@@ -45,18 +45,14 @@ void StaticDataProvider::readInstances(const std::string& instanceFileOrString, 
     if ( row.declaresSizes ) {
       continue;
     }
-    if ( !row.initialization.empty() && reader.assignsObject(row) ) {
-      // the value of an object is a literal known from the start; the row is read without it, so that a data
-      // provider still learns of the node
-      reader.setObject(row);
-      if ( row.node ) {
-        auto rest = row;
-        rest.initialization.clear();
-        readValue(reader, rest, handle);
+    if ( !row.node ) {
+      // a global value is given once, for every run
+      if ( reader.assignsObject(row) ) {
+        reader.setObject(row, handle);
       }
-    }
-    else if ( !row.node ) {
-      reader.evaluateGlobal(row.initialization, handle);
+      else {
+        reader.evaluateGlobal(row.initialization, handle);
+      }
     }
     else {
       readValue(reader, row, handle);
@@ -103,7 +99,7 @@ void StaticDataProvider::readInstances(const std::string& instanceFileOrString, 
   }
   for ( auto& object : this->model->objects ) {
     if ( auto it = reader.globalObjects.find(object.get()); it != reader.globalObjects.end() ) {
-      globals.objects.push_back( conform(object.get(), it->second, "given globally") );
+      globals.objects.push_back( it->second );
     }
     else {
       globals.objects.push_back( getDefaultObject(object.get()) );
@@ -123,19 +119,17 @@ void StaticDataProvider::readInstances(const std::string& instanceFileOrString, 
     // instances are instantiated at integral times
     auto instantiationTime = BPMNOS::number(std::ceil((double)values.at(timestampAttribute)));
     // the objects the instance data gives, every other object of the instance taking its default
-    std::unordered_map<const BPMNOS::Model::Attribute*, std::shared_ptr<const BPMNOS::Object>> objects;
-    if ( auto given = reader.objects.find(instanceId); given != reader.objects.end() ) {
-      for ( auto& [object, index] : given->second ) {
-        objects[object] = conform(object, index, "of instance '" + stringRegistry[instanceId] + "'");
-      }
-    }
+    auto objects = reader.objects.contains(instanceId) ? reader.objects.at(instanceId) : std::unordered_map<const BPMNOS::Model::Attribute*, std::shared_ptr<const BPMNOS::Object>>{};
     instancePositions[instanceId] = instances.size();
     instances.push_back(Instance{instanceId, process, std::move(values), instantiationTime, std::move(objects)});
   }
 }
 
 void StaticDataProvider::readValue(InstanceDataReader& reader, const InstanceDataReader::Row& row, const LIMEX::Handle<double>& handle) {
-  if ( !row.initialization.empty() ) {
+  if ( !row.initialization.empty() && reader.assignsObject(row) ) {
+    reader.setObject(row, handle);
+  }
+  else if ( !row.initialization.empty() ) {
     auto [attribute, expression] = reader.lookupAttribute(row.node, row.initialization);
     reader.setValue(row.instanceId, attribute, reader.evaluate(row.instanceId, row.node, expression, attribute->type, handle));
   }
@@ -274,6 +268,10 @@ const std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::number>& Stati
   return getInstance(instanceId).values;
 }
 
+const std::unordered_map<const BPMNOS::Model::Attribute*, std::shared_ptr<const BPMNOS::Object>>& StaticDataProvider::getInstanceObjects([[maybe_unused]] const Scenario& scenario, size_t instanceId) const {
+  return getInstance(instanceId).objects;
+}
+
 BPMNOS::number StaticDataProvider::getKnownTime([[maybe_unused]] const Scenario& scenario, [[maybe_unused]] size_t instanceId) const {
   return std::numeric_limits<BPMNOS::number>::lowest();
 }
@@ -325,7 +323,7 @@ void StaticDataProvider::readyProcess(Scenario& scenario, EventQueue& queue, con
     if ( !process ) {
       return nullptr;
     }
-    InstanceValues values(*this, process->node, dueScenario.time, BPMNOS::Status{}, process->owner->data, process->owned->instance, getInstanceValues(dueScenario, instanceId), getInstance(instanceId).objects);
+    InstanceValues values(*this, process->node, dueScenario.time, BPMNOS::Status{}, process->owner->data, process->owned->instance, getInstanceValues(dueScenario, instanceId), getInstanceObjects(dueScenario, instanceId));
     return std::make_shared<ReadyEvent>(process.get(), std::move(values.status), std::move(values.data));
   });
 }
@@ -341,7 +339,7 @@ void StaticDataProvider::readyActivity(Scenario& scenario, EventQueue& queue, co
     if ( !activity ) {
       return nullptr;
     }
-    InstanceValues values(*this, activity->node, dueScenario.time, activity->status, *activity->data, std::nullopt, getInstanceValues(dueScenario, instanceId), getInstance(instanceId).objects);
+    InstanceValues values(*this, activity->node, dueScenario.time, activity->status, *activity->data, std::nullopt, getInstanceValues(dueScenario, instanceId), getInstanceObjects(dueScenario, instanceId));
     applyReadyValues(dueScenario, activity.get(), values);
     return std::make_shared<ReadyEvent>(activity.get(), std::move(values.status), std::move(values.data));
   });
@@ -380,7 +378,7 @@ BPMNOS::Status StaticDataProvider::getStatus(const Scenario& scenario, size_t in
     result.attributes.push_back(getValue(scenario, instanceId, attribute.get()));
   }
   for ( auto& object : extensionElements->statusObjects ) {
-    result.objects.push_back(getObject(instanceId, object.get()));
+    result.objects.push_back(getObject(scenario, instanceId, object.get()));
   }
   return result;
 }
@@ -392,13 +390,13 @@ BPMNOS::Data StaticDataProvider::getData(const Scenario& scenario, size_t instan
     result.attributes.push_back(getValue(scenario, instanceId, attribute.get()));
   }
   for ( auto& object : extensionElements->dataObjects ) {
-    result.objects.push_back(getObject(instanceId, object.get()));
+    result.objects.push_back(getObject(scenario, instanceId, object.get()));
   }
   return result;
 }
 
-const std::shared_ptr<const BPMNOS::Object>& StaticDataProvider::getObject(size_t instanceId, const BPMNOS::Model::Attribute* object) const {
-  auto& objects = getInstance(instanceId).objects;
+const std::shared_ptr<const BPMNOS::Object>& StaticDataProvider::getObject(const Scenario& scenario, size_t instanceId, const BPMNOS::Model::Attribute* object) const {
+  auto& objects = getInstanceObjects(scenario, instanceId);
   if ( auto it = objects.find(object); it != objects.end() ) {
     return it->second;
   }

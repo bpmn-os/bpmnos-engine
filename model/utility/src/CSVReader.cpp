@@ -10,9 +10,10 @@
 
 using namespace BPMNOS;
 
-CSVReader::CSVReader(const std::string& instanceFileOrString, const std::string& delimiters)
+CSVReader::CSVReader(const std::string& instanceFileOrString, const std::string& delimiters, bool initializers)
   : instanceFileOrString(instanceFileOrString)
   , delimiters(delimiters)
+  , initializers(initializers)
 {
 }
 
@@ -37,18 +38,24 @@ CSVReader::Table CSVReader::read() {
 
   std::string line;
   while (std::getline(*input, line)) {
-    InputEncoder encoder( line );
+    InputEncoder encoder( line, initializers );
     line = encoder.text();
     if ( BPMNOS::trim_copy(line).empty() ) continue; // skip empty lines
-    // the cells are the stretches between delimiters, a literal having been replaced by the number encoding it,
-    // so that a delimiter within a literal separates nothing
+    // the cells are the stretches between delimiters, a literal having been replaced by the number encoding it and
+    // an object initializer having been kept as it is written, so that a delimiter within either separates nothing
     Row row;
     std::vector<Type> types;
     // the line is split without its surrounding whitespace, which may hold a delimiter such as a tab
     size_t lineEnd = line.find_last_not_of(" \t\r\n\f\v") + 1;
     size_t begin = line.find_first_not_of(" \t\r\n\f\v");
     while ( begin <= lineEnd ) {
-      size_t end = std::min(line.find_first_of(delimiters, begin), lineEnd);
+      size_t end = line.find_first_of(delimiters, begin);
+      for ( auto& span : encoder.spans() ) {
+        if ( span.type == InputEncoder::Span::Type::INITIALIZER && span.begin < end && end < span.end ) {
+          end = line.find_first_of(delimiters, span.end);
+        }
+      }
+      end = std::min(end, lineEnd);
       size_t first = begin;
       size_t last = end;
       while ( first < last && std::isspace((unsigned char)line[first]) ) ++first;
@@ -57,10 +64,10 @@ CSVReader::Table CSVReader::read() {
       begin = end + 1;
 
       auto span = std::ranges::find_if(encoder.spans(), [first, last](auto& candidate) { return candidate.begin == first && candidate.end == last; });
-      if ( span != encoder.spans().end() ) {
+      if ( span != encoder.spans().end() && span->type != InputEncoder::Span::Type::INITIALIZER ) {
         // the cell states a literal, which the number encodes
         row.push_back((BPMNOS::number)std::stod(cell));
-        types.push_back( span->object ? Type::OBJECT : Type::STRING );
+        types.push_back( span->type == InputEncoder::Span::Type::OBJECT ? Type::OBJECT : Type::STRING );
       }
       else if ( !cell.empty() && (std::isdigit( cell[0] ) || cell[0] == '.' || cell[0] == '-') ) {
         // treat cell as number

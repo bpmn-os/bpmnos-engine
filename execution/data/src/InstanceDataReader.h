@@ -8,6 +8,8 @@
 #include <limex.h>
 #include "model/bpmnos/src/Model.h"
 #include "model/bpmnos/src/extensionElements/Attribute.h"
+#include "model/bpmnos/src/extensionElements/Schema.h"
+#include "model/utility/src/InputEncoder.h"
 #include "model/utility/src/Number.h"
 #include "model/utility/src/Value.h"
 
@@ -25,7 +27,7 @@ namespace BPMNOS::Execution {
  * A row whose initialization has no `:=` is a size declaration instead, `name[6].flags[3]`, naming no instance
  * and naming the node declaring the object, or no node for a global object; it fixes the sizes of the object
  * for every instance. An initialization of an object gives a literal, which arrives as the index of a constant
- * object.
+ * object, or an object initializer, a literal whose members may be expressions, which arrives as it is written.
  *
  * The reader resolves the rows and offers what every data provider needs to interpret them: the lookup of
  * the attribute an initialization gives a value to, the evaluation of global values and of expressions of
@@ -73,11 +75,27 @@ public:
    */
   bool assignsObject(const Row& row) const;
   /**
-   * @brief Method recording the literal the row gives an object of an instance or a global object.
+   * @brief Method returning the object an initialization gives a value to, an object of the node or a global object
+   * if the row names no node, and the initializer stating the value.
    *
-   * The row must give no value in a further column, the value of an object being known from the start.
+   * It rejects a value for an object the model assigns a value to.
    */
-  void setObject(const Row& row);
+  std::pair<const BPMNOS::Model::Attribute*, BPMNOS::ObjectInitializer> lookupObject(const Row& row) const;
+  /**
+   * @brief Method evaluating the initializer the row gives an object of an instance or a global object and
+   * recording the object, to which later expressions may refer.
+   *
+   * An expression member may refer to global attributes and objects, and to attributes and objects of the instance,
+   * whose values have been recorded before; it does not refer to another member of the same initializer.
+   */
+  void setObject(const Row& row, const LIMEX::Handle<double>& handle);
+  /**
+   * @brief Method returning the object an initializer states with the given values of its expression members,
+   * conformed to the given schema of the object.
+   *
+   * Each value is converted to the type the schema gives at the position of its member.
+   */
+  static std::shared_ptr<const BPMNOS::Object> instantiate(const BPMNOS::Model::Schema& schema, const BPMNOS::Model::Attribute* object, const BPMNOS::ObjectInitializer& initializer, const std::vector<double>& values);
   /**
    * @brief Method recording a size declaration.
    */
@@ -123,8 +141,8 @@ public:
 
   std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::number> globals; ///< The values of the global attributes recorded
   std::unordered_map<size_t, std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::number>> values; ///< The values of the attributes of each instance recorded
-  std::unordered_map<size_t, std::unordered_map<const BPMNOS::Model::Attribute*, size_t>> objects; ///< The constant object given for each object of each instance, by its index in the object registry
-  std::unordered_map<const BPMNOS::Model::Attribute*, size_t> globalObjects; ///< The constant object given for each global object
+  std::unordered_map<size_t, std::unordered_map<const BPMNOS::Model::Attribute*, std::shared_ptr<const BPMNOS::Object>>> objects; ///< The object recorded for each object of each instance
+  std::unordered_map<const BPMNOS::Model::Attribute*, std::shared_ptr<const BPMNOS::Object>> globalObjects; ///< The object recorded for each global object
   std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::Model::Schema> schemas; ///< The schema of each object whose sizes are declared
 
   /// @brief Converts the value of an expression of the instance data to a value of the given type, an integer
@@ -133,6 +151,9 @@ public:
 
 private:
   const BPMN::Node* findNode(const std::string& nodeId) const;
+  /// @brief Method evaluating an expression of the instance data at a node of an instance, or of the global values if
+  /// no node is given, rejecting a reference to an attribute or object without a value.
+  double execute(std::optional<size_t> instanceId, const BPMN::Node* node, const std::string& expression, const LIMEX::Handle<double>& handle) const;
 };
 
 } // namespace BPMNOS::Execution

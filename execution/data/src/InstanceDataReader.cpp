@@ -4,6 +4,7 @@
 #include "model/utility/src/CSVReader.h"
 #include "model/utility/src/ObjectRegistry.h"
 #include "model/utility/src/InputEncoder.h"
+#include <algorithm>
 #include <ranges>
 #include <stdexcept>
 
@@ -17,7 +18,8 @@ InstanceDataReader::InstanceDataReader(const BPMNOS::Model::Model* model, const 
     throw std::logic_error("InstanceDataReader: at least three columns are required");
   }
 
-  BPMNOS::CSVReader reader(instanceFileOrString, ";");
+  // a cell may hold an object initializer, which keeps its text
+  BPMNOS::CSVReader reader(instanceFileOrString, ";", true);
   auto table = reader.read();
   if ( table.empty() ) {
     throw std::runtime_error("InstanceDataReader: table '" + instanceFileOrString + "' is empty");
@@ -193,32 +195,107 @@ bool InstanceDataReader::assignsObject(const Row& row) const {
   return extensionElements && extensionElements->attributeRegistry.contains(name) && extensionElements->attributeRegistry[name]->isObject();
 }
 
-void InstanceDataReader::setObject(const Row& row) {
-  for ( auto& cell : row.cells ) {
-    if ( !cell.empty() ) {
-      throw std::runtime_error("InstanceDataReader: the value of an object is known from the start and takes no further value, in '" + row.initialization + "'");
-    }
-  }
-  auto [name, literal] = splitInitialization(row.initialization);
-  // the literal has been registered as a constant object when the line was read, and stands as its index
-  size_t index = 0;
-  try {
-    index = std::stoul(literal);
-    objectRegistry[index];
-  }
-  catch ( const std::exception& ) {
-    throw std::runtime_error("InstanceDataReader: object '" + name + "' must be given a literal, not '" + literal + "'");
-  }
+std::pair<const BPMNOS::Model::Attribute*, BPMNOS::ObjectInitializer> InstanceDataReader::lookupObject(const Row& row) const {
+  auto [name, text] = splitInitialization(row.initialization);
+  const BPMNOS::Model::Attribute* object = nullptr;
   if ( !row.node ) {
-    auto object = findObject(model, nullptr, name);
+    object = findObject(model, nullptr, name);
     if ( object->initialObject.has_value() || object->expression ) {
       throw std::runtime_error("InstanceDataReader: global object '" + name + "' is assigned by the model and must not be given");
     }
-    globalObjects[object] = index;
-    return;
   }
-  auto [object, _] = lookupAttribute(row.node, row.initialization);
-  objects[row.instanceId][object] = index;
+  else {
+    object = lookupAttribute(row.node, row.initialization).first;
+  }
+
+  // a literal without expression members has been registered as a constant object when the line was read, and
+  // stands as its index; an object initializer stands as it is written
+  try {
+    size_t consumed = 0;
+    size_t index = std::stoul(text, &consumed);
+    if ( consumed == text.size() ) {
+      return { object, BPMNOS::ObjectInitializer( objectRegistry[index] ) };
+    }
+  }
+  catch ( const std::exception& ) {
+  }
+  try {
+    return { object, BPMNOS::ObjectInitializer(text) };
+  }
+  catch ( const std::exception& error ) {
+    throw std::runtime_error("InstanceDataReader: object '" + name + "' must be given a literal, not '" + text + "'.\n" + error.what());
+  }
+}
+
+void InstanceDataReader::setObject(const Row& row, const LIMEX::Handle<double>& handle) {
+  auto [object, initializer] = lookupObject(row);
+  std::optional<size_t> instanceId = row.node ? std::optional<size_t>(row.instanceId) : std::nullopt;
+  // the members read what earlier rows have given, the object being recorded only when all its members are evaluated
+  std::vector<double> values;
+  for ( auto& member : initializer.members() ) {
+    values.push_back( execute(instanceId, row.node, member.expression, handle) );
+  }
+  auto value = instantiate(getSchema(object), object, initializer, values);
+  if ( instanceId.has_value() ) {
+    objects[instanceId.value()][object] = std::move(value);
+  }
+  else {
+    globalObjects[object] = std::move(value);
+  }
+}
+
+namespace {
+
+/// Returns the scalar type a schema gives at the path of a member of a literal, nullopt if the path does not fit the
+/// schema.
+std::optional<BPMNOS::ValueType> scalarAt(const BPMNOS::Model::Schema& schema, const BPMNOS::ObjectInitializer::Path& path) {
+  const BPMNOS::Model::Schema* current = &schema;
+  size_t dimension = 0;
+  for ( auto& step : path ) {
+    if ( step.empty() ) {
+      // an element of an array
+      if ( dimension == current->dimensions.size() ) {
+        return std::nullopt;
+      }
+      dimension++;
+      continue;
+    }
+    // a field of a value with fields
+    if ( dimension != current->dimensions.size() ) {
+      return std::nullopt;
+    }
+    auto field = std::find_if(current->fields.begin(), current->fields.end(), [&step](auto& candidate) { return candidate.first == step; });
+    if ( field == current->fields.end() ) {
+      return std::nullopt;
+    }
+    current = &field->second;
+    dimension = 0;
+  }
+  if ( dimension != current->dimensions.size() ) {
+    return std::nullopt;
+  }
+  return current->scalar;
+}
+
+} // namespace
+
+std::shared_ptr<const BPMNOS::Object> InstanceDataReader::instantiate(const BPMNOS::Model::Schema& schema, const BPMNOS::Model::Attribute* object, const BPMNOS::ObjectInitializer& initializer, const std::vector<double>& values) {
+  // a member takes the type of its position, read as a literal is read: a string and a truth value keep their
+  // types and every number is a decimal, so that it agrees with the constant members; a member whose position the
+  // schema lacks is refused when the object is conformed
+  std::vector<std::pair<double, ValueType>> typedValues;
+  auto& members = initializer.members();
+  for ( size_t k = 0; k < members.size(); k++ ) {
+    auto type = scalarAt(schema, members[k].path).value_or(ValueType::DECIMAL);
+    auto value = (double)convert(values[k], type);
+    typedValues.emplace_back( value, ( type == ValueType::STRING || type == ValueType::BOOLEAN ) ? type : ValueType::DECIMAL );
+  }
+  try {
+    return schema.conform( initializer.instantiate(typedValues) );
+  }
+  catch ( const std::exception& error ) {
+    throw std::runtime_error("InstanceDataReader: illegal value of object '" + object->name + "'.\n" + error.what());
+  }
 }
 
 void InstanceDataReader::declareSizes(const Row& row) {
@@ -242,22 +319,21 @@ void InstanceDataReader::declareSizes(const Row& row) {
 }
 
 std::shared_ptr<const BPMNOS::Object> InstanceDataReader::knownObject(std::optional<size_t> instanceId, const BPMNOS::Model::Attribute* object) const {
-  auto index = object->initialObject;
   if ( instanceId.has_value() ) {
     if ( auto instanceObjects = objects.find(instanceId.value()); instanceObjects != objects.end() ) {
       if ( auto given = instanceObjects->second.find(object); given != instanceObjects->second.end() ) {
-        index = given->second;
+        return given->second;
       }
     }
   }
   else if ( auto given = globalObjects.find(object); given != globalObjects.end() ) {
-    index = given->second;
+    return given->second;
   }
-  if ( !index.has_value() ) {
+  if ( !object->initialObject.has_value() ) {
     return nullptr;
   }
   try {
-    return getSchema(object).conform( objectRegistry[index.value()] );
+    return getSchema(object).conform( objectRegistry[object->initialObject.value()] );
   }
   catch ( const std::exception& error ) {
     throw std::runtime_error("InstanceDataReader: illegal value of object '" + object->name + "'.\n" + error.what());
@@ -288,46 +364,24 @@ void InstanceDataReader::evaluateGlobal(const std::string& initialization, const
     throw std::runtime_error("InstanceDataReader: global attribute '" + attributeName + "' is assigned by the model and must not be given");
   }
 
-  BPMNOS::Model::Expression expression(handle, BPMNOS::InputEncoder::fragment(expressionString), model->attributeRegistry);
-  // the global attributes are the first data attributes
-  BPMNOS::Data globalValues(model->attributes.size());
-  for ( auto& [globalAttribute, value] : globals ) {
-    globalValues.attributes[globalAttribute->index] = value;
-  }
-  for ( auto referencedAttribute : expression.variables ) {
-    if ( !globals.contains(referencedAttribute) ) {
-      throw std::runtime_error("InstanceDataReader: global attribute '" + attributeName + "' refers to global attribute '" + referencedAttribute->name + "' without a value");
-    }
-  }
-  // the global objects given by earlier rows or by the model
-  for ( auto& object : model->objects ) {
-    globalValues.objects.push_back( knownObject(std::nullopt, object.get()) );
-  }
-  for ( auto referencedAttribute : expression.paths ) {
-    // a path to an input has no attribute, an input holding its object from the start
-    if ( referencedAttribute && !globalValues.objects[referencedAttribute->index] ) {
-      throw std::runtime_error("InstanceDataReader: global attribute '" + attributeName + "' refers to global object '" + referencedAttribute->name + "' without a value");
-    }
-  }
-
-  auto value = expression.execute(BPMNOS::Status{}, globalValues);
-  if ( !value.has_value() ) {
-    throw std::runtime_error("InstanceDataReader: failed to evaluate global attribute '" + attributeName + "'");
-  }
-  globals[attribute] = convert(value.value(), attribute->type);
+  globals[attribute] = convert(execute(std::nullopt, nullptr, expressionString, handle), attribute->type);
 }
 
 BPMNOS::number InstanceDataReader::evaluate(size_t instanceId, const BPMN::Node* node, const std::string& expressionString, ValueType type, const LIMEX::Handle<double>& handle) const {
-  auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  BPMNOS::Model::Expression expression(handle, BPMNOS::InputEncoder::fragment(expressionString), extensionElements->attributeRegistry);
+  return convert(execute(instanceId, node, expressionString, handle), type);
+}
 
-  BPMNOS::Status status(extensionElements->attributeRegistry.statusAttributes.size());
-  BPMNOS::Data data(extensionElements->attributeRegistry.dataAttributes.size());
+double InstanceDataReader::execute(std::optional<size_t> instanceId, const BPMN::Node* node, const std::string& expressionString, const LIMEX::Handle<double>& handle) const {
+  auto& registry = node ? node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributeRegistry : model->attributeRegistry;
+  BPMNOS::Model::Expression expression(handle, BPMNOS::InputEncoder::fragment(expressionString), registry);
+
+  BPMNOS::Status status(registry.statusAttributes.size());
+  BPMNOS::Data data(registry.dataAttributes.size());
   // the global attributes are the first data attributes
   for ( auto& [attribute, value] : globals ) {
     data.attributes[attribute->index] = value;
   }
-  auto instanceValues = values.find(instanceId);
+  auto instanceValues = instanceId.has_value() ? values.find(instanceId.value()) : values.end();
   if ( instanceValues != values.end() ) {
     for ( auto& [attribute, value] : instanceValues->second ) {
       if ( attribute->category == BPMNOS::Model::Attribute::Category::STATUS ) {
@@ -349,7 +403,6 @@ BPMNOS::number InstanceDataReader::evaluate(size_t instanceId, const BPMN::Node*
   }
 
   // the objects given by earlier rows or by the model, the global objects being the first data objects
-  auto& registry = extensionElements->attributeRegistry;
   status.objects.resize(registry.statusObjects.size());
   for ( auto object : registry.statusObjects ) {
     status.objects[object->index] = knownObject(instanceId, object);
@@ -357,7 +410,7 @@ BPMNOS::number InstanceDataReader::evaluate(size_t instanceId, const BPMN::Node*
   data.objects.resize(registry.dataObjects.size());
   for ( auto object : registry.dataObjects ) {
     bool global = ( object->index < model->objects.size() );
-    data.objects[object->index] = knownObject(global ? std::nullopt : std::optional<size_t>(instanceId), object);
+    data.objects[object->index] = knownObject(global ? std::nullopt : instanceId, object);
   }
   for ( auto attribute : expression.paths ) {
     // a path to an input has no attribute, an input holding its object from the start
@@ -370,7 +423,7 @@ BPMNOS::number InstanceDataReader::evaluate(size_t instanceId, const BPMN::Node*
   if ( !value.has_value() ) {
     throw std::runtime_error("InstanceDataReader: failed to evaluate expression '" + expressionString + "'");
   }
-  return convert(value.value(), type);
+  return value.value();
 }
 
 void InstanceDataReader::setValue(size_t instanceId, const BPMNOS::Model::Attribute* attribute, BPMNOS::number value) {

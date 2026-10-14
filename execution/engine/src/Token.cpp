@@ -721,8 +721,10 @@ void Token::advanceToCompleted() {
       applyOperators( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
     }
 
-    if ( node->represents<BPMN::MessageCatchEvent>() && !node->represents<BPMN::ReceiveTask>() ) {
-      if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
+    if ( node->represents<BPMN::MessageCatchEvent>() ) {
+      // the data the message content writes are announced by the update the operators notify, which names the same
+      // attributes, and here only if there are no operators
+      if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>(); extensionElements && extensionElements->operators.empty() ) {
         // the observers decide by the index of each attribute whether it concerns this instance or all of them
         owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdate.attributes ) );
       }

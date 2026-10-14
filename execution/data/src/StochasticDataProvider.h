@@ -4,6 +4,7 @@
 #include <limits>
 #include <map>
 #include <memory>
+#include <optional>
 #include <random>
 #include <string>
 #include <unordered_map>
@@ -30,7 +31,9 @@ namespace BPMNOS::Execution {
  * status the token holds, the data of the enclosing instances and the globals: it is sampled when the token
  * arrives and determines when the token becomes ready. The other ready expressions are applied when the token
  * becomes ready, over the initial values of the scope instance, and may assign a status attribute or a data
- * attribute the scope owns. Every random expression of an instance and a node is evaluated with a random number
+ * attribute the scope owns, an object among them, or an element or field of such an object; a completion expression
+ * assigns a status attribute, a status object, or an element or field of a status object. An object initializer of an instance is sampled for each scenario like a value, in the
+ * order of the rows, its expression members reading the objects given by earlier rows. Every random expression of an instance and a node is evaluated with a random number
  * generator of its own, seeded from the seed of the scenario and the identifiers of the instance and the
  * node, so that a realisation depends on nothing but the seed, the model and the instance data.
  *
@@ -60,6 +63,7 @@ public:
 
     const unsigned int seed; ///< The seed of the realisation
     std::unordered_map<size_t, std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::number>> values; ///< The values sampled for each instance
+    std::unordered_map<size_t, std::unordered_map<const BPMNOS::Model::Attribute*, std::shared_ptr<const BPMNOS::Object>>> objects; ///< The objects sampled for each instance
     std::unordered_map<size_t, BPMNOS::number> instantiationTimes; ///< The instantiation time sampled for each instance
     std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, BPMNOS::number>> disclosureTimes; ///< The disclosure times sampled for each instance
     std::vector<BPMNOS::number> initializationDisclosureTimes; ///< The disclosure time sampled for each initialization, in the order of the rows
@@ -91,6 +95,7 @@ public:
 protected:
   void readValue(InstanceDataReader& reader, const InstanceDataReader::Row& row, const LIMEX::Handle<double>& handle) override;
   const std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::number>& getInstanceValues(const StaticDataProvider::Scenario& scenario, size_t instanceId) const override;
+  const std::unordered_map<const BPMNOS::Model::Attribute*, std::shared_ptr<const BPMNOS::Object>>& getInstanceObjects(const StaticDataProvider::Scenario& scenario, size_t instanceId) const override;
   const std::unordered_map<const BPMN::Node*, BPMNOS::number>& getDisclosureTimes(const StaticDataProvider::Scenario& scenario, size_t instanceId) const override;
   BPMNOS::number getProcessReadyTime(const StaticDataProvider::Scenario& scenario, size_t instanceId) const override;
   std::optional<BPMNOS::number> getReadyTimestamp(StaticDataProvider::Scenario& scenario, const Token* token, BPMNOS::number earliest) const override;
@@ -100,28 +105,46 @@ protected:
 
 private:
   /**
-   * @brief Initialization of an attribute of an instance, sampled for each scenario.
+   * @brief Initializer of an object of an instance, with its expression members compiled.
+   */
+  struct ObjectInitialization {
+    BPMNOS::ObjectInitializer initializer;
+    std::vector<std::unique_ptr<BPMNOS::Model::Expression>> members; ///< The expression members, in the order of the initializer
+    BPMNOS::Model::Schema schema; ///< The schema of the object with the sizes the size declarations fix
+  };
+
+  /**
+   * @brief Initialization of an attribute or object of an instance, sampled for each scenario.
    */
   struct Initialization {
     size_t instanceId;
     const BPMN::Node* node;
     const BPMNOS::Model::Attribute* attribute;
-    std::unique_ptr<BPMNOS::Model::Expression> value;
+    std::unique_ptr<BPMNOS::Model::Expression> value; ///< The expression of a scalar value, nullptr for an object
+    std::optional<ObjectInitialization> object; ///< The initializer of an object
     std::unique_ptr<BPMNOS::Model::Expression> disclosure;
   };
 
   using Expressions = std::unordered_map<size_t, std::unordered_map<const BPMN::Node*, std::vector<std::unique_ptr<BPMNOS::Model::Expression>>>>;
 
   /// @brief Method compiling a ready expression at the node of a row, which may assign a status attribute or a data
-  /// attribute the scope of the node owns, and which, if it assigns the timestamp, must be the first ready expression
+  /// attribute the scope of the node owns, an object among them, or an element or field of one, and which, if it assigns the timestamp, must be the first ready expression
   /// of the node and may read only what the scope inherits.
   std::unique_ptr<BPMNOS::Model::Expression> compileReadyExpression(const InstanceDataReader::Row& row, const std::string& expression) const;
 
-  /// @brief Method compiling a completion expression at the node of a row, which may only assign a status attribute.
+  /// @brief Method compiling a completion expression at the node of a row, which may only assign a status attribute,
+  /// a status object, or an element or field of one.
   std::unique_ptr<BPMNOS::Model::Expression> compileCompletionExpression(const InstanceDataReader::Row& row, const std::string& expression) const;
 
   /// @brief Method returning the ready expressions of an instance and a node, nullptr if there are none.
   const std::vector<std::unique_ptr<BPMNOS::Model::Expression>>* getReadyExpressions(size_t instanceId, const BPMN::Node* node) const;
+
+  /// @brief Method returning true if an earlier row gives a value to the attribute or object of an instance.
+  bool initialisedBefore(size_t instanceId, const BPMNOS::Model::Attribute* attribute) const;
+
+  /// @brief Method refusing an expression member of an object initializer of an instance that reads an attribute or
+  /// object to which neither the global values, the model, nor an earlier row of the instance gives a value.
+  void requireInitialised(const InstanceDataReader& reader, size_t instanceId, const BPMNOS::Model::Expression& member, const std::string& text) const;
 
   /// @brief Method sampling the initializations of a scenario, keeping those of the original scenario of a
   /// fork disclosed before the spawn time.
@@ -130,7 +153,7 @@ private:
   /// @brief Method computing a completion status by evaluating the completion expressions of an instance and a node on it,
   /// sampling it again while its timestamp precedes the given time if an expression assigns the timestamp,
   /// and setting the timestamp to the given time at last.
-  void computeStatus(Scenario& scenario, size_t instanceId, const BPMN::Node* node, BPMNOS::Status& status, const BPMNOS::SharedData& data, BPMNOS::number earliest) const;
+  void computeStatus(Scenario& scenario, size_t instanceId, const BPMN::Node* node, BPMNOS::Status& status, BPMNOS::SharedData& data, BPMNOS::number earliest) const;
 
   const unsigned int seed;
   mutable RandomDistributionFactory randomDistributionFactory; ///< The factory of the random functions, whose random number generator is set for every evaluation

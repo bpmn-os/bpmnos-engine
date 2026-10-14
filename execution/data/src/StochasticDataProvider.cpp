@@ -83,12 +83,10 @@ std::unique_ptr<BPMNOS::Model::Expression> StochasticDataProvider::compileReadyE
     throw std::runtime_error("StochasticDataProvider: the ready expression of '" + row.node->id + "' must assign an attribute");
   }
   auto target = compiled->target.value();
-  // a ready event gives the whole status and the data the scope owns, never inherited data
+  // a ready event gives the whole status and the data the scope owns, never inherited data; an object, an element
+  // or a field may be assigned as a scalar may
   if ( target->category != BPMNOS::Model::Attribute::Category::STATUS && !holds(extensionElements->data, target) && !holds(extensionElements->dataObjects, target) ) {
     throw std::runtime_error("StochasticDataProvider: the ready expression of '" + row.node->id + "' must assign a status attribute or a data attribute the scope owns");
-  }
-  if ( compiled->writesToObject() ) {
-    throw std::runtime_error("StochasticDataProvider: the ready expression of '" + row.node->id + "' must not assign an object");
   }
   if ( assignsTimestamp(*compiled) ) {
     // the timestamp determines when the token becomes ready, so it is sampled when the token arrives, before any
@@ -108,11 +106,9 @@ std::unique_ptr<BPMNOS::Model::Expression> StochasticDataProvider::compileReadyE
 std::unique_ptr<BPMNOS::Model::Expression> StochasticDataProvider::compileCompletionExpression(const InstanceDataReader::Row& row, const std::string& expression) const {
   auto extensionElements = row.node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   auto compiled = std::make_unique<BPMNOS::Model::Expression>(handle, BPMNOS::InputEncoder::fragment(expression), extensionElements->attributeRegistry);
+  // a status object, an element or a field of one may be assigned as a scalar may
   if ( !compiled->target.has_value() || compiled->target.value()->category != BPMNOS::Model::Attribute::Category::STATUS ) {
     throw std::runtime_error("StochasticDataProvider: the completion expression of '" + row.node->id + "' must assign a status attribute");
-  }
-  if ( compiled->writesToObject() ) {
-    throw std::runtime_error("StochasticDataProvider: the completion expression of '" + row.node->id + "' must not assign an object");
   }
   return compiled;
 }
@@ -127,6 +123,32 @@ const std::vector<std::unique_ptr<BPMNOS::Model::Expression>>* StochasticDataPro
     return nullptr;
   }
   return &nodeExpressions->second;
+}
+
+bool StochasticDataProvider::initialisedBefore(size_t instanceId, const BPMNOS::Model::Attribute* attribute) const {
+  return std::ranges::any_of(initializations, [instanceId, attribute](auto& initialization) {
+    return initialization.instanceId == instanceId && initialization.attribute == attribute;
+  });
+}
+
+void StochasticDataProvider::requireInitialised(const InstanceDataReader& reader, size_t instanceId, const BPMNOS::Model::Expression& member, const std::string& text) const {
+  // a global value is given by the instance data before any instance is read, an object possibly by the model
+  for ( auto attribute : member.variables ) {
+    bool known = attribute->isGlobal ? reader.globals.contains(attribute) : initialisedBefore(instanceId, attribute);
+    if ( !known ) {
+      throw std::runtime_error("StochasticDataProvider: expression '" + text + "' refers to attribute '" + attribute->name + "' without a value");
+    }
+  }
+  for ( auto object : member.paths ) {
+    // a path to an input has no attribute, an input holding its object from the start
+    if ( !object ) {
+      continue;
+    }
+    bool known = object->initialObject.has_value() || ( object->isGlobal ? reader.globalObjects.contains(object) : initialisedBefore(instanceId, object) );
+    if ( !known ) {
+      throw std::runtime_error("StochasticDataProvider: expression '" + text + "' refers to object '" + object->name + "' without a value");
+    }
+  }
 }
 
 void StochasticDataProvider::readValue(InstanceDataReader& reader, const InstanceDataReader::Row& row, [[maybe_unused]] const LIMEX::Handle<double>& rowHandle) {
@@ -165,14 +187,34 @@ void StochasticDataProvider::readValue(InstanceDataReader& reader, const Instanc
     return;
   }
 
-  auto [attribute, expression] = reader.lookupAttribute(row.node, row.initialization);
   auto& attributeRegistry = row.node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributeRegistry;
+  auto disclosureExpression = std::make_unique<BPMNOS::Model::Expression>(handle, BPMNOS::InputEncoder::fragment(disclosure.empty() ? "0" : disclosure), attributeRegistry);
+  if ( reader.assignsObject(row) ) {
+    auto [object, initializer] = reader.lookupObject(row);
+    std::vector<std::unique_ptr<BPMNOS::Model::Expression>> members;
+    for ( auto& member : initializer.members() ) {
+      members.push_back( std::make_unique<BPMNOS::Model::Expression>(handle, BPMNOS::InputEncoder::fragment(member.expression), attributeRegistry) );
+      requireInitialised(reader, row.instanceId, *members.back(), member.expression);
+    }
+    initializations.push_back({
+      row.instanceId,
+      row.node,
+      object,
+      nullptr,
+      ObjectInitialization{ std::move(initializer), std::move(members), reader.getSchema(object) },
+      std::move(disclosureExpression)
+    });
+    return;
+  }
+
+  auto [attribute, expression] = reader.lookupAttribute(row.node, row.initialization);
   initializations.push_back({
     row.instanceId,
     row.node,
     attribute,
     std::make_unique<BPMNOS::Model::Expression>(handle, BPMNOS::InputEncoder::fragment(expression), attributeRegistry),
-    std::make_unique<BPMNOS::Model::Expression>(handle, BPMNOS::InputEncoder::fragment(disclosure.empty() ? "0" : disclosure), attributeRegistry)
+    std::nullopt,
+    std::move(disclosureExpression)
   });
 }
 
@@ -193,6 +235,7 @@ std::unique_ptr<BPMNOS::Execution::Scenario> StochasticDataProvider::forkScenari
 void StochasticDataProvider::sample(Scenario& scenario, const Scenario* original, BPMNOS::number spawnTime) const {
   for ( auto& instance : instances ) {
     scenario.values[instance.id] = instance.values;
+    scenario.objects[instance.id] = instance.objects;
     scenario.instantiationTimes[instance.id] = instance.instantiationTime;
     scenario.disclosureTimes[instance.id][instance.process] = 0;
   }
@@ -201,14 +244,21 @@ void StochasticDataProvider::sample(Scenario& scenario, const Scenario* original
   for ( size_t k = 0; k < initializations.size(); k++ ) {
     auto& initialization = initializations[k];
     auto& values = scenario.values.at(initialization.instanceId);
+    auto& objects = scenario.objects.at(initialization.instanceId);
     auto process = getInstance(initialization.instanceId).process;
-    bool isTimestamp = ( initialization.attribute == process->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp].get() );
+    bool isTimestamp = ( !initialization.object.has_value() && initialization.attribute == process->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp].get() );
 
-    BPMNOS::number value;
+    BPMNOS::number value = 0;
+    std::shared_ptr<const BPMNOS::Object> object;
     BPMNOS::number disclosureTime;
     if ( original && original->initializationDisclosureTimes[k] < spawnTime ) {
       // the initialization was disclosed before the spawn time, so the fork keeps it
-      value = original->values.at(initialization.instanceId).at(initialization.attribute);
+      if ( initialization.object.has_value() ) {
+        object = original->objects.at(initialization.instanceId).at(initialization.attribute);
+      }
+      else {
+        value = original->values.at(initialization.instanceId).at(initialization.attribute);
+      }
       disclosureTime = original->initializationDisclosureTimes[k];
     }
     else {
@@ -225,24 +275,49 @@ void StochasticDataProvider::sample(Scenario& scenario, const Scenario* original
           data.attributes[attribute->index] = attributeValue;
         }
       }
+      // the objects given by earlier rows, every other object holding its default, the global objects being the
+      // first data objects
+      auto objectOf = [&](const BPMNOS::Model::Attribute* attribute) {
+        auto it = objects.find(attribute);
+        return it != objects.end() ? it->second : getDefaultObject(attribute);
+      };
+      status.objects.resize(attributeRegistry.statusObjects.size());
+      for ( auto attribute : attributeRegistry.statusObjects ) {
+        status.objects[attribute->index] = objectOf(attribute);
+      }
+      data.objects.resize(attributeRegistry.dataObjects.size());
+      for ( auto attribute : attributeRegistry.dataObjects ) {
+        data.objects[attribute->index] = ( attribute->index < globals.objects.size() ) ? globals.objects[attribute->index] : objectOf(attribute);
+      }
 
       randomDistributionFactory.setCurrentRng(&scenario.getRandomNumberGenerator(initialization.instanceId, initialization.node));
-      auto evaluate = [&]() {
-        return convert(initialization.value->execute(status, data).value_or(0), initialization.attribute->type);
-      };
-      value = evaluate();
-      if ( isTimestamp ) {
-        // a fork samples a timestamp before the spawn time again, and sets it to the spawn time at last
-        for ( int tries = 1; value < spawnTime && tries < maxResamplingTries; tries++ ) {
-          value = evaluate();
+      if ( initialization.object.has_value() ) {
+        // the members read the values before the row, the object being given only when all its members are evaluated
+        std::vector<double> memberValues;
+        for ( auto& member : initialization.object->members ) {
+          memberValues.push_back( member->execute(status, data).value_or(0) );
         }
-        value = std::max(value, spawnTime);
+        object = InstanceDataReader::instantiate(initialization.object->schema, initialization.attribute, initialization.object->initializer, memberValues);
+        attributeRegistry.setObject(initialization.attribute, status, data, object);
       }
-      if ( initialization.attribute->category == BPMNOS::Model::Attribute::Category::STATUS ) {
-        status.attributes[initialization.attribute->index] = value;
-      }
-      else if ( initialization.attribute->category == BPMNOS::Model::Attribute::Category::DATA ) {
-        data.attributes[initialization.attribute->index] = value;
+      else {
+        auto evaluate = [&]() {
+          return convert(initialization.value->execute(status, data).value_or(0), initialization.attribute->type);
+        };
+        value = evaluate();
+        if ( isTimestamp ) {
+          // a fork samples a timestamp before the spawn time again, and sets it to the spawn time at last
+          for ( int tries = 1; value < spawnTime && tries < maxResamplingTries; tries++ ) {
+            value = evaluate();
+          }
+          value = std::max(value, spawnTime);
+        }
+        if ( initialization.attribute->category == BPMNOS::Model::Attribute::Category::STATUS ) {
+          status.attributes[initialization.attribute->index] = value;
+        }
+        else if ( initialization.attribute->category == BPMNOS::Model::Attribute::Category::DATA ) {
+          data.attributes[initialization.attribute->index] = value;
+        }
       }
       auto evaluateDisclosure = [&]() {
         return BPMNOS::number(std::ceil(initialization.disclosure->execute(status, data).value_or(0)));
@@ -256,7 +331,12 @@ void StochasticDataProvider::sample(Scenario& scenario, const Scenario* original
       randomDistributionFactory.setCurrentRng(nullptr);
     }
 
-    values[initialization.attribute] = value;
+    if ( initialization.object.has_value() ) {
+      objects[initialization.attribute] = std::move(object);
+    }
+    else {
+      values[initialization.attribute] = value;
+    }
     scenario.initializationDisclosureTimes.push_back(disclosureTime);
     if ( isTimestamp ) {
       // instances are instantiated at integral times
@@ -279,6 +359,10 @@ void StochasticDataProvider::sample(Scenario& scenario, const Scenario* original
 
 const std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::number>& StochasticDataProvider::getInstanceValues(const StaticDataProvider::Scenario& scenario, size_t instanceId) const {
   return static_cast<const Scenario&>(scenario).values.at(instanceId);
+}
+
+const std::unordered_map<const BPMNOS::Model::Attribute*, std::shared_ptr<const BPMNOS::Object>>& StochasticDataProvider::getInstanceObjects(const StaticDataProvider::Scenario& scenario, size_t instanceId) const {
+  return static_cast<const Scenario&>(scenario).objects.at(instanceId);
 }
 
 const std::unordered_map<const BPMN::Node*, BPMNOS::number>& StochasticDataProvider::getDisclosureTimes(const StaticDataProvider::Scenario& scenario, size_t instanceId) const {
@@ -345,7 +429,7 @@ BPMNOS::Status StochasticDataProvider::getCompletionStatus(StaticDataProvider::S
   return status;
 }
 
-void StochasticDataProvider::computeStatus(Scenario& scenario, size_t instanceId, const BPMN::Node* node, BPMNOS::Status& status, const BPMNOS::SharedData& data, BPMNOS::number earliest) const {
+void StochasticDataProvider::computeStatus(Scenario& scenario, size_t instanceId, const BPMN::Node* node, BPMNOS::Status& status, BPMNOS::SharedData& data, BPMNOS::number earliest) const {
   auto instanceExpressions = completionExpressions.find(instanceId);
   if ( instanceExpressions == completionExpressions.end() ) {
     return;
@@ -359,7 +443,12 @@ void StochasticDataProvider::computeStatus(Scenario& scenario, size_t instanceId
   auto evaluate = [&]() {
     status = initialStatus;
     for ( auto& expression : nodeExpressions->second ) {
-      if ( auto value = expression->execute(status, data) ) {
+      if ( expression->writesToObject() ) {
+        // the status object is copied on write, so that the status restored before a new sample keeps the object
+        // it was computed from
+        expression->writeToObject(status, data);
+      }
+      else if ( auto value = expression->execute(status, data) ) {
         auto target = expression->target.value();
         status.attributes[target->index] = convert(value.value(), target->type);
       }
