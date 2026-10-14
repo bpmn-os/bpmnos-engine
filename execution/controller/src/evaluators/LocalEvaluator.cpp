@@ -17,10 +17,10 @@ bool LocalEvaluator::updateValues(EntryDecision* decision, Status& status, Data&
   // make sure that all initial attribute values are up to date
   extensionElements->computeInitialValues(token->owner->systemState->getTime(),status,data);
 
-  if ( token->node->represents<BPMN::SubProcess>() ) {
-    // the operators of a scope are applied to the token at its start event, i.e. after the scope is
-    // entered, so its entry restrictions constrain the status they produce
-    extensionElements->applyOperators(status,data);
+  if ( auto subProcess = token->node->represents<BPMN::SubProcess>(); subProcess && subProcess->startEvent ) {
+    // the operators of the start event are applied to the token at it, i.e. after the subprocess is entered,
+    // so that the entry restrictions of the subprocess constrain the status they produce
+    subProcess->startEvent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->applyOperators(status,data);
   }
 
   if ( !extensionElements->feasibleEntry(status,data) ) {
@@ -82,15 +82,12 @@ bool LocalEvaluator::updateValues(MessageDeliveryDecision* decision, Status& sta
   }
   assert( token->node->represents<BPMN::FlowNode>() );
   assert( token->node->as<BPMN::FlowNode>()->parent );
-  auto extensionElements = 
-    token->node->represents<BPMN::MessageStartEvent>() ?
-    token->node->as<BPMN::FlowNode>()->parent->extensionElements->as<BPMNOS::Model::ExtensionElements>() :
-    token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()
-  ;
+  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
   assert( dynamic_cast<const MessageDeliveryEvent*>(decision) );
   auto message = static_cast<const MessageDeliveryEvent*>(decision)->message.lock();
   message->apply(token->node->as<BPMN::FlowNode>(),token->getAttributeRegistry(),status,data);
+  // the operators of the catching node are applied after the content is received
   extensionElements->applyOperators(status,data);
 
   // check feasibility
@@ -98,7 +95,8 @@ bool LocalEvaluator::updateValues(MessageDeliveryDecision* decision, Status& sta
     return extensionElements->feasibleCompletion(status,data);
   }
   else if ( token->node->represents<BPMN::MessageStartEvent>() ) {
-    return extensionElements->feasibleEntry(status,data);
+    // the entry restrictions of the event subprocess the start event starts
+    return token->node->as<BPMN::FlowNode>()->parent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleEntry(status,data);
   }
   else {
     return extensionElements->satisfiesInheritedRestrictions(status,data);
@@ -195,11 +193,10 @@ std::set<const BPMNOS::Model::Attribute*> LocalEvaluator::getDependencies(EntryD
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
 
-  if ( 
-    token->node->represents<BPMN::Activity>() &&
-    !token->node->represents<BPMN::Task>()
-  ) {
-    dependencies.insert(extensionElements->operatorDependencies.begin(), extensionElements->operatorDependencies.end());
+  if ( auto subProcess = token->node->represents<BPMN::SubProcess>(); subProcess && subProcess->startEvent ) {
+    // the operators of the start event are applied on entry
+    auto& startEventDependencies = subProcess->startEvent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->operatorDependencies;
+    dependencies.insert(startEventDependencies.begin(), startEventDependencies.end());
   }
 
   dependencies.insert(extensionElements->entryDependencies.begin(), extensionElements->entryDependencies.end());
@@ -270,6 +267,12 @@ std::set<const BPMNOS::Model::Attribute*> LocalEvaluator::getDependencies(Messag
     auto extensionElements = eventSubProcess->extensionElements->as<BPMNOS::Model::ExtensionElements>();
     assert(extensionElements);
     dependencies.insert(extensionElements->entryDependencies.begin(), extensionElements->entryDependencies.end());
+    auto& startEventDependencies = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->operatorDependencies;
+    dependencies.insert(startEventDependencies.begin(), startEventDependencies.end());
+  }
+  else {
+    // an intermediate or boundary message catch event
+    auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
     dependencies.insert(extensionElements->operatorDependencies.begin(), extensionElements->operatorDependencies.end());
   }
   return dependencies;

@@ -11,9 +11,6 @@
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/extensionElements/Gatekeeper.h"
 #include "model/bpmnos/src/extensionElements/MessageDefinition.h"
-#include "model/bpmnos/src/extensionElements/Timer.h"
-#include "model/bpmnos/src/extensionElements/SignalDefinition.h"
-#include "model/bpmnos/src/extensionElements/Conditions.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "execution/utility/src/erase.h"
@@ -480,11 +477,14 @@ void Token::advanceToEntered() {
   else if ( node->represents<BPMN::CatchEvent>() ) {
 //std::cerr << "advance to busy state" << std::endl;
     // tokens entering a catching event automatically advance to busy state; an untyped start event
-    // awaits no trigger, but passes through the same states so that the operators of the scope it
-    // starts are applied where every scope applies them
+    // awaits no trigger, but passes through the same states so that its operators are applied where
+    // every catch event applies them
     engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), this);
   }
   else if ( node->represents<BPMN::ThrowEvent>() ) {
+    // the operators of a throw event are applied before it throws
+    applyOperators( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
+
     if ( node->represents<BPMN::ErrorEndEvent>() ) {
       engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
       return;
@@ -654,8 +654,8 @@ void Token::advanceToBusy() {
   }
   else if ( node->represents<BPMN::TimerCatchEvent>() ) {
     // determine time
-    auto trigger = node->extensionElements->as<BPMNOS::Model::Timer>()->trigger.get();
-    if (!trigger->expression) {
+    auto trigger = node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->trigger.get();
+    if ( !trigger || !trigger->expression ) {
       throw std::runtime_error("Token: no trigger given for node '" + node->id + "'");
     }
     auto triggerValue = trigger->expression->execute(status, *data);
@@ -671,13 +671,12 @@ void Token::advanceToBusy() {
   }
   else if ( node->represents<BPMN::SignalCatchEvent>() ) {
     // determine signal name
-    assert( node->extensionElements->represents<BPMNOS::Model::SignalDefinition>() );
-    awaitSignal( node->extensionElements->as<BPMNOS::Model::SignalDefinition>()->name );
+    assert( node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->signal );
+    awaitSignal( node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->signalName );
   }
   else if ( node->represents<BPMN::ConditionalCatchEvent>() ) {
     // determine conditions
-    assert(node->extensionElements->represents<BPMNOS::Model::Conditions>());
-    auto extensionElements = node->extensionElements->as<BPMNOS::Model::Conditions>();
+    auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
     if ( !extensionElements->conditionsSatisfied(status,*data) ) {
       awaitConditions( owner->root->instance.value() );
     }
@@ -729,22 +728,11 @@ void Token::advanceToCompleted() {
   if ( auto flowNode = node->represents<BPMN::FlowNode>() ) {
     // the completion status of a send, receive or decision task is determined here alone and not by the
     // data provider: a send task completes with the status it was busy with, its operators having been applied
-    // before the message was sent, and the operators of a receive or decision task are applied on completion
-    if (
-      node->represents<BPMN::ReceiveTask>() ||
-      node->represents<BPMNOS::Model::DecisionTask>()
-    ) {
-      if ( auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
-        const_cast<Engine*>(owner->systemState->engine)->addToObjective( extensionElements->applyOperators(status,*data) );
-        // notify about data update
-        // the observers decide by the index of each attribute whether it concerns this instance or all of them
-        owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdate.attributes ) );
-      }
-    }
-    // a start event has no operators of its own; the token at it applies the operators of the scope it
-    // starts, the scope being entered here
-    else if ( node->represents<BPMN::UntypedStartEvent>() || node->represents<BPMN::TypedStartEvent>() ) {
-      if ( flowNode->parent->represents<BPMN::EventSubProcess>() ) {
+    // before the message was sent; the operators of a catching node, a catch event, a receive task or a
+    // decision task, are applied on completion, after what arrived: the message, the signal, the triggering
+    // status or the choices
+    if ( node->represents<BPMN::CatchEvent>() || node->represents<BPMNOS::Model::DecisionTask>() ) {
+      if ( node->represents<BPMN::TypedStartEvent>() && flowNode->parent->represents<BPMN::EventSubProcess>() ) {
         // the event subprocess is instantiated here, so the values the model assigns to its attributes are
         // computed here, its data and status being internal, and the objective value is updated here; a
         // process or subprocess accounted its objective when its state machine was created
@@ -754,7 +742,7 @@ void Token::advanceToCompleted() {
         }
         const_cast<StateMachine*>(owner)->updateObjective();
       }
-      applyOperators( flowNode->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
+      applyOperators( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
     }
 
     if ( node->represents<BPMN::MessageCatchEvent>() && !node->represents<BPMN::ReceiveTask>() ) {
@@ -860,7 +848,8 @@ void Token::advanceToCompleted() {
       ( node->represents<BPMN::TypedStartEvent>() && node->as<BPMN::FlowNode>()->parent->represents<BPMN::Process>() )
     ) {
       // there is no pending scope to promote and no further instance to arm, so only the entry
-      // restrictions of the scope are checked, against the status its operators have just produced
+      // restrictions of the scope are checked, against the status the operators of its start event have just
+      // produced
       auto extensionElements = node->as<BPMN::FlowNode>()->parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
       if ( !extensionElements->feasibleEntry(status,*data) ) {
         engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
@@ -1412,12 +1401,12 @@ void Token::applyOperators(const BPMNOS::Model::ExtensionElements* extensionElem
 }
 
 void Token::emitSignal() {
-  assert( node->extensionElements->represents<BPMNOS::Model::SignalDefinition>() );
-  auto signalDefinition = node->extensionElements->as<BPMNOS::Model::SignalDefinition>();
+  auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  assert( extensionElements->signal );
 
   // determine signal content before it is received anywhere; a recipient writing a global would
   // otherwise change what a later reader of the content obtains
-  Signal signal( signalDefinition->name, getSignalContent(signalDefinition->contentMap) );
+  Signal signal( extensionElements->signalName, getSignalContent(extensionElements->signalContentMap) );
 
   // the broadcast is enqueued so that token advances already scheduled are made before the signal is
   // delivered: a token on its way to a catching signal event when the signal is thrown still receives it
@@ -1443,14 +1432,14 @@ ContentMap Token::getSignalContent(const BPMNOS::Model::ContentDefinitionMap& co
 
 void Token::setSignalContent(ContentMap& sourceMap) {
   auto& attributeRegistry = getAttributeRegistry();
-  assert( node->extensionElements->represents<BPMNOS::Model::SignalDefinition>() );
-  auto signalDefinition = node->extensionElements->as<BPMNOS::Model::SignalDefinition>();
+  auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  assert( extensionElements->signal );
 
   BPMNOS::number objectiveChange = 0;
 
   size_t counter = 0;
   for (auto& [key,contentValue] : sourceMap) {
-    if ( auto it = signalDefinition->contentMap.find(key); it != signalDefinition->contentMap.end() ) {
+    if ( auto it = extensionElements->signalContentMap.find(key); it != extensionElements->signalContentMap.end() ) {
       objectiveChange += receiveContent(attributeRegistry, key, it->second->attribute, &contentValue, status, *data);
     }
     else {
@@ -1459,9 +1448,9 @@ void Token::setSignalContent(ContentMap& sourceMap) {
     }
   }
 
-  if ( signalDefinition->contentMap.size() > sourceMap.size() - counter ) {
+  if ( extensionElements->signalContentMap.size() > sourceMap.size() - counter ) {
     // recipient has keys in content that are not in signal content
-    for (auto& [key,definition] : signalDefinition->contentMap) {
+    for (auto& [key,definition] : extensionElements->signalContentMap) {
       if ( !sourceMap.contains(key) ) {
         // key in recipient content, but not in message content
         objectiveChange += receiveContent(attributeRegistry, key, definition->attribute, nullptr, status, *data);
@@ -1473,7 +1462,7 @@ void Token::setSignalContent(ContentMap& sourceMap) {
 
   // notify about data update
   // the observers decide by the index of each attribute whether it concerns this instance or all of them
-  owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), signalDefinition->dataUpdate.attributes ) );
+  owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdate.attributes ) );
 }
 
 

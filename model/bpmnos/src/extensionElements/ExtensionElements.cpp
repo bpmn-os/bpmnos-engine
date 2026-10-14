@@ -10,6 +10,10 @@
 #include "model/bpmnos/src/xml/bpmnos/tDecisions.h"
 #include "model/bpmnos/src/xml/bpmnos/tDecision.h"
 #include "model/bpmnos/src/xml/bpmnos/tMessage.h"
+#include "model/bpmnos/src/xml/bpmnos/tSignal.h"
+#include "model/bpmnos/src/xml/bpmnos/tContent.h"
+#include "model/bpmnos/src/xml/bpmnos/tTimer.h"
+#include "model/bpmnos/src/xml/bpmnos/tParameter.h"
 #include "model/bpmnos/src/xml/bpmnos/tLoopCharacteristics.h"
 #include "model/bpmnos/src/xml/bpmnos/tGuidance.h"
 #include "model/utility/src/Keywords.h"
@@ -22,6 +26,8 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
   : BPMN::ExtensionElements( baseElement )
   , attributeRegistry(attributeRegistry_)
   , parent(parent)
+  , signal(nullptr)
+  , signalName(0)
   , hasSequentialPerformer(false)
   , isInstantaneous(true)
 {
@@ -163,6 +169,12 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
 
     // add all operators
     if ( status->get().operators.has_value() ) {
+      // a scope, a process or a subprocess of any kind, has no operators; what is to happen when it starts is
+      // stated by the operators of its start event
+      if ( baseElement->is<XML::bpmn::tProcess>() || baseElement->is<XML::bpmn::tSubProcess>() ) {
+        throw std::runtime_error("ExtensionElements: scope '" + (std::string)baseElement->id.value().get().value + "' must not have operators");
+      }
+
       for ( XML::bpmnos::tOperator& operator_ : status->get().operators.value().get().operator_ ) {
         try {
           operators.push_back( std::make_unique<Operator>(&operator_,attributeRegistry) );
@@ -184,12 +196,6 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
       }
 
       if ( !isInstantaneous ) {
-        // the operators of a scope are applied to the token at its start event, which is instantaneous,
-        // and the duration of a scope is the duration of what happens within it
-        if ( baseElement->is<XML::bpmn::tProcess>() || baseElement->is<XML::bpmn::tSubProcess>() ) {
-          throw std::runtime_error("ExtensionElements: operators of scope '" + (std::string)baseElement->id.value().get().value + "' must not modify timestamp");
-        }
-
         // a send task completes when its message is delivered, a receive task when a message is
         // delivered to it, and a decision task when the choices are made, so none of them may advance
         // the timestamp by an operator of its own
@@ -203,6 +209,11 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
         }
         if ( baseElement->is<XML::bpmn::tSendTask>() || baseElement->is<XML::bpmn::tReceiveTask>() || isDecisionTask ) {
           throw std::runtime_error("ExtensionElements: operators of task '" + (std::string)baseElement->id.value().get().value + "' must not modify timestamp");
+        }
+
+        // an event is instantaneous
+        if ( baseElement->is<XML::bpmn::tEvent>() ) {
+          throw std::runtime_error("ExtensionElements: operators of event '" + (std::string)baseElement->id.value().get().value + "' must not modify timestamp");
         }
       }
     }
@@ -251,6 +262,47 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
       if ( attribute->category != Attribute::Category::STATUS ) {
         dataUpdate.attributes.push_back(attribute);
       }
+    }
+  }
+
+  // add timer trigger
+  if ( auto timer = element->getOptionalChild<XML::bpmnos::tTimer>(); timer.has_value() ) {
+    if ( auto& parameter = timer->get().parameter; parameter.name.value.value == "trigger" ) {
+      trigger = std::make_unique<Parameter>(&parameter,attributeRegistry);
+    }
+  }
+
+  // add signal
+  if ( auto definition = element->getOptionalChild<XML::bpmnos::tSignal>(); definition.has_value() ) {
+    signal = &definition->get();
+    signalName = BPMNOS::to_number(signal->name.value.value,STRING);
+    for ( XML::bpmnos::tContent& content : signal->content ) {
+      signalContentMap.emplace(content.key.value.value,std::make_unique<ContentDefinition>(&content,attributeRegistry));
+    }
+    if ( baseElement->is<XML::bpmn::tCatchEvent>() ) {
+      // add data attributes modified by signal content to dataUpdate
+      for ( auto& [key,content] : signalContentMap ) {
+        Attribute* attribute = content->attribute;
+        if ( attribute->category != Attribute::Category::STATUS ) {
+          dataUpdate.attributes.push_back(attribute);
+        }
+      }
+    }
+  }
+
+  // add conditions of a conditional event
+  for ( XML::bpmnos::tRestriction& condition : get<XML::bpmnos::tRestrictions,XML::bpmnos::tRestriction>() ) {
+    try {
+      conditions.push_back(std::make_unique<Restriction>(&condition,attributeRegistry));
+    }
+    catch ( const std::exception& error ) {
+      throw std::runtime_error("ExtensionElements: illegal parameters for condition '" + (std::string)condition.id.value + "'.\n" + error.what());
+    }
+    for ( auto input : conditions.back()->expression.inputs ) {
+      if ( input->category == Attribute::Category::STATUS && !input->isObject() && input->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
+        throw std::runtime_error("ExtensionElements: condition '" + (std::string)condition.id.value + "' is time dependent");
+      }
+      conditionDependencies.insert(input);
     }
   }
 
@@ -303,6 +355,19 @@ const MessageDefinition* ExtensionElements::getMessageDefinition() const {
   }
   return messageDefinition.get();
 }
+
+template <typename DataType>
+bool ExtensionElements::conditionsSatisfied(const BPMNOS::Status& status, const DataType& data) const {
+  for ( auto& condition : conditions ) {
+    if ( !condition->isSatisfied(status,data) ) {
+      return false;
+    }
+  }
+  return true;
+}
+
+template bool ExtensionElements::conditionsSatisfied<BPMNOS::Data>(const BPMNOS::Status& status, const BPMNOS::Data& data) const;
+template bool ExtensionElements::conditionsSatisfied<BPMNOS::SharedData>(const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;
 
 template <typename DataType>
 bool ExtensionElements::feasibleEntry(const BPMNOS::Status& status, const DataType& data) const {

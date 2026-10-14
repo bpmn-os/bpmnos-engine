@@ -174,11 +174,6 @@
             <bpmnos:restriction id="Restriction_1q6ed62" scope="exit" expression="load &#60;= capacity" />
             <bpmnos:restriction id="Restriction_3o3t8f8" scope="exit" expression="pending == 0" />
           </bpmnos:restrictions>
-          <bpmnos:operators>
-            <bpmnos:operator id="Operator_15659lk" expression="pending += 1" />
-            <bpmnos:operator id="Operator_36m5puq" expression="requests_made += 1" />
-            <bpmnos:operator id="Operator_1h6f9d5" expression="load += quantity" />
-          </bpmnos:operators>
         </bpmnos:status>
       </bpmn2:extensionElements>
       <bpmn2:startEvent id="StartEventRequest" name="Request" isInterrupting="false">
@@ -191,6 +186,13 @@
             <bpmnos:content key="LatestVisit" attribute="latest_visit" />
             <bpmnos:content key="LatenessPenaty" attribute="lateness_penalty" />
           </bpmnos:message>
+          <bpmnos:status>
+            <bpmnos:operators>
+              <bpmnos:operator id="Operator_15659lk" expression="pending += 1" />
+              <bpmnos:operator id="Operator_36m5puq" expression="requests_made += 1" />
+              <bpmnos:operator id="Operator_1h6f9d5" expression="load += quantity" />
+            </bpmnos:operators>
+          </bpmnos:status>
         </bpmn2:extensionElements>
         <bpmn2:outgoing>Flow_0540sk2</bpmn2:outgoing>
         <bpmn2:messageEventDefinition id="MessageEventDefinition_1n9dvq0" />

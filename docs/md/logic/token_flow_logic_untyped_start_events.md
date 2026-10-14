@@ -5,7 +5,7 @@ The state of a token at an untyped start event is immediately advanced to @ref B
 After entry, a token is created for the @ref BPMN::TypedStartEvent "start event" of each @ref BPMN::EventSubProcess "event-subprocess" within the same @ref BPMN::Scope "scope".
 The state is then advanced to @ref BPMNOS::Execution::Token::State::BUSY "BUSY", an untyped start event awaiting no trigger, and on to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
 
-Upon completion, the @ref BPMNOS::Model::ExtensionElements::operators "operators" of the scope the start event belongs to are applied.
+Upon completion, the @ref BPMNOS::Model::ExtensionElements::operators "operators" of the start event are applied.
 
 After completion, the entry scope restrictions of the scope are checked.
 If the restrictions are violated, the state is changed to @ref BPMNOS::Execution::Token::State::FAILED "FAILED".
@@ -28,4 +28,4 @@ stateDiagram-v2
     FAILED --> [*]
 </pre>
 
-@note Operators for elements with a scope must be instantaneous, i.e. they must not change the timestamp.
+@note The operators of a start event must be instantaneous, i.e. they must not change the timestamp.

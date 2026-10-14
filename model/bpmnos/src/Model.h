@@ -57,9 +57,14 @@ public:
   std::unique_ptr<BPMN::FlowNode> createAdHocSubProcess(XML::bpmn::tAdHocSubProcess* adHocSubProcess, BPMN::Scope* parent) override;
   std::unique_ptr<BPMN::FlowNode> createTask(XML::bpmn::tTask* task, BPMN::Scope* parent) override;
 
+  /// @brief Creates an event and binds extension elements to every event that has none of its own, so that every
+  /// event may state operators.
+  std::unique_ptr<BPMN::FlowNode> createEvent(XML::bpmn::tEvent* event, BPMN::Scope* parent) override;
+  /// @brief Creates a boundary event, which is not created through @ref createEvent, and binds extension elements
+  /// to it where it has none of its own.
+  std::unique_ptr<BPMN::FlowNode> createBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) override;
+
   std::unique_ptr<BPMN::FlowNode> createTimerStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) override;
-  std::unique_ptr<BPMN::FlowNode> createTimerBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) override;
-  std::unique_ptr<BPMN::FlowNode> createTimerCatchEvent(XML::bpmn::tCatchEvent* catchEvent, BPMN::Scope* parent) override;
 
   std::unique_ptr<BPMN::FlowNode> createSignalStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) override;
   std::unique_ptr<BPMN::FlowNode> createSignalBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) override;
@@ -67,8 +72,6 @@ public:
   std::unique_ptr<BPMN::FlowNode> createSignalThrowEvent(XML::bpmn::tThrowEvent* throwEvent, BPMN::Scope* parent) override;
 
   std::unique_ptr<BPMN::FlowNode> createConditionalStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) override;
-  std::unique_ptr<BPMN::FlowNode> createConditionalBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) override;
-  std::unique_ptr<BPMN::FlowNode> createConditionalCatchEvent(XML::bpmn::tCatchEvent* catchEvent, BPMN::Scope* parent) override;
 
   std::unique_ptr<BPMN::FlowNode> createMessageStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) override;
   std::unique_ptr<BPMN::FlowNode> createMessageBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) override;

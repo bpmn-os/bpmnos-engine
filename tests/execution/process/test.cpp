@@ -430,8 +430,8 @@ SCENARIO( "Process with operators", "[execution][process]" ) {
 SCENARIO( "Process with operator modifying timestamp", "[execution][process]" ) {
   const std::string modelFile = "tests/execution/process/Process_with_operator_modifying_timestamp.bpmn";
 
-  GIVEN( "A process whose operators modify the timestamp" ) {
-    THEN( "The model is refused, the start event applying them being instantaneous" ) {
+  GIVEN( "A process whose start event has operators modifying the timestamp" ) {
+    THEN( "The model is refused, the start event being instantaneous" ) {
       REQUIRE_THROWS( Model::Model(modelFile) );
     }
   }

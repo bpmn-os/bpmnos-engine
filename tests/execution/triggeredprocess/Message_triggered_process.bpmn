@@ -151,10 +151,6 @@
           <bpmnos:attribute id="Timestamp" type="decimal" name="timestamp" />
           <bpmnos:attribute id="Received" type="integer" name="received" />
         </bpmnos:attributes>
-        <bpmnos:operators>
-          <bpmnos:operator id="Operator_1" expression="total := total + received" />
-          <bpmnos:operator id="Operator_2" expression="instantiations := instantiations + 1" />
-        </bpmnos:operators>
       </bpmnos:status>
     </bpmn2:extensionElements>
     <bpmn2:startEvent id="MessageStartEvent">
@@ -162,6 +158,12 @@
         <bpmnos:message name="Trigger">
           <bpmnos:content key="Amount" attribute="received" />
         </bpmnos:message>
+        <bpmnos:status>
+          <bpmnos:operators>
+            <bpmnos:operator id="Operator_1" expression="total := total + received" />
+            <bpmnos:operator id="Operator_2" expression="instantiations := instantiations + 1" />
+          </bpmnos:operators>
+        </bpmnos:status>
       </bpmn2:extensionElements>
       <bpmn2:messageEventDefinition id="MessageEventDefinition_3" />
     </bpmn2:startEvent>

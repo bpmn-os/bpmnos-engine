@@ -109,9 +109,6 @@
             <bpmnos:attribute id="JobDuration" type="decimal" name="duration" />
             <bpmnos:attribute id="JobOrder" type="string" name="order" />
           </bpmnos:attributes>
-          <bpmnos:operators>
-            <bpmnos:operator id="OperatorJobRequests" expression="job_requests += 1" />
-          </bpmnos:operators>
         </bpmnos:status>
       </bpmn2:extensionElements>
       <bpmn2:sequenceFlow id="Flow_04nmpfp" sourceRef="CatchRequestMessage" targetRef="AdHocSubProcess" />
@@ -136,6 +133,11 @@
             <bpmnos:content key="Duration" attribute="duration" />
             <bpmnos:content key="Order" attribute="order" />
           </bpmnos:message>
+          <bpmnos:status>
+            <bpmnos:operators>
+              <bpmnos:operator id="OperatorJobRequests" expression="job_requests += 1" />
+            </bpmnos:operators>
+          </bpmnos:status>
         </bpmn2:extensionElements>
         <bpmn2:outgoing>Flow_04nmpfp</bpmn2:outgoing>
         <bpmn2:messageEventDefinition id="MessageEventDefinition_1xfumwd" />

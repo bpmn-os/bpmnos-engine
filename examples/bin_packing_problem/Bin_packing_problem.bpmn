@@ -93,11 +93,6 @@ I the stochastic case, where actual item size is only revaled when handling the 
           <bpmnos:restrictions>
             <bpmnos:restriction id="Restriction_0hn1t54" scope="entry" expression="total_size &#60;= capacity" />
           </bpmnos:restrictions>
-          <bpmnos:operators>
-            <bpmnos:operator id="Operator_2bo3f0c" expression="usage_count := max{usage_count,1}" />
-            <bpmnos:operator id="Operator_3cjc7m2" expression="items_allocated += 1" />
-            <bpmnos:operator id="Operator_1vlbcn0" expression="total_size += size" />
-          </bpmnos:operators>
         </bpmnos:status>
       </bpmn2:extensionElements>
       <bpmn2:sequenceFlow id="Flow_04nmpfp" sourceRef="CatchRequestMessage" targetRef="AdHocSubProcess" />
@@ -110,6 +105,13 @@ I the stochastic case, where actual item size is only revaled when handling the 
             <bpmnos:content key="Item" attribute="item" />
             <bpmnos:content key="Size" attribute="size" />
           </bpmnos:message>
+          <bpmnos:status>
+            <bpmnos:operators>
+              <bpmnos:operator id="Operator_2bo3f0c" expression="usage_count := max{usage_count,1}" />
+              <bpmnos:operator id="Operator_3cjc7m2" expression="items_allocated += 1" />
+              <bpmnos:operator id="Operator_1vlbcn0" expression="total_size += size" />
+            </bpmnos:operators>
+          </bpmnos:status>
           <bpmnos:guidance type="message">
             <bpmnos:attributes>
               <bpmnos:attribute id="Attribute_2jeu4u0" type="decimal" name="fill_rate" objective="maximize" weight="1" />

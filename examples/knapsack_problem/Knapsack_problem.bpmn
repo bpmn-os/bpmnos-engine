@@ -94,9 +94,6 @@ It has a data object containing the `capacity`as well as the `total_weight` and 
             <bpmnos:attribute id="Weight" type="decimal" name="weight" />
             <bpmnos:attribute id="Value" type="decimal" name="value" />
           </bpmnos:attributes>
-          <bpmnos:operators>
-            <bpmnos:operator id="Operator_Items" expression="items_requested += 1" />
-          </bpmnos:operators>
         </bpmnos:status>
       </bpmn2:extensionElements>
       <bpmn2:sequenceFlow id="Flow_04nmpfp" sourceRef="CatchRequestMessage" targetRef="AdHocSubProcess" />
@@ -173,6 +170,11 @@ It has a data object containing the `capacity`as well as the `total_weight` and 
             <bpmnos:content key="Weight" attribute="weight" />
             <bpmnos:content key="Value" attribute="value" />
           </bpmnos:message>
+          <bpmnos:status>
+            <bpmnos:operators>
+              <bpmnos:operator id="Operator_Items" expression="items_requested += 1" />
+            </bpmnos:operators>
+          </bpmnos:status>
         </bpmn2:extensionElements>
         <bpmn2:outgoing>Flow_04nmpfp</bpmn2:outgoing>
         <bpmn2:messageEventDefinition id="MessageEventDefinition_1xfumwd" />

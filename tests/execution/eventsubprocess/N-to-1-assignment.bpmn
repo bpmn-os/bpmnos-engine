@@ -17,15 +17,15 @@
     <bpmn2:sequenceFlow id="Flow_1hzrkyr" sourceRef="StartEvent_1" targetRef="WaitTask" />
     <bpmn2:subProcess id="EventSubProcess" triggeredByEvent="true">
       <bpmn2:extensionElements>
-        <bpmnos:status>
-          <bpmnos:operators>
-            <bpmnos:operator id="EventSubProcessOperator" expression="received += 1" />
-          </bpmnos:operators>
-        </bpmnos:status>
       </bpmn2:extensionElements>
       <bpmn2:startEvent id="MessageStartEvent" isInterrupting="false">
         <bpmn2:extensionElements>
           <bpmnos:message name="message" />
+          <bpmnos:status>
+            <bpmnos:operators>
+              <bpmnos:operator id="EventSubProcessOperator" expression="received += 1" />
+            </bpmnos:operators>
+          </bpmnos:status>
         </bpmn2:extensionElements>
         <bpmn2:outgoing>Flow_09a573r</bpmn2:outgoing>
         <bpmn2:messageEventDefinition id="MessageEventDefinition_1lxldns" />

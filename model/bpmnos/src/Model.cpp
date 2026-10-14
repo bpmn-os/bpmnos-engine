@@ -11,9 +11,6 @@
 #include <algorithm>
 #include "extensionElements/ExtensionElements.h"
 #include "extensionElements/Gatekeeper.h"
-#include "extensionElements/Timer.h"
-#include "extensionElements/SignalDefinition.h"
-#include "extensionElements/Conditions.h"
 #include "extensionElements/MessageDefinition.h"
 #include "DecisionTask.h"
 #include "SequentialAdHocSubProcess.h"
@@ -316,114 +313,100 @@ std::unique_ptr<BPMN::FlowNode> Model::createTask(XML::bpmn::tTask* task, BPMN::
 }
 
 
+std::unique_ptr<BPMN::FlowNode> Model::createEvent(XML::bpmn::tEvent* event, BPMN::Scope* parent) {
+  auto baseElement = BPMN::Model::createEvent(event,parent);
+  if ( baseElement->extensionElements && baseElement->extensionElements->represents<ExtensionElements>() ) {
+    // the event's factory has bound extension elements already
+    return baseElement;
+  }
+  // bind attributes, restrictions, operators, timer, and conditions
+  return bind<BPMN::FlowNode>(
+    std::move(baseElement),
+    std::make_unique<ExtensionElements>(event,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent)
+  );
+}
+
+std::unique_ptr<BPMN::FlowNode> Model::createBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) {
+  auto baseElement = BPMN::Model::createBoundaryEvent(boundaryEvent,parent);
+  if ( baseElement->extensionElements && baseElement->extensionElements->represents<ExtensionElements>() ) {
+    // the event's factory has bound extension elements already
+    return baseElement;
+  }
+  // bind attributes, restrictions, operators, timer, and conditions
+  return bind<BPMN::FlowNode>(
+    std::move(baseElement),
+    std::make_unique<ExtensionElements>(boundaryEvent,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent)
+  );
+}
+
 std::unique_ptr<BPMN::FlowNode> Model::createTimerStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) {
   if ( parent->represents<BPMN::Process>() ) {
     throw std::runtime_error("Model: timer start event of process '" + parent->id + "' is not supported");
   }
-  // bind timer
-  return bind<BPMN::FlowNode>(
-    BPMN::Model::createTimerStartEvent(startEvent,parent),
-    std::make_unique<Timer>(startEvent,parent)
-  );
-}
-
-std::unique_ptr<BPMN::FlowNode> Model::createTimerBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) {
-  // bind timer
-  return bind<BPMN::FlowNode>(
-    BPMN::Model::createTimerBoundaryEvent(boundaryEvent,parent),
-    std::make_unique<Timer>(boundaryEvent,parent)
-  );
-}
-
-std::unique_ptr<BPMN::FlowNode> Model::createTimerCatchEvent(XML::bpmn::tCatchEvent* catchEvent, BPMN::Scope* parent) {
-  // bind timer
-  return bind<BPMN::FlowNode>(
-    BPMN::Model::createTimerCatchEvent(catchEvent,parent),
-    std::make_unique<Timer>(catchEvent,parent)
-  );
+  return BPMN::Model::createTimerStartEvent(startEvent,parent);
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createSignalStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) {
   auto baseElement = BPMN::Model::createSignalStartEvent(startEvent,parent);
-  auto definition = std::make_unique<SignalDefinition>(startEvent,parent);
+  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(startEvent,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent);
 
-  if ( !definition->signal ) {
+  if ( !extensionElements->signal ) {
     throw std::runtime_error("Model: No signal defined for signal start event '" + baseElement->id + "'");
   }
 
   if ( auto process = parent->represents<BPMN::Process>() ) {
     // the process is instantiated whenever a signal with this name is thrown
-    auto [ entry, inserted ] = processesTriggeredBySignal.emplace( definition->name, process );
+    auto [ entry, inserted ] = processesTriggeredBySignal.emplace( extensionElements->signalName, process );
     if ( !inserted ) {
-      throw std::runtime_error("Model: signal '" + BPMNOS::to_string(definition->name,STRING) + "' instantiates process '" + entry->second->id + "' and process '" + process->id + "'");
+      throw std::runtime_error("Model: signal '" + BPMNOS::to_string(extensionElements->signalName,STRING) + "' instantiates process '" + entry->second->id + "' and process '" + process->id + "'");
     }
   }
 
   // bind signal
-  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(definition) );
+  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createSignalBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) {
   auto baseElement = BPMN::Model::createSignalBoundaryEvent(boundaryEvent,parent);
-  auto definition = std::make_unique<SignalDefinition>(boundaryEvent,parent);
+  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(boundaryEvent,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent);
 
-  if ( !definition->signal ) {
+  if ( !extensionElements->signal ) {
     throw std::runtime_error("Model: No signal defined for signal boundary event '" + baseElement->id + "'");
   }
 
   // bind signal
-  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(definition) );
+  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createSignalCatchEvent(XML::bpmn::tCatchEvent* catchEvent, BPMN::Scope* parent) {
   auto baseElement = BPMN::Model::createSignalCatchEvent(catchEvent,parent);
-  auto definition = std::make_unique<SignalDefinition>(catchEvent,parent);
+  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(catchEvent,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent);
 
-  if ( !definition->signal ) {
+  if ( !extensionElements->signal ) {
     throw std::runtime_error("Model: No signal defined for signal catch event '" + baseElement->id + "'");
   }
 
   // bind signal
-  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(definition) );
+  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createSignalThrowEvent(XML::bpmn::tThrowEvent* throwEvent, BPMN::Scope* parent) {
   auto baseElement = BPMN::Model::createSignalThrowEvent(throwEvent,parent);
-  auto definition = std::make_unique<SignalDefinition>(throwEvent,parent);
+  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(throwEvent,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent);
 
-  if ( !definition->signal ) {
+  if ( !extensionElements->signal ) {
     throw std::runtime_error("Model: No signal defined for signal throw event '" + baseElement->id + "'");
   }
 
   // bind signal
-  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(definition) );
+  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createConditionalStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) {
   if ( parent->represents<BPMN::Process>() ) {
     throw std::runtime_error("Model: conditional start event of process '" + parent->id + "' is not supported");
   }
-  // bind conditions
-  return bind<BPMN::FlowNode>(
-    BPMN::Model::createConditionalStartEvent(startEvent,parent),
-    std::make_unique<Conditions>(startEvent,parent)
-  );
-}
-
-std::unique_ptr<BPMN::FlowNode> Model::createConditionalBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) {
-  // bind conditions
-  return bind<BPMN::FlowNode>(
-    BPMN::Model::createConditionalBoundaryEvent(boundaryEvent,parent),
-    std::make_unique<Conditions>(boundaryEvent,parent)
-  );
-}
-
-std::unique_ptr<BPMN::FlowNode> Model::createConditionalCatchEvent(XML::bpmn::tCatchEvent* catchEvent, BPMN::Scope* parent) {
-  // bind conditions
-  return bind<BPMN::FlowNode>(
-    BPMN::Model::createConditionalCatchEvent(catchEvent,parent),
-    std::make_unique<Conditions>(catchEvent,parent)
-  );
+  return BPMN::Model::createConditionalStartEvent(startEvent,parent);
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createMessageStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) {

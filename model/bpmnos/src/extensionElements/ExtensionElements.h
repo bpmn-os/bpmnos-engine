@@ -11,8 +11,11 @@
 #include "Operator.h"
 #include "Choice.h"
 #include "MessageDefinition.h"
+#include "ContentDefinition.h"
+#include "Parameter.h"
 #include "Guidance.h"
 #include "model/bpmnos/src/xml/bpmnos/tAttribute.h"
+#include "model/bpmnos/src/xml/bpmnos/tSignal.h"
 
 namespace BPMNOS::Model {
 
@@ -58,7 +61,17 @@ public:
 
   std::vector< const BPMN::FlowNode* > messageCandidates; ///< Vector containing all potential sending or receiving nodes of a message.
 
-  std::vector< std::unique_ptr<Restriction> > conditions; ///< Vector containing conditions that may be provided for conditional events.
+  std::unique_ptr<Parameter> trigger; ///< Parameter giving the time at which a timer event is triggered, or nullptr if the node declares no timer.
+
+  XML::bpmnos::tSignal* signal; ///< The `<bpmnos:signal>` element the signal is declared by, or nullptr if the node declares none.
+  BPMNOS::number signalName; ///< Name of the signal. Temporary: removed once a signal is declared by a named definition.
+  ContentDefinitionMap signalContentMap; ///< Content of the signal by key. Temporary: removed once the content of a signal is one object.
+
+  std::vector< std::unique_ptr<Restriction> > conditions; ///< Vector containing the conditions of a conditional event.
+  std::set<const Attribute*> conditionDependencies; ///< Set containing all input attributes influencing whether the conditions are satisfied.
+
+  template <typename DataType>
+  bool conditionsSatisfied(const BPMNOS::Status& status, const DataType& data) const; ///< Returns true if and only if every condition is satisfied.
 
   std::optional< std::unique_ptr<Parameter> > loopCardinality;  ///< Number of instances to be generated.
   std::optional< std::unique_ptr<Parameter> > loopIndex; ///< Attribute holding the automatically generated loop index.

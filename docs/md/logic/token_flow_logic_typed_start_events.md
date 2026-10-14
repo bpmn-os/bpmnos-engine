@@ -4,7 +4,7 @@
 A token at a typed start event is generated when the trigger occurs, and its state advances from @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED" through @ref BPMNOS::Execution::Token::State::BUSY "BUSY" to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" instantaneously.
 The @ref BPMNOS::Model::ContentDefinition "content" of the message or signal that triggered it is part of the @ref BPMNOS::Execution::Token::status "status" the token is generated with.
 
-Upon completion, the @ref BPMNOS::Model::ExtensionElements::operators "operators" of the scope the start event belongs to are applied. If the scope is an @ref BPMN::EventSubProcess "event-subprocess", the values the model assigns to its @ref BPMNOS::Model::ExtensionElements::attributes "attributes" and data attributes are computed first, since the event-subprocess takes no values from the data: until it is triggered, its attributes are undefined.
+Upon completion, the @ref BPMNOS::Model::ExtensionElements::operators "operators" of the start event are applied. If the scope is an @ref BPMN::EventSubProcess "event-subprocess", the values the model assigns to its @ref BPMNOS::Model::ExtensionElements::attributes "attributes" and data attributes are computed first, since the event-subprocess takes no values from the data: until it is triggered, its attributes are undefined.
 If the start event belongs to an interrupting @ref BPMN::EventSubProcess "event-subprocess", all other tokens within the scope of the event-subprocess are withdrawn.
 If it belongs to a non-interrupting event-subprocess, the event-subprocess may be triggered again.
 If it belongs to a @ref BPMN::Process "process", each trigger creates an instance of that process.
@@ -32,4 +32,4 @@ stateDiagram-v2
 
 
 @attention @ref BPMN::TypedStartEvent "Typed start events" are supported for @ref BPMN::EventSubProcess "event-subprocesses" and, restricted to @ref BPMN::MessageStartEvent "message start events" and @ref BPMN::SignalStartEvent "signal start events", for @ref BPMN::Process "processes".
-@note Operators for elements with a scope must be instantaneous, i.e. they must not change the timestamp.
+@note The operators of a start event must be instantaneous, i.e. they must not change the timestamp.

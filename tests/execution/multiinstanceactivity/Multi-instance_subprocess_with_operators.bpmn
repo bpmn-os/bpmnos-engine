@@ -18,9 +18,6 @@
           <bpmnos:attributes>
             <bpmnos:attribute id="Index" type="integer" name="index" />
           </bpmnos:attributes>
-          <bpmnos:operators>
-            <bpmnos:operator id="Operator_1" expression="counter := counter + 1" />
-          </bpmnos:operators>
         </bpmnos:status>
         <bpmnos:loopCharacteristics>
           <bpmnos:parameter name="index" value="index" />
@@ -30,7 +27,15 @@
       <bpmn2:incoming>Flow_1</bpmn2:incoming>
       <bpmn2:outgoing>Flow_2</bpmn2:outgoing>
       <bpmn2:multiInstanceLoopCharacteristics />
-      <bpmn2:startEvent id="StartEvent_2" />
+      <bpmn2:startEvent id="StartEvent_2">
+        <bpmn2:extensionElements>
+          <bpmnos:status>
+            <bpmnos:operators>
+              <bpmnos:operator id="Operator_1" expression="counter := counter + 1" />
+            </bpmnos:operators>
+          </bpmnos:status>
+        </bpmn2:extensionElements>
+      </bpmn2:startEvent>
     </bpmn2:subProcess>
     <bpmn2:sequenceFlow id="Flow_2" sourceRef="MultiInstanceActivity_1" targetRef="EndEvent_1" />
     <bpmn2:endEvent id="EndEvent_1">

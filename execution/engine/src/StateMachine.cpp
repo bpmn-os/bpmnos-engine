@@ -7,8 +7,6 @@
 #include "Event.h"
 #include "execution/utility/src/erase.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
-#include "model/bpmnos/src/extensionElements/Timer.h"
-#include "model/bpmnos/src/extensionElements/SignalDefinition.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "bpmn++.h"
@@ -133,7 +131,7 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
       token->state == Token::State::BUSY
     ) {
       assert(other->systemState->tokensAwaitingTimer.find(otherToken.get()) != other->systemState->tokensAwaitingTimer.end());
-      auto trigger = token->node->extensionElements->as<BPMNOS::Model::Timer>()->trigger.get();
+      auto trigger = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->trigger.get();
       BPMNOS::number time = trigger->expression->execute(token->status, *token->data).value();
       const_cast<SystemState*>(systemState)->tokensAwaitingTimer.emplace(time, token);
     }
@@ -143,7 +141,7 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
       token->node->represents<BPMN::SignalCatchEvent>() && 
       token->state == Token::State::BUSY
     ) {
-      auto signalName = token->node->extensionElements->as<BPMNOS::Model::SignalDefinition>()->name;
+      auto signalName = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->signalName;
       assert(other->systemState->tokensAwaitingSignal.at(signalName).find(otherToken.get()) != other->systemState->tokensAwaitingSignal.at(signalName).end());
       const_cast<SystemState*>(systemState)->tokensAwaitingSignal[signalName].emplace_back(token);
     }

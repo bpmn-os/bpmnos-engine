@@ -181,10 +181,6 @@
             <bpmnos:attribute id="DeliveryDuration" type="decimal" name="delivery_duration" />
             <bpmnos:attribute id="LateDeliveryPenalty" type="decimal" name="late_delivery_penalty" objective="none" />
           </bpmnos:attributes>
-          <bpmnos:operators>
-            <bpmnos:operator id="Operator_15659lk" expression="pending += 1" />
-            <bpmnos:operator id="Operator_36m5puq" expression="requests_made += 1" />
-          </bpmnos:operators>
         </bpmnos:status>
       </bpmn2:extensionElements>
       <bpmn2:startEvent id="StartEventRequest" name="Request" isInterrupting="false">
@@ -203,6 +199,12 @@
             <bpmnos:content key="LateDeliveryPenalty" attribute="late_delivery_penalty" />
             <bpmnos:content key="PickupDuration" attribute="pickup_duration" />
           </bpmnos:message>
+          <bpmnos:status>
+            <bpmnos:operators>
+              <bpmnos:operator id="Operator_15659lk" expression="pending += 1" />
+              <bpmnos:operator id="Operator_36m5puq" expression="requests_made += 1" />
+            </bpmnos:operators>
+          </bpmnos:status>
         </bpmn2:extensionElements>
         <bpmn2:outgoing>Flow_0540sk2</bpmn2:outgoing>
         <bpmn2:messageEventDefinition id="MessageEventDefinition_1n9dvq0" />

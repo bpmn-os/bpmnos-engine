@@ -138,14 +138,15 @@ For each operator the following fields can be provided
 - `id`: a unique identifier, 
 - `expression`: an expression assigning a value to an attribute.
 
-Operators may be provided for @ref BPMN::Process "processes", @ref BPMN::SubProcess "subprocesses", @ref BPMN::EventSubProcess "event-subprocesses", and @ref BPMN::Task "tasks".
-The operators of a task are applied when the task is performed, after its entry restrictions have been checked.
-The operators of an element with a scope are applied to the token at the start event of that scope upon its completion, the scope being instantiated there, and the entry restrictions of the scope are checked thereafter, so that they constrain the status the operators produce.
-A start event has no operators of its own.
-A scope is instantiated as often as it is entered, so the operators of a looped or of a multi-instance subprocess are applied once per iteration and once per instance respectively.
-An @ref BPMN::AdHocSubProcess "ad-hoc subprocess" has no start event and must therefore not declare operators.
+Operators may be provided for @ref BPMN::Task "tasks" and events. A process, a subprocess and an event-subprocess have no operators, and a model declaring operators for one of them is refused; what is to happen when a scope starts is stated by the operators of its start event.
+The operators of a regular task and of a @ref BPMN::SendTask "send task" are applied when the task is performed, after its entry restrictions have been checked, those of a send task before its message is sent.
+The operators of a @ref BPMN::ReceiveTask "receive task" and of a @ref BPMNOS::Model::DecisionTask "decision task" are applied upon completion, after the message has been received or the choices have been made.
+The operators of a @ref BPMN::CatchEvent "catch event", start events included, are applied when the event is triggered, after the message or signal it receives has been taken; those of an untyped start event, which awaits no trigger, when it is passed.
+The operators of a @ref BPMN::ThrowEvent "throw event", end events included, are applied before the event throws, so that a message or signal it throws carries the values they produce; those of an untyped end event, which throws nothing, when it is reached.
+The entry restrictions of a scope are checked after the operators of its start event have been applied, so that they constrain the status those operators produce.
+A scope is started as often as it is entered, so the operators of the start event of a looped or of a multi-instance subprocess are applied once per iteration and once per instance respectively.
 
-@attention Operators for elements with a scope must not modify the `timestamp` attribute, a scope being entered instantaneously and its duration being the duration of what happens within it. The same holds for a @ref BPMN::SendTask "send task", a @ref BPMN::ReceiveTask "receive task" and a @ref BPMNOS::Model::DecisionTask "decision task", each of which completes upon an event of its own. Only a regular task may advance the timestamp, which is how its duration is modelled.
+@attention Operators of an event must not modify the `timestamp` attribute, an event being instantaneous. The same holds for a @ref BPMN::SendTask "send task", a @ref BPMN::ReceiveTask "receive task" and a @ref BPMNOS::Model::DecisionTask "decision task", each of which completes upon an event of its own. Only a regular task may advance the timestamp, which is how its duration is modelled.
 
 The following shows an example of an operator increasing an attribute value.
   ```xml
@@ -242,7 +243,7 @@ A process cannot send itself a message, a message flow connecting two participan
 The instance receives a generated identifier and is created with the content of the message in its status.
 
 ## Signals
-@ref BPMNOS::Model::SignalDefinition "Signals" can be used to broadcast a @ref BPMNOS::Model::ContentDefinition "content" to whoever is listening for them.
+Signals can be used to broadcast a @ref BPMNOS::Model::ContentDefinition "content" to whoever is listening for them.
 
 For @ref BPMN::SignalThrowEvent "signal throw events" and @ref BPMN::SignalCatchEvent "signal catch events" a `<bpmnos:signal>` element must be provided with field `name` representing a name of the signal, and it may contain one or more `<bpmnos:content>` elements defining the content the signal carries, each with the fields `key` and `attribute` that a message content has.
 

@@ -4,7 +4,7 @@
 #include "Engine.h"
 #include "SystemState.h"
 #include "Token.h"
-#include "model/bpmnos/src/extensionElements/Conditions.h"
+#include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include <algorithm>
 #include <iterator>
 #include <iostream>
@@ -47,8 +47,7 @@ void ConditionalEventObserver::triggerConditionalEvent(const std::vector<const B
   for ( auto it = waitingTokens.begin(); it != waitingTokens.end(); ) {
     auto& [token_ptr] = *it;
     auto token = token_ptr.lock();
-    assert( token->node->extensionElements->represents<BPMNOS::Model::Conditions>() );
-    auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::Conditions>();
+    auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
 
     // lambda determining whether data update intersects with data dependencies of conditional event
     auto intersect = [](const std::vector<const BPMNOS::Model::Attribute*>& first, const std::set<const BPMNOS::Model::Attribute*>& second) -> bool {
@@ -60,7 +59,7 @@ void ConditionalEventObserver::triggerConditionalEvent(const std::vector<const B
       return false;
     };
     
-    if ( intersect(attributes,extensionElements->dataDependencies) ) {
+    if ( intersect(attributes,extensionElements->conditionDependencies) ) {
       // advance token if conditions are satisfied
       if ( extensionElements->conditionsSatisfied(token->status,*token->data) ) {
         auto engine = const_cast<Engine*>(systemState->engine);

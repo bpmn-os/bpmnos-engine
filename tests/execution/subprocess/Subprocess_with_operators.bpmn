@@ -14,16 +14,19 @@
     </bpmn2:startEvent>
     <bpmn2:subProcess id="Activity_1" name="Subprocess with operators">
       <bpmn2:extensionElements>
-        <bpmnos:status>
-          <bpmnos:operators>
-            <bpmnos:operator id="Operator_1" expression="value := value + 41" />
-            <bpmnos:operator id="Operator_2" expression="counter := counter + 1" />
-          </bpmnos:operators>
-        </bpmnos:status>
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_01tjf2m</bpmn2:incoming>
       <bpmn2:outgoing>Flow_10i5l1l</bpmn2:outgoing>
-      <bpmn2:startEvent id="StartEvent_2" />
+      <bpmn2:startEvent id="StartEvent_2">
+        <bpmn2:extensionElements>
+          <bpmnos:status>
+            <bpmnos:operators>
+              <bpmnos:operator id="Operator_1" expression="value := value + 41" />
+              <bpmnos:operator id="Operator_2" expression="counter := counter + 1" />
+            </bpmnos:operators>
+          </bpmnos:status>
+        </bpmn2:extensionElements>
+      </bpmn2:startEvent>
     </bpmn2:subProcess>
     <bpmn2:sequenceFlow id="Flow_01tjf2m" sourceRef="StartEvent_1" targetRef="Activity_1" />
     <bpmn2:endEvent id="EndEvent_1">

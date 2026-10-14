@@ -7,7 +7,6 @@
 #include "ConditionalEventObserver.h"
 #include "execution/controller/src/Decision.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
-#include "model/bpmnos/src/extensionElements/SignalDefinition.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "execution/engine/src/events/TimerEvent.h"
@@ -241,19 +240,12 @@ void Engine::triggerInstance(const BPMN::Process* process, ContentMap content) {
   assert( process->startNodes.size() == 1 );
   auto startNode = process->startNodes.front();
 
-  // a signal start event holds its definition as its extension elements, whereas a message start event
-  // holds extension elements carrying a message definition
-  const BPMNOS::Model::ContentDefinitionMap* contentMap;
-  const std::vector<const BPMNOS::Model::Attribute*>* dataUpdateAttributes;
-  if ( auto signalDefinition = startNode->extensionElements->represents<BPMNOS::Model::SignalDefinition>() ) {
-    contentMap = &signalDefinition->contentMap;
-    dataUpdateAttributes = &signalDefinition->dataUpdate.attributes;
-  }
-  else {
-    auto startNodeExtensionElements = startNode->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-    contentMap = &startNodeExtensionElements->getMessageDefinition()->contentMap;
-    dataUpdateAttributes = &startNodeExtensionElements->dataUpdate.attributes;
-  }
+  // the start event is triggered by a signal or by a message, whose content it declares
+  auto startNodeExtensionElements = startNode->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  const BPMNOS::Model::ContentDefinitionMap* contentMap = startNodeExtensionElements->signal ?
+    &startNodeExtensionElements->signalContentMap :
+    &startNodeExtensionElements->getMessageDefinition()->contentMap;
+  const std::vector<const BPMNOS::Model::Attribute*>* dataUpdateAttributes = &startNodeExtensionElements->dataUpdate.attributes;
 
   BPMNOS::number objectiveChange = 0;
   for ( auto& [key,definition] : *contentMap ) {
