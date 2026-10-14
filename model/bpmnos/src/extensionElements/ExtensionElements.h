@@ -97,10 +97,6 @@ public:
   
   bool isInstantaneous; ///< Boolean indicating whether operators may modify timestamp.
 
-  /// @brief Method computing the values the model assigns and returning the change of the objective.
-  template <typename DataType>
-  BPMNOS::number computeInitialValues(BPMNOS::number currentTime, BPMNOS::Status& status, DataType& data) const;
-
   /// @brief Method applying the operators and returning the change of the objective.
   template <typename DataType>
   BPMNOS::number applyOperators(BPMNOS::Status& status, DataType& data) const;

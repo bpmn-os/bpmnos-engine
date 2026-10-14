@@ -19,7 +19,7 @@
       <bpmn2:extensionElements>
         <bpmnos:status>
           <bpmnos:attributes>
-            <bpmnos:attribute id="Attribute_0vj3qof" type="string[]" name="destinations := destinations(current_location)" />
+            <bpmnos:attribute id="Attribute_0vj3qof" type="string[]" name="destinations" />
             <bpmnos:attribute id="Attribute_1n9rlco" type="decimal" name="duration" />
             <bpmnos:attribute id="Attribute_1s6sf1v" type="decimal" name="departure" />
             <bpmnos:attribute id="Attribute_219l1cu" type="string" name="next_location" />
@@ -33,6 +33,13 @@
       <bpmn2:outgoing>Flow_1xj9350</bpmn2:outgoing>
       <bpmn2:standardLoopCharacteristics />
       <bpmn2:startEvent id="StartEventTrip">
+        <bpmn2:extensionElements>
+          <bpmnos:status>
+            <bpmnos:operators>
+              <bpmnos:operator id="OperatorDestinations" expression="destinations := destinations(current_location)" />
+            </bpmnos:operators>
+          </bpmnos:status>
+        </bpmn2:extensionElements>
         <bpmn2:outgoing>Flow_1fba3u2</bpmn2:outgoing>
       </bpmn2:startEvent>
       <bpmn2:sequenceFlow id="Flow_1fba3u2" sourceRef="StartEventTrip" targetRef="SelectDestination" />

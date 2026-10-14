@@ -9,6 +9,9 @@
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
+#include "execution/data/src/InstanceValues.h"
+#include "execution/data/src/DataProvider.h"
+#include "execution/data/src/Scenario.h"
 #include "bpmn++.h"
 #include <cassert>
 #include <ranges>
@@ -63,11 +66,10 @@ std::cerr << std::endl;
 */
   assert( this->instance.has_value() && this->instance.value() >= 0 );
 
-  if ( scope && !scope->represents<BPMN::EventSubProcess>() && !scope->represents<BPMN::Process>() ) {
-    // an event subprocess is instantiated when its start event is triggered and not when the state machine
-    // awaiting the trigger is created, so its data is accounted there; a pending event subprocess that is
-    // never triggered instantiates nothing and accounts nothing. The data of a process instance is accounted
-    // when the instance is started, since the data may change until then
+  if ( scope && !scope->represents<BPMN::Process>() ) {
+    // the state machine of a scope instance is created with its initial values, an event subprocess's while it
+    // listens for its trigger, so that its data is accounted whether it is triggered or not. The data of a process
+    // instance is accounted when the instance is started, since its data are given when its process becomes ready
     updateObjective();
   }
 }
@@ -415,45 +417,43 @@ void StateMachine::initiateBoundaryEvent(Token* token, const BPMN::FlowNode* nod
 void StateMachine::takeTriggeringStatus(Token* eventToken, const Status& status) {
   // the token triggering an event subprocess belongs to an enclosing scope, so the status it hands over
   // holds values for the attributes of the enclosing scopes only, possibly followed by values of a nested
-  // scope it was raised in; the status of the start token keeps its layout, the attributes of the event
-  // subprocess remaining undefined until the model assigns values to them when it is triggered
+  // scope it was raised in; the status of the start token keeps its layout and the values the attributes and
+  // objects of the event subprocess were given when it was created
   auto extensionElements = eventToken->node->as<BPMN::FlowNode>()->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
   auto ownAttributes = extensionElements ? extensionElements->attributes.size() : 0;
-  auto statusSize = eventToken->status.attributes.size();
-  // the objects of the event subprocess are kept, those of the enclosing scopes taken from the status
   auto ownObjects = extensionElements ? extensionElements->statusObjects.size() : 0;
-  std::vector< std::shared_ptr<const BPMNOS::Object> > objects( eventToken->status.objects.end() - (long)ownObjects, eventToken->status.objects.end() );
+  auto statusSize = eventToken->status.attributes.size();
   auto objectCount = eventToken->status.objects.size();
+  std::vector<BPMNOS::Value> attributes( eventToken->status.attributes.end() - (long)ownAttributes, eventToken->status.attributes.end() );
+  std::vector< std::shared_ptr<const BPMNOS::Object> > objects( eventToken->status.objects.end() - (long)ownObjects, eventToken->status.objects.end() );
   eventToken->status = status;
   eventToken->status.attributes.resize( statusSize - ownAttributes );
-  eventToken->status.attributes.resize( statusSize );
+  eventToken->status.attributes.insert( eventToken->status.attributes.end(), attributes.begin(), attributes.end() );
   eventToken->status.objects.resize( objectCount - ownObjects );
   eventToken->status.objects.insert( eventToken->status.objects.end(), objects.begin(), objects.end() );
 }
 
-BPMNOS::Data StateMachine::undefinedData(const BPMN::Node* node) const {
-  auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-  Data data( extensionElements ? extensionElements->data.size() : 0 );
-  if ( extensionElements ) {
-    // the objects take the values the model and the declared sizes give them, no instance data being given
-    // for a scope the engine creates itself
-    for ( auto& object : extensionElements->dataObjects ) {
-      data.objects.push_back( systemState->scenario->dataProvider->getDefaultObject(object.get()) );
-    }
+std::shared_ptr<StateMachine> StateMachine::createPendingEventSubProcess(const BPMN::EventSubProcess* eventSubProcess, const Status& status) {
+  // the instance of a non-interrupting event subprocess has an identifier of its own, disambiguated by the number
+  // of instances of the start event; an interrupting one shares the identity of the instance of the scope
+  std::optional<BPMNOS::number> identity;
+  if ( !eventSubProcess->startEvent->isInterrupting ) {
+    auto counter = ++instantiations[eventSubProcess->startEvent];
+    auto instanceId = BPMNOS::to_string(instance.value(),STRING) + StateMachine::delimiters[0] + eventSubProcess->id + StateMachine::delimiters[1] + std::to_string(counter);
+    identity = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
   }
-  return data;
+  // the instance comes into being while it listens, with its initial values, no instance data being given for a
+  // scope the engine creates itself
+  Execution::InstanceValues values(*systemState->scenario->dataProvider, eventSubProcess, systemState->getTime(), status, data, identity, {}, {});
+  auto pendingEventSubProcess = std::make_shared<StateMachine>( systemState, eventSubProcess, parentToken, std::move(values.data), identity );
+  pendingEventSubProcess->run( std::move(values.status) );
+  return pendingEventSubProcess;
 }
 
 void StateMachine::initiateEventSubprocesses(Token* token) {
 //std::cerr << "initiate " << scope->eventSubProcesses.size() << " eventSubprocesses for token at " << token->node->id << "/" << parentToken << "/" << token << " owned by " << token->owner << std::endl;
   for ( auto& eventSubProcess : scope->eventSubProcesses ) {
-    // the data of an event subprocess is internal: it is undefined until the model assigns values to it
-    // when the event subprocess is triggered
-    pendingEventSubProcesses.push_back(std::make_shared<StateMachine>( systemState, eventSubProcess, parentToken, undefinedData(eventSubProcess) ) );
-    auto pendingEventSubProcess = pendingEventSubProcesses.back().get();
-//std::cerr << "Pending event subprocess has parent: " << pendingEventSubProcess->parentToken->jsonify().dump() << std::endl;
-
-    pendingEventSubProcess->run(token->status);
+    pendingEventSubProcesses.push_back( createPendingEventSubProcess(eventSubProcess, token->status) );
   }
 }
 
@@ -797,36 +797,13 @@ void StateMachine::run(Status status) {
   }
 
   for ( auto token : tokens ) {
-    if ( auto flowNode = token->node->represents<BPMN::FlowNode>() ) {
-      // a typed start event of a process belongs to an instance already created by the trigger, with
-      // the status and the identifier it was created with
-      if ( auto startEvent = token->node->represents<BPMN::TypedStartEvent>();
-        startEvent && flowNode->parent->represents<BPMN::EventSubProcess>()
-      ) {
-        // the status attributes of the event subprocess are internal: they are undefined until the model
-        // assigns values to them when the event subprocess is triggered
-        auto extensionElements = flowNode->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-        token->status.attributes.resize( token->status.attributes.size() + ( extensionElements ? extensionElements->attributes.size() : 0 ) );
-        if ( extensionElements ) {
-          // its status objects take the values the model and the declared sizes give them
-          for ( auto& object : extensionElements->statusObjects ) {
-            token->status.objects.push_back( systemState->scenario->dataProvider->getDefaultObject(object.get()) );
-          }
-        }
-
-        if ( !startEvent->isInterrupting ) {
-          // token instantiates non-interrupting event subprocess
-          // get instantiation counter from context
-          auto context = const_cast<StateMachine*>(parentToken->owned.get());
-          auto counter = ++context->instantiations[flowNode];
-          // disambiguate instance id
-          auto instanceId = BPMNOS::to_string((*parentToken->data).attributes[systemState->engine->getModel()->instanceIndex].get().value(),STRING) + StateMachine::delimiters[0] + scope->id + StateMachine::delimiters[1] + std::to_string(counter);
-          data.attributes[systemState->engine->getModel()->instanceIndex].get() = BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING);
-          const_cast<SystemState*>(systemState)->archive[ (long unsigned int)data.attributes[systemState->engine->getModel()->instanceIndex].get().value() ] = weak_from_this();
-          registerRecipient();
-        }
-      }
-//std::cerr << "Initial token: >" << token->jsonify().dump() << "<" << std::endl;
+    if ( auto startEvent = token->node->represents<BPMN::TypedStartEvent>();
+      startEvent && !startEvent->isInterrupting && startEvent->parent->represents<BPMN::EventSubProcess>()
+    ) {
+      // the instance of a non-interrupting event subprocess, created with an identifier of its own, receives
+      // the messages addressed to it
+      const_cast<SystemState*>(systemState)->archive[ (long unsigned int)instance.value() ] = weak_from_this();
+      registerRecipient();
     }
     // advance token
     token->advanceFromCreated();
@@ -871,11 +848,12 @@ void StateMachine::createCompensationTokenForBoundaryEvent(const BPMN::BoundaryE
 
 void StateMachine::createCompensationEventSubProcess(const BPMN::EventSubProcess* eventSubProcess, BPMNOS::Status status) {
 //std::cerr << "createCompensationEventSubProcess: " << eventSubProcess->id << "/" << scope->id << "/" << parentToken->owner->scope->id <<std::endl;
-  // create state machine for compensation event subprocess, whose data is internal and undefined until the
-  // model assigns values to it when its start event completes
-  compensationEventSubProcesses.push_back(std::make_shared<StateMachine>( systemState, eventSubProcess, parentToken, undefinedData(eventSubProcess) ) );
+  // the compensation event subprocess comes into being with its initial values, no instance data being given
+  // for a scope the engine creates itself
+  Execution::InstanceValues values(*systemState->scenario->dataProvider, eventSubProcess, systemState->getTime(), std::move(status), parentToken->owned->data, std::nullopt, {}, {});
+  compensationEventSubProcesses.push_back(std::make_shared<StateMachine>( systemState, eventSubProcess, parentToken, std::move(values.data) ) );
   // create token at start event of compensation event subprocess
-  std::shared_ptr<Token> compensationToken = std::make_shared<Token>(compensationEventSubProcesses.back().get(), eventSubProcess->startEvent, status );
+  std::shared_ptr<Token> compensationToken = std::make_shared<Token>(compensationEventSubProcesses.back().get(), eventSubProcess->startEvent, std::move(values.status) );
   compensationToken->update(Token::State::BUSY);
   compensationTokens.push_back(std::move(compensationToken));
 }
@@ -888,10 +866,16 @@ void StateMachine::compensateActivity(Token* token) {
     // move token to compensation activity
     token->node = compensationActivity;
     auto engine = const_cast<Engine*>(systemState->engine);
+    // the compensation activity comes into being with its initial values, built from the status of the scope the
+    // token holds, no instance data being given for a scope the engine creates itself
+    auto extensionElements = compensationActivity->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    BPMNOS::Status inheritedStatus = token->status;
+    inheritedStatus.attributes.resize( extensionElements->attributeRegistry.statusAttributes.size() - extensionElements->attributes.size() );
+    inheritedStatus.objects.resize( extensionElements->attributeRegistry.statusObjects.size() - extensionElements->statusObjects.size() );
+    Execution::InstanceValues values(*systemState->scenario->dataProvider, compensationActivity, systemState->getTime(), std::move(inheritedStatus), *token->data, std::nullopt, {}, {});
+    token->status = std::move(values.status);
     if ( auto scope = token->node->represents<BPMN::Scope>() ) {
-      // the data of a compensation activity is internal: it is undefined until the model assigns values to
-      // it when the activity is entered
-      createChild( token, scope, undefinedData(scope) );
+      createChild( token, scope, std::move(values.data) );
     }
     engine->commands.emplace_back(std::bind(&Token::advanceToEntered,token), token);
   }

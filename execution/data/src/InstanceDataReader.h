@@ -127,9 +127,12 @@ public:
   std::unordered_map<const BPMNOS::Model::Attribute*, size_t> globalObjects; ///< The constant object given for each global object
   std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::Model::Schema> schemas; ///< The schema of each object whose sizes are declared
 
+  /// @brief Converts the value of an expression of the instance data to a value of the given type, an integer
+  /// being truncated and a boolean being true for every value but zero.
+  static BPMNOS::number convert(double value, ValueType type);
+
 private:
   const BPMN::Node* findNode(const std::string& nodeId) const;
-  static BPMNOS::number convert(double value, ValueType type);
 };
 
 } // namespace BPMNOS::Execution

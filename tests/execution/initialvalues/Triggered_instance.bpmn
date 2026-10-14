@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmnos="https://bpmnos.telematique.eu" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+  <bpmn2:collaboration id="Collaboration_1">
+    <bpmn2:participant id="Participant_1" processRef="Process_1" />
+    <bpmn2:participant id="Participant_2" processRef="Triggered" />
+  </bpmn2:collaboration>
+  <bpmn2:process id="Process_1" isExecutable="true">
+    <bpmn2:extensionElements>
+      <bpmnos:status>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Timestamp" type="decimal" name="timestamp" />
+          <bpmnos:attribute id="Amount" type="integer" name="amount := 5" />
+        </bpmnos:attributes>
+      </bpmnos:status>
+    </bpmn2:extensionElements>
+    <bpmn2:startEvent id="StartEvent_1">
+      <bpmn2:outgoing>Flow_1</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="MessageThrowEvent_1" />
+    <bpmn2:endEvent id="MessageThrowEvent_1">
+      <bpmn2:extensionElements>
+        <bpmnos:message name="Trigger">
+          <bpmnos:content key="Amount" attribute="amount" />
+        </bpmnos:message>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>Flow_1</bpmn2:incoming>
+      <bpmn2:messageEventDefinition id="MessageEventDefinition_1" />
+    </bpmn2:endEvent>
+    <bpmn2:dataObject id="DataObject_1">
+      <bpmn2:extensionElements>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Instance" type="string" name="instance" />
+        </bpmnos:attributes>
+      </bpmn2:extensionElements>
+    </bpmn2:dataObject>
+  </bpmn2:process>
+  <bpmn2:process id="Triggered" isExecutable="true">
+    <bpmn2:extensionElements>
+      <bpmnos:status>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Timestamp" type="decimal" name="timestamp" />
+          <bpmnos:attribute id="Received" type="integer" name="received := 1" />
+          <bpmnos:attribute id="Initial" type="integer" name="initial := 7" />
+          <bpmnos:attribute id="Seen" type="integer" name="seen" />
+        </bpmnos:attributes>
+      </bpmnos:status>
+    </bpmn2:extensionElements>
+    <bpmn2:startEvent id="MessageStartEvent">
+      <bpmn2:extensionElements>
+        <bpmnos:message name="Trigger">
+          <bpmnos:content key="Amount" attribute="received" />
+        </bpmnos:message>
+        <bpmnos:status>
+          <bpmnos:operators>
+            <bpmnos:operator id="Operator_1" expression="seen := received + initial" />
+          </bpmnos:operators>
+        </bpmnos:status>
+      </bpmn2:extensionElements>
+      <bpmn2:outgoing>Flow_2</bpmn2:outgoing>
+      <bpmn2:messageEventDefinition id="MessageEventDefinition_2" />
+    </bpmn2:startEvent>
+    <bpmn2:sequenceFlow id="Flow_2" sourceRef="MessageStartEvent" targetRef="EndEvent_2" />
+    <bpmn2:endEvent id="EndEvent_2">
+      <bpmn2:incoming>Flow_2</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:dataObject id="DataObject_2">
+      <bpmn2:extensionElements>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Instance" type="string" name="instance" />
+        </bpmnos:attributes>
+      </bpmn2:extensionElements>
+    </bpmn2:dataObject>
+  </bpmn2:process>
+</bpmn2:definitions>

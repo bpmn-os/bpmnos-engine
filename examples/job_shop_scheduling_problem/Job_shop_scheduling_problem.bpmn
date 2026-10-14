@@ -32,8 +32,8 @@
         <bpmnos:status>
           <bpmnos:attributes>
             <bpmnos:attribute id="Index" type="integer" name="index" />
-            <bpmnos:attribute id="RequestedMachine" type="string" name="machine := machines[index]" />
-            <bpmnos:attribute id="Duration" type="decimal" name="duration := durations[index]" />
+            <bpmnos:attribute id="RequestedMachine" type="string" name="machine" />
+            <bpmnos:attribute id="Duration" type="decimal" name="duration" />
           </bpmnos:attributes>
         </bpmnos:status>
         <bpmnos:loopCharacteristics>
@@ -45,6 +45,14 @@
       <bpmn2:outgoing>Flow_0xaxr01</bpmn2:outgoing>
       <bpmn2:multiInstanceLoopCharacteristics isSequential="true" />
       <bpmn2:startEvent id="JobStartEvent">
+        <bpmn2:extensionElements>
+          <bpmnos:status>
+            <bpmnos:operators>
+              <bpmnos:operator id="OperatorMachine" expression="machine := machines[index]" />
+              <bpmnos:operator id="OperatorDuration" expression="duration := durations[index]" />
+            </bpmnos:operators>
+          </bpmnos:status>
+        </bpmn2:extensionElements>
         <bpmn2:outgoing>Flow_06kzyqb</bpmn2:outgoing>
       </bpmn2:startEvent>
       <bpmn2:endEvent id="JobEndEvent">

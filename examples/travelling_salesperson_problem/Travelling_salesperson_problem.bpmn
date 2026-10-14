@@ -24,10 +24,12 @@
           <bpmnos:status>
             <bpmnos:attributes>
               <bpmnos:attribute id="Index" type="integer" name="index" />
-              <bpmnos:attribute id="Location" type="string" name="location := locations[index]" />
-              <bpmnos:attribute id="Distance" type="decimal" name="distance := distance(current_location,location)" objective="none" />
+              <bpmnos:attribute id="Location" type="string" name="location" />
+              <bpmnos:attribute id="Distance" type="decimal" name="distance" objective="none" />
             </bpmnos:attributes>
             <bpmnos:operators>
+              <bpmnos:operator id="OperatorLocation" expression="location := locations[index]" />
+              <bpmnos:operator id="OperatorDistance" expression="distance := distance(current_location,location)" />
               <bpmnos:operator id="Operator_06serru" expression="current_location := location" />
               <bpmnos:operator id="Operator_0lkr11q" expression="timestamp += distance / speed" />
             </bpmnos:operators>

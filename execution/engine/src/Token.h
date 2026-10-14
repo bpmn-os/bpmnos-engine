@@ -119,7 +119,6 @@ private:
   bool exitIsFeasible() const; ///< Check restrictions within current and ancestor scopes
 //  bool satisfiesInheritedRestrictions() const; ///< Check restrictions within ancestor scopes
 
-  void computeInitialValues( const BPMNOS::Model::ExtensionElements* extensionElements );
 
   void advanceFromCreated();
   void advanceToReady();

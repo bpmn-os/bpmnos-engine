@@ -26,6 +26,17 @@ BPMNOS::number convert(double value, BPMNOS::ValueType type) {
   }
 }
 
+/// @brief Returns true if an expression assigns the timestamp.
+bool assignsTimestamp(const BPMNOS::Model::Expression& expression) {
+  auto target = expression.target.value();
+  return target->category == BPMNOS::Model::Attribute::Category::STATUS && !target->isObject() && target->index == BPMNOS::Model::ExtensionElements::Index::Timestamp;
+}
+
+/// @brief Returns true if a list of attributes declared for a node holds the given attribute.
+bool holds(const std::vector<std::unique_ptr<BPMNOS::Model::Attribute>>& attributes, const BPMNOS::Model::Attribute* attribute) {
+  return std::ranges::any_of(attributes, [attribute](auto& declared) { return declared.get() == attribute; });
+}
+
 } // namespace
 
 StochasticDataProvider::Scenario::Scenario(std::shared_ptr<const StochasticDataProvider> dataProvider, unsigned int seed)
@@ -65,16 +76,57 @@ StochasticDataProvider::StochasticDataProvider(std::shared_ptr<const BPMNOS::Mod
   randomDistributionFactory.setCurrentRng(nullptr);
 }
 
-std::unique_ptr<BPMNOS::Model::Expression> StochasticDataProvider::compileStatusExpression(const InstanceDataReader::Row& row, const std::string& expression, const std::string& column) const {
+std::unique_ptr<BPMNOS::Model::Expression> StochasticDataProvider::compileReadyExpression(const InstanceDataReader::Row& row, const std::string& expression) const {
+  auto extensionElements = row.node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  auto compiled = std::make_unique<BPMNOS::Model::Expression>(handle, BPMNOS::InputEncoder::fragment(expression), extensionElements->attributeRegistry);
+  if ( !compiled->target.has_value() ) {
+    throw std::runtime_error("StochasticDataProvider: the ready expression of '" + row.node->id + "' must assign an attribute");
+  }
+  auto target = compiled->target.value();
+  // a ready event gives the whole status and the data the scope owns, never inherited data
+  if ( target->category != BPMNOS::Model::Attribute::Category::STATUS && !holds(extensionElements->data, target) && !holds(extensionElements->dataObjects, target) ) {
+    throw std::runtime_error("StochasticDataProvider: the ready expression of '" + row.node->id + "' must assign a status attribute or a data attribute the scope owns");
+  }
+  if ( compiled->writesToObject() ) {
+    throw std::runtime_error("StochasticDataProvider: the ready expression of '" + row.node->id + "' must not assign an object");
+  }
+  if ( assignsTimestamp(*compiled) ) {
+    // the timestamp determines when the token becomes ready, so it is sampled when the token arrives, before any
+    // other ready expression and before the attributes of the scope exist
+    if ( getReadyExpressions(row.instanceId, row.node) ) {
+      throw std::runtime_error("StochasticDataProvider: the ready expression of '" + row.node->id + "' assigning the timestamp must be the first ready expression of the node");
+    }
+    for ( auto input : compiled->inputs ) {
+      if ( holds(extensionElements->attributes, input) || holds(extensionElements->statusObjects, input) || holds(extensionElements->data, input) || holds(extensionElements->dataObjects, input) ) {
+        throw std::runtime_error("StochasticDataProvider: the ready expression of '" + row.node->id + "' assigning the timestamp must read only what the scope inherits, not '" + input->name + "'");
+      }
+    }
+  }
+  return compiled;
+}
+
+std::unique_ptr<BPMNOS::Model::Expression> StochasticDataProvider::compileCompletionExpression(const InstanceDataReader::Row& row, const std::string& expression) const {
   auto extensionElements = row.node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   auto compiled = std::make_unique<BPMNOS::Model::Expression>(handle, BPMNOS::InputEncoder::fragment(expression), extensionElements->attributeRegistry);
   if ( !compiled->target.has_value() || compiled->target.value()->category != BPMNOS::Model::Attribute::Category::STATUS ) {
-    throw std::runtime_error("StochasticDataProvider: the " + column + " expression of '" + row.node->id + "' must assign a status attribute");
+    throw std::runtime_error("StochasticDataProvider: the completion expression of '" + row.node->id + "' must assign a status attribute");
   }
   if ( compiled->writesToObject() ) {
-    throw std::runtime_error("StochasticDataProvider: the " + column + " expression of '" + row.node->id + "' must not assign an object");
+    throw std::runtime_error("StochasticDataProvider: the completion expression of '" + row.node->id + "' must not assign an object");
   }
   return compiled;
+}
+
+const std::vector<std::unique_ptr<BPMNOS::Model::Expression>>* StochasticDataProvider::getReadyExpressions(size_t instanceId, const BPMN::Node* node) const {
+  auto instanceExpressions = readyExpressions.find(instanceId);
+  if ( instanceExpressions == readyExpressions.end() ) {
+    return nullptr;
+  }
+  auto nodeExpressions = instanceExpressions->second.find(node);
+  if ( nodeExpressions == instanceExpressions->second.end() ) {
+    return nullptr;
+  }
+  return &nodeExpressions->second;
 }
 
 void StochasticDataProvider::readValue(InstanceDataReader& reader, const InstanceDataReader::Row& row, [[maybe_unused]] const LIMEX::Handle<double>& rowHandle) {
@@ -89,7 +141,8 @@ void StochasticDataProvider::readValue(InstanceDataReader& reader, const Instanc
     if ( !activity || row.node->represents<BPMN::EventSubProcess>() || activity->isForCompensation ) {
       throw std::runtime_error("StochasticDataProvider: no ready expression may be given for '" + row.node->id + "'");
     }
-    readyExpressions[row.instanceId][row.node].push_back(compileStatusExpression(row, ready, "ready"));
+    auto compiled = compileReadyExpression(row, ready);
+    readyExpressions[row.instanceId][row.node].push_back(std::move(compiled));
   }
 
   if ( !completion.empty() ) {
@@ -102,7 +155,7 @@ void StochasticDataProvider::readValue(InstanceDataReader& reader, const Instanc
     ) {
       throw std::runtime_error("StochasticDataProvider: no completion expression may be given for '" + row.node->id + "'");
     }
-    completionExpressions[row.instanceId][row.node].push_back(compileStatusExpression(row, completion, "completion"));
+    completionExpressions[row.instanceId][row.node].push_back(compileCompletionExpression(row, completion));
   }
 
   if ( row.initialization.empty() ) {
@@ -236,26 +289,65 @@ BPMNOS::number StochasticDataProvider::getProcessReadyTime(const StaticDataProvi
   return std::max(static_cast<const Scenario&>(scenario).instantiationTimes.at(instanceId), getKnownTime(scenario, instanceId));
 }
 
-BPMNOS::Status StochasticDataProvider::getActivityReadyStatus(StaticDataProvider::Scenario& scenario, const Token* token, BPMNOS::number earliest) const {
-  auto status = DynamicDataProvider::getActivityReadyStatus(scenario, token, earliest);
-  computeStatus(static_cast<Scenario&>(scenario), readyExpressions, (size_t)token->owner->root->instance.value(), token->node, status, *token->data, earliest);
-  return status;
+std::optional<BPMNOS::number> StochasticDataProvider::getReadyTimestamp(StaticDataProvider::Scenario& scenario, const Token* token, BPMNOS::number earliest) const {
+  auto instanceId = (size_t)token->owner->root->instance.value();
+  auto expressions = getReadyExpressions(instanceId, token->node);
+  if ( !expressions || !assignsTimestamp(*expressions->front()) ) {
+    return std::nullopt;
+  }
+  auto& expression = *expressions->front();
+  auto target = expression.target.value();
+  randomDistributionFactory.setCurrentRng(&static_cast<Scenario&>(scenario).getRandomNumberGenerator(instanceId, token->node));
+  auto evaluate = [&]() -> std::optional<BPMNOS::number> {
+    if ( auto value = expression.execute(token->status, *token->data) ) {
+      return convert(value.value(), target->type);
+    }
+    return std::nullopt;
+  };
+  auto timestamp = evaluate();
+  // a timestamp sampled for a token awaiting its ready event in an installed system state is sampled again while
+  // it precedes the time of that state, and is then set to that time, since the event has not happened before
+  for ( int tries = 1; timestamp.has_value() && timestamp.value() < earliest && tries < maxResamplingTries; tries++ ) {
+    timestamp = evaluate();
+  }
+  if ( timestamp.has_value() && timestamp.value() < earliest ) {
+    timestamp = earliest;
+  }
+  randomDistributionFactory.setCurrentRng(nullptr);
+  return timestamp;
 }
 
-BPMNOS::number StochasticDataProvider::getActivityReadyTime(const StaticDataProvider::Scenario& scenario, size_t instanceId, const BPMN::Node* activity, const BPMNOS::Status& readyStatus) const {
-  // the token becomes ready once the timestamp of the status it becomes ready with is reached
-  return std::max(DynamicDataProvider::getActivityReadyTime(scenario, instanceId, activity, readyStatus), readyStatus.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp].value());
+BPMNOS::number StochasticDataProvider::getActivityReadyTime(const StaticDataProvider::Scenario& scenario, size_t instanceId, const BPMN::Node* activity, std::optional<BPMNOS::number> readyTimestamp) const {
+  // the token becomes ready once the timestamp a ready value gives is reached
+  auto readyTime = DynamicDataProvider::getActivityReadyTime(scenario, instanceId, activity, readyTimestamp);
+  return readyTimestamp.has_value() ? std::max(readyTime, readyTimestamp.value()) : readyTime;
+}
+
+void StochasticDataProvider::applyReadyValues(StaticDataProvider::Scenario& scenario, const Token* token, InstanceValues& values) const {
+  auto instanceId = (size_t)token->owner->root->instance.value();
+  auto expressions = getReadyExpressions(instanceId, token->node);
+  if ( !expressions ) {
+    return;
+  }
+  randomDistributionFactory.setCurrentRng(&static_cast<Scenario&>(scenario).getRandomNumberGenerator(instanceId, token->node));
+  for ( auto& expression : *expressions ) {
+    // the timestamp was sampled when the token arrived
+    if ( !assignsTimestamp(*expression) ) {
+      values.assign(*expression);
+    }
+  }
+  randomDistributionFactory.setCurrentRng(nullptr);
 }
 
 BPMNOS::Status StochasticDataProvider::getCompletionStatus(StaticDataProvider::Scenario& scenario, const Token* token, BPMNOS::number earliest) const {
   auto status = DynamicDataProvider::getCompletionStatus(scenario, token, earliest);
-  computeStatus(static_cast<Scenario&>(scenario), completionExpressions, (size_t)token->owner->root->instance.value(), token->node, status, *token->data, earliest);
+  computeStatus(static_cast<Scenario&>(scenario), (size_t)token->owner->root->instance.value(), token->node, status, *token->data, earliest);
   return status;
 }
 
-void StochasticDataProvider::computeStatus(Scenario& scenario, const Expressions& expressions, size_t instanceId, const BPMN::Node* node, BPMNOS::Status& status, const BPMNOS::SharedData& data, BPMNOS::number earliest) const {
-  auto instanceExpressions = expressions.find(instanceId);
-  if ( instanceExpressions == expressions.end() ) {
+void StochasticDataProvider::computeStatus(Scenario& scenario, size_t instanceId, const BPMN::Node* node, BPMNOS::Status& status, const BPMNOS::SharedData& data, BPMNOS::number earliest) const {
+  auto instanceExpressions = completionExpressions.find(instanceId);
+  if ( instanceExpressions == completionExpressions.end() ) {
     return;
   }
   auto nodeExpressions = instanceExpressions->second.find(node);

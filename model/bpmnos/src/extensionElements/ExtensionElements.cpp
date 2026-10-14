@@ -472,35 +472,6 @@ template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::Data>(co
 template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::SharedData>(const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;
 
 template <typename DataType>
-BPMNOS::number ExtensionElements::computeInitialValues(BPMNOS::number currentTime, BPMNOS::Status& status, DataType& data) const {
-  BPMNOS::number change = 0;
-  status.attributes.at(BPMNOS::Model::ExtensionElements::Index::Timestamp) = currentTime;
-  for ( auto& attribute : attributes ) {
-    if ( attribute->expression ) {
-      change += attributeRegistry.setValue( attribute.get(), status, data, BPMNOS::to_value( attribute->expression->execute(status,data) ) );
-    }
-  }
-  for ( auto& attribute : this->data ) {
-    if ( attribute->expression ) {
-      change += attributeRegistry.setValue( attribute.get(), status, data, BPMNOS::to_value( attribute->expression->execute(status,data) ) );
-    }
-  }
-  // the objects the model computes, such as the result of a lookup, which carry no objective
-  for ( auto objects : { &statusObjects, &dataObjects } ) {
-    for ( auto& object : *objects ) {
-      if ( object->expression ) {
-        object->expression->writeToObject(status,data);
-      }
-    }
-  }
-  return change;
-}
-
-template BPMNOS::number ExtensionElements::computeInitialValues<BPMNOS::Data>(BPMNOS::number currentTime, Status& status, BPMNOS::Data& data) const;
-template BPMNOS::number ExtensionElements::computeInitialValues<BPMNOS::SharedData>(BPMNOS::number currentTime, Status& status, BPMNOS::SharedData& data) const;
-
-
-template <typename DataType>
 BPMNOS::number ExtensionElements::applyOperators(BPMNOS::Status& status, DataType& data) const {
   BPMNOS::number change = 0;
   for ( auto& operator_ : operators ) {

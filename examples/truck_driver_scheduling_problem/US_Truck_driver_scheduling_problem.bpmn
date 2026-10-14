@@ -21,11 +21,11 @@
         <bpmnos:status>
           <bpmnos:attributes>
             <bpmnos:attribute id="Index" type="integer" name="index" />
-            <bpmnos:attribute id="ServiceTime" type="decimal" name="service_time := service_times[index]" />
-            <bpmnos:attribute id="TravelTime" type="decimal" name="travel_time := travel_times[index]" />
-            <bpmnos:attribute id="LatestVisit" type="decimal" name="latest_visit := latest_visits[index]" />
-            <bpmnos:attribute id="EarliestVisit" type="decimal" name="earliest_visit := earliest_visits[index]" />
-            <bpmnos:attribute id="DrivingTime" type="decimal" name="remaining_driving_time := travel_time" />
+            <bpmnos:attribute id="ServiceTime" type="decimal" name="service_time" />
+            <bpmnos:attribute id="TravelTime" type="decimal" name="travel_time" />
+            <bpmnos:attribute id="LatestVisit" type="decimal" name="latest_visit" />
+            <bpmnos:attribute id="EarliestVisit" type="decimal" name="earliest_visit" />
+            <bpmnos:attribute id="DrivingTime" type="decimal" name="remaining_driving_time" />
           </bpmnos:attributes>
         </bpmnos:status>
         <bpmnos:loopCharacteristics>
@@ -37,6 +37,17 @@
       <bpmn2:outgoing>Flow_1xxyckx</bpmn2:outgoing>
       <bpmn2:multiInstanceLoopCharacteristics isSequential="true" />
       <bpmn2:startEvent id="StartTripEvent">
+        <bpmn2:extensionElements>
+          <bpmnos:status>
+            <bpmnos:operators>
+              <bpmnos:operator id="OperatorServiceTime" expression="service_time := service_times[index]" />
+              <bpmnos:operator id="OperatorTravelTime" expression="travel_time := travel_times[index]" />
+              <bpmnos:operator id="OperatorLatestVisit" expression="latest_visit := latest_visits[index]" />
+              <bpmnos:operator id="OperatorEarliestVisit" expression="earliest_visit := earliest_visits[index]" />
+              <bpmnos:operator id="OperatorDrivingTime" expression="remaining_driving_time := travel_time" />
+            </bpmnos:operators>
+          </bpmnos:status>
+        </bpmn2:extensionElements>
         <bpmn2:outgoing>Flow_0susd9a</bpmn2:outgoing>
       </bpmn2:startEvent>
       <bpmn2:task id="VisitTask" name="Visit">

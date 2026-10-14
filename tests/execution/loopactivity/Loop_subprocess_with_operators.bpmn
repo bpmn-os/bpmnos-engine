@@ -34,7 +34,7 @@
           <bpmnos:attributes>
             <bpmnos:attribute id="Index" type="integer" name="index" />
             <bpmnos:attribute id="Maximum" type="integer" name="maximum" />
-            <bpmnos:attribute id="Loop" type="boolean" name="loop := (index &#60;= 2)" />
+            <bpmnos:attribute id="Loop" type="boolean" name="loop" />
           </bpmnos:attributes>
         </bpmnos:status>
       </bpmn2:extensionElements>
@@ -45,6 +45,7 @@
         <bpmn2:extensionElements>
           <bpmnos:status>
             <bpmnos:operators>
+              <bpmnos:operator id="OperatorLoop" expression="loop := (index &#60;= 2)" />
               <bpmnos:operator id="Operator_1" expression="counter := counter + 1" />
             </bpmnos:operators>
           </bpmnos:status>

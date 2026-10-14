@@ -47,7 +47,7 @@ message and signal content are rendered alike.
 
 ## Scenario
 
-A @ref BPMNOS::Execution::Scenario "scenario" holds what a run on a model needs to know of its environment: the process instances and the values of their attributes, and the times at which these become known. It is created by a @ref BPMNOS::Execution::DataProvider "data provider" from instance data supplied before the run, and the data provider enqueues the events the scenario gives rise to during the run, as described in the documentation of the @ref engine "execution engine". Four data providers are available, differing in what is known when, and are described below. The data may give no values to the attributes of an @ref BPMN::EventSubProcess "event subprocess" or of a compensation activity: the engine creates such scopes itself and gives them the values the model assigns, and a data provider rejects a row naming such a node in its INITIALIZATION column or, for the stochastic data provider, its READY column. The data may give no values to the attributes of a @ref BPMNOS::Model::Guidance "guidance" either, which take only the values the model assigns to them.
+A @ref BPMNOS::Execution::Scenario "scenario" holds what a run on a model needs to know of its environment: the process instances and the values of their attributes, and the times at which these become known. It is created by a @ref BPMNOS::Execution::DataProvider "data provider" from instance data supplied before the run, and the data provider enqueues the events the scenario gives rise to during the run, as described in the documentation of the @ref engine "execution engine". Four data providers are available, differing in what is known when, and are described below. The data may give no values to the attributes of an @ref BPMN::EventSubProcess "event subprocess" or of a compensation activity: the engine creates such scopes itself and gives them the values the model assigns when it creates them, and a data provider rejects a row naming such a node in its INITIALIZATION column or, for the stochastic data provider, its READY column. The data may give no values to the attributes of a @ref BPMNOS::Model::Guidance "guidance" either, which take only the values the model assigns to them.
 
 ## Static data provider
 
@@ -248,7 +248,7 @@ INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION
 - **NODE_ID**: The BPMN node ID (process, activity, subprocess, etc.). Leave empty for global attributes.
 - **INITIALIZATION**: An assignment expression in the format `attribute := expression`. Evaluated at parse time. May contain random functions and can reference any attributes previously parse-time evaluated in earlier CSV rows.
 - **DISCLOSURE**: The time at which this attribute value becomes known. Leave empty for immediate disclosure.
-- **READY**: Expression evaluated when a token arrives at an activity (Task, SubProcess, CallActivity). Evaluated at runtime with full context (status and data, the data including the global attributes).
+- **READY**: An assignment applied when a token becomes ready at an activity (Task, SubProcess, CallActivity), over the initial values of the scope instance. It assigns a status attribute or a data attribute the scope owns. One assigning the timestamp must be the first of its node and is evaluated when the token arrives, as described below.
 - **COMPLETION**: Expression evaluated when a task completes. Only valid for Task nodes (not SendTask, ReceiveTask, DecisionTask). Evaluated at runtime with full context.
 
 ### Random Functions
@@ -285,7 +285,7 @@ Instance_1; SubProcess_1; ; ; localVar := parentValue * 2;
 |--------|----------------|-------------------|
 | INITIALIZATION | Parse time | Previously evaluated attributes (same instance) |
 | DISCLOSURE | Parse time | Previously evaluated attributes + INITIALIZATION from same row |
-| READY | Runtime (token arrival) | Status, Data, Globals |
+| READY | Runtime (ready event; the timestamp at token arrival) | Status, Data, Globals |
 | COMPLETION | Runtime (task completion) | Status, Data, Globals |
 
 **INITIALIZATION** expressions are evaluated at parse time. They can reference any attributes previously parse-time evaluated in earlier rows (globals or instance attributes).
@@ -294,28 +294,17 @@ Instance_1; SubProcess_1; ; ; localVar := parentValue * 2;
 
 **Row order matters**: Attributes initialized in earlier CSV rows become available for reference in later rows. Instance 1's attributes cannot be referenced from Instance 2's expressions.
 
-**READY** expressions are evaluated when a token arrives at an activity (enters ARRIVED or CREATED state). They have access to the parent scope's status and data attributes, plus global attributes. This is useful for initializing activity-local attributes based on runtime state.
+**READY** expressions are evaluated when the ready event of a token at an activity becomes due, after the initial values of the scope instance have been built, and are evaluated over the status of the token, the data of the enclosing instances and the globals, and the attributes of the scope with their initial values. A ready expression may overwrite any value of the status and of the data the scope owns, one the model initialises included, so that a value the model expects may be replaced by a sampled one. A ready expression assigning the timestamp determines when the token becomes ready, and is therefore evaluated when the token arrives at the activity (enters the state ARRIVED or CREATED); it must be the first ready expression of its node and may read only what the scope inherits, the status the token holds, the data of the enclosing instances and the globals, never an attribute of the scope, which does not exist before the ready event. A change of the inherited data or of a global after the arrival of the token is therefore ignored by it. A token awaiting its ready event when a system state is installed has its ready timestamp evaluated anew at the installation, and evaluated again up to `maxResamplingTries` times while it precedes the time of the state, after which it is set to that time.
 
 **COMPLETION** expressions are evaluated when a task enters BUSY state. They have full access to status, data, and global attributes.
 
 ### Attribute Initialization and Modification
 
-**Initialization (mutually exclusive with model expressions)**:
-An attribute's initial value can come from:
-- INITIALIZATION expression (parse-time)
-- Model expression (defined in BPMN)
+The values of a scope instance are built when the instance comes into being: when the ready event of a token at the scope becomes due, and for an event subprocess, a compensation event subprocess, a compensation activity or an instance started by a trigger, which the engine creates itself, when it is created. The status begins with the status the token holds, whose timestamp is set to the time at which the instance comes into being, and the instance of a process or of a non-interrupting event subprocess is given its identity. The attributes the scope declares are then given their initial values one at a time in the order of their declaration, the status attributes first, then the data attributes, then the objects. An attribute the model initialises takes the value of its initial expression, evaluated at that moment; any other attribute takes the value the INITIALIZATION column gives it, or remains undefined. An attribute is initialised either by the model or by the instance data, never by both, and a row giving a value to an attribute the model initialises is rejected. An initial expression thus reads everything the scope inherits, the timestamp, the instance and every attribute declared before it, and nothing declared after it. The values of a loop activity and of the instances of a multi-instance activity are built once, when the token at the activity becomes ready; what is to differ from one iteration or instance to another is stated by operators of the start event of a subprocess or by the operators of a task.
 
-If both attempt to initialize the same attribute, an error is thrown.
+The READY expressions are applied over the initial values when the ready event becomes due and may overwrite any value of the status and of the data the scope owns, as described above, and the COMPLETION expressions may modify any status attribute when the task completes. Neither changes the values of an enclosing scope's data.
 
-**Runtime Modification**:
-- READY expressions can override INITIALIZATION values at runtime
-- READY expressions cannot override model expressions
-- COMPLETION expressions can modify any status attribute, including those with model expressions (model expressions run at ready time, COMPLETION runs later)
-
-Both READY and COMPLETION modifications are local to the activity/task scope and do not affect parent scope values.
-
-**Limitation - Event Subprocesses and Compensation Activities**:
-CSV-provided INITIALIZATION and READY expressions for an event subprocess or a compensation activity are rejected. Use model expressions for the attributes of such scopes, which are evaluated when an event subprocess is triggered or a compensation activity is entered.
+The data may give no values to the attributes of an event subprocess or of a compensation activity, and a row naming such a node in its INITIALIZATION or READY column is rejected; the attributes of such scopes take the values the model assigns when the engine creates them. An event subprocess is created when the scope containing it receives its token and again after every trigger of a non-interrupting one, so that the weighted data it is created with enter the objective whether it is triggered or not: a non-interrupting event subprocess triggered k times counts the initial weighted data of k + 1 instances, and a data attribute given its value by an operator of its start event rather than by an initial expression counts only when the event subprocess is triggered.
 
 ### Reproducibility
 

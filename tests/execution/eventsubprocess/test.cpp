@@ -481,12 +481,15 @@ SCENARIO( "Event subprocess with an attribute assigned by the model", "[executio
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
 
-      THEN( "The attribute takes the value the model assigns when the event subprocess is triggered" ) {
+      THEN( "The attribute takes the value the model assigns when the event subprocess is created" ) {
+        // the first instance is created when the process starts at time 0, the second when the first is
+        // triggered at time 1; both are triggered at time 1 and keep the values they were created with
         auto startLog = recorder.find(nlohmann::json{{"nodeId","EscalationStartEvent_1"},{"state","COMPLETED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( startLog.size() == 2 );
-        for ( auto& entry : startLog ) {
-          REQUIRE( entry["status"]["triggered"] == entry["status"]["timestamp"].get<double>() + 100 );
-        }
+        REQUIRE( startLog[0]["status"]["timestamp"] == 1 );
+        REQUIRE( startLog[0]["status"]["triggered"] == 100 );
+        REQUIRE( startLog[1]["status"]["timestamp"] == 1 );
+        REQUIRE( startLog[1]["status"]["triggered"] == 101 );
       }
     }
   }

@@ -353,10 +353,6 @@ void Token::advanceToReady() {
   awaitEntryEvent();
 }
 
-void Token::computeInitialValues( const BPMNOS::Model::ExtensionElements* extensionElements ) {
-  const_cast<Engine*>(owner->systemState->engine)->addToObjective( extensionElements->computeInitialValues(owner->systemState->currentTime,status,*data) );
-}
-
 void Token::advanceToEntered() {
 //std::cerr << "advanceToEntered: " << jsonify().dump() << std::endl;
 
@@ -369,41 +365,31 @@ void Token::advanceToEntered() {
     }
   }
 
-  if ( node->represents<BPMN::Process>() ) {
+  // the initial values of a scope instance are given when it comes into being, not on entry
+  if ( auto activity = node->represents<BPMN::Activity>();
+    activity &&
+    activity->loopCharacteristics.has_value() &&
+    activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
+  ) {
     auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
     assert( extensionElements );
-
-    computeInitialValues( extensionElements );
-  }
-  else if ( auto activity = node->represents<BPMN::Activity>() ) {
-    auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-    assert( extensionElements );
-
-    if (
-      activity->loopCharacteristics.has_value() &&
-      activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
-    ) {
 //std::cerr << "initialize or increment loop index for standard loop" << std::endl;
-      // initialize or increment loop index for standard loop
-      if ( extensionElements->loopIndex.has_value() && extensionElements->loopIndex.value()->expression ) {
-        auto& attributeRegistry = getAttributeRegistry();
-        auto attribute = extensionElements->loopIndex.value()->expression->isAttribute();
-        if ( auto index = attributeRegistry.getValue( attribute, status, *data); index.has_value() ) {
-          // increment existing value
-          const_cast<Engine*>(owner->systemState->engine)->addToObjective( attributeRegistry.setValue(attribute, status, *data, (unsigned int)index.value() + 1) );
-        }
-        else {
-          // initialize non-existing value
-          const_cast<Engine*>(owner->systemState->engine)->addToObjective( attributeRegistry.setValue(attribute, status, *data, 1) );
-        }
+    // initialize or increment loop index for standard loop
+    if ( extensionElements->loopIndex.has_value() && extensionElements->loopIndex.value()->expression ) {
+      auto& attributeRegistry = getAttributeRegistry();
+      auto attribute = extensionElements->loopIndex.value()->expression->isAttribute();
+      if ( auto index = attributeRegistry.getValue( attribute, status, *data); index.has_value() ) {
+        // increment existing value
+        const_cast<Engine*>(owner->systemState->engine)->addToObjective( attributeRegistry.setValue(attribute, status, *data, (unsigned int)index.value() + 1) );
       }
-      else if ( extensionElements->loopMaximum.has_value() ) {
-        throw std::runtime_error("Token: no attribute provided for loop index parameter of standard loop activity '" + node->id +"' with loop maximum" );
+      else {
+        // initialize non-existing value
+        const_cast<Engine*>(owner->systemState->engine)->addToObjective( attributeRegistry.setValue(attribute, status, *data, 1) );
       }
     }
-
-    computeInitialValues( extensionElements );
-//std::cerr << jsonify() << std::endl;
+    else if ( extensionElements->loopMaximum.has_value() ) {
+      throw std::runtime_error("Token: no attribute provided for loop index parameter of standard loop activity '" + node->id +"' with loop maximum" );
+    }
   }
 
   
@@ -732,16 +718,6 @@ void Token::advanceToCompleted() {
     // decision task, are applied on completion, after what arrived: the message, the signal, the triggering
     // status or the choices
     if ( node->represents<BPMN::CatchEvent>() || node->represents<BPMNOS::Model::DecisionTask>() ) {
-      if ( node->represents<BPMN::TypedStartEvent>() && flowNode->parent->represents<BPMN::EventSubProcess>() ) {
-        // the event subprocess is instantiated here, so the values the model assigns to its attributes are
-        // computed here, its data and status being internal, and the objective value is updated here; a
-        // process or subprocess accounted its objective when its state machine was created
-        if ( auto extensionElements = flowNode->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
-          // the timestamp of the token is kept, the event subprocess being triggered at it
-          const_cast<Engine*>(owner->systemState->engine)->addToObjective( extensionElements->computeInitialValues(status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp].value(),status,*data) );
-        }
-        const_cast<StateMachine*>(owner)->updateObjective();
-      }
       applyOperators( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
     }
 
@@ -903,23 +879,12 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
         context->clearObsoleteTokens();
       }
       else {
-//std::cerr << "Before pendingEventSubProcesses: " << context->pendingEventSubProcesses.size() << std::endl;
-        // respawn pending event subprocesses
-        std::shared_ptr pendingEventSubProcess = std::make_shared<StateMachine>(it->get());
-
         // move the triggered event subprocess to nonInterruptingEventSubProcesses
-        context->nonInterruptingEventSubProcesses.push_back(std::move(*it));
+        auto triggered = std::move(*it);
+        context->nonInterruptingEventSubProcesses.push_back(triggered);
 
-        // replace iterator with pending event subprocess
-        *it = pendingEventSubProcess;
-
-//std::cerr << "After pendingEventSubProcesses: " << context->pendingEventSubProcesses.size() << std::endl;
-
-        // prepare the new instance of the pending subprocess
-        auto eventSubProcess = context->pendingEventSubProcesses.back().get();
-//std::cerr << "***" << owner->parentToken << std::endl;
-        eventSubProcess->run(owner->parentToken->status);
-//std::cerr << "***" << std::endl;
+        // a new instance listens for the next trigger, created with its initial values
+        *it = context->createPendingEventSubProcess( triggered->scope->as<BPMN::EventSubProcess>(), owner->parentToken->status );
       }
       
       // check entry scope restrictions of event-subprocess

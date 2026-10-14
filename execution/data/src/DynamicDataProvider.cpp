@@ -62,10 +62,10 @@ BPMNOS::number DynamicDataProvider::getProcessReadyTime(const Scenario& scenario
   return std::max(StaticDataProvider::getProcessReadyTime(scenario, instanceId), getKnownTime(scenario, instanceId));
 }
 
-BPMNOS::number DynamicDataProvider::getActivityReadyTime(const Scenario& scenario, size_t instanceId, const BPMN::Node* activity, const BPMNOS::Status& readyStatus) const {
+BPMNOS::number DynamicDataProvider::getActivityReadyTime(const Scenario& scenario, size_t instanceId, const BPMN::Node* activity, std::optional<BPMNOS::number> readyTimestamp) const {
   auto& nodeDisclosureTimes = getDisclosureTimes(scenario, instanceId);
   if ( auto it = nodeDisclosureTimes.find(activity); it != nodeDisclosureTimes.end() ) {
-    return std::max(it->second, StaticDataProvider::getActivityReadyTime(scenario, instanceId, activity, readyStatus));
+    return std::max(it->second, StaticDataProvider::getActivityReadyTime(scenario, instanceId, activity, readyTimestamp));
   }
-  return StaticDataProvider::getActivityReadyTime(scenario, instanceId, activity, readyStatus);
+  return StaticDataProvider::getActivityReadyTime(scenario, instanceId, activity, readyTimestamp);
 }

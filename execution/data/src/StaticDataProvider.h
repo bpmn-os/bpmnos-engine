@@ -1,6 +1,7 @@
 #ifndef BPMNOS_Execution_StaticDataProvider_H
 #define BPMNOS_Execution_StaticDataProvider_H
 
+#include <functional>
 #include <limits>
 #include <map>
 #include <memory>
@@ -13,6 +14,7 @@
 #include "DataProvider.h"
 #include "Scenario.h"
 #include "InstanceDataReader.h"
+#include "InstanceValues.h"
 #include "model/bpmnos/src/Model.h"
 #include "model/bpmnos/src/extensionElements/Attribute.h"
 #include "model/utility/src/Number.h"
@@ -46,7 +48,9 @@ public:
   public:
     Scenario(std::shared_ptr<const StaticDataProvider> dataProvider);
 
-    std::multimap<BPMNOS::number, std::shared_ptr<Event>> scheduledEvents; ///< Events due later, by the time they are due
+    /// Events due later, by the time they are due, each produced when it becomes due, so that a ready event is built
+    /// from the data and globals of that time; a producer returns nothing if the token it concerns no longer exists
+    std::multimap<BPMNOS::number, std::function<std::shared_ptr<Event>(Scenario&)>> scheduledEvents;
     BPMNOS::number time = std::numeric_limits<BPMNOS::number>::lowest(); ///< The current time of the run
   };
 
@@ -105,34 +109,38 @@ protected:
   /// instantiation time.
   virtual BPMNOS::number getProcessReadyTime(const Scenario& scenario, size_t instanceId) const;
 
-  /// @brief Method returning the status a token arriving at an activity becomes ready with, which is the
-  /// status it arrived with followed by the values of the activity.
+  /// @brief Method returning the timestamp a token arriving at an activity becomes ready with, if a ready value gives
+  /// it, which is never the case for a static data provider.
   ///
-  /// The status of a token awaiting its ready event in an installed system state is computed anew, and its
-  /// timestamp must not precede the given time, which is the time of that state; for a token arriving at the
-  /// activity, the given time is the lowest number. A status that cannot differ from one realisation to
-  /// another is not affected by it.
-  virtual BPMNOS::Status getActivityReadyStatus(Scenario& scenario, const Token* token, BPMNOS::number earliest) const;
+  /// The timestamp is determined when the token arrives, since the time at which the ready event becomes due
+  /// depends on it. For a token awaiting its ready event in an installed system state it is determined anew and
+  /// must not precede the given time, which is the time of that state; for a token arriving at the activity, the
+  /// given time is the lowest number.
+  virtual std::optional<BPMNOS::number> getReadyTimestamp(Scenario& scenario, const Token* token, BPMNOS::number earliest) const;
 
-  /// @brief Method returning the time at which a token of an instance arriving at an activity becomes ready
-  /// with the given status, which is the start of the run, so that it becomes ready at once.
-  virtual BPMNOS::number getActivityReadyTime(const Scenario& scenario, size_t instanceId, const BPMN::Node* activity, const BPMNOS::Status& readyStatus) const;
+  /// @brief Method returning the time at which a token of an instance arriving at an activity becomes ready, given
+  /// the timestamp a ready value gives, which is the start of the run, so that it becomes ready at once.
+  virtual BPMNOS::number getActivityReadyTime(const Scenario& scenario, size_t instanceId, const BPMN::Node* activity, std::optional<BPMNOS::number> readyTimestamp) const;
+
+  /// @brief Method applying the ready values of a token over the initial values of the scope instance of the
+  /// activity, when its ready event becomes due; a static data provider gives no ready values.
+  virtual void applyReadyValues(Scenario& scenario, const Token* token, InstanceValues& values) const;
 
   /// @brief Method returning the status a busy task completes with at its timestamp, which is the status it
   /// became busy with.
   ///
-  /// The given time is that of @ref getActivityReadyStatus for a token awaiting its completion event in an
+  /// The given time is that of @ref getReadyTimestamp for a token awaiting its completion event in an
   /// installed system state, and the lowest number for a task becoming busy.
   virtual BPMNOS::Status getCompletionStatus(Scenario& scenario, const Token* token, BPMNOS::number earliest) const;
 
-  /// @brief Method returning the value of an attribute of an instance, computed from the values of the
-  /// instance if the model assigns it, and std::nullopt if it is not known.
+  /// @brief Method returning the value the instance data give an attribute of an instance, std::nullopt if they
+  /// give none.
   std::optional<BPMNOS::number> getValue(const Scenario& scenario, size_t instanceId, const BPMNOS::Model::Attribute* attribute) const;
 
-  /// @brief Method returning the values of the status attributes a node declares.
+  /// @brief Method returning the values the instance data give the status attributes a node declares.
   BPMNOS::Status getStatus(const Scenario& scenario, size_t instanceId, const BPMN::Node* node) const;
 
-  /// @brief Method returning the values of the data attributes a node declares.
+  /// @brief Method returning the values the instance data give the data attributes a node declares.
   BPMNOS::Data getData(const Scenario& scenario, size_t instanceId, const BPMN::Node* node) const;
 
   /**
@@ -164,10 +172,11 @@ protected:
   BPMNOS::number endTime = std::numeric_limits<BPMNOS::number>::max();
 
 private:
+  std::shared_ptr<Event> instantiate(const Scenario& scenario, const Instance& instance) const;
   void readyProcess(Scenario& scenario, EventQueue& queue, const Token* token) const;
   void readyActivity(Scenario& scenario, EventQueue& queue, const Token* token, BPMNOS::number earliest) const;
   void completeTask(Scenario& scenario, EventQueue& queue, const Token* token, BPMNOS::number earliest) const;
-  static void schedule(Scenario& scenario, EventQueue& queue, BPMNOS::number dueTime, BPMNOS::number currentTime, std::shared_ptr<Event> event);
+  static void schedule(Scenario& scenario, EventQueue& queue, BPMNOS::number dueTime, BPMNOS::number currentTime, std::function<std::shared_ptr<Event>(Scenario&)> produce);
 };
 
 } // namespace BPMNOS::Execution

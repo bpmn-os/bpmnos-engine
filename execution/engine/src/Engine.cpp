@@ -10,6 +10,9 @@
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "execution/engine/src/events/TimerEvent.h"
+#include "execution/data/src/InstanceValues.h"
+#include "execution/data/src/DataProvider.h"
+#include "execution/data/src/Scenario.h"
 #include "execution/utility/src/erase.h"
 #include <cassert>
 #include <limits>
@@ -215,25 +218,13 @@ void Engine::triggerInstance(const BPMN::Process* process, ContentMap content) {
   auto counter = ++systemState->instantiationCounter[process];
   auto instanceId = process->id + StateMachine::delimiters[1] + std::to_string(counter);
 
-  BPMNOS::Data data( extensionElements->data.size() );
-  data.attributes[Model::ExtensionElements::Position::Instance] = BPMNOS::to_number(instanceId,STRING);
-
-  BPMNOS::Status status( extensionElements->attributes.size() );
-  status.attributes[Model::ExtensionElements::Index::Timestamp] = systemState->getTime();
-
-  // the objects take the values the model and the declared sizes give them, an instance created by a trigger
-  // being given no instance data
-  auto dataProvider = systemState->scenario->dataProvider;
-  for ( auto& object : extensionElements->dataObjects ) {
-    data.objects.push_back( dataProvider->getDefaultObject(object.get()) );
-  }
-  for ( auto& object : extensionElements->statusObjects ) {
-    status.objects.push_back( dataProvider->getDefaultObject(object.get()) );
-  }
+  // the instance comes into being with the trigger, so that it is initialised before the content of the trigger
+  // is written, an instance created by a trigger being given no instance data
+  InstanceValues values(*systemState->scenario->dataProvider, process, systemState->getTime(), BPMNOS::Status{}, systemState->stateMachine->data, BPMNOS::to_number(instanceId,STRING), {}, {});
 
   // the instance is created before the content of the trigger is applied, so that the content is written
   // through the data of the token at the process, which holds the global attributes and those of the instance
-  auto token = systemState->stateMachine->createInstance(process, std::move(data), std::move(status));
+  auto token = systemState->stateMachine->createInstance(process, std::move(values.data), std::move(values.status));
 
   // the content of the trigger is applied to the initial status of the instance, which is where it is
   // needed and after which it is of no further concern
@@ -346,6 +337,12 @@ void Engine::process(const ReadyEvent* event) {
     assert( data.attributes.size() == stateMachine->data.attributes.size() - instanceIndex );
     for ( size_t i = 0; i < data.attributes.size(); i++ ) {
       stateMachine->data.attributes[instanceIndex + i].get() = data.attributes[i];
+    }
+    // the objects of the instance follow the global objects
+    auto globalObjects = model->objects.size();
+    assert( data.objects.size() == stateMachine->data.objects.size() - globalObjects );
+    for ( size_t i = 0; i < data.objects.size(); i++ ) {
+      stateMachine->data.objects[globalObjects + i].get() = data.objects[i];
     }
   }
   else if ( auto scope = token->node->represents<BPMN::Scope>() ) {

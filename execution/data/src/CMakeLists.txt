@@ -4,6 +4,7 @@ list(APPEND execution_data_SOURCES
   Scenario.cpp
   DataProvider.cpp
   InstanceDataReader.cpp
+  InstanceValues.cpp
   StaticDataProvider.cpp
   ExpectedValueDataProvider.cpp
   DynamicDataProvider.cpp
@@ -16,6 +17,7 @@ list(APPEND execution_data_HEADERS
   Scenario.h
   DataProvider.h
   InstanceDataReader.h
+  InstanceValues.h
   StaticDataProvider.h
   ExpectedValueDataProvider.h
   DynamicDataProvider.h

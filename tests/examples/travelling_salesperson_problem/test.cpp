@@ -35,7 +35,7 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
       THEN( "Then locations are visited in any order" ) {
-        auto visitLog = recorder.find(nlohmann::json{{"nodeId", "VisitLocation"},{"state", "ENTERED"}});
+        auto visitLog = recorder.find(nlohmann::json{{"nodeId", "VisitLocation"},{"state", "BUSY"}});
         REQUIRE( visitLog.size() == 3 );
         std::set<std::string> visited;
         for ( auto visit : visitLog ) {
@@ -68,7 +68,7 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
       THEN( "Then locations are visited in the nearest-neighbour order" ) {
-        auto visitLog = recorder.find(nlohmann::json{{"nodeId", "VisitLocation"},{"state", "ENTERED"}});
+        auto visitLog = recorder.find(nlohmann::json{{"nodeId", "VisitLocation"},{"state", "BUSY"}});
         REQUIRE( visitLog[0]["status"]["location"] == "Berlin" );
         REQUIRE( visitLog[1]["status"]["location"] == "Cologne" );
         REQUIRE( visitLog[2]["status"]["location"] == "Munich" );
@@ -90,7 +90,7 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
       THEN( "Then locations are visited in the nearest-neighbour order" ) {
-        auto visitLog = recorder.find(nlohmann::json{{"nodeId", "VisitLocation"},{"state", "ENTERED"}});
+        auto visitLog = recorder.find(nlohmann::json{{"nodeId", "VisitLocation"},{"state", "BUSY"}});
         REQUIRE( visitLog[0]["status"]["location"] == "Berlin" );
         REQUIRE( visitLog[1]["status"]["location"] == "Cologne" );
         REQUIRE( visitLog[2]["status"]["location"] == "Munich" );

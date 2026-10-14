@@ -14,9 +14,6 @@ bool LocalEvaluator::updateValues(EntryDecision* decision, Status& status, Data&
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
 
-  // make sure that all initial attribute values are up to date
-  extensionElements->computeInitialValues(token->owner->systemState->getTime(),status,data);
-
   if ( auto subProcess = token->node->represents<BPMN::SubProcess>(); subProcess && subProcess->startEvent ) {
     // the operators of the start event are applied to the token at it, i.e. after the subprocess is entered,
     // so that the entry restrictions of the subprocess constrain the status they produce

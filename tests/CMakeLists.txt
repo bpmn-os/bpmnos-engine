@@ -57,6 +57,7 @@ list(APPEND tests_SOURCES
   execution/escalationevent/test.cpp
   execution/message/test.cpp
   execution/eventoperators/test.cpp
+  execution/initialvalues/test.cpp
   execution/boundaryevent/test.cpp
   execution/eventsubprocess/test.cpp
   execution/compensationactivity/test.cpp
