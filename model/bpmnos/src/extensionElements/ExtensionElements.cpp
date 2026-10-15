@@ -122,7 +122,17 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     signalDefinition = std::make_unique<SignalDefinition>(&signal->get());
   }
 
-  // the operators see the content object of the message or signal the node states, named after it
+  // add error definition
+  if ( auto error = element->getOptionalChild<XML::bpmnos::tError>(); error.has_value() ) {
+    errorDefinition = std::make_unique<ErrorDefinition>(&error->get());
+  }
+
+  // add escalation definition
+  if ( auto escalation = element->getOptionalChild<XML::bpmnos::tEscalation>(); escalation.has_value() ) {
+    escalationDefinition = std::make_unique<EscalationDefinition>(&escalation->get());
+  }
+
+  // the operators see the content object of the message, signal, error or escalation the node states, named after it
   if ( messageDefinition ) {
     augmentedAttributeRegistry = std::make_unique<AttributeRegistry>(attributeRegistry);
     content = std::make_unique<Attribute>(messageDefinition->element->name.value.value, messageDefinition->schema, *augmentedAttributeRegistry);
@@ -130,6 +140,14 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
   else if ( signalDefinition ) {
     augmentedAttributeRegistry = std::make_unique<AttributeRegistry>(attributeRegistry);
     content = std::make_unique<Attribute>(signalDefinition->element->name.value.value, signalDefinition->schema, *augmentedAttributeRegistry);
+  }
+  else if ( errorDefinition ) {
+    augmentedAttributeRegistry = std::make_unique<AttributeRegistry>(attributeRegistry);
+    content = std::make_unique<Attribute>(errorDefinition->element->name.value.value, errorDefinition->schema, *augmentedAttributeRegistry);
+  }
+  else if ( escalationDefinition ) {
+    augmentedAttributeRegistry = std::make_unique<AttributeRegistry>(attributeRegistry);
+    content = std::make_unique<Attribute>(escalationDefinition->element->name.value.value, escalationDefinition->schema, *augmentedAttributeRegistry);
   }
 
   if ( auto status = element->getOptionalChild<XML::bpmnos::tStatus>(); status.has_value() ) {

@@ -19,6 +19,52 @@
 
 using namespace BPMNOS::Execution;
 
+namespace {
+
+/// Returns the candidate catching an error or escalation of the given content: the first whose node states the name
+/// of the content, or else the first whose node states no definition and so catches every error or escalation. The
+/// definition of a candidate is std::nullopt if its node catches no error or escalation of the type considered, and
+/// nullptr if its node states no definition.
+template <typename Candidate, typename DefinitionOf>
+Candidate selectCatcher(const std::vector<Candidate>& candidates, DefinitionOf definitionOf, const std::optional<Content>& content) {
+  Candidate catchingAll{};
+  for ( auto& candidate : candidates ) {
+    auto definition = definitionOf(candidate);
+    if ( !definition.has_value() ) {
+      continue;
+    }
+    if ( !definition.value() ) {
+      if ( !catchingAll ) {
+        catchingAll = candidate;
+      }
+    }
+    else if ( content && content->name == definition.value()->name ) {
+      return candidate;
+    }
+  }
+  return catchingAll;
+}
+
+/// Returns the error definition of a node catching errors, nullptr if it states none, and std::nullopt if the node
+/// catches no error.
+std::optional<const BPMNOS::Model::ErrorDefinition*> errorDefinitionOf(const BPMN::Node* node) {
+  if ( !node->represents<BPMN::ErrorBoundaryEvent>() && !node->represents<BPMN::ErrorStartEvent>() ) {
+    return std::nullopt;
+  }
+  return node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->errorDefinition.get();
+}
+
+/// Returns the escalation definition of a node catching escalations, nullptr if it states none, and std::nullopt if
+/// the node catches no escalation.
+std::optional<const BPMNOS::Model::EscalationDefinition*> escalationDefinitionOf(const BPMN::Node* node) {
+  if ( !node->represents<BPMN::EscalationBoundaryEvent>() && !node->represents<BPMN::EscalationStartEvent>() ) {
+    return std::nullopt;
+  }
+  return node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->escalationDefinition.get();
+}
+
+} // namespace
+
 StateMachine::StateMachine(const SystemState* systemState, Data globals)
   : systemState(systemState)
   , scope(nullptr)
@@ -426,25 +472,6 @@ void StateMachine::initiateBoundaryEvent(Token* token, const BPMN::FlowNode* nod
   const_cast<SystemState*>(systemState)->tokenAssociatedToBoundaryEventToken[createdToken] = token;
   const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[token].push_back(createdToken);
   createdToken->advanceToEntered();
-}
-
-void StateMachine::takeTriggeringStatus(Token* eventToken, const Status& status) {
-  // the token triggering an event subprocess belongs to an enclosing scope, so the status it hands over
-  // holds values for the attributes of the enclosing scopes only, possibly followed by values of a nested
-  // scope it was raised in; the status of the start token keeps its layout and the values the attributes and
-  // objects of the event subprocess were given when it was created
-  auto extensionElements = eventToken->node->as<BPMN::FlowNode>()->parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
-  auto ownAttributes = extensionElements ? extensionElements->attributes.size() : 0;
-  auto ownObjects = extensionElements ? extensionElements->statusObjects.size() : 0;
-  auto statusSize = eventToken->status.attributes.size();
-  auto objectCount = eventToken->status.objects.size();
-  std::vector<BPMNOS::Value> attributes( eventToken->status.attributes.end() - (long)ownAttributes, eventToken->status.attributes.end() );
-  std::vector< std::shared_ptr<const BPMNOS::Object> > objects( eventToken->status.objects.end() - (long)ownObjects, eventToken->status.objects.end() );
-  eventToken->status = status;
-  eventToken->status.attributes.resize( statusSize - ownAttributes );
-  eventToken->status.attributes.insert( eventToken->status.attributes.end(), attributes.begin(), attributes.end() );
-  eventToken->status.objects.resize( objectCount - ownObjects );
-  eventToken->status.objects.insert( eventToken->status.objects.end(), objects.begin(), objects.end() );
 }
 
 std::shared_ptr<StateMachine> StateMachine::createPendingEventSubProcess(const BPMN::EventSubProcess* eventSubProcess, const Status& status) {
@@ -972,26 +999,24 @@ void StateMachine::handleEventBasedGatewayActivation(Token* token) {
 
 void StateMachine::handleEscalation(Token* token) {
 //std::cerr << "handleEscalation " << token->node->id << std::endl;
+  // the escalation carries the content of the escalation thrown, which the token hands on, keeping its own status
   if ( !parentToken ) {
+    // the escalation is not caught
+    token->content.reset();
     return;
   }
 
-  auto it = std::find_if(pendingEventSubProcesses.begin(), pendingEventSubProcesses.end(), [](std::shared_ptr<StateMachine>& stateMachine) {
-    auto eventSubProcess = stateMachine->scope->as<BPMN::EventSubProcess>();
-    return eventSubProcess->startEvent->represents<BPMN::EscalationStartEvent>();
-  });
+  // find event subprocess catching the escalation
+  if ( auto eventSubProcess = selectCatcher(pendingEventSubProcesses, [](const std::shared_ptr<StateMachine>& stateMachine) { return escalationDefinitionOf(stateMachine->scope->as<BPMN::EventSubProcess>()->startEvent); }, token->content) ) {
+    // trigger event subprocess
+    auto eventToken = eventSubProcess->tokens.front().get();
+//std::cerr << "found event-subprocess catching escalation:" << eventToken << "/" << eventToken->owner << std::endl;
+    eventToken->content = std::exchange(token->content, std::nullopt);
+    eventToken->advanceToCompleted();
+    return;
+  }
 
   auto engine = const_cast<Engine*>(systemState->engine);
-
-  if ( it != pendingEventSubProcesses.end() ) {
-    // trigger event subprocess
-    auto eventToken = it->get()->tokens.front().get();
-//std::cerr << "found event-subprocess catching escalation:" << eventToken << "/" << eventToken->owner << std::endl;
-    takeTriggeringStatus(eventToken, token->status);
-    eventToken->advanceToCompleted();
-
-    return;
-  }
 
   if ( auto activity = token->node->represents<BPMN::Activity>();
     activity &&
@@ -999,31 +1024,26 @@ void StateMachine::handleEscalation(Token* token) {
     activity->loopCharacteristics.has_value() &&
     activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard
   ) {
-    // handle failure at main token waiting for all instances
+    // handle escalation at main token waiting for all instances
     auto mainToken = const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.at(token);
-    mainToken->status = token->status;
+    mainToken->content = std::exchange(token->content, std::nullopt);
     handleEscalation(mainToken);
     return;
   }
 
   // find escalation boundary event
   if ( token->node->represents<BPMN::FlowNode>() ) {
-    auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[token];
-    for ( auto eventToken : tokensAwaitingBoundaryEvent) {
-      if ( eventToken->node->represents<BPMN::EscalationBoundaryEvent>() ) {
-        eventToken->status = token->status;
-        eventToken->advanceToCompleted();
-        return;
-      }
+    if ( auto eventToken = selectCatcher(const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[token], [](Token* candidate) { return escalationDefinitionOf(candidate->node); }, token->content) ) {
+      eventToken->content = std::exchange(token->content, std::nullopt);
+      eventToken->advanceToCompleted();
+      return;
     }
   }
 
-  // update status of upper token with that of current token; the parent token of a compensation event subprocess
-  // owns the subprocess it compensates, which has completed, so the escalation bubbles up from the state machine
-  // the subprocess completed in
+  // hand the content to the upper token; the parent token of a compensation event subprocess owns the subprocess it
+  // compensates, which has completed, so the escalation bubbles up from the state machine the subprocess completed in
   auto upperToken = scope->represents<BPMN::EventSubProcess>() && scope->as<BPMN::EventSubProcess>()->startEvent->represents<BPMN::CompensateStartEvent>() ? parentToken->owner->parentToken : parentToken;
-  upperToken->status = token->status;
-  upperToken->update(upperToken->state);
+  upperToken->content = std::exchange(token->content, std::nullopt);
 
 //std::cerr << "bubbble up escalation" << std::endl;
   auto parent = const_cast<StateMachine*>(upperToken->owner);
@@ -1052,35 +1072,30 @@ void StateMachine::handleFailure(Token* token) {
         // handle failure at main token waiting for all instances       
         auto mainToken = const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.at(token);
 //std::cerr << "handle failure at main token waiting for all instances "  << std::endl;
-        mainToken->status = token->status;
+        mainToken->content = std::exchange(token->content, std::nullopt);
         handleFailure(mainToken);
         return;
       }
     }
   }
 
+  // the failure carries the content of the error thrown, none if the error is unnamed or the failure is not raised
+  // by an error, which the token hands on, keeping its own status
+
   // find error boundary event at token node
   if ( token->node->represents<BPMN::FlowNode>() ) {
-    auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[token];
-    for ( auto eventToken : tokensAwaitingBoundaryEvent) {
-      if ( eventToken->node->represents<BPMN::ErrorBoundaryEvent>() ) {
-        eventToken->status = token->status;
-        eventToken->advanceToCompleted();
-        return;
-      }
+    if ( auto eventToken = selectCatcher(const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[token], [](Token* candidate) { return errorDefinitionOf(candidate->node); }, token->content) ) {
+      eventToken->content = std::exchange(token->content, std::nullopt);
+      eventToken->advanceToCompleted();
+      return;
     }
   }
 
   // find event-subprocess catching error
-  auto it = std::find_if(pendingEventSubProcesses.begin(), pendingEventSubProcesses.end(), [](std::shared_ptr<StateMachine>& stateMachine) {
-    auto eventSubProcess = stateMachine->scope->as<BPMN::EventSubProcess>();
-    return eventSubProcess->startEvent->represents<BPMN::ErrorStartEvent>();
-  });
-  if ( it != pendingEventSubProcesses.end() ) {
+  if ( auto eventSubProcess = selectCatcher(pendingEventSubProcesses, [](const std::shared_ptr<StateMachine>& stateMachine) { return errorDefinitionOf(stateMachine->scope->as<BPMN::EventSubProcess>()->startEvent); }, token->content) ) {
     // trigger event subprocess
-    auto eventToken = it->get()->tokens.front().get();
-    // update status of event token with that of current token
-    takeTriggeringStatus(eventToken, token->status);
+    auto eventToken = eventSubProcess->tokens.front().get();
+    eventToken->content = std::exchange(token->content, std::nullopt);
     // remove all tokens
     clearObsoleteTokens();
     engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,eventToken), eventToken);
@@ -1102,8 +1117,8 @@ void StateMachine::handleFailure(Token* token) {
   // bubble up error; the parent token of a compensation event subprocess owns the subprocess it compensates,
   // which has completed, so the failure bubbles up from the state machine the subprocess completed in
   auto upperToken = scope->represents<BPMN::EventSubProcess>() && scope->as<BPMN::EventSubProcess>()->startEvent->represents<BPMN::CompensateStartEvent>() ? parentToken->owner->parentToken : parentToken;
-  // update status of upper token with that of current token
-  upperToken->status = token->status;
+  // hand the content to the upper token
+  upperToken->content = std::exchange(token->content, std::nullopt);
   engine->commands.emplace_back(std::bind(&Token::advanceToFailed,upperToken), upperToken);
 }
 

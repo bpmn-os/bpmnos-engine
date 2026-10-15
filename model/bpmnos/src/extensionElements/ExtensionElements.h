@@ -12,6 +12,8 @@
 #include "Choice.h"
 #include "MessageDefinition.h"
 #include "SignalDefinition.h"
+#include "ErrorDefinition.h"
+#include "EscalationDefinition.h"
 #include "Parameter.h"
 #include "Guidance.h"
 #include "model/bpmnos/src/xml/bpmnos/tAttribute.h"
@@ -55,12 +57,12 @@ public:
 
   struct { std::vector<const Attribute*> attributes; } dataUpdate; ///< Struct containing the data attributes, global or not, that are modified through operators or choices.
 
-  /// The registry the operators are compiled with if the node states a message or signal: the registry of the node,
-  /// augmented by the content object of the message or signal, so that only the operators see the content object;
+  /// The registry the operators are compiled with if the node states a message, signal, error or escalation: the
+  /// registry of the node, augmented by its content object, so that only the operators see the content object;
   /// nullptr if the node states none, the operators being compiled with the registry of the node.
   std::unique_ptr<AttributeRegistry> augmentedAttributeRegistry;
-  /// The content object of the message or signal the node states, a status object named after the message or
-  /// signal and of its type, nullptr if the node states none. Its slot follows the status objects of the node, and
+  /// The content object of the message, signal, error or escalation the node states, a status object named after it
+  /// and of its type, nullptr if the node states none. Its slot follows the status objects of the node, and
   /// it is held there only while the operators run: the operators of a throwing node write it, starting from an
   /// undefined object of its type, and those of a catching node read the object received.
   std::unique_ptr<Attribute> content;
@@ -73,6 +75,10 @@ public:
   std::unique_ptr<Parameter> trigger; ///< Parameter giving the time at which a timer event is triggered, or nullptr if the node declares no timer.
 
   std::unique_ptr<SignalDefinition> signalDefinition; ///< Signal definition provided for the node, or nullptr if the node throws or catches no signal.
+
+  std::unique_ptr<ErrorDefinition> errorDefinition; ///< Error definition provided for the node, or nullptr if the node throws an unnamed error or catches every error, or neither.
+
+  std::unique_ptr<EscalationDefinition> escalationDefinition; ///< Escalation definition provided for the node, or nullptr if the node throws an unnamed escalation or catches every escalation, or neither.
 
   std::vector< std::unique_ptr<Restriction> > conditions; ///< Vector containing the conditions of a conditional event.
   std::set<const Attribute*> conditionDependencies; ///< Set containing all input attributes influencing whether the conditions are satisfied.
@@ -106,7 +112,8 @@ public:
 
   /// @brief Method applying the operators and returning the change of the objective.
   ///
-  /// If the node states a message or signal, its content object, which the operators write or read, must be given;
+  /// If the node states a message, signal, error or escalation, its content object, which the operators write or
+  /// read, must be given;
   /// otherwise the content object given, if any, is not used.
   template <typename DataType>
   BPMNOS::number applyOperators(BPMNOS::Status& status, DataType& data, std::shared_ptr<const BPMNOS::Object>* contentObject = nullptr) const;

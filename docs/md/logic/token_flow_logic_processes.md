@@ -64,7 +64,7 @@ A process token remains in @ref BPMNOS::Execution::Token::State::BUSY "BUSY" sta
 - the last active token within the scope has completed without failure.
 
 While the process token is in @ref BPMNOS::Execution::Token::State::BUSY "BUSY" state,
-the @ref BPMNOS::Execution::Token::status "token status" may be updated due to an escalation raised downstream by an @ref BPMN::EscalationThrowEvent "escalation event".
+an escalation raised downstream by an @ref BPMN::EscalationThrowEvent "escalation event" may pass the token, which hands its content on without its status being changed.
 If the token resides at a process which is the  @ref BPMNOS::Model::SequentialAdHocSubProcess::performer "performer" of a @ref BPMNOS::Model::SequentialAdHocSubProcess "sequential ad-hoc subprocess", 
 the @ref BPMNOS::Execution::Token::status "token status" is also updated whenever a token exits a child activity of the @ref BPMNOS::Model::SequentialAdHocSubProcess "sequential ad-hoc subprocess".
 

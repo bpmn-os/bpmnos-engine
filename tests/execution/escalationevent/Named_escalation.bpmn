@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmnos="https://bpmnos.telematique.eu" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+  <bpmn2:process id="Process_1" isExecutable="true">
+    <bpmn2:extensionElements>
+      <bpmnos:status>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Timestamp" type="decimal" name="timestamp" />
+          <bpmnos:attribute id="Level" type="integer" name="level := 3" />
+          <bpmnos:attribute id="Seen" type="integer" name="seen" />
+        </bpmnos:attributes>
+      </bpmnos:status>
+    </bpmn2:extensionElements>
+    <bpmn2:dataObject id="DataObject_1">
+      <bpmn2:extensionElements>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Instance" type="string" name="instance" />
+        </bpmnos:attributes>
+      </bpmn2:extensionElements>
+    </bpmn2:dataObject>
+    <bpmn2:startEvent id="StartEvent_1">
+      <bpmn2:outgoing>Flow_1</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="SubProcess_1" />
+    <bpmn2:subProcess id="SubProcess_1">
+      <bpmn2:incoming>Flow_1</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_6</bpmn2:outgoing>
+      <bpmn2:startEvent id="StartEvent_2">
+        <bpmn2:outgoing>Flow_2</bpmn2:outgoing>
+      </bpmn2:startEvent>
+      <bpmn2:sequenceFlow id="Flow_2" sourceRef="StartEvent_2" targetRef="EscalationThrowEvent_1" />
+      <bpmn2:intermediateThrowEvent id="EscalationThrowEvent_1">
+        <bpmn2:extensionElements>
+          <bpmnos:status>
+            <bpmnos:operators>
+              <bpmnos:operator id="Operator_1" expression="level := 9" />
+              <bpmnos:operator id="Operator_2" expression="Late.delay := 2" />
+            </bpmnos:operators>
+          </bpmnos:status>
+          <bpmnos:escalation name="Late" type="{ delay: integer }" />
+        </bpmn2:extensionElements>
+        <bpmn2:incoming>Flow_2</bpmn2:incoming>
+        <bpmn2:outgoing>Flow_3</bpmn2:outgoing>
+        <bpmn2:escalationEventDefinition id="EscalationEventDefinition_1" />
+      </bpmn2:intermediateThrowEvent>
+      <bpmn2:sequenceFlow id="Flow_3" sourceRef="EscalationThrowEvent_1" targetRef="EndEvent_2" />
+      <bpmn2:endEvent id="EndEvent_2">
+        <bpmn2:incoming>Flow_3</bpmn2:incoming>
+      </bpmn2:endEvent>
+    </bpmn2:subProcess>
+    <bpmn2:sequenceFlow id="Flow_6" sourceRef="SubProcess_1" targetRef="EndEvent_1" />
+    <bpmn2:endEvent id="EndEvent_1">
+      <bpmn2:incoming>Flow_6</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:boundaryEvent id="EscalationBoundaryEvent_All" cancelActivity="false" attachedToRef="SubProcess_1">
+      <bpmn2:outgoing>Flow_4</bpmn2:outgoing>
+      <bpmn2:escalationEventDefinition id="EscalationEventDefinition_2" />
+    </bpmn2:boundaryEvent>
+    <bpmn2:sequenceFlow id="Flow_4" sourceRef="EscalationBoundaryEvent_All" targetRef="EndEvent_All" />
+    <bpmn2:endEvent id="EndEvent_All">
+      <bpmn2:incoming>Flow_4</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:boundaryEvent id="EscalationBoundaryEvent_Late" cancelActivity="false" attachedToRef="SubProcess_1">
+      <bpmn2:extensionElements>
+        <bpmnos:status>
+          <bpmnos:operators>
+            <bpmnos:operator id="Operator_3" expression="seen := Late.delay" />
+          </bpmnos:operators>
+        </bpmnos:status>
+        <bpmnos:escalation name="Late" type="{ delay: integer }" />
+      </bpmn2:extensionElements>
+      <bpmn2:outgoing>Flow_5</bpmn2:outgoing>
+      <bpmn2:escalationEventDefinition id="EscalationEventDefinition_3" />
+    </bpmn2:boundaryEvent>
+    <bpmn2:sequenceFlow id="Flow_5" sourceRef="EscalationBoundaryEvent_Late" targetRef="EndEvent_Late" />
+    <bpmn2:endEvent id="EndEvent_Late">
+      <bpmn2:incoming>Flow_5</bpmn2:incoming>
+    </bpmn2:endEvent>
+  </bpmn2:process>
+</bpmn2:definitions>

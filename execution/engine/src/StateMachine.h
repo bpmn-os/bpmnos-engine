@@ -127,7 +127,6 @@ private:
   /// @brief Method creating a pending instance of an event subprocess of the scope, which listens for its trigger,
   /// with its initial values built from the given status of the scope, and its start token.
   std::shared_ptr<StateMachine> createPendingEventSubProcess(const BPMN::EventSubProcess* eventSubProcess, const Status& status);
-  static void takeTriggeringStatus(Token* eventToken, const Status& status); ///< Hands the status of the token triggering an event subprocess to its start token, keeping the attributes of the event subprocess
 
   void createCompensationTokenForBoundaryEvent(const BPMN::BoundaryEvent* compensateBoundaryEvent, BPMNOS::Status status); ///< Method creating a compensation token at a compensate boundary event of an activity
 //  void createCompensationTokenForEventSubProcess(const BPMN::EventSubProcess* compensationEventSubProcess, Token* token); ///< Method creating a compensation token at a compensation event subproces of an activity

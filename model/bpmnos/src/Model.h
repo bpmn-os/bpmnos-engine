@@ -81,6 +81,12 @@ public:
   /// Called at the end of @ref createMessageFlows, this being the first point at which every process has been read.
   void validateSignals();
 
+  /// @brief Validates that every thrower and catcher of an error stating its name agree on its type.
+  void validateErrors();
+
+  /// @brief Validates that every thrower and catcher of an escalation stating its name agree on its type.
+  void validateEscalations();
+
   bool messageMayBeCaught( BPMN::Process* sendingProcess, BPMN::FlowNode* throwingMessageEvent, BPMN::Process* receivingProcess, BPMN::FlowNode* catchingMessageEvent );
   bool messageMayBeThrown( BPMN::Process* sendingProcess, BPMN::FlowNode* throwingMessageEvent, BPMN::Process* receivingProcess, BPMN::FlowNode* catchingMessageEvent );
   void createMessageCandidates( BPMN::Process* sendingProcess, BPMN::FlowNode* throwingMessageEvent, BPMN::Process* receivingProcess, BPMN::FlowNode* catchingMessageEvent );

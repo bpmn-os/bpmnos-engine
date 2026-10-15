@@ -1333,11 +1333,21 @@ void Token::withdraw() {
 void Token::applyOperators(const BPMNOS::Model::ExtensionElements& extensionElements) {
   assert( status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] == owner->systemState->getTime() );
 
-  if ( extensionElements.content && node->represents<BPMN::ThrowEvent>() ) {
-    // the content a throwing node sends is named by its definition, and its object is written from an undefined
-    // object of its type
-    auto name = node->represents<BPMN::MessageThrowEvent>() ? extensionElements.messageDefinition->name : extensionElements.signalDefinition->name;
-    content = Content{ name, extensionElements.content->schema->undefinedObject() };
+  if ( node->represents<BPMN::ThrowEvent>() ) {
+    if ( extensionElements.content ) {
+      // the content a throwing node sends is named by its definition, and its object is written from an undefined
+      // object of its type
+      auto name =
+        node->represents<BPMN::MessageThrowEvent>() ? extensionElements.messageDefinition->name :
+        node->represents<BPMN::SignalThrowEvent>() ? extensionElements.signalDefinition->name :
+        node->represents<BPMN::ErrorEndEvent>() ? extensionElements.errorDefinition->name :
+        extensionElements.escalationDefinition->name;
+      content = Content{ name, extensionElements.content->schema->undefinedObject() };
+    }
+    else {
+      // an unnamed error or escalation has no content
+      content.reset();
+    }
   }
 
   if ( extensionElements.operators.empty() ) {

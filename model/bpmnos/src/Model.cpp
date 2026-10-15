@@ -342,6 +342,22 @@ std::unique_ptr<BPMN::FlowNode> Model::createEvent(XML::bpmn::tEvent* event, BPM
     }
   }
 
+  // an error or escalation is stated only by an event throwing or catching it, which may also state none
+  if ( extensionElements->errorDefinition &&
+    !baseElement->represents<BPMN::ErrorStartEvent>() &&
+    !baseElement->represents<BPMN::ErrorBoundaryEvent>() &&
+    !baseElement->represents<BPMN::ErrorEndEvent>()
+  ) {
+    throw std::runtime_error("Model: error defined for '" + baseElement->id + "', which is no error event");
+  }
+  if ( extensionElements->escalationDefinition &&
+    !baseElement->represents<BPMN::EscalationStartEvent>() &&
+    !baseElement->represents<BPMN::EscalationBoundaryEvent>() &&
+    !baseElement->represents<BPMN::EscalationThrowEvent>()
+  ) {
+    throw std::runtime_error("Model: escalation defined for '" + baseElement->id + "', which is no escalation event");
+  }
+
   // bind attributes, restrictions, operators, message, signal, timer, and conditions
   return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
 }
@@ -392,6 +408,46 @@ void Model::createMessageFlows() {
 
   validateTriggeringMessages();
   validateSignals();
+  validateErrors();
+  validateEscalations();
+}
+
+void Model::validateErrors() {
+  // every thrower and catcher of an error agree on its type, the first one found standing for all of them
+  std::unordered_map< BPMNOS::number, const BPMN::FlowNode* > firstErrorEvents;
+  for ( auto& process : processes ) {
+    for ( auto node : process->find_all( [](const BPMN::Node* node) { return node->represents<BPMN::ErrorStartEvent>() || node->represents<BPMN::ErrorBoundaryEvent>() || node->represents<BPMN::ErrorEndEvent>(); } ) ) {
+      auto errorEvent = node->as<BPMN::FlowNode>();
+      auto errorDefinition = errorEvent->extensionElements->as<ExtensionElements>()->errorDefinition.get();
+      if ( !errorDefinition ) {
+        // an unnamed error has no content
+        continue;
+      }
+      auto [ entry, inserted ] = firstErrorEvents.emplace( errorDefinition->name, errorEvent );
+      if ( !inserted && !errorDefinition->schema.agrees( entry->second->extensionElements->as<ExtensionElements>()->errorDefinition->schema ) ) {
+        throw std::runtime_error("Model: error '" + BPMNOS::to_string(errorDefinition->name,STRING) + "' of '" + entry->second->id + "' and of '" + errorEvent->id + "' must have the same type");
+      }
+    }
+  }
+}
+
+void Model::validateEscalations() {
+  // every thrower and catcher of an escalation agree on its type, the first one found standing for all of them
+  std::unordered_map< BPMNOS::number, const BPMN::FlowNode* > firstEscalationEvents;
+  for ( auto& process : processes ) {
+    for ( auto node : process->find_all( [](const BPMN::Node* node) { return node->represents<BPMN::EscalationStartEvent>() || node->represents<BPMN::EscalationBoundaryEvent>() || node->represents<BPMN::EscalationThrowEvent>(); } ) ) {
+      auto escalationEvent = node->as<BPMN::FlowNode>();
+      auto escalationDefinition = escalationEvent->extensionElements->as<ExtensionElements>()->escalationDefinition.get();
+      if ( !escalationDefinition ) {
+        // an unnamed escalation has no content
+        continue;
+      }
+      auto [ entry, inserted ] = firstEscalationEvents.emplace( escalationDefinition->name, escalationEvent );
+      if ( !inserted && !escalationDefinition->schema.agrees( entry->second->extensionElements->as<ExtensionElements>()->escalationDefinition->schema ) ) {
+        throw std::runtime_error("Model: escalation '" + BPMNOS::to_string(escalationDefinition->name,STRING) + "' of '" + entry->second->id + "' and of '" + escalationEvent->id + "' must have the same type");
+      }
+    }
+  }
 }
 
 void Model::validateSignals() {

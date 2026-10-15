@@ -276,6 +276,24 @@ The content object is fixed when the signal is thrown, so that a recipient modif
 
 A signal may also instantiate a process, which it does where the process has a @ref BPMN::SignalStartEvent "signal start event". Such a process is instantiated whenever a signal of that name is thrown, including by itself, the specification giving no ground to forbid a process instantiating itself where a signal rather than a message carries the trigger. An unguarded re-throw does not terminate.
 
+## Errors and escalations
+Errors and escalations carry a content object from the element throwing them to the element catching them, as signals do.
+
+An @ref BPMN::ErrorEndEvent "error end event", an @ref BPMN::ErrorBoundaryEvent "error boundary event" and an @ref BPMN::ErrorStartEvent "error start event" may provide a `<bpmnos:error>` element, and an @ref BPMN::EscalationThrowEvent "escalation throw event", an @ref BPMN::EscalationBoundaryEvent "escalation boundary event" and an @ref BPMN::EscalationStartEvent "escalation start event" may provide a `<bpmnos:escalation>` element, each with field `name` representing the name of the error or escalation and, if it has content, field `type` stating the type of its content, an object as for a signal; every thrower and catcher of an error or escalation of a name states the same type. The operators of the throwing element write the content object and those of the catching element read it, as for a signal.
+
+An error or escalation is propagated from the element throwing it through the enclosing scopes until an element catches it, and its content is handed on with it; the status of the thrower is not handed on, so that the catching element and every scope the error or escalation passes keep their own status. An element stating a `<bpmnos:error>` or `<bpmnos:escalation>` element catches only an error or escalation of that name, whereas an element stating none catches every error or escalation, reading no content. An element throwing an error or escalation without stating its name throws one that only elements stating none catch, and so does the failure of a token violating a restriction, which is an error without a name. Where several elements could catch an error or escalation at the same scope, one stating its name takes precedence over one stating none.
+
+```xml
+<bpmn2:extensionElements>
+  <bpmnos:status>
+    <bpmnos:operators>
+      <bpmnos:operator id="Operator_Shortage" expression="Shortage.missing := demand - stock" />
+    </bpmnos:operators>
+  </bpmnos:status>
+  <bpmnos:error name="Shortage" type="{ missing: integer }" />
+</bpmn2:extensionElements>
+```
+
 ## Timer
 The trigger for a @ref BPMN::TimerCatchEvent "timer event" can be specified by providing a parameter with name `trigger` and value being an expression as shown in the following example.
 

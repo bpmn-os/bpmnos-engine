@@ -122,6 +122,18 @@
     <xsd:attribute name="type" type="xsd:string" use="optional"/>
   </xsd:complexType>
 
+  <xsd:element name="error" type="tError"/>
+  <xsd:complexType name="tError">
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="type" type="xsd:string" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:element name="escalation" type="tEscalation"/>
+  <xsd:complexType name="tEscalation">
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="type" type="xsd:string" use="optional"/>
+  </xsd:complexType>
+
   <xsd:element name="loopCharacteristics" type="tLoopCharacteristics"/>
   <xsd:complexType name="tLoopCharacteristics">
     <xsd:sequence>
