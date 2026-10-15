@@ -521,11 +521,12 @@ std::optional<double> Expression::execute(const BPMNOS::Status& status, const Da
     return (double)value.has_value();
   }
 
-  // the number of values is fixed by the expression, so that each vector is allocated once
-  std::vector<double> variableValues;
-  variableValues.reserve(variables.size());
-  std::vector<const BPMNOS::Object*> pathObjects;
-  pathObjects.reserve(paths.size());
+  // the buffers are reused by every evaluation on the thread, so that an evaluation allocates nothing; no evaluation
+  // starts another while they are in use
+  thread_local std::vector<double> variableValues;
+  thread_local std::vector<const BPMNOS::Object*> pathObjects;
+  variableValues.clear();
+  pathObjects.clear();
   if ( !setValues(status, data, variableValues, pathObjects, false) ) {
     // return nullopt because a required value is not given
     return std::nullopt;
@@ -580,11 +581,12 @@ bool Expression::setValues(const BPMNOS::Status& status, const DataType& data, s
 template <typename DataType>
 void Expression::writeToObject(BPMNOS::Status& status, DataType& data) const {
   assert( objectTarget );
-  // the number of values is fixed by the expression, so that each vector is allocated once
-  std::vector<double> variableValues;
-  variableValues.reserve(variables.size());
-  std::vector<const BPMNOS::Object*> pathObjects;
-  pathObjects.reserve(paths.size());
+  // the buffers are reused by every write on the thread, so that a write allocates nothing for them; no write starts
+  // another while they are in use
+  thread_local std::vector<double> variableValues;
+  thread_local std::vector<const BPMNOS::Object*> pathObjects;
+  variableValues.clear();
+  pathObjects.clear();
   if ( !setValues(status, data, variableValues, pathObjects, true) ) {
     throw std::runtime_error("Expression: '" + expression + "' reads an array without a value");
   }
