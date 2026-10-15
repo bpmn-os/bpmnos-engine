@@ -104,13 +104,26 @@ public:
    *
    * This is also the value of the objects of the scopes the engine creates itself, event subprocesses and
    * instances started by a trigger.
+   *
+   * The content attribute of a node stating a message, signal, error or escalation has a default object as well,
+   * with undefined values in the sizes declared at the node throwing it or, for a signal, by its name, from which a
+   * throwing node starts the content its operators write.
    */
   const std::shared_ptr<const BPMNOS::Object>& getDefaultObject(const BPMNOS::Model::Attribute* object) const;
+
+  /**
+   * @brief Method returning the content object a signal of the given name starts from, with undefined values in
+   * the sizes declared by its name, so that a signal raised by the environment has the layout of one thrown
+   * within the model.
+   */
+  const std::shared_ptr<const BPMNOS::Object>& getDefaultContent(BPMNOS::number signalName) const;
 
 protected:
   const std::shared_ptr<const BPMNOS::Model::Model> model; ///< The model the data provider is built on, whose ownership it shares
   /// The default object of each object attribute
   std::unordered_map<const BPMNOS::Model::Attribute*, std::shared_ptr<const BPMNOS::Object>> defaultObjects;
+  /// The default content object of each signal, by its name
+  std::unordered_map<BPMNOS::number, std::shared_ptr<const BPMNOS::Object>> defaultContents;
 };
 
 } // namespace BPMNOS::Execution

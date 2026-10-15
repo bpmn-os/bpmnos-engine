@@ -304,17 +304,53 @@ void InstanceDataReader::declareSizes(const Row& row) {
     ++end;
   }
   auto name = text.substr(0, end);
-  auto object = findObject(model, row.node, name);
-  if ( !object ) {
-    throw std::runtime_error("InstanceDataReader: size declaration '" + text + "' names no object " + ( row.node ? "of node '" + row.node->id + "'" : std::string("of the model") ));
+  auto declare = [&text,end](BPMNOS::Model::Schema& schema) {
+    try {
+      schema.declareSizes( text.substr(end) );
+    }
+    catch ( const std::exception& error ) {
+      throw std::runtime_error("InstanceDataReader: illegal size declaration '" + text + "'.\n" + error.what());
+    }
+  };
+
+  if ( auto object = findObject(model, row.node, name) ) {
+    declare( schemas.try_emplace(object, *object->schema).first->second );
+    return;
   }
-  auto [it, _] = schemas.try_emplace(object, *object->schema);
-  try {
-    it->second.declareSizes( text.substr(end) );
+
+  if ( !row.node ) {
+    // the content of a signal is declared by the name of the signal
+    for ( auto& process : model->processes ) {
+      for ( auto node : process->find_all([](const BPMN::Node* node) { return node->represents<BPMN::SignalThrowEvent>() || node->represents<BPMN::SignalCatchEvent>(); }) ) {
+        auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+        if ( extensionElements->content->name == name ) {
+          declare( signalSchemas.try_emplace(extensionElements->signalDefinition->name, *extensionElements->content->schema).first->second );
+          return;
+        }
+      }
+    }
+    throw std::runtime_error("InstanceDataReader: size declaration '" + text + "' names no object or signal of the model");
   }
-  catch ( const std::exception& error ) {
-    throw std::runtime_error("InstanceDataReader: illegal size declaration '" + text + "'.\n" + error.what());
+
+  // the content of a message, error or escalation is declared at the node throwing it
+  auto extensionElements = row.node->extensionElements ? row.node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() : nullptr;
+  if ( !extensionElements || !extensionElements->content || extensionElements->content->name != name ) {
+    throw std::runtime_error("InstanceDataReader: size declaration '" + text + "' names no object of node '" + row.node->id + "'");
   }
+  if ( row.node->represents<BPMN::SignalThrowEvent>() || row.node->represents<BPMN::SignalCatchEvent>() ) {
+    throw std::runtime_error("InstanceDataReader: size declaration '" + text + "' at node '" + row.node->id + "' must name no node, the sizes of a signal being declared by its name");
+  }
+  if ( !row.node->represents<BPMN::ThrowEvent>() ) {
+    throw std::runtime_error("InstanceDataReader: size declaration '" + text + "' at node '" + row.node->id + "' must be given at the node throwing the content");
+  }
+  declare( schemas.try_emplace(extensionElements->content.get(), *extensionElements->content->schema).first->second );
+}
+
+BPMNOS::Model::Schema InstanceDataReader::getSignalSchema(BPMNOS::number name, const BPMNOS::Model::Schema& type) const {
+  if ( auto it = signalSchemas.find(name); it != signalSchemas.end() ) {
+    return it->second;
+  }
+  return type;
 }
 
 std::shared_ptr<const BPMNOS::Object> InstanceDataReader::knownObject(std::optional<size_t> instanceId, const BPMNOS::Model::Attribute* object) const {

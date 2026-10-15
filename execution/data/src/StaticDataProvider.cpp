@@ -97,6 +97,23 @@ void StaticDataProvider::readInstances(const std::string& instanceFileOrString, 
       defaultObjects[object] = schema.undefinedObject();
     }
   }
+  // the default content with the sizes declared at the node throwing it or, for a signal, by its name, every node of
+  // a signal sharing one
+  for ( auto& [name, schema] : reader.signalSchemas ) {
+    defaultContents[name] = schema.undefinedObject();
+  }
+  for ( auto& process : this->model->processes ) {
+    for ( auto node : process->find_all([](const BPMN::Node* node) { return node->extensionElements && node->extensionElements->represents<const BPMNOS::Model::ExtensionElements>() && node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->content; }) ) {
+      auto extensionElements = node->extensionElements->as<const BPMNOS::Model::ExtensionElements>();
+      auto content = extensionElements->content.get();
+      if ( auto signalDefinition = extensionElements->signalDefinition.get() ) {
+        defaultObjects[content] = defaultContents.at(signalDefinition->name);
+      }
+      else if ( reader.schemas.contains(content) ) {
+        defaultObjects[content] = reader.getSchema(content).undefinedObject();
+      }
+    }
+  }
   for ( auto& object : this->model->objects ) {
     if ( auto it = reader.globalObjects.find(object.get()); it != reader.globalObjects.end() ) {
       globals.objects.push_back( it->second );

@@ -198,3 +198,76 @@ TEST_CASE( "The content object of messages and signals", "[execution][message][s
     }
   }
 }
+
+namespace {
+
+/// The exchange model with the content type `{ route: integer[] }`, the catcher copying the route.
+std::string routeModel(const std::string& element, const std::vector<std::string>& thrown) {
+  auto xml = exchangeModel(element, "Exchange", thrown, { "stops := Exchange.route" });
+  xml = fill(xml, R"(type="{ count: integer, pair: { a: integer, b: integer } }" />)", R"(type="{ route: integer[] }" />)");
+  xml = fill(xml, R"(type="{ pair: { b: integer, a: integer }, count: integer }" />)", R"(type="{ route: integer[] }" />)");
+  return fill(xml, R"(<bpmnos:attribute id="Other" type="integer" name="other" />)", R"(<bpmnos:attribute id="Other" type="integer" name="other" />
+          <bpmnos:attribute id="Stops" type="integer[]" name="stops" />)");
+}
+
+/// Runs the route model with the given size declaration and returns the record of the message or signal.
+nlohmann::ordered_json routeExchange(const std::string& element, const std::vector<std::string>& thrown, const std::string& declaration) {
+  auto model = modelFrom(routeModel(element, thrown));
+  auto provider = std::make_shared<Execution::StaticDataProvider>(model,
+    "INSTANCE_ID; NODE_ID; INITIALIZATION\n" + declaration +
+    "Instance_1; Thrower; timestamp := 1\n"
+    "Instance_2; Catcher; timestamp := 0\n"
+  );
+  Execution::Engine engine(model);
+  Execution::InstantEntry entryHandler;
+  Execution::FirstMatchingMessageDelivery messageHandler;
+  Execution::InstantExit exitHandler;
+  entryHandler.connect(&engine);
+  messageHandler.connect(&engine);
+  exitHandler.connect(&engine);
+  Execution::Recorder recorder;
+  recorder.subscribe(&engine);
+  engine.run(provider->createScenario());
+  auto contentLog = ( element == "message" ?
+    recorder.find(nlohmann::json{{"origin","Throw"},{"state","CREATED"}}) :
+    recorder.find(nlohmann::json{{"name","Exchange"}}, nlohmann::json{{"event",nullptr}})
+  );
+  REQUIRE( contentLog.size() == 1 );
+  return contentLog[0];
+}
+
+} // namespace
+
+TEST_CASE( "Size declarations of the content of messages and signals", "[execution][message][signal][content]" ) {
+  SECTION( "The content of a message declared at the throwing node" ) {
+    auto contentLog = routeExchange("message", { "Exchange.route := [1, 2]" }, "; Throw; Exchange.route[4]\n");
+    // the declared dimension is fixed, a shorter array being padded
+    REQUIRE( contentLog["content"] == nlohmann::ordered_json::parse(R"({ "route": [1, 2, null, null] })") );
+    REQUIRE_THROWS_WITH( routeExchange("message", { "Exchange.route := [1, 2, 3, 4, 5]" }, "; Throw; Exchange.route[4]\n"), Catch::Matchers::ContainsSubstring("5 elements where 4 are declared") );
+  }
+
+  SECTION( "The content of a message without a declaration takes the length assigned" ) {
+    auto contentLog = routeExchange("message", { "Exchange.route := [1, 2]" }, "");
+    REQUIRE( contentLog["content"] == nlohmann::ordered_json::parse(R"({ "route": [1, 2] })") );
+  }
+
+  SECTION( "The content of a signal declared by its name" ) {
+    auto contentLog = routeExchange("signal", { "Exchange.route := [1, 2]" }, "; ; Exchange.route[4]\n");
+    REQUIRE( contentLog["content"] == nlohmann::ordered_json::parse(R"({ "route": [1, 2, null, null] })") );
+    // a signal raised by the environment starts from the same layout
+    auto model = modelFrom(routeModel("signal", {}));
+    auto provider = std::make_shared<Execution::StaticDataProvider>(model, "INSTANCE_ID; NODE_ID; INITIALIZATION\n; ; Exchange.route[4]\nInstance_1; Thrower;\n");
+    REQUIRE( provider->getDefaultContent(BPMNOS::to_number(std::string("Exchange"),STRING))->values.size() == 4 );
+  }
+
+  SECTION( "Illegal size declarations of content are refused" ) {
+    auto provide = [](const std::string& element, const std::string& declaration) {
+      auto model = modelFrom(routeModel(element, {}));
+      return std::make_shared<Execution::StaticDataProvider>(model, "INSTANCE_ID; NODE_ID; INITIALIZATION\n" + declaration + "Instance_1; Thrower;\n");
+    };
+    REQUIRE_THROWS_WITH( provide("signal", "; Throw; Exchange.route[4]\n"), Catch::Matchers::ContainsSubstring("the sizes of a signal being declared by its name") );
+    REQUIRE_THROWS_WITH( provide("message", "; Catch; Exchange.route[4]\n"), Catch::Matchers::ContainsSubstring("must be given at the node throwing the content") );
+    REQUIRE_THROWS_WITH( provide("message", "; ; Exchange.route[4]\n"), Catch::Matchers::ContainsSubstring("names no object or signal of the model") );
+    REQUIRE_THROWS_WITH( provide("message", "; Throw; Other.route[4]\n"), Catch::Matchers::ContainsSubstring("names no object of node 'Throw'") );
+  }
+}

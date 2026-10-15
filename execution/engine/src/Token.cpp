@@ -14,6 +14,8 @@
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "execution/utility/src/erase.h"
+#include "execution/data/src/DataProvider.h"
+#include "execution/data/src/Scenario.h"
 #include "model/utility/src/Number.h"
 #include <cassert>
 #include <iostream>
@@ -1335,14 +1337,14 @@ void Token::applyOperators(const BPMNOS::Model::ExtensionElements& extensionElem
 
   if ( node->represents<BPMN::ThrowEvent>() ) {
     if ( extensionElements.content ) {
-      // the content a throwing node sends is named by its definition, and its object is written from an undefined
-      // object of its type
+      // the content a throwing node sends is named by its definition, and its object is written from its default
+      // object, undefined in the sizes the instance data declare
       auto name =
         node->represents<BPMN::MessageThrowEvent>() ? extensionElements.messageDefinition->name :
         node->represents<BPMN::SignalThrowEvent>() ? extensionElements.signalDefinition->name :
         node->represents<BPMN::ErrorEndEvent>() ? extensionElements.errorDefinition->name :
         extensionElements.escalationDefinition->name;
-      content = Content{ name, extensionElements.content->schema->undefinedObject() };
+      content = Content{ name, owner->systemState->scenario->dataProvider->getDefaultObject(extensionElements.content.get()) };
     }
     else {
       // an unnamed error or escalation has no content

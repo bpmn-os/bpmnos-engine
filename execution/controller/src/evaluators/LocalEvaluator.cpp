@@ -3,6 +3,8 @@
 #include "execution/engine/src/SystemState.h"
 #include "execution/engine/src/StateMachine.h"
 #include "execution/engine/src/Token.h"
+#include "execution/data/src/DataProvider.h"
+#include "execution/data/src/Scenario.h"
 
 using namespace BPMNOS::Execution;
 
@@ -33,11 +35,11 @@ bool LocalEvaluator::updateValues(EntryDecision* decision, Status& status, Data&
   ) {
     // apply operators after checking entry restrictions and before applying guidance
     // receive tasks and decision tasks require further decision before operators are applied
-    // the operators of a send task write the content object, starting from an undefined object of its type, as they
-    // do when the task is performed
+    // the operators of a send task write the content object, starting from its default object, as they do when the
+    // task is performed
     std::shared_ptr<const BPMNOS::Object> content;
     if ( extensionElements->content ) {
-      content = extensionElements->content->schema->undefinedObject();
+      content = token->owner->systemState->scenario->dataProvider->getDefaultObject(extensionElements->content.get());
     }
     extensionElements->applyOperators(status, data, &content);
   }
