@@ -277,23 +277,25 @@ Inherited (2)</summary>
 </ul>
 <p></p>
 </details>
+<h3 class="doxsection"><a class="anchor" id="operators-37"></a>
+Operators</h3>
+<ul>
+<li><span class="tt">Request.quantity := quantity</span></li>
+<li><span class="tt">Request.location := location</span></li>
+<li><span class="tt">Request.customer := instance</span></li>
+<li><span class="tt">Request.handling_duration := handling_duration</span></li>
+<li><span class="tt">Request.earliest_visit := earliest_visit</span></li>
+<li><span class="tt">Request.latest_visit := latest_visit</span></li>
+<li><span class="tt">Request.lateness_penalty := lateness_penalty</span></li>
+</ul>
 <h3 class="doxsection"><a class="anchor" id="message-24"></a>
 Message</h3>
 <h4 class="doxsection"><a class="anchor" id="name-request-8"></a>
 <em>Name</em> Request</h4>
 <h5 class="doxsection"><a class="anchor" id="header-0-15"></a>
 Header (0)</h5>
-<h5 class="doxsection"><a class="anchor" id="content-7"></a>
-Content (7)</h5>
-<ul>
-<li><em>Quantity:</em> <b>quantity</b></li>
-<li><em>Location:</em> <b>location</b></li>
-<li><em>Customer:</em> <b>instance</b></li>
-<li><em>HandlingDuration:</em> <b>handling_duration</b></li>
-<li><em>EarliestVisit:</em> <b>earliest_visit</b></li>
-<li><em>LatestVisit:</em> <b>latest_visit</b></li>
-<li><em>LatenessPenaty:</em> <b>lateness_penalty</b></li>
-</ul>
+<h5 class="doxsection"><a class="anchor" id="content-0-24"></a>
+Content (0)</h5>
 <h2 class="doxsection"><a class="anchor" id="intermediatecatchevent-catcharrival"></a>
 IntermediateCatchEvent (CatchArrival)</h2>
 <h3 class="doxsection"><a class="anchor" id="status-166"></a>
@@ -342,7 +344,7 @@ Message</h3>
 <em>Name</em> Arrival</h4>
 <h5 class="doxsection"><a class="anchor" id="header-0-16"></a>
 Header (0)</h5>
-<h5 class="doxsection"><a class="anchor" id="content-0-14"></a>
+<h5 class="doxsection"><a class="anchor" id="content-0-25"></a>
 Content (0)</h5>
 <h2 class="doxsection"><a class="anchor" id="intermediatecatchevent-waitevent"></a>
 IntermediateCatchEvent (WaitEvent)</h2>
@@ -475,7 +477,7 @@ Inherited (2)</summary>
 </ul>
 <p></p>
 </details>
-<h3 class="doxsection"><a class="anchor" id="operators-29"></a>
+<h3 class="doxsection"><a class="anchor" id="operators-38"></a>
 Operators</h3>
 <ul>
 <li><span class="tt">timestamp += handling_duration</span></li>
@@ -528,7 +530,7 @@ Message</h3>
 <em>Name</em> Ready</h4>
 <h5 class="doxsection"><a class="anchor" id="header-0-17"></a>
 Header (0)</h5>
-<h5 class="doxsection"><a class="anchor" id="content-0-15"></a>
+<h5 class="doxsection"><a class="anchor" id="content-0-26"></a>
 Content (0)</h5>
 <h2 class="doxsection"><a class="anchor" id="datastorereference-datastorereference_1-3"></a>
 DataStoreReference (DataStoreReference_1)</h2>
@@ -882,7 +884,7 @@ Owned (2)</summary>
 </ul>
 <p></p>
 </details>
-<h3 class="doxsection"><a class="anchor" id="operators-30"></a>
+<h3 class="doxsection"><a class="anchor" id="operators-39"></a>
 Operators</h3>
 <ul>
 <li><span class="tt">timestamp += duration</span></li>
@@ -952,13 +954,6 @@ Inherited (2)</summary>
 </ul>
 <p></p>
 </details>
-<h3 class="doxsection"><a class="anchor" id="operators-31"></a>
-Operators</h3>
-<ul>
-<li><span class="tt">pending += 1</span></li>
-<li><span class="tt">requests_made += 1</span></li>
-<li><span class="tt">load += quantity</span></li>
-</ul>
 <h3 class="doxsection"><a class="anchor" id="exit-restrictions-17"></a>
 Exit restrictions</h3>
 <details  open="true">
@@ -1032,15 +1027,20 @@ Message</h3>
 <em>Name</em> Request</h4>
 <h5 class="doxsection"><a class="anchor" id="header-0-18"></a>
 Header (0)</h5>
-<h5 class="doxsection"><a class="anchor" id="content-6"></a>
-Content (6)</h5>
+<h5 class="doxsection"><a class="anchor" id="content-0-27"></a>
+Content (0)</h5>
+<h3 class="doxsection"><a class="anchor" id="operators-40"></a>
+Operators</h3>
 <ul>
-<li><em>Quantity:</em> <b>quantity</b></li>
-<li><em>Location:</em> <b>customer_location</b></li>
-<li><em>Customer:</em> <b>customer</b></li>
-<li><em>EarliestVisit:</em> <b>earliest_visit</b></li>
-<li><em>LatestVisit:</em> <b>latest_visit</b></li>
-<li><em>LatenessPenaty:</em> <b>lateness_penalty</b></li>
+<li><span class="tt">quantity := Request.quantity</span></li>
+<li><span class="tt">customer_location := Request.location</span></li>
+<li><span class="tt">customer := Request.customer</span></li>
+<li><span class="tt">earliest_visit := Request.earliest_visit</span></li>
+<li><span class="tt">latest_visit := Request.latest_visit</span></li>
+<li><span class="tt">lateness_penalty := Request.lateness_penalty</span></li>
+<li><span class="tt">pending += 1</span></li>
+<li><span class="tt">requests_made += 1</span></li>
+<li><span class="tt">load += quantity</span></li>
 </ul>
 <h2 class="doxsection"><a class="anchor" id="adhocsubprocess-adhocsubprocessrequest-1"></a>
 AdHocSubProcess (AdHocSubProcessRequest)</h2>
@@ -1272,7 +1272,7 @@ Inherited (2)</summary>
 </ul>
 <p></p>
 </details>
-<h3 class="doxsection"><a class="anchor" id="operators-32"></a>
+<h3 class="doxsection"><a class="anchor" id="operators-41"></a>
 Operators</h3>
 <ul>
 <li><span class="tt">timestamp += duration</span></li>
@@ -1344,7 +1344,7 @@ Header (1)</h5>
 <ul>
 <li><em>recipient:</em> <span class="tt">customer</span></li>
 </ul>
-<h5 class="doxsection"><a class="anchor" id="content-0-16"></a>
+<h5 class="doxsection"><a class="anchor" id="content-0-28"></a>
 Content (0)</h5>
 <h2 class="doxsection"><a class="anchor" id="intermediatecatchevent-catchshipmenthandled"></a>
 IntermediateCatchEvent (CatchShipmentHandled)</h2>
@@ -1410,7 +1410,7 @@ Header (1)</h5>
 <ul>
 <li><em>sender:</em> <span class="tt">customer</span></li>
 </ul>
-<h5 class="doxsection"><a class="anchor" id="content-0-17"></a>
+<h5 class="doxsection"><a class="anchor" id="content-0-29"></a>
 Content (0)</h5>
 <h2 class="doxsection"><a class="anchor" id="endevent-endeventvisit"></a>
 EndEvent (EndEventVisit)</h2>

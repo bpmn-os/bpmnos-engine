@@ -5,6 +5,7 @@ var classBPMNOS_1_1Model_1_1Attribute =
       [ "DATA", "classBPMNOS_1_1Model_1_1Attribute.html#aae591f2dba868c00d93ef926d42bf145ae44f9e348e41cb272efa87387728571b", null ]
     ] ],
     [ "Attribute", "classBPMNOS_1_1Model_1_1Attribute.html#ad855c1b6042d629e042714ae5a7919e1", null ],
+    [ "Attribute", "classBPMNOS_1_1Model_1_1Attribute.html#aa6adecd9f8fe29b904163f1490577ddc", null ],
     [ "isObject", "classBPMNOS_1_1Model_1_1Attribute.html#a184c6e7d804a2617caf26920ee5765d0", null ],
     [ "category", "classBPMNOS_1_1Model_1_1Attribute.html#a1ee7d0aa9c8aa5eed633b96bf5b96e0a", null ],
     [ "declaration", "classBPMNOS_1_1Model_1_1Attribute.html#a28add65097efff77d4f89205ee172627", null ],

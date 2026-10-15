@@ -1,9 +1,9 @@
 var ExtensionElements_8cpp =
 [
-    [ "ExtensionElements::applyOperators< BPMNOS::Data >", "ExtensionElements_8cpp.html#af266ab20ae66e93ad0f0be355a44904c", null ],
-    [ "ExtensionElements::applyOperators< BPMNOS::SharedData >", "ExtensionElements_8cpp.html#ab685937b417288955620ada61eff164b", null ],
-    [ "ExtensionElements::computeInitialValues< BPMNOS::Data >", "ExtensionElements_8cpp.html#a9565b4ca7800aa98bbb137a320efc8aa", null ],
-    [ "ExtensionElements::computeInitialValues< BPMNOS::SharedData >", "ExtensionElements_8cpp.html#aaa23793404d10cfd84b179b8037bcefb", null ],
+    [ "ExtensionElements::applyOperators< BPMNOS::Data >", "ExtensionElements_8cpp.html#a560ba06850f7d8755ca00994d832d92b", null ],
+    [ "ExtensionElements::applyOperators< BPMNOS::SharedData >", "ExtensionElements_8cpp.html#aac2d47413d56ad01d8e38fcad08d8a63", null ],
+    [ "ExtensionElements::conditionsSatisfied< BPMNOS::Data >", "ExtensionElements_8cpp.html#ae5480cfc1efae6bebed1cf33fc2bf1f4", null ],
+    [ "ExtensionElements::conditionsSatisfied< BPMNOS::SharedData >", "ExtensionElements_8cpp.html#ab42913671dfe9285eb9639a3ca303fbf", null ],
     [ "ExtensionElements::feasibleCompletion< BPMNOS::Data >", "ExtensionElements_8cpp.html#aa87e333920390b5295c74a0600eb61e1", null ],
     [ "ExtensionElements::feasibleCompletion< BPMNOS::SharedData >", "ExtensionElements_8cpp.html#ad9ae7469daa111e86cf308de75bfed22", null ],
     [ "ExtensionElements::feasibleEntry< BPMNOS::Data >", "ExtensionElements_8cpp.html#a13bf39c64a09d12e841ba6273c38a638", null ],

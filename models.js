@@ -17,7 +17,8 @@ var models =
         ] ],
         [ "StartEvent (StartEventTrip)", "earliest_arrival_problem.html#startevent-starteventtrip", [
           [ "Status", "earliest_arrival_problem.html#status-32", null ],
-          [ "Data", "earliest_arrival_problem.html#data-32", null ]
+          [ "Data", "earliest_arrival_problem.html#data-32", null ],
+          [ "Operators", "earliest_arrival_problem.html#operators-7", null ]
         ] ],
         [ "EndEvent (EndEventTrip)", "earliest_arrival_problem.html#endevent-endeventtrip", [
           [ "Status", "earliest_arrival_problem.html#status-33", null ],
@@ -27,17 +28,17 @@ var models =
           [ "Status", "earliest_arrival_problem.html#status-34", null ],
           [ "Data", "earliest_arrival_problem.html#data-34", null ],
           [ "Choices", "earliest_arrival_problem.html#choices-1", null ],
-          [ "Operators", "earliest_arrival_problem.html#operators-5", null ],
+          [ "Operators", "earliest_arrival_problem.html#operators-8", null ],
           [ "Exit restrictions", "earliest_arrival_problem.html#exit-restrictions-15", null ],
           [ "Choice guidance", "earliest_arrival_problem.html#choice-guidance", [
             [ "Attributes", "earliest_arrival_problem.html#attributes-2", null ],
-            [ "Operators", "earliest_arrival_problem.html#operators-6", null ]
+            [ "Operators", "earliest_arrival_problem.html#operators-9", null ]
           ] ]
         ] ],
         [ "Task (Travel)", "earliest_arrival_problem.html#task-travel", [
           [ "Status", "earliest_arrival_problem.html#status-35", null ],
           [ "Data", "earliest_arrival_problem.html#data-35", null ],
-          [ "Operators", "earliest_arrival_problem.html#operators-7", null ]
+          [ "Operators", "earliest_arrival_problem.html#operators-10", null ]
         ] ],
         [ "IntermediateCatchEvent (TimerEvent)", "earliest_arrival_problem.html#intermediatecatchevent-timerevent", [
           [ "Status", "earliest_arrival_problem.html#status-36", null ],
@@ -69,10 +70,11 @@ var models =
         [ "SendTask (SendRequestTask)", "assignment_problem.html#sendtask-sendrequesttask", [
           [ "Status", "assignment_problem.html#status-2", null ],
           [ "Data", "assignment_problem.html#data-2", null ],
+          [ "Operators", "assignment_problem.html#operators-1", null ],
           [ "Message", "assignment_problem.html#message", [
             [ "<em>Name</em> Message", "assignment_problem.html#name-message", [
               [ "Header (0)", "assignment_problem.html#header-0", null ],
-              [ "Content (1)", "assignment_problem.html#content-1", null ]
+              [ "Content (0)", "assignment_problem.html#content-0", null ]
             ] ]
           ] ]
         ] ],
@@ -94,10 +96,10 @@ var models =
           [ "Message", "assignment_problem.html#message-1", [
             [ "<em>Name</em> Message", "assignment_problem.html#name-message-1", [
               [ "Header (0)", "assignment_problem.html#header-0-1", null ],
-              [ "Content (1)", "assignment_problem.html#content-1-1", null ]
+              [ "Content (0)", "assignment_problem.html#content-0-1", null ]
             ] ]
           ] ],
-          [ "Operators", "assignment_problem.html#operators-1", null ]
+          [ "Operators", "assignment_problem.html#operators-2", null ]
         ] ],
         [ "EndEvent (EndEventServer)", "assignment_problem.html#endevent-endeventserver", [
           [ "Status", "assignment_problem.html#status-7", null ],
@@ -123,10 +125,11 @@ var models =
         [ "SendTask (SendRequestTask)", "knapsack_problem.html#sendtask-sendrequesttask-1", [
           [ "Status", "knapsack_problem.html#status-61", null ],
           [ "Data", "knapsack_problem.html#data-61", null ],
+          [ "Operators", "knapsack_problem.html#operators-16", null ],
           [ "Message", "knapsack_problem.html#message-8", [
             [ "<em>Name</em> Request", "knapsack_problem.html#name-request-4", [
               [ "Header (0)", "knapsack_problem.html#header-0-5", null ],
-              [ "Content (3)", "knapsack_problem.html#content-3", null ]
+              [ "Content (0)", "knapsack_problem.html#content-0-8", null ]
             ] ]
           ] ]
         ] ],
@@ -140,7 +143,7 @@ var models =
           [ "Message", "knapsack_problem.html#message-9", [
             [ "<em>Name</em> Acceptance", "knapsack_problem.html#name-acceptance", [
               [ "Header (0)", "knapsack_problem.html#header-0-6", null ],
-              [ "Content (0)", "knapsack_problem.html#content-0-2", null ]
+              [ "Content (0)", "knapsack_problem.html#content-0-9", null ]
             ] ]
           ] ]
         ] ],
@@ -154,7 +157,7 @@ var models =
           [ "Message", "knapsack_problem.html#message-10", [
             [ "<em>Name</em> Rejection", "knapsack_problem.html#name-rejection", [
               [ "Header (0)", "knapsack_problem.html#header-0-7", null ],
-              [ "Content (0)", "knapsack_problem.html#content-0-3", null ]
+              [ "Content (0)", "knapsack_problem.html#content-0-10", null ]
             ] ]
           ] ]
         ] ],
@@ -168,8 +171,7 @@ var models =
         ] ],
         [ "SubProcess (EventSubProcess)", "knapsack_problem.html#subprocess-eventsubprocess-2", [
           [ "Status", "knapsack_problem.html#status-68", null ],
-          [ "Data", "knapsack_problem.html#data-68", null ],
-          [ "Operators", "knapsack_problem.html#operators-11", null ]
+          [ "Data", "knapsack_problem.html#data-68", null ]
         ] ],
         [ "AdHocSubProcess (AdHocSubProcess)", "knapsack_problem.html#adhocsubprocess-adhocsubprocess-2", [
           [ "Status", "knapsack_problem.html#status-69", null ],
@@ -193,14 +195,14 @@ var models =
           [ "Message", "knapsack_problem.html#message-11", [
             [ "<em>Name</em> Rejection", "knapsack_problem.html#name-rejection-1", [
               [ "Header (1)", "knapsack_problem.html#header-1-3", null ],
-              [ "Content (0)", "knapsack_problem.html#content-0-4", null ]
+              [ "Content (0)", "knapsack_problem.html#content-0-11", null ]
             ] ]
           ] ]
         ] ],
         [ "Task (IncludeItemActivity)", "knapsack_problem.html#task-includeitemactivity", [
           [ "Status", "knapsack_problem.html#status-74", null ],
           [ "Data", "knapsack_problem.html#data-74", null ],
-          [ "Operators", "knapsack_problem.html#operators-12", null ]
+          [ "Operators", "knapsack_problem.html#operators-17", null ]
         ] ],
         [ "EndEvent (ThrowAcceptanceMessage)", "knapsack_problem.html#endevent-throwacceptancemessage", [
           [ "Status", "knapsack_problem.html#status-75", null ],
@@ -208,7 +210,7 @@ var models =
           [ "Message", "knapsack_problem.html#message-12", [
             [ "<em>Name</em> Acceptance", "knapsack_problem.html#name-acceptance-1", [
               [ "Header (1)", "knapsack_problem.html#header-1-4", null ],
-              [ "Content (0)", "knapsack_problem.html#content-0-5", null ]
+              [ "Content (0)", "knapsack_problem.html#content-0-12", null ]
             ] ]
           ] ]
         ] ],
@@ -222,9 +224,10 @@ var models =
           [ "Message", "knapsack_problem.html#message-13", [
             [ "<em>Name</em> Request", "knapsack_problem.html#name-request-5", [
               [ "Header (0)", "knapsack_problem.html#header-0-8", null ],
-              [ "Content (3)", "knapsack_problem.html#content-3-1", null ]
+              [ "Content (0)", "knapsack_problem.html#content-0-13", null ]
             ] ]
-          ] ]
+          ] ],
+          [ "Operators", "knapsack_problem.html#operators-18", null ]
         ] ],
         [ "EndEvent (EndEventKnapsack)", "knapsack_problem.html#endevent-endeventknapsack", [
           [ "Status", "knapsack_problem.html#status-78", null ],
@@ -274,10 +277,11 @@ var models =
           [ "Status", "bin_packing_problem.html#status-12", null ],
           [ "Data", "bin_packing_problem.html#data-12", null ],
           [ "Globals", "bin_packing_problem.html#globals-4", null ],
+          [ "Operators", "bin_packing_problem.html#operators-3", null ],
           [ "Message", "bin_packing_problem.html#message-2", [
             [ "<em>Name</em> Request", "bin_packing_problem.html#name-request", [
               [ "Header (0)", "bin_packing_problem.html#header-0-2", null ],
-              [ "Content (2)", "bin_packing_problem.html#content-2", null ]
+              [ "Content (0)", "bin_packing_problem.html#content-0-2", null ]
             ] ]
           ] ]
         ] ],
@@ -323,7 +327,6 @@ var models =
           [ "Data", "bin_packing_problem.html#data-18", null ],
           [ "Globals", "bin_packing_problem.html#globals-10", null ],
           [ "Entry restrictions", "bin_packing_problem.html#entry-restrictions-4", null ],
-          [ "Operators", "bin_packing_problem.html#operators-2", null ],
           [ "Completion restrictions", "bin_packing_problem.html#completion-restrictions-4", null ],
           [ "Exit restrictions", "bin_packing_problem.html#exit-restrictions-4", null ]
         ] ],
@@ -343,14 +346,15 @@ var models =
           [ "Message", "bin_packing_problem.html#message-3", [
             [ "<em>Name</em> Request", "bin_packing_problem.html#name-request-1", [
               [ "Header (0)", "bin_packing_problem.html#header-0-3", null ],
-              [ "Content (2)", "bin_packing_problem.html#content-2-1", null ]
+              [ "Content (0)", "bin_packing_problem.html#content-0-3", null ]
             ] ]
           ] ],
+          [ "Operators", "bin_packing_problem.html#operators-4", null ],
           [ "Completion restrictions", "bin_packing_problem.html#completion-restrictions-6", null ],
           [ "Exit restrictions", "bin_packing_problem.html#exit-restrictions-6", null ],
           [ "Message guidance", "bin_packing_problem.html#message-guidance", [
             [ "Attributes", "bin_packing_problem.html#attributes-1", null ],
-            [ "Operators", "bin_packing_problem.html#operators-3", null ]
+            [ "Operators", "bin_packing_problem.html#operators-5", null ]
           ] ]
         ] ],
         [ "AdHocSubProcess (AdHocSubProcess)", "bin_packing_problem.html#adhocsubprocess-adhocsubprocess", [
@@ -390,7 +394,7 @@ var models =
           [ "Data", "bin_packing_problem.html#data-25", null ],
           [ "Globals", "bin_packing_problem.html#globals-17", null ],
           [ "Entry restrictions", "bin_packing_problem.html#entry-restrictions-11", null ],
-          [ "Operators", "bin_packing_problem.html#operators-4", null ],
+          [ "Operators", "bin_packing_problem.html#operators-6", null ],
           [ "Completion restrictions", "bin_packing_problem.html#completion-restrictions-11", null ],
           [ "Exit restrictions", "bin_packing_problem.html#exit-restrictions-11", null ]
         ] ],
@@ -454,7 +458,8 @@ var models =
         [ "StartEvent (JobStartEvent)", "job_shop_scheduling_problem.html#startevent-jobstartevent", [
           [ "Status", "job_shop_scheduling_problem.html#status-43", null ],
           [ "Data", "job_shop_scheduling_problem.html#data-43", null ],
-          [ "Globals", "job_shop_scheduling_problem.html#globals-26", null ]
+          [ "Globals", "job_shop_scheduling_problem.html#globals-26", null ],
+          [ "Operators", "job_shop_scheduling_problem.html#operators-11", null ]
         ] ],
         [ "EndEvent (JobEndEvent)", "job_shop_scheduling_problem.html#endevent-jobendevent", [
           [ "Status", "job_shop_scheduling_problem.html#status-44", null ],
@@ -465,10 +470,11 @@ var models =
           [ "Status", "job_shop_scheduling_problem.html#status-45", null ],
           [ "Data", "job_shop_scheduling_problem.html#data-45", null ],
           [ "Globals", "job_shop_scheduling_problem.html#globals-28", null ],
+          [ "Operators", "job_shop_scheduling_problem.html#operators-12", null ],
           [ "Message", "job_shop_scheduling_problem.html#message-4", [
             [ "<em>Name</em> Request", "job_shop_scheduling_problem.html#name-request-2", [
               [ "Header (1)", "job_shop_scheduling_problem.html#header-1", null ],
-              [ "Content (2)", "job_shop_scheduling_problem.html#content-2-2", null ]
+              [ "Content (0)", "job_shop_scheduling_problem.html#content-0-4", null ]
             ] ]
           ] ]
         ] ],
@@ -479,10 +485,10 @@ var models =
           [ "Message", "job_shop_scheduling_problem.html#message-5", [
             [ "<em>Name</em> Completion", "job_shop_scheduling_problem.html#name-completion", [
               [ "Header (0)", "job_shop_scheduling_problem.html#header-0-4", null ],
-              [ "Content (0)", "job_shop_scheduling_problem.html#content-0", null ]
+              [ "Content (0)", "job_shop_scheduling_problem.html#content-0-5", null ]
             ] ]
           ] ],
-          [ "Operators", "job_shop_scheduling_problem.html#operators-8", null ]
+          [ "Operators", "job_shop_scheduling_problem.html#operators-13", null ]
         ] ],
         [ "DataObjectReference (DataObjectReference_0nc3n7b)", "job_shop_scheduling_problem.html#dataobjectreference-dataobjectreference_0nc3n7b", [
           [ "Status", "job_shop_scheduling_problem.html#status-47", null ],
@@ -502,8 +508,7 @@ var models =
         [ "SubProcess (EventSubProcess)", "job_shop_scheduling_problem.html#subprocess-eventsubprocess-1", [
           [ "Status", "job_shop_scheduling_problem.html#status-50", null ],
           [ "Data", "job_shop_scheduling_problem.html#data-50", null ],
-          [ "Globals", "job_shop_scheduling_problem.html#globals-33", null ],
-          [ "Operators", "job_shop_scheduling_problem.html#operators-9", null ]
+          [ "Globals", "job_shop_scheduling_problem.html#globals-33", null ]
         ] ],
         [ "AdHocSubProcess (AdHocSubProcess)", "job_shop_scheduling_problem.html#adhocsubprocess-adhocsubprocess-1", [
           [ "Status", "job_shop_scheduling_problem.html#status-51", null ],
@@ -514,7 +519,7 @@ var models =
           [ "Status", "job_shop_scheduling_problem.html#status-52", null ],
           [ "Data", "job_shop_scheduling_problem.html#data-52", null ],
           [ "Globals", "job_shop_scheduling_problem.html#globals-35", null ],
-          [ "Operators", "job_shop_scheduling_problem.html#operators-10", null ]
+          [ "Operators", "job_shop_scheduling_problem.html#operators-14", null ]
         ] ],
         [ "StartEvent (CatchRequestMessage)", "job_shop_scheduling_problem.html#startevent-catchrequestmessage-1", [
           [ "Status", "job_shop_scheduling_problem.html#status-53", null ],
@@ -523,9 +528,10 @@ var models =
           [ "Message", "job_shop_scheduling_problem.html#message-6", [
             [ "<em>Name</em> Request", "job_shop_scheduling_problem.html#name-request-3", [
               [ "Header (1)", "job_shop_scheduling_problem.html#header-1-1", null ],
-              [ "Content (2)", "job_shop_scheduling_problem.html#content-2-3", null ]
+              [ "Content (0)", "job_shop_scheduling_problem.html#content-0-6", null ]
             ] ]
-          ] ]
+          ] ],
+          [ "Operators", "job_shop_scheduling_problem.html#operators-15", null ]
         ] ],
         [ "EndEvent (ThrowCompletionMessage)", "job_shop_scheduling_problem.html#endevent-throwcompletionmessage", [
           [ "Status", "job_shop_scheduling_problem.html#status-54", null ],
@@ -534,7 +540,7 @@ var models =
           [ "Message", "job_shop_scheduling_problem.html#message-7", [
             [ "<em>Name</em> Completion", "job_shop_scheduling_problem.html#name-completion-1", [
               [ "Header (1)", "job_shop_scheduling_problem.html#header-1-2", null ],
-              [ "Content (0)", "job_shop_scheduling_problem.html#content-0-1", null ]
+              [ "Content (0)", "job_shop_scheduling_problem.html#content-0-7", null ]
             ] ]
           ] ]
         ] ],
@@ -557,7 +563,7 @@ var models =
           [ "Status", "job_shop_scheduling_problem.html#status-58", null ],
           [ "Data", "job_shop_scheduling_problem.html#data-58", null ],
           [ "Globals", "job_shop_scheduling_problem.html#globals-41", null ],
-          [ "Conditions", "job_shop_scheduling_problem.html#conditions", null ]
+          [ "Conditions", "job_shop_scheduling_problem.html#conditions-1", null ]
         ] ]
       ] ]
     ] ],
@@ -580,10 +586,11 @@ var models =
           [ "Status", "vehicle_routing_problem.html#status-165", null ],
           [ "Data", "vehicle_routing_problem.html#data-165", null ],
           [ "Globals", "vehicle_routing_problem.html#globals-82", null ],
+          [ "Operators", "vehicle_routing_problem.html#operators-37", null ],
           [ "Message", "vehicle_routing_problem.html#message-24", [
             [ "<em>Name</em> Request", "vehicle_routing_problem.html#name-request-8", [
               [ "Header (0)", "vehicle_routing_problem.html#header-0-15", null ],
-              [ "Content (7)", "vehicle_routing_problem.html#content-7", null ]
+              [ "Content (0)", "vehicle_routing_problem.html#content-0-24", null ]
             ] ]
           ] ]
         ] ],
@@ -594,7 +601,7 @@ var models =
           [ "Message", "vehicle_routing_problem.html#message-25", [
             [ "<em>Name</em> Arrival", "vehicle_routing_problem.html#name-arrival-4", [
               [ "Header (0)", "vehicle_routing_problem.html#header-0-16", null ],
-              [ "Content (0)", "vehicle_routing_problem.html#content-0-14", null ]
+              [ "Content (0)", "vehicle_routing_problem.html#content-0-25", null ]
             ] ]
           ] ]
         ] ],
@@ -613,7 +620,7 @@ var models =
           [ "Status", "vehicle_routing_problem.html#status-169", null ],
           [ "Data", "vehicle_routing_problem.html#data-169", null ],
           [ "Globals", "vehicle_routing_problem.html#globals-86", null ],
-          [ "Operators", "vehicle_routing_problem.html#operators-29", null ]
+          [ "Operators", "vehicle_routing_problem.html#operators-38", null ]
         ] ],
         [ "IntermediateThrowEvent (ThrowShipmentHandled)", "vehicle_routing_problem.html#intermediatethrowevent-throwshipmenthandled", [
           [ "Status", "vehicle_routing_problem.html#status-170", null ],
@@ -622,7 +629,7 @@ var models =
           [ "Message", "vehicle_routing_problem.html#message-26", [
             [ "<em>Name</em> Ready", "vehicle_routing_problem.html#name-ready", [
               [ "Header (0)", "vehicle_routing_problem.html#header-0-17", null ],
-              [ "Content (0)", "vehicle_routing_problem.html#content-0-15", null ]
+              [ "Content (0)", "vehicle_routing_problem.html#content-0-26", null ]
             ] ]
           ] ]
         ] ],
@@ -661,13 +668,12 @@ var models =
           [ "Data", "vehicle_routing_problem.html#data-177", null ],
           [ "Globals", "vehicle_routing_problem.html#globals-94", null ],
           [ "Entry restrictions", "vehicle_routing_problem.html#entry-restrictions-17", null ],
-          [ "Operators", "vehicle_routing_problem.html#operators-30", null ]
+          [ "Operators", "vehicle_routing_problem.html#operators-39", null ]
         ] ],
         [ "SubProcess (EventSubProcess)", "vehicle_routing_problem.html#subprocess-eventsubprocess-4", [
           [ "Status", "vehicle_routing_problem.html#status-178", null ],
           [ "Data", "vehicle_routing_problem.html#data-178", null ],
           [ "Globals", "vehicle_routing_problem.html#globals-95", null ],
-          [ "Operators", "vehicle_routing_problem.html#operators-31", null ],
           [ "Exit restrictions", "vehicle_routing_problem.html#exit-restrictions-17", null ]
         ] ],
         [ "StartEvent (StartEventRequest)", "vehicle_routing_problem.html#startevent-starteventrequest-1", [
@@ -677,9 +683,10 @@ var models =
           [ "Message", "vehicle_routing_problem.html#message-27", [
             [ "<em>Name</em> Request", "vehicle_routing_problem.html#name-request-9", [
               [ "Header (0)", "vehicle_routing_problem.html#header-0-18", null ],
-              [ "Content (6)", "vehicle_routing_problem.html#content-6", null ]
+              [ "Content (0)", "vehicle_routing_problem.html#content-0-27", null ]
             ] ]
-          ] ]
+          ] ],
+          [ "Operators", "vehicle_routing_problem.html#operators-40", null ]
         ] ],
         [ "AdHocSubProcess (AdHocSubProcessRequest)", "vehicle_routing_problem.html#adhocsubprocess-adhocsubprocessrequest-1", [
           [ "Status", "vehicle_routing_problem.html#status-180", null ],
@@ -700,7 +707,7 @@ var models =
           [ "Status", "vehicle_routing_problem.html#status-183", null ],
           [ "Data", "vehicle_routing_problem.html#data-183", null ],
           [ "Globals", "vehicle_routing_problem.html#globals-100", null ],
-          [ "Operators", "vehicle_routing_problem.html#operators-32", null ]
+          [ "Operators", "vehicle_routing_problem.html#operators-41", null ]
         ] ],
         [ "IntermediateThrowEvent (ThrowArrival)", "vehicle_routing_problem.html#intermediatethrowevent-throwarrival", [
           [ "Status", "vehicle_routing_problem.html#status-184", null ],
@@ -709,7 +716,7 @@ var models =
           [ "Message", "vehicle_routing_problem.html#message-28", [
             [ "<em>Name</em> Arrival", "vehicle_routing_problem.html#name-arrival-5", [
               [ "Header (1)", "vehicle_routing_problem.html#header-1-9", null ],
-              [ "Content (0)", "vehicle_routing_problem.html#content-0-16", null ]
+              [ "Content (0)", "vehicle_routing_problem.html#content-0-28", null ]
             ] ]
           ] ]
         ] ],
@@ -720,7 +727,7 @@ var models =
           [ "Message", "vehicle_routing_problem.html#message-29", [
             [ "<em>Name</em> Ready", "vehicle_routing_problem.html#name-ready-1", [
               [ "Header (1)", "vehicle_routing_problem.html#header-1-10", null ],
-              [ "Content (0)", "vehicle_routing_problem.html#content-0-17", null ]
+              [ "Content (0)", "vehicle_routing_problem.html#content-0-29", null ]
             ] ]
           ] ]
         ] ],
@@ -763,7 +770,7 @@ var models =
           [ "Message", "pickup_delivery_problem.html#message-14", [
             [ "<em>Name</em> Unloaded", "pickup_delivery_problem.html#name-unloaded", [
               [ "Header (0)", "pickup_delivery_problem.html#header-0-9", null ],
-              [ "Content (0)", "pickup_delivery_problem.html#content-0-6", null ]
+              [ "Content (0)", "pickup_delivery_problem.html#content-0-14", null ]
             ] ]
           ] ]
         ] ],
@@ -776,7 +783,7 @@ var models =
           [ "Status", "pickup_delivery_problem.html#status-86", null ],
           [ "Data", "pickup_delivery_problem.html#data-86", null ],
           [ "Globals", "pickup_delivery_problem.html#globals-47", null ],
-          [ "Operators", "pickup_delivery_problem.html#operators-13", null ]
+          [ "Operators", "pickup_delivery_problem.html#operators-19", null ]
         ] ],
         [ "IntermediateCatchEvent (DeliveryWaitEvent)", "pickup_delivery_problem.html#intermediatecatchevent-deliverywaitevent", [
           [ "Status", "pickup_delivery_problem.html#status-87", null ],
@@ -788,7 +795,7 @@ var models =
           [ "Status", "pickup_delivery_problem.html#status-88", null ],
           [ "Data", "pickup_delivery_problem.html#data-88", null ],
           [ "Globals", "pickup_delivery_problem.html#globals-49", null ],
-          [ "Operators", "pickup_delivery_problem.html#operators-14", null ]
+          [ "Operators", "pickup_delivery_problem.html#operators-20", null ]
         ] ],
         [ "IntermediateCatchEvent (PickupWaitEvent)", "pickup_delivery_problem.html#intermediatecatchevent-pickupwaitevent", [
           [ "Status", "pickup_delivery_problem.html#status-89", null ],
@@ -803,7 +810,7 @@ var models =
           [ "Message", "pickup_delivery_problem.html#message-15", [
             [ "<em>Name</em> Arrival", "pickup_delivery_problem.html#name-arrival", [
               [ "Header (0)", "pickup_delivery_problem.html#header-0-10", null ],
-              [ "Content (0)", "pickup_delivery_problem.html#content-0-7", null ]
+              [ "Content (0)", "pickup_delivery_problem.html#content-0-15", null ]
             ] ]
           ] ]
         ] ],
@@ -814,7 +821,7 @@ var models =
           [ "Message", "pickup_delivery_problem.html#message-16", [
             [ "<em>Name</em> Loaded", "pickup_delivery_problem.html#name-loaded", [
               [ "Header (0)", "pickup_delivery_problem.html#header-0-11", null ],
-              [ "Content (0)", "pickup_delivery_problem.html#content-0-8", null ]
+              [ "Content (0)", "pickup_delivery_problem.html#content-0-16", null ]
             ] ]
           ] ]
         ] ],
@@ -825,7 +832,7 @@ var models =
           [ "Message", "pickup_delivery_problem.html#message-17", [
             [ "<em>Name</em> Arrival", "pickup_delivery_problem.html#name-arrival-1", [
               [ "Header (0)", "pickup_delivery_problem.html#header-0-12", null ],
-              [ "Content (0)", "pickup_delivery_problem.html#content-0-9", null ]
+              [ "Content (0)", "pickup_delivery_problem.html#content-0-17", null ]
             ] ]
           ] ]
         ] ],
@@ -833,10 +840,11 @@ var models =
           [ "Status", "pickup_delivery_problem.html#status-93", null ],
           [ "Data", "pickup_delivery_problem.html#data-93", null ],
           [ "Globals", "pickup_delivery_problem.html#globals-54", null ],
+          [ "Operators", "pickup_delivery_problem.html#operators-21", null ],
           [ "Message", "pickup_delivery_problem.html#message-18", [
             [ "<em>Name</em> Request", "pickup_delivery_problem.html#name-request-6", [
               [ "Header (0)", "pickup_delivery_problem.html#header-0-13", null ],
-              [ "Content (12)", "pickup_delivery_problem.html#content-12", null ]
+              [ "Content (0)", "pickup_delivery_problem.html#content-0-18", null ]
             ] ]
           ] ]
         ] ],
@@ -853,8 +861,7 @@ var models =
         [ "SubProcess (EventSubProcess)", "pickup_delivery_problem.html#subprocess-eventsubprocess-3", [
           [ "Status", "pickup_delivery_problem.html#status-96", null ],
           [ "Data", "pickup_delivery_problem.html#data-96", null ],
-          [ "Globals", "pickup_delivery_problem.html#globals-57", null ],
-          [ "Operators", "pickup_delivery_problem.html#operators-15", null ]
+          [ "Globals", "pickup_delivery_problem.html#globals-57", null ]
         ] ],
         [ "StartEvent (StartEventRequest)", "pickup_delivery_problem.html#startevent-starteventrequest", [
           [ "Status", "pickup_delivery_problem.html#status-97", null ],
@@ -863,9 +870,10 @@ var models =
           [ "Message", "pickup_delivery_problem.html#message-19", [
             [ "<em>Name</em> Request", "pickup_delivery_problem.html#name-request-7", [
               [ "Header (0)", "pickup_delivery_problem.html#header-0-14", null ],
-              [ "Content (12)", "pickup_delivery_problem.html#content-12-1", null ]
+              [ "Content (0)", "pickup_delivery_problem.html#content-0-19", null ]
             ] ]
-          ] ]
+          ] ],
+          [ "Operators", "pickup_delivery_problem.html#operators-22", null ]
         ] ],
         [ "AdHocSubProcess (AdHocSubProcessRequest)", "pickup_delivery_problem.html#adhocsubprocess-adhocsubprocessrequest", [
           [ "Status", "pickup_delivery_problem.html#status-98", null ],
@@ -887,7 +895,7 @@ var models =
           [ "Status", "pickup_delivery_problem.html#status-101", null ],
           [ "Data", "pickup_delivery_problem.html#data-101", null ],
           [ "Globals", "pickup_delivery_problem.html#globals-62", null ],
-          [ "Operators", "pickup_delivery_problem.html#operators-16", null ]
+          [ "Operators", "pickup_delivery_problem.html#operators-23", null ]
         ] ],
         [ "IntermediateThrowEvent (ThrowPickupArrival)", "pickup_delivery_problem.html#intermediatethrowevent-throwpickuparrival", [
           [ "Status", "pickup_delivery_problem.html#status-102", null ],
@@ -896,7 +904,7 @@ var models =
           [ "Message", "pickup_delivery_problem.html#message-20", [
             [ "<em>Name</em> Arrival", "pickup_delivery_problem.html#name-arrival-2", [
               [ "Header (1)", "pickup_delivery_problem.html#header-1-5", null ],
-              [ "Content (0)", "pickup_delivery_problem.html#content-0-10", null ]
+              [ "Content (0)", "pickup_delivery_problem.html#content-0-20", null ]
             ] ]
           ] ]
         ] ],
@@ -912,10 +920,10 @@ var models =
           [ "Message", "pickup_delivery_problem.html#message-21", [
             [ "<em>Name</em> Loaded", "pickup_delivery_problem.html#name-loaded-1", [
               [ "Header (1)", "pickup_delivery_problem.html#header-1-6", null ],
-              [ "Content (0)", "pickup_delivery_problem.html#content-0-11", null ]
+              [ "Content (0)", "pickup_delivery_problem.html#content-0-21", null ]
             ] ]
           ] ],
-          [ "Operators", "pickup_delivery_problem.html#operators-17", null ]
+          [ "Operators", "pickup_delivery_problem.html#operators-24", null ]
         ] ],
         [ "SubProcess (DeliveryActivity)", "pickup_delivery_problem.html#subprocess-deliveryactivity", [
           [ "Status", "pickup_delivery_problem.html#status-105", null ],
@@ -931,7 +939,7 @@ var models =
           [ "Status", "pickup_delivery_problem.html#status-107", null ],
           [ "Data", "pickup_delivery_problem.html#data-107", null ],
           [ "Globals", "pickup_delivery_problem.html#globals-68", null ],
-          [ "Operators", "pickup_delivery_problem.html#operators-18", null ]
+          [ "Operators", "pickup_delivery_problem.html#operators-25", null ]
         ] ],
         [ "IntermediateThrowEvent (CatchArrival)", "pickup_delivery_problem.html#intermediatethrowevent-catcharrival", [
           [ "Status", "pickup_delivery_problem.html#status-108", null ],
@@ -940,7 +948,7 @@ var models =
           [ "Message", "pickup_delivery_problem.html#message-22", [
             [ "<em>Name</em> Arrival", "pickup_delivery_problem.html#name-arrival-3", [
               [ "Header (1)", "pickup_delivery_problem.html#header-1-7", null ],
-              [ "Content (0)", "pickup_delivery_problem.html#content-0-12", null ]
+              [ "Content (0)", "pickup_delivery_problem.html#content-0-22", null ]
             ] ]
           ] ]
         ] ],
@@ -956,10 +964,10 @@ var models =
           [ "Message", "pickup_delivery_problem.html#message-23", [
             [ "<em>Name</em> Unloaded", "pickup_delivery_problem.html#name-unloaded-1", [
               [ "Header (1)", "pickup_delivery_problem.html#header-1-8", null ],
-              [ "Content (0)", "pickup_delivery_problem.html#content-0-13", null ]
+              [ "Content (0)", "pickup_delivery_problem.html#content-0-23", null ]
             ] ]
           ] ],
-          [ "Operators", "pickup_delivery_problem.html#operators-19", null ]
+          [ "Operators", "pickup_delivery_problem.html#operators-26", null ]
         ] ],
         [ "EndEvent (EndEventRequest)", "pickup_delivery_problem.html#endevent-endeventrequest", [
           [ "Status", "pickup_delivery_problem.html#status-111", null ],
@@ -986,7 +994,7 @@ var models =
           [ "Data", "pickup_delivery_problem.html#data-115", null ],
           [ "Globals", "pickup_delivery_problem.html#globals-76", null ],
           [ "Entry restrictions", "pickup_delivery_problem.html#entry-restrictions-16", null ],
-          [ "Operators", "pickup_delivery_problem.html#operators-20", null ]
+          [ "Operators", "pickup_delivery_problem.html#operators-27", null ]
         ] ],
         [ "EndEvent (EndEventVehicle)", "pickup_delivery_problem.html#endevent-endeventvehicle", [
           [ "Status", "pickup_delivery_problem.html#status-116", null ],
@@ -1018,12 +1026,12 @@ var models =
           [ "Status", "travelling_salesperson_problem.html#status-121", null ],
           [ "Data", "travelling_salesperson_problem.html#data-121", null ],
           [ "Multi-instance", "travelling_salesperson_problem.html#multi-instance-1", null ],
-          [ "Operators", "travelling_salesperson_problem.html#operators-21", null ]
+          [ "Operators", "travelling_salesperson_problem.html#operators-28", null ]
         ] ],
         [ "Task (ReturnTrip)", "travelling_salesperson_problem.html#task-returntrip-1", [
           [ "Status", "travelling_salesperson_problem.html#status-122", null ],
           [ "Data", "travelling_salesperson_problem.html#data-122", null ],
-          [ "Operators", "travelling_salesperson_problem.html#operators-22", null ]
+          [ "Operators", "travelling_salesperson_problem.html#operators-29", null ]
         ] ],
         [ "EndEvent (EndEvent_1)", "travelling_salesperson_problem.html#endevent-endevent_1-1", [
           [ "Status", "travelling_salesperson_problem.html#status-123", null ],
@@ -1055,12 +1063,13 @@ var models =
         ] ],
         [ "StartEvent (StartTripEvent)", "truck_driver_scheduling_problem.html#startevent-starttripevent", [
           [ "Status", "truck_driver_scheduling_problem.html#status-129", null ],
-          [ "Data", "truck_driver_scheduling_problem.html#data-129", null ]
+          [ "Data", "truck_driver_scheduling_problem.html#data-129", null ],
+          [ "Operators", "truck_driver_scheduling_problem.html#operators-30", null ]
         ] ],
         [ "Task (VisitTask)", "truck_driver_scheduling_problem.html#task-visittask", [
           [ "Status", "truck_driver_scheduling_problem.html#status-130", null ],
           [ "Data", "truck_driver_scheduling_problem.html#data-130", null ],
-          [ "Operators", "truck_driver_scheduling_problem.html#operators-23", null ]
+          [ "Operators", "truck_driver_scheduling_problem.html#operators-31", null ]
         ] ],
         [ "EndEvent (EndVisitEvent)", "truck_driver_scheduling_problem.html#endevent-endvisitevent", [
           [ "Status", "truck_driver_scheduling_problem.html#status-131", null ],
@@ -1091,7 +1100,7 @@ var models =
         [ "Task (DriveTask)", "truck_driver_scheduling_problem.html#task-drivetask", [
           [ "Status", "truck_driver_scheduling_problem.html#status-137", null ],
           [ "Data", "truck_driver_scheduling_problem.html#data-137", null ],
-          [ "Operators", "truck_driver_scheduling_problem.html#operators-24", null ]
+          [ "Operators", "truck_driver_scheduling_problem.html#operators-32", null ]
         ] ],
         [ "ExclusiveGateway (ArrivalGateway)", "truck_driver_scheduling_problem.html#exclusivegateway-arrivalgateway", [
           [ "Status", "truck_driver_scheduling_problem.html#status-138", null ],
@@ -1147,12 +1156,12 @@ var models =
         [ "Task (BreakDuringTripTask)", "truck_driver_scheduling_problem.html#task-breakduringtriptask", [
           [ "Status", "truck_driver_scheduling_problem.html#status-147", null ],
           [ "Data", "truck_driver_scheduling_problem.html#data-147", null ],
-          [ "Operators", "truck_driver_scheduling_problem.html#operators-25", null ]
+          [ "Operators", "truck_driver_scheduling_problem.html#operators-33", null ]
         ] ],
         [ "Task (RestDuringTripTask)", "truck_driver_scheduling_problem.html#task-restduringtriptask", [
           [ "Status", "truck_driver_scheduling_problem.html#status-148", null ],
           [ "Data", "truck_driver_scheduling_problem.html#data-148", null ],
-          [ "Operators", "truck_driver_scheduling_problem.html#operators-26", null ]
+          [ "Operators", "truck_driver_scheduling_problem.html#operators-34", null ]
         ] ],
         [ "EndEvent (TripEndEventBreak)", "truck_driver_scheduling_problem.html#endevent-tripendeventbreak", [
           [ "Status", "truck_driver_scheduling_problem.html#status-149", null ],
@@ -1192,12 +1201,12 @@ var models =
         [ "Task (BreakAtDestinationTask)", "truck_driver_scheduling_problem.html#task-breakatdestinationtask", [
           [ "Status", "truck_driver_scheduling_problem.html#status-154", null ],
           [ "Data", "truck_driver_scheduling_problem.html#data-154", null ],
-          [ "Operators", "truck_driver_scheduling_problem.html#operators-27", null ]
+          [ "Operators", "truck_driver_scheduling_problem.html#operators-35", null ]
         ] ],
         [ "Task (RestAtDestinationTask)", "truck_driver_scheduling_problem.html#task-restatdestinationtask", [
           [ "Status", "truck_driver_scheduling_problem.html#status-155", null ],
           [ "Data", "truck_driver_scheduling_problem.html#data-155", null ],
-          [ "Operators", "truck_driver_scheduling_problem.html#operators-28", null ]
+          [ "Operators", "truck_driver_scheduling_problem.html#operators-36", null ]
         ] ],
         [ "Task (DecideAtDestinationTask)", "truck_driver_scheduling_problem.html#task-decideatdestinationtask", [
           [ "Status", "truck_driver_scheduling_problem.html#status-156", null ],

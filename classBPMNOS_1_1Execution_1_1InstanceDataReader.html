@@ -130,10 +130,10 @@ $(function(){initNavTree('classBPMNOS_1_1Execution_1_1InstanceDataReader.html','
 <p>Class reading the instance data of a data provider from a CSV table.  
  <a href="#details">More...</a></p>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The data provider gives the names of the columns it reads in their order. The first three columns hold the instance, the node, and the initialization, which has the form <span class="tt">attribute := expression</span>, and the further columns are interpreted by the data provider alone. The first line of the table names its columns, which must be the first three or more of the columns given by the data provider; a column the table lacks gives no input. A row without instance and node gives the value of a global attribute and has no further cells, and every other row belongs to an instance, the first row of which must name the process of the instance. A row whose initialization has no <span class="tt">:=</span> is a size declaration instead, <span class="tt">name[6].flags[3]</span>, naming no instance and naming the node declaring the object, or no node for a global object; it fixes the sizes of the object for every instance. An initialization of an object gives a literal, which arrives as the index of a constant object.</p>
+<div class="textblock"><p>The data provider gives the names of the columns it reads in their order. The first three columns hold the instance, the node, and the initialization, which has the form <span class="tt">attribute := expression</span>, and the further columns are interpreted by the data provider alone. The first line of the table names its columns, which must be the first three or more of the columns given by the data provider; a column the table lacks gives no input. A row without instance and node gives the value of a global attribute and has no further cells, and every other row belongs to an instance, the first row of which must name the process of the instance. A row whose initialization has no <span class="tt">:=</span> is a size declaration instead, <span class="tt">name[6].flags[3]</span>, naming no instance and naming the node declaring the object, or no node for a global object; it fixes the sizes of the object for every instance. An initialization of an object gives a literal, which arrives as the index of a constant object, or an object initializer, a literal whose members may be expressions, which arrives as it is written.</p>
 <p>The reader resolves the rows and offers what every data provider needs to interpret them: the lookup of the attribute an initialization gives a value to, the evaluation of global values and of expressions of an instance with a LIMEX handle chosen by the data provider, and the default values of the instance and the timestamp. How the values of an instance are used is left to the data provider. </p>
 
-<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8h_source.html#l00035">35</a> of file <a class="el" href="InstanceDataReader_8h_source.html">InstanceDataReader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8h_source.html#l00037">37</a> of file <a class="el" href="InstanceDataReader_8h_source.html">InstanceDataReader.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="InstanceDataReader_8h_source.html">InstanceDataReader.h</a>&gt;</code></p>
 <table class="memberdecls">
@@ -149,12 +149,16 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a155f5a8c8cb4638e62ac0751cdf57c7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the attribute of the node an initialization gives a value to, and the expression.  <br /></td></tr>
 <tr class="memitem:a76e174b961b1fa50f7e6e2a281f3b316" id="r_a76e174b961b1fa50f7e6e2a281f3b316"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a76e174b961b1fa50f7e6e2a281f3b316">assignsObject</a> (const <a class="el" href="structBPMNOS_1_1Execution_1_1InstanceDataReader_1_1Row.html">Row</a> &amp;row) const</td></tr>
 <tr class="memdesc:a76e174b961b1fa50f7e6e2a281f3b316"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning true if the initialization of the row gives a value to an object.  <br /></td></tr>
-<tr class="memitem:ac6e4ec68341d2f498983b57b2da10115" id="r_ac6e4ec68341d2f498983b57b2da10115"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac6e4ec68341d2f498983b57b2da10115">setObject</a> (const <a class="el" href="structBPMNOS_1_1Execution_1_1InstanceDataReader_1_1Row.html">Row</a> &amp;row)</td></tr>
-<tr class="memdesc:ac6e4ec68341d2f498983b57b2da10115"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method recording the literal the row gives an object of an instance or a global object.  <br /></td></tr>
+<tr class="memitem:a116ac33e060a812ed7a357b968620afc" id="r_a116ac33e060a812ed7a357b968620afc"><td class="memItemLeft" align="right" valign="top">std::pair&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *, <a class="el" href="classBPMNOS_1_1ObjectInitializer.html">BPMNOS::ObjectInitializer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a116ac33e060a812ed7a357b968620afc">lookupObject</a> (const <a class="el" href="structBPMNOS_1_1Execution_1_1InstanceDataReader_1_1Row.html">Row</a> &amp;row) const</td></tr>
+<tr class="memdesc:a116ac33e060a812ed7a357b968620afc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the object an initialization gives a value to, an object of the node or a global object if the row names no node, and the initializer stating the value.  <br /></td></tr>
+<tr class="memitem:ad7d93f89a494832d97008613a44ad14f" id="r_ad7d93f89a494832d97008613a44ad14f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad7d93f89a494832d97008613a44ad14f">setObject</a> (const <a class="el" href="structBPMNOS_1_1Execution_1_1InstanceDataReader_1_1Row.html">Row</a> &amp;row, const LIMEX::Handle&lt; double &gt; &amp;handle)</td></tr>
+<tr class="memdesc:ad7d93f89a494832d97008613a44ad14f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method evaluating the initializer the row gives an object of an instance or a global object and recording the object, to which later expressions may refer.  <br /></td></tr>
 <tr class="memitem:ac1700bd24dabfc2faef8b92b16c6c919" id="r_ac1700bd24dabfc2faef8b92b16c6c919"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac1700bd24dabfc2faef8b92b16c6c919">declareSizes</a> (const <a class="el" href="structBPMNOS_1_1Execution_1_1InstanceDataReader_1_1Row.html">Row</a> &amp;row)</td></tr>
 <tr class="memdesc:ac1700bd24dabfc2faef8b92b16c6c919"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method recording a size declaration.  <br /></td></tr>
 <tr class="memitem:a67063220015b98d5981ccf6ebd9596b7" id="r_a67063220015b98d5981ccf6ebd9596b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">BPMNOS::Model::Schema</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a67063220015b98d5981ccf6ebd9596b7">getSchema</a> (const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *object) const</td></tr>
 <tr class="memdesc:a67063220015b98d5981ccf6ebd9596b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the schema of an object with the sizes the size declarations fix.  <br /></td></tr>
+<tr class="memitem:a1361a5361650f7641f160432d59d7ffd" id="r_a1361a5361650f7641f160432d59d7ffd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">BPMNOS::Model::Schema</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1361a5361650f7641f160432d59d7ffd">getSignalSchema</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> name, const <a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">BPMNOS::Model::Schema</a> &amp;type) const</td></tr>
+<tr class="memdesc:a1361a5361650f7641f160432d59d7ffd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the schema of the content of the signal with the given name, of the given type, with the sizes the size declarations fix.  <br /></td></tr>
 <tr class="memitem:a880ddca5915bb483418b841d5186b4d9" id="r_a880ddca5915bb483418b841d5186b4d9"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a880ddca5915bb483418b841d5186b4d9">knownObject</a> (std::optional&lt; size_t &gt; instanceId, const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *object) const</td></tr>
 <tr class="memdesc:a880ddca5915bb483418b841d5186b4d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the object an object attribute holds for an expression of the instance data, given by an earlier row or by the model, nullptr if it has no value yet.  <br /></td></tr>
 <tr class="memitem:a654c34387cebcc9ba65266ece43af44c" id="r_a654c34387cebcc9ba65266ece43af44c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a654c34387cebcc9ba65266ece43af44c">evaluateGlobal</a> (const std::string &amp;initialization, const LIMEX::Handle&lt; double &gt; &amp;handle)</td></tr>
@@ -170,6 +174,10 @@ Public Member Functions</h2></td></tr>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a6aa9f4031d81c13059c93e7f1c596545" id="r_a6aa9f4031d81c13059c93e7f1c596545"><td class="memItemLeft" align="right" valign="top">static std::pair&lt; std::string, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6aa9f4031d81c13059c93e7f1c596545">splitInitialization</a> (const std::string &amp;initialization)</td></tr>
 <tr class="memdesc:a6aa9f4031d81c13059c93e7f1c596545"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method splitting an initialization of the form <span class="tt">attribute := expression</span>.  <br /></td></tr>
+<tr class="memitem:a1e8f0a00e044797a073b95358c392919" id="r_a1e8f0a00e044797a073b95358c392919"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1e8f0a00e044797a073b95358c392919">instantiate</a> (const <a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">BPMNOS::Model::Schema</a> &amp;schema, const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *object, const <a class="el" href="classBPMNOS_1_1ObjectInitializer.html">BPMNOS::ObjectInitializer</a> &amp;initializer, const std::vector&lt; double &gt; &amp;<a class="el" href="#aa9f78ce1ba3d743226d52d644bba4c3f">values</a>)</td></tr>
+<tr class="memdesc:a1e8f0a00e044797a073b95358c392919"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the object an initializer states with the given values of its expression members, conformed to the given schema of the object.  <br /></td></tr>
+<tr class="memitem:af2ca0c05611ba2dd73efdff596af29ad" id="r_af2ca0c05611ba2dd73efdff596af29ad"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af2ca0c05611ba2dd73efdff596af29ad">convert</a> (double value, <a class="el" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a> type)</td></tr>
+<tr class="memdesc:af2ca0c05611ba2dd73efdff596af29ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the value of an expression of the instance data to a value of the given type, an integer being truncated and a boolean being true for every value but zero.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -182,12 +190,14 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:a0647b5178edde31b961ef82c021ff6a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">The values of the global attributes recorded.  <br /></td></tr>
 <tr class="memitem:aa9f78ce1ba3d743226d52d644bba4c3f" id="r_aa9f78ce1ba3d743226d52d644bba4c3f"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa9f78ce1ba3d743226d52d644bba4c3f">values</a></td></tr>
 <tr class="memdesc:aa9f78ce1ba3d743226d52d644bba4c3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The values of the attributes of each instance recorded.  <br /></td></tr>
-<tr class="memitem:a288b21010485021a0dbac80a9affefc8" id="r_a288b21010485021a0dbac80a9affefc8"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *, size_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a288b21010485021a0dbac80a9affefc8">objects</a></td></tr>
-<tr class="memdesc:a288b21010485021a0dbac80a9affefc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">The constant object given for each object of each instance, by its index in the object registry.  <br /></td></tr>
-<tr class="memitem:a9acb5570ee66bf24eaee6a43087e7871" id="r_a9acb5570ee66bf24eaee6a43087e7871"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *, size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9acb5570ee66bf24eaee6a43087e7871">globalObjects</a></td></tr>
-<tr class="memdesc:a9acb5570ee66bf24eaee6a43087e7871"><td class="mdescLeft">&#160;</td><td class="mdescRight">The constant object given for each global object.  <br /></td></tr>
+<tr class="memitem:a2c4772039a5d92c0a19b2769b141dd32" id="r_a2c4772039a5d92c0a19b2769b141dd32"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *, std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2c4772039a5d92c0a19b2769b141dd32">objects</a></td></tr>
+<tr class="memdesc:a2c4772039a5d92c0a19b2769b141dd32"><td class="mdescLeft">&#160;</td><td class="mdescRight">The object recorded for each object of each instance.  <br /></td></tr>
+<tr class="memitem:adcdeba1a5f25ecd9e5a04df9494907c8" id="r_adcdeba1a5f25ecd9e5a04df9494907c8"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *, std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adcdeba1a5f25ecd9e5a04df9494907c8">globalObjects</a></td></tr>
+<tr class="memdesc:adcdeba1a5f25ecd9e5a04df9494907c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">The object recorded for each global object.  <br /></td></tr>
 <tr class="memitem:ad9d84838852282ec376fa0ca75c98897" id="r_ad9d84838852282ec376fa0ca75c98897"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *, <a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">BPMNOS::Model::Schema</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad9d84838852282ec376fa0ca75c98897">schemas</a></td></tr>
 <tr class="memdesc:ad9d84838852282ec376fa0ca75c98897"><td class="mdescLeft">&#160;</td><td class="mdescRight">The schema of each object whose sizes are declared.  <br /></td></tr>
+<tr class="memitem:aec8dbab471f47df518f4b4555c145754" id="r_aec8dbab471f47df518f4b4555c145754"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>, <a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">BPMNOS::Model::Schema</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec8dbab471f47df518f4b4555c145754">signalSchemas</a></td></tr>
+<tr class="memdesc:aec8dbab471f47df518f4b4555c145754"><td class="mdescLeft">&#160;</td><td class="mdescRight">The schema of the content of each signal whose sizes are declared, by the name of the signal.  <br /></td></tr>
 </table>
 <a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a80d65c16247f0af05ef1d3f8e2db9025" name="a80d65c16247f0af05ef1d3f8e2db9025"></a>
@@ -222,7 +232,7 @@ Public Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00012">12</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00013">13</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
 
 </div>
 </div>
@@ -247,7 +257,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>The instance takes its identifier and the timestamp zero, unless the values give them. </p>
 
-<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00380">380</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00468">468</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
 
 </div>
 </div>
@@ -266,7 +276,38 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00187">187</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00188">188</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
+
+</div>
+</div>
+<a id="af2ca0c05611ba2dd73efdff596af29ad" name="af2ca0c05611ba2dd73efdff596af29ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2ca0c05611ba2dd73efdff596af29ad">&#9670;&#160;</a></span>convert()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> InstanceDataReader::convert </td>
+          <td>(</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>value</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681">ValueType</a></td>          <td class="paramname"><span class="paramname"><em>type</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00482">482</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
 
 </div>
 </div>
@@ -284,8 +325,9 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>A declaration naming a node fixes the sizes of an object the node declares or of the content of a message, error or escalation the node throws; one naming no node fixes the sizes of a global object or of the content of a signal, which is the same wherever its name is thrown or raised and is therefore declared by its name. </p>
 
-<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00224">224</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00300">300</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
 
 </div>
 </div>
@@ -324,7 +366,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>The expression may refer to global attributes and to attributes of the instance whose values have been recorded before. </p>
 
-<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00320">320</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00405">405</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
 
 </div>
 </div>
@@ -348,7 +390,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>The expression may refer to global attributes whose values have been recorded before. </p>
 
-<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00274">274</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00385">385</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
 
 </div>
 </div>
@@ -367,7 +409,72 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00267">267</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00378">378</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a1361a5361650f7641f160432d59d7ffd" name="a1361a5361650f7641f160432d59d7ffd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1361a5361650f7641f160432d59d7ffd">&#9670;&#160;</a></span>getSignalSchema()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">BPMNOS::Model::Schema</a> InstanceDataReader::getSignalSchema </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></td>          <td class="paramname"><span class="paramname"><em>name</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">BPMNOS::Model::Schema</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>type</em></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00349">349</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a1e8f0a00e044797a073b95358c392919" name="a1e8f0a00e044797a073b95358c392919"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e8f0a00e044797a073b95358c392919">&#9670;&#160;</a></span>instantiate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; InstanceDataReader::instantiate </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">BPMNOS::Model::Schema</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>schema</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *</td>          <td class="paramname"><span class="paramname"><em>object</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1ObjectInitializer.html">BPMNOS::ObjectInitializer</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>initializer</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>values</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Each value is converted to the type the schema gives at the position of its member. </p>
+
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00281">281</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
 
 </div>
 </div>
@@ -391,7 +498,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>No instance is given for a global object. </p>
 
-<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00244">244</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00356">356</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
 
 </div>
 </div>
@@ -413,14 +520,34 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>It rejects a value for an event subprocess or a compensation activity, which the engine creates itself, for an attribute of a guidance, and for an attribute the model assigns a value to. </p>
+<p>It rejects a value for an event subprocess, which the engine creates itself, for an attribute of a guidance, and for an attribute the model assigns a value to. </p>
 
-<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00132">132</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00134">134</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
 
 </div>
 </div>
-<a id="ac6e4ec68341d2f498983b57b2da10115" name="ac6e4ec68341d2f498983b57b2da10115"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac6e4ec68341d2f498983b57b2da10115">&#9670;&#160;</a></span>setObject()</h2>
+<a id="a116ac33e060a812ed7a357b968620afc" name="a116ac33e060a812ed7a357b968620afc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a116ac33e060a812ed7a357b968620afc">&#9670;&#160;</a></span>lookupObject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::pair&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *, <a class="el" href="classBPMNOS_1_1ObjectInitializer.html">BPMNOS::ObjectInitializer</a> &gt; InstanceDataReader::lookupObject </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Execution_1_1InstanceDataReader_1_1Row.html">Row</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>row</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>It rejects a value for an object the model assigns a value to. </p>
+
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00197">197</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ad7d93f89a494832d97008613a44ad14f" name="ad7d93f89a494832d97008613a44ad14f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7d93f89a494832d97008613a44ad14f">&#9670;&#160;</a></span>setObject()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -428,14 +555,18 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="memname">void InstanceDataReader::setObject </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Execution_1_1InstanceDataReader_1_1Row.html">Row</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>row</em></span></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Execution_1_1InstanceDataReader_1_1Row.html">Row</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>row</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const LIMEX::Handle&lt; double &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The row must give no value in a further column, the value of an object being known from the start. </p>
+<p>An expression member may refer to global attributes and objects, and to attributes and objects of the instance, whose values have been recorded before; it does not refer to another member of the same initializer. </p>
 
-<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00196">196</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00229">229</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
 
 </div>
 </div>
@@ -463,7 +594,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00376">376</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00464">464</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
 
 </div>
 </div>
@@ -490,24 +621,24 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00116">116</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8cpp_source.html#l00118">118</a> of file <a class="el" href="InstanceDataReader_8cpp_source.html">InstanceDataReader.cpp</a>.</p>
 
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
-<a id="a9acb5570ee66bf24eaee6a43087e7871" name="a9acb5570ee66bf24eaee6a43087e7871"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9acb5570ee66bf24eaee6a43087e7871">&#9670;&#160;</a></span>globalObjects</h2>
+<a id="adcdeba1a5f25ecd9e5a04df9494907c8" name="adcdeba1a5f25ecd9e5a04df9494907c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adcdeba1a5f25ecd9e5a04df9494907c8">&#9670;&#160;</a></span>globalObjects</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::unordered_map&lt;const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a>*, size_t&gt; BPMNOS::Execution::InstanceDataReader::globalObjects</td>
+          <td class="memname">std::unordered_map&lt;const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a>*, std::shared_ptr&lt;const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a>&gt; &gt; BPMNOS::Execution::InstanceDataReader::globalObjects</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8h_source.html#l00127">127</a> of file <a class="el" href="InstanceDataReader_8h_source.html">InstanceDataReader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8h_source.html#l00154">154</a> of file <a class="el" href="InstanceDataReader_8h_source.html">InstanceDataReader.h</a>.</p>
 
 </div>
 </div>
@@ -523,7 +654,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8h_source.html#l00124">124</a> of file <a class="el" href="InstanceDataReader_8h_source.html">InstanceDataReader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8h_source.html#l00151">151</a> of file <a class="el" href="InstanceDataReader_8h_source.html">InstanceDataReader.h</a>.</p>
 
 </div>
 </div>
@@ -539,23 +670,23 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8h_source.html#l00055">55</a> of file <a class="el" href="InstanceDataReader_8h_source.html">InstanceDataReader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8h_source.html#l00057">57</a> of file <a class="el" href="InstanceDataReader_8h_source.html">InstanceDataReader.h</a>.</p>
 
 </div>
 </div>
-<a id="a288b21010485021a0dbac80a9affefc8" name="a288b21010485021a0dbac80a9affefc8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a288b21010485021a0dbac80a9affefc8">&#9670;&#160;</a></span>objects</h2>
+<a id="a2c4772039a5d92c0a19b2769b141dd32" name="a2c4772039a5d92c0a19b2769b141dd32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c4772039a5d92c0a19b2769b141dd32">&#9670;&#160;</a></span>objects</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::unordered_map&lt;size_t, std::unordered_map&lt;const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a>*, size_t&gt; &gt; BPMNOS::Execution::InstanceDataReader::objects</td>
+          <td class="memname">std::unordered_map&lt;size_t, std::unordered_map&lt;const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a>*, std::shared_ptr&lt;const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a>&gt; &gt; &gt; BPMNOS::Execution::InstanceDataReader::objects</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8h_source.html#l00126">126</a> of file <a class="el" href="InstanceDataReader_8h_source.html">InstanceDataReader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8h_source.html#l00153">153</a> of file <a class="el" href="InstanceDataReader_8h_source.html">InstanceDataReader.h</a>.</p>
 
 </div>
 </div>
@@ -571,7 +702,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8h_source.html#l00057">57</a> of file <a class="el" href="InstanceDataReader_8h_source.html">InstanceDataReader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8h_source.html#l00059">59</a> of file <a class="el" href="InstanceDataReader_8h_source.html">InstanceDataReader.h</a>.</p>
 
 </div>
 </div>
@@ -587,7 +718,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8h_source.html#l00056">56</a> of file <a class="el" href="InstanceDataReader_8h_source.html">InstanceDataReader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8h_source.html#l00058">58</a> of file <a class="el" href="InstanceDataReader_8h_source.html">InstanceDataReader.h</a>.</p>
 
 </div>
 </div>
@@ -603,7 +734,23 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8h_source.html#l00128">128</a> of file <a class="el" href="InstanceDataReader_8h_source.html">InstanceDataReader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8h_source.html#l00155">155</a> of file <a class="el" href="InstanceDataReader_8h_source.html">InstanceDataReader.h</a>.</p>
+
+</div>
+</div>
+<a id="aec8dbab471f47df518f4b4555c145754" name="aec8dbab471f47df518f4b4555c145754"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec8dbab471f47df518f4b4555c145754">&#9670;&#160;</a></span>signalSchemas</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>, <a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">BPMNOS::Model::Schema</a>&gt; BPMNOS::Execution::InstanceDataReader::signalSchemas</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8h_source.html#l00156">156</a> of file <a class="el" href="InstanceDataReader_8h_source.html">InstanceDataReader.h</a>.</p>
 
 </div>
 </div>
@@ -619,7 +766,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8h_source.html#l00125">125</a> of file <a class="el" href="InstanceDataReader_8h_source.html">InstanceDataReader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InstanceDataReader_8h_source.html#l00152">152</a> of file <a class="el" href="InstanceDataReader_8h_source.html">InstanceDataReader.h</a>.</p>
 
 </div>
 </div>

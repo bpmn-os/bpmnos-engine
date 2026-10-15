@@ -137,13 +137,13 @@ It is assumed that <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/class
 <dd>
 It is assumed that <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tAdHocSubProcess.html#ae23c5fdf78dfa0b786996324816a7420">XML::bpmn::tAdHocSubProcess::ordering</a> is <span class="tt">Sequential</span>. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00036">36</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00037">37</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="Token_8h_source.html">Token.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for BPMNOS::Execution::Token:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1Token__inherit__graph.svg" width="344" height="707"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1Token__inherit__graph.svg" width="344" height="730"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
@@ -231,6 +231,7 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:af602aefbf9bc21a1805e6a24d9218b4d" id="r_af602aefbf9bc21a1805e6a24d9218b4d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structBPMNOS_1_1SharedData.html">SharedData</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af602aefbf9bc21a1805e6a24d9218b4d">data</a></td></tr>
 <tr class="memdesc:af602aefbf9bc21a1805e6a24d9218b4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the data of the owner or owned state machine subprocesses).  <br /></td></tr>
 <tr class="memitem:a79b026438bda3f72cf67023359af5c99" id="r_a79b026438bda3f72cf67023359af5c99"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="structBPMNOS_1_1Execution_1_1DecisionRequest.html">DecisionRequest</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a79b026438bda3f72cf67023359af5c99">decisionRequest</a></td></tr>
+<tr class="memitem:a6dea934c71051fddfe46a2683d73b89e" id="r_a6dea934c71051fddfe46a2683d73b89e"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structBPMNOS_1_1Execution_1_1Content.html">Content</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6dea934c71051fddfe46a2683d73b89e">content</a></td></tr>
 <tr class="memitem:a169e5ce7edc041f251a5a659151af1ba" id="r_a169e5ce7edc041f251a5a659151af1ba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a31d15b136d0a0445e2c32806687139a3">Token</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a169e5ce7edc041f251a5a659151af1ba">performing</a></td></tr>
 <tr class="memdesc:a169e5ce7edc041f251a5a659151af1ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the activity token currently performed (only applies if node is a performer referenced by sequential ad-hoc subprocesses).  <br /></td></tr>
 <tr class="memitem:ac161ab385826d16d918b0922b01311af" id="r_ac161ab385826d16d918b0922b01311af"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1Execution_1_1auto__list.html">auto_list</a>&lt; std::weak_ptr&lt; <a class="el" href="#a31d15b136d0a0445e2c32806687139a3">Token</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac161ab385826d16d918b0922b01311af">pendingSequentialEntries</a></td></tr>
@@ -283,7 +284,7 @@ Friends</h2></td></tr>
 <tr><td class="fieldname"><a id="a635be14129b3dcfd2a8753cdc4f9e92da15f20da2a811c696726c7187065cd6d2" name="a635be14129b3dcfd2a8753cdc4f9e92da15f20da2a811c696726c7187065cd6d2"></a>WITHDRAWN&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00049">49</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00050">50</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -320,7 +321,7 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Token_8cpp_source.html#l00026">26</a> of file <a class="el" href="Token_8cpp_source.html">Token.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8cpp_source.html#l00025">25</a> of file <a class="el" href="Token_8cpp_source.html">Token.cpp</a>.</p>
 
 </div>
 </div>
@@ -346,7 +347,7 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Token_8cpp_source.html#l00038">38</a> of file <a class="el" href="Token_8cpp_source.html">Token.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8cpp_source.html#l00037">37</a> of file <a class="el" href="Token_8cpp_source.html">Token.cpp</a>.</p>
 
 </div>
 </div>
@@ -372,7 +373,7 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Token_8cpp_source.html#l00050">50</a> of file <a class="el" href="Token_8cpp_source.html">Token.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8cpp_source.html#l00049">49</a> of file <a class="el" href="Token_8cpp_source.html">Token.cpp</a>.</p>
 
 </div>
 </div>
@@ -403,7 +404,7 @@ Friends</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="Token_8cpp_source.html#l00062">62</a> of file <a class="el" href="Token_8cpp_source.html">Token.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8cpp_source.html#l00061">61</a> of file <a class="el" href="Token_8cpp_source.html">Token.cpp</a>.</p>
 
 </div>
 </div>
@@ -450,7 +451,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00106">106</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00111">111</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -477,7 +478,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00104">104</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00109">109</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -504,7 +505,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00105">105</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00110">110</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -531,7 +532,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00108">108</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00113">113</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -558,7 +559,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00103">103</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00108">108</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -585,7 +586,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00109">109</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00114">114</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -604,7 +605,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8cpp_source.html#l00180">180</a> of file <a class="el" href="Token_8cpp_source.html">Token.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8cpp_source.html#l00179">179</a> of file <a class="el" href="Token_8cpp_source.html">Token.cpp</a>.</p>
 
 </div>
 </div>
@@ -623,7 +624,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8cpp_source.html#l00198">198</a> of file <a class="el" href="Token_8cpp_source.html">Token.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8cpp_source.html#l00190">190</a> of file <a class="el" href="Token_8cpp_source.html">Token.cpp</a>.</p>
 
 </div>
 </div>
@@ -652,7 +653,7 @@ Friends</h2></td></tr>
 
 <p>Implements <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#ac4ef9f23fb39b38cf961872f741979b9">BPMNOS::Execution::Observable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00044">44</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00045">45</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -671,7 +672,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8cpp_source.html#l01518">1518</a> of file <a class="el" href="Token_8cpp_source.html">Token.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8cpp_source.html#l01432">1432</a> of file <a class="el" href="Token_8cpp_source.html">Token.cpp</a>.</p>
 
 </div>
 </div>
@@ -690,7 +691,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8cpp_source.html#l00202">202</a> of file <a class="el" href="Token_8cpp_source.html">Token.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8cpp_source.html#l00194">194</a> of file <a class="el" href="Token_8cpp_source.html">Token.cpp</a>.</p>
 
 </div>
 </div>
@@ -717,7 +718,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00102">102</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00107">107</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -744,7 +745,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00107">107</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00112">112</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -769,7 +770,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00041">41</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00042">42</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -793,7 +794,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00040">40</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00041">41</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -817,7 +818,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00039">39</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00040">40</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -841,11 +842,28 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00038">38</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00039">39</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a6dea934c71051fddfe46a2683d73b89e" name="a6dea934c71051fddfe46a2683d73b89e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6dea934c71051fddfe46a2683d73b89e">&#9670;&#160;</a></span>content</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;<a class="el" href="structBPMNOS_1_1Execution_1_1Content.html">Content</a>&gt; BPMNOS::Execution::Token::content</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The content of a message or signal at a node stating one, its name and its content object: written by the operators of a throwing node before the message or signal is sent, or received by a catching node and held until its operators read it. </p>
+
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00102">102</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+
+</div>
+</div>
 <a id="af602aefbf9bc21a1805e6a24d9218b4d" name="af602aefbf9bc21a1805e6a24d9218b4d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af602aefbf9bc21a1805e6a24d9218b4d">&#9670;&#160;</a></span>data</h2>
 
@@ -858,7 +876,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00096">96</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00097">97</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -874,7 +892,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00097">97</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00098">98</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -890,7 +908,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00047">47</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00048">48</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -906,7 +924,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00046">46</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00047">47</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -922,7 +940,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00045">45</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00046">46</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -938,7 +956,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00099">99</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00104">104</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -954,7 +972,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00098">98</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00103">103</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -970,7 +988,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00048">48</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00049">49</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -986,7 +1004,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00094">94</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00095">95</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -1010,7 +1028,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00051">51</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00052">52</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>
@@ -1026,7 +1044,7 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00095">95</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Token_8h_source.html#l00096">96</a> of file <a class="el" href="Token_8h_source.html">Token.h</a>.</p>
 
 </div>
 </div>

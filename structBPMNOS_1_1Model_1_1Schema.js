@@ -1,5 +1,6 @@
 var structBPMNOS_1_1Model_1_1Schema =
 [
+    [ "agrees", "structBPMNOS_1_1Model_1_1Schema.html#ab23b9340ad51f80294a71f78fc585dce", null ],
     [ "conform", "structBPMNOS_1_1Model_1_1Schema.html#a7ea9a098f348721e676e857ed61682a9", null ],
     [ "declareSizes", "structBPMNOS_1_1Model_1_1Schema.html#aef42695c99b3cdb8484b8ce699330aa2", null ],
     [ "fromJSON", "structBPMNOS_1_1Model_1_1Schema.html#a54e3f61f0d9f83f9a80a5cca3fc44b06", null ],

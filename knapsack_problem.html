@@ -216,19 +216,21 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
+<h3 class="doxsection"><a class="anchor" id="operators-16"></a>
+Operators</h3>
+<ul>
+<li><span class="tt">Request.item := instance</span></li>
+<li><span class="tt">Request.value := value</span></li>
+<li><span class="tt">Request.weight := weight</span></li>
+</ul>
 <h3 class="doxsection"><a class="anchor" id="message-8"></a>
 Message</h3>
 <h4 class="doxsection"><a class="anchor" id="name-request-4"></a>
 <em>Name</em> Request</h4>
 <h5 class="doxsection"><a class="anchor" id="header-0-5"></a>
 Header (0)</h5>
-<h5 class="doxsection"><a class="anchor" id="content-3"></a>
-Content (3)</h5>
-<ul>
-<li><em>Item:</em> <b>instance</b></li>
-<li><em>Value:</em> <b>value</b></li>
-<li><em>Weight:</em> <b>weight</b></li>
-</ul>
+<h5 class="doxsection"><a class="anchor" id="content-0-8"></a>
+Content (0)</h5>
 <h2 class="doxsection"><a class="anchor" id="eventbasedgateway-event-basedgateway"></a>
 EventBasedGateway (Event-basedGateway)</h2>
 <h3 class="doxsection"><a class="anchor" id="status-62"></a>
@@ -287,7 +289,7 @@ Message</h3>
 <em>Name</em> Acceptance</h4>
 <h5 class="doxsection"><a class="anchor" id="header-0-6"></a>
 Header (0)</h5>
-<h5 class="doxsection"><a class="anchor" id="content-0-2"></a>
+<h5 class="doxsection"><a class="anchor" id="content-0-9"></a>
 Content (0)</h5>
 <h2 class="doxsection"><a class="anchor" id="endevent-itemaccepted"></a>
 EndEvent (ItemAccepted)</h2>
@@ -347,7 +349,7 @@ Message</h3>
 <em>Name</em> Rejection</h4>
 <h5 class="doxsection"><a class="anchor" id="header-0-7"></a>
 Header (0)</h5>
-<h5 class="doxsection"><a class="anchor" id="content-0-3"></a>
+<h5 class="doxsection"><a class="anchor" id="content-0-10"></a>
 Content (0)</h5>
 <h2 class="doxsection"><a class="anchor" id="endevent-itemrejected"></a>
 EndEvent (ItemRejected)</h2>
@@ -452,11 +454,6 @@ Inherited (6)</summary>
 </ul>
 <p></p>
 </details>
-<h3 class="doxsection"><a class="anchor" id="operators-11"></a>
-Operators</h3>
-<ul>
-<li><span class="tt">items_requested += 1</span></li>
-</ul>
 <h2 class="doxsection"><a class="anchor" id="adhocsubprocess-adhocsubprocess-2"></a>
 AdHocSubProcess (AdHocSubProcess)</h2>
 <p>The adhoc-subprocess ensures that the <em>Handle item</em> activities of all event-subprocesses are executed sequentially.</p>
@@ -643,7 +640,7 @@ Header (1)</h5>
 <ul>
 <li><em>recipient:</em> <span class="tt">item</span></li>
 </ul>
-<h5 class="doxsection"><a class="anchor" id="content-0-4"></a>
+<h5 class="doxsection"><a class="anchor" id="content-0-11"></a>
 Content (0)</h5>
 <h2 class="doxsection"><a class="anchor" id="task-includeitemactivity"></a>
 Task (IncludeItemActivity)</h2>
@@ -680,7 +677,7 @@ Inherited (6)</summary>
 </ul>
 <p></p>
 </details>
-<h3 class="doxsection"><a class="anchor" id="operators-12"></a>
+<h3 class="doxsection"><a class="anchor" id="operators-17"></a>
 Operators</h3>
 <ul>
 <li><span class="tt">total_value += value</span></li>
@@ -730,7 +727,7 @@ Header (1)</h5>
 <ul>
 <li><em>recipient:</em> <span class="tt">item</span></li>
 </ul>
-<h5 class="doxsection"><a class="anchor" id="content-0-5"></a>
+<h5 class="doxsection"><a class="anchor" id="content-0-12"></a>
 Content (0)</h5>
 <h2 class="doxsection"><a class="anchor" id="endevent-endeventsubprocess-1"></a>
 EndEvent (EndEventSubProcess)</h2>
@@ -808,12 +805,15 @@ Message</h3>
 <em>Name</em> Request</h4>
 <h5 class="doxsection"><a class="anchor" id="header-0-8"></a>
 Header (0)</h5>
-<h5 class="doxsection"><a class="anchor" id="content-3-1"></a>
-Content (3)</h5>
+<h5 class="doxsection"><a class="anchor" id="content-0-13"></a>
+Content (0)</h5>
+<h3 class="doxsection"><a class="anchor" id="operators-18"></a>
+Operators</h3>
 <ul>
-<li><em>Item:</em> <b>item</b></li>
-<li><em>Weight:</em> <b>weight</b></li>
-<li><em>Value:</em> <b>value</b></li>
+<li><span class="tt">item := Request.item</span></li>
+<li><span class="tt">weight := Request.weight</span></li>
+<li><span class="tt">value := Request.value</span></li>
+<li><span class="tt">items_requested += 1</span></li>
 </ul>
 <h2 class="doxsection"><a class="anchor" id="endevent-endeventknapsack"></a>
 EndEvent (EndEventKnapsack)</h2>

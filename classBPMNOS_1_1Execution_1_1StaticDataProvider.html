@@ -133,13 +133,13 @@ $(function(){initNavTree('classBPMNOS_1_1Execution_1_1StaticDataProvider.html','
 <div class="textblock"><p>The data is read from a CSV table with the columns <span class="tt">INSTANCE_ID</span>, <span class="tt">NODE_ID</span> and <span class="tt">INITIALIZATION</span>. Every instance is instantiated at the first instant of a run, and its process becomes ready at its instantiation time, which is the timestamp of the instance rounded up. A token arriving at an activity becomes ready at once, with the status it arrived with followed by the values of the activity, and a task other than a send, receive or decision task completes with the status it became busy with at the timestamp of that status. An event due later is scheduled and enqueued when the <a class="el" href="structBPMNOS_1_1Execution_1_1ClockTickEvent.html">ClockTickEvent</a> advancing to its time is announced. A run ends when nothing is left to do, no instance is left and no event is scheduled, or when nothing is left to do at the end time.</p>
 <p>The time at which every kind of event becomes due is given by a virtual method, which a derived data provider may override. </p>
 
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8h_source.html#l00040">40</a> of file <a class="el" href="StaticDataProvider_8h_source.html">StaticDataProvider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8h_source.html#l00042">42</a> of file <a class="el" href="StaticDataProvider_8h_source.html">StaticDataProvider.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="StaticDataProvider_8h_source.html">StaticDataProvider.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for BPMNOS::Execution::StaticDataProvider:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1StaticDataProvider__inherit__graph.svg" width="439" height="1867"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1StaticDataProvider__inherit__graph.svg" width="439" height="1912"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
@@ -176,6 +176,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a03351cb05ddb88de7c6f11fe242789a7 inherit pub_methods_classBPMNOS_1_1Execution_1_1DataProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method creating the scenario of a fork of a run, which agrees with the scenario of the run before the instant following its current time and is the realisation with the given index thereafter.  <br /></td></tr>
 <tr class="memitem:ae7fcd7e49e7a3960e34053cbb06afb28 inherit pub_methods_classBPMNOS_1_1Execution_1_1DataProvider" id="r_ae7fcd7e49e7a3960e34053cbb06afb28"><td class="memItemLeft" align="right" valign="top">const std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1DataProvider.html#ae7fcd7e49e7a3960e34053cbb06afb28">getDefaultObject</a> (const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *object) const</td></tr>
 <tr class="memdesc:ae7fcd7e49e7a3960e34053cbb06afb28 inherit pub_methods_classBPMNOS_1_1Execution_1_1DataProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the object an object attribute holds where no instance data gives it a value: the model's initial value, or an object with undefined values in the sizes declared, an open dimension having no elements.  <br /></td></tr>
+<tr class="memitem:a4b893ca233f9c1ea7da04b655e1b8bf5 inherit pub_methods_classBPMNOS_1_1Execution_1_1DataProvider" id="r_a4b893ca233f9c1ea7da04b655e1b8bf5"><td class="memItemLeft" align="right" valign="top">const std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1DataProvider.html#a4b893ca233f9c1ea7da04b655e1b8bf5">getDefaultContent</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> signalName) const</td></tr>
+<tr class="memdesc:a4b893ca233f9c1ea7da04b655e1b8bf5 inherit pub_methods_classBPMNOS_1_1Execution_1_1DataProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the content object a signal of the given name starts from, with undefined values in the sizes declared by its name, so that a signal raised by the environment has the layout of one thrown within the model.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -187,24 +189,20 @@ Protected Member Functions</h2></td></tr>
 <tr class="memdesc:a09712af2fe26fa7e93df69ee0b2bc9ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method reading a row of an instance, evaluating its initialization at once with the given handle and ignoring every further column.  <br /></td></tr>
 <tr class="memitem:a45fcbf4a8aeb702fbdcc59944d71b20b" id="r_a45fcbf4a8aeb702fbdcc59944d71b20b"><td class="memItemLeft" align="right" valign="top">virtual const std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a45fcbf4a8aeb702fbdcc59944d71b20b">getInstanceValues</a> (const <a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html">Scenario</a> &amp;scenario, size_t instanceId) const</td></tr>
 <tr class="memdesc:a45fcbf4a8aeb702fbdcc59944d71b20b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the values of the attributes of an instance, which are those read.  <br /></td></tr>
+<tr class="memitem:a24ecbf29ec9bf4c58f0c5a4a9eb331a3" id="r_a24ecbf29ec9bf4c58f0c5a4a9eb331a3"><td class="memItemLeft" align="right" valign="top">virtual const std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *, std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a24ecbf29ec9bf4c58f0c5a4a9eb331a3">getInstanceObjects</a> (const <a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html">Scenario</a> &amp;scenario, size_t instanceId) const</td></tr>
+<tr class="memdesc:a24ecbf29ec9bf4c58f0c5a4a9eb331a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the objects the instance data give an instance, which are those read.  <br /></td></tr>
 <tr class="memitem:abe8443434aa2d5c95a0770b09d3b98b0" id="r_abe8443434aa2d5c95a0770b09d3b98b0"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abe8443434aa2d5c95a0770b09d3b98b0">getKnownTime</a> (const <a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html">Scenario</a> &amp;scenario, size_t instanceId) const</td></tr>
 <tr class="memdesc:abe8443434aa2d5c95a0770b09d3b98b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the time at which an instance becomes known, which is the start of the run.  <br /></td></tr>
 <tr class="memitem:a241343cb59a173e6233a853a06f5196c" id="r_a241343cb59a173e6233a853a06f5196c"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a241343cb59a173e6233a853a06f5196c">getProcessReadyTime</a> (const <a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html">Scenario</a> &amp;scenario, size_t instanceId) const</td></tr>
 <tr class="memdesc:a241343cb59a173e6233a853a06f5196c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the time at which the process of an instance becomes ready, which is its instantiation time.  <br /></td></tr>
-<tr class="memitem:a5da07508e0cd271918bae6bbea622079" id="r_a5da07508e0cd271918bae6bbea622079"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5da07508e0cd271918bae6bbea622079">getActivityReadyStatus</a> (<a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html">Scenario</a> &amp;scenario, const <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> *token, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> earliest) const</td></tr>
-<tr class="memdesc:a5da07508e0cd271918bae6bbea622079"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the status a token arriving at an activity becomes ready with, which is the status it arrived with followed by the values of the activity.  <br /></td></tr>
-<tr class="memitem:a0a5e413ec401cc8fc874edbbc7872df6" id="r_a0a5e413ec401cc8fc874edbbc7872df6"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0a5e413ec401cc8fc874edbbc7872df6">getActivityReadyTime</a> (const <a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html">Scenario</a> &amp;scenario, size_t instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *activity, const <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;readyStatus) const</td></tr>
-<tr class="memdesc:a0a5e413ec401cc8fc874edbbc7872df6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the time at which a token of an instance arriving at an activity becomes ready with the given status, which is the start of the run, so that it becomes ready at once.  <br /></td></tr>
+<tr class="memitem:a0e9cc519cae88c1b0997a92f2f296d53" id="r_a0e9cc519cae88c1b0997a92f2f296d53"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0e9cc519cae88c1b0997a92f2f296d53">getReadyTimestamp</a> (<a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html">Scenario</a> &amp;scenario, const <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> *token, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> earliest) const</td></tr>
+<tr class="memdesc:a0e9cc519cae88c1b0997a92f2f296d53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the timestamp a token arriving at an activity becomes ready with, if a ready value gives it, which is never the case for a static data provider.  <br /></td></tr>
+<tr class="memitem:aa79134f3d04afde0eb29decdbb4aad6f" id="r_aa79134f3d04afde0eb29decdbb4aad6f"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa79134f3d04afde0eb29decdbb4aad6f">getActivityReadyTime</a> (const <a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html">Scenario</a> &amp;scenario, size_t instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *activity, std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; readyTimestamp) const</td></tr>
+<tr class="memdesc:aa79134f3d04afde0eb29decdbb4aad6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the time at which a token of an instance arriving at an activity becomes ready, given the timestamp a ready value gives, which is the start of the run, so that it becomes ready at once.  <br /></td></tr>
+<tr class="memitem:adab688dd39311e18a1dafa81f184f691" id="r_adab688dd39311e18a1dafa81f184f691"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adab688dd39311e18a1dafa81f184f691">applyReadyValues</a> (<a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html">Scenario</a> &amp;scenario, const <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> *token, <a class="el" href="classBPMNOS_1_1Execution_1_1InstanceValues.html">InstanceValues</a> &amp;values) const</td></tr>
+<tr class="memdesc:adab688dd39311e18a1dafa81f184f691"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method applying the ready values of a token over the initial values of the scope instance of the activity, when its ready event becomes due; a static data provider gives no ready values.  <br /></td></tr>
 <tr class="memitem:aaa77e43f70b669e414d5a21b2cc14178" id="r_aaa77e43f70b669e414d5a21b2cc14178"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaa77e43f70b669e414d5a21b2cc14178">getCompletionStatus</a> (<a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html">Scenario</a> &amp;scenario, const <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> *token, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> earliest) const</td></tr>
 <tr class="memdesc:aaa77e43f70b669e414d5a21b2cc14178"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the status a busy task completes with at its timestamp, which is the status it became busy with.  <br /></td></tr>
-<tr class="memitem:acee10ce877b7e946648fc6020ecd2828" id="r_acee10ce877b7e946648fc6020ecd2828"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acee10ce877b7e946648fc6020ecd2828">getValue</a> (const <a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html">Scenario</a> &amp;scenario, size_t instanceId, const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *attribute) const</td></tr>
-<tr class="memdesc:acee10ce877b7e946648fc6020ecd2828"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the value of an attribute of an instance, computed from the values of the instance if the model assigns it, and std::nullopt if it is not known.  <br /></td></tr>
-<tr class="memitem:a636514177654d99f350f6e21216b77aa" id="r_a636514177654d99f350f6e21216b77aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a636514177654d99f350f6e21216b77aa">getStatus</a> (const <a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html">Scenario</a> &amp;scenario, size_t instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *node) const</td></tr>
-<tr class="memdesc:a636514177654d99f350f6e21216b77aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the values of the status attributes a node declares.  <br /></td></tr>
-<tr class="memitem:a79d1e46f5b27bf32853aa475fea781a2" id="r_a79d1e46f5b27bf32853aa475fea781a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a79d1e46f5b27bf32853aa475fea781a2">getData</a> (const <a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html">Scenario</a> &amp;scenario, size_t instanceId, const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *node) const</td></tr>
-<tr class="memdesc:a79d1e46f5b27bf32853aa475fea781a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the values of the data attributes a node declares.  <br /></td></tr>
-<tr class="memitem:ac1bc6eac88bd25b4d74d1d0c1f90ccc5" id="r_ac1bc6eac88bd25b4d74d1d0c1f90ccc5"><td class="memItemLeft" align="right" valign="top">const std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac1bc6eac88bd25b4d74d1d0c1f90ccc5">getObject</a> (size_t instanceId, const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *object) const</td></tr>
-<tr class="memdesc:ac1bc6eac88bd25b4d74d1d0c1f90ccc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the object an object attribute of an instance holds.  <br /></td></tr>
 <tr class="memitem:a4a00e0a486fb41dee0b35e5ec4ce64d4" id="r_a4a00e0a486fb41dee0b35e5ec4ce64d4"><td class="memItemLeft" align="right" valign="top">std::vector&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4a00e0a486fb41dee0b35e5ec4ce64d4">objectsOf</a> (const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *process=nullptr) const</td></tr>
 <tr class="memdesc:a4a00e0a486fb41dee0b35e5ec4ce64d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the object attributes of the scopes of a process, or of every process and the global objects if no process is given.  <br /></td></tr>
 <tr class="memitem:ac2262bbef75cd3c63117eefe040c95d6" id="r_ac2262bbef75cd3c63117eefe040c95d6"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Instance.html">Instance</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac2262bbef75cd3c63117eefe040c95d6">getInstance</a> (size_t instanceId) const</td></tr>
@@ -222,6 +220,8 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:a1ee135e62b41f4990a3c0f5c45d15cd1 inherit pro_attribs_classBPMNOS_1_1Execution_1_1DataProvider" id="r_a1ee135e62b41f4990a3c0f5c45d15cd1"><td class="memItemLeft" align="right" valign="top">const std::shared_ptr&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Model.html">BPMNOS::Model::Model</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1DataProvider.html#a1ee135e62b41f4990a3c0f5c45d15cd1">model</a></td></tr>
 <tr class="memitem:ad47d4be227d21a6373f3992af84cb85a inherit pro_attribs_classBPMNOS_1_1Execution_1_1DataProvider" id="r_ad47d4be227d21a6373f3992af84cb85a"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *, std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1DataProvider.html#ad47d4be227d21a6373f3992af84cb85a">defaultObjects</a></td></tr>
 <tr class="memdesc:ad47d4be227d21a6373f3992af84cb85a inherit pro_attribs_classBPMNOS_1_1Execution_1_1DataProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">The default object of each object attribute.  <br /></td></tr>
+<tr class="memitem:a4e958158168d3912b222f743dfed7f67 inherit pro_attribs_classBPMNOS_1_1Execution_1_1DataProvider" id="r_a4e958158168d3912b222f743dfed7f67"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>, std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1DataProvider.html#a4e958158168d3912b222f743dfed7f67">defaultContents</a></td></tr>
+<tr class="memdesc:a4e958158168d3912b222f743dfed7f67 inherit pro_attribs_classBPMNOS_1_1Execution_1_1DataProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">The default content object of each signal, by its name.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -333,7 +333,45 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBPMNOS_1_1Execution_1_1DataProvider.html#ad5cf7f81a28ab0266d0e2470940ca575">BPMNOS::Execution::DataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00253">253</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00268">268</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
+
+</div>
+</div>
+<a id="adab688dd39311e18a1dafa81f184f691" name="adab688dd39311e18a1dafa81f184f691"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adab688dd39311e18a1dafa81f184f691">&#9670;&#160;</a></span>applyReadyValues()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void StaticDataProvider::applyReadyValues </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html">Scenario</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>scenario</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> *</td>          <td class="paramname"><span class="paramname"><em>token</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classBPMNOS_1_1Execution_1_1InstanceValues.html">InstanceValues</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>values</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#a58d51df23d1129b465b073bb6afc438b">BPMNOS::Execution::StochasticDataProvider</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00308">308</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -364,7 +402,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#af1cb15ce7ebf375f28ca337b74e97e1c">BPMNOS::Execution::StochasticDataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00142">142</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00155">155</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -402,51 +440,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Execution_1_1DataProvider.html#a883a1de9d004ec6887e4e70f440ba3c7">BPMNOS::Execution::DataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00249">249</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00264">264</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a5da07508e0cd271918bae6bbea622079" name="a5da07508e0cd271918bae6bbea622079"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5da07508e0cd271918bae6bbea622079">&#9670;&#160;</a></span>getActivityReadyStatus()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> StaticDataProvider::getActivityReadyStatus </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html">Scenario</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>scenario</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> *</td>          <td class="paramname"><span class="paramname"><em>token</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></td>          <td class="paramname"><span class="paramname"><em>earliest</em></span>&#160;) const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>The status of a token awaiting its ready event in an installed system state is computed anew, and its timestamp must not precede the given time, which is the time of that state; for a token arriving at the activity, the given time is the lowest number. A status that cannot differ from one realisation to another is not affected by it. </p>
-
-<p>Reimplemented in <a class="el" href="classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#a29afe3beb60f2d0450ca2035558ee6d0">BPMNOS::Execution::StochasticDataProvider</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00281">281</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
-
-</div>
-</div>
-<a id="a0a5e413ec401cc8fc874edbbc7872df6" name="a0a5e413ec401cc8fc874edbbc7872df6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0a5e413ec401cc8fc874edbbc7872df6">&#9670;&#160;</a></span>getActivityReadyTime()</h2>
+<a id="aa79134f3d04afde0eb29decdbb4aad6f" name="aa79134f3d04afde0eb29decdbb4aad6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa79134f3d04afde0eb29decdbb4aad6f">&#9670;&#160;</a></span>getActivityReadyTime()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -472,7 +471,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>readyStatus</em></span>&#160;) const</td>
+          <td class="paramtype">std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>readyTimestamp</em></span>&#160;) const</td>
         </tr>
       </table>
   </td>
@@ -482,9 +481,9 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classBPMNOS_1_1Execution_1_1DynamicDataProvider.html#afa0e1f34fe791b4ceb1c4488e03154d0">BPMNOS::Execution::DynamicDataProvider</a>, and <a class="el" href="classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#a52b8d945c2d5d660ea86a3b026fed350">BPMNOS::Execution::StochasticDataProvider</a>.</p>
+<p>Reimplemented in <a class="el" href="classBPMNOS_1_1Execution_1_1DynamicDataProvider.html#abe7724d4fedf57bead2aa32573925dbb">BPMNOS::Execution::DynamicDataProvider</a>, and <a class="el" href="classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#a6cd285d2c843efb43c14b9ad3bf17a84">BPMNOS::Execution::StochasticDataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00294">294</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00304">304</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -519,47 +518,11 @@ Additional Inherited Members</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>The given time is that of <a class="el" href="#a5da07508e0cd271918bae6bbea622079">getActivityReadyStatus</a> for a token awaiting its completion event in an installed system state, and the lowest number for a task becoming busy. </p>
+<p>The given time is that of <a class="el" href="#a0e9cc519cae88c1b0997a92f2f296d53">getReadyTimestamp</a> for a token awaiting its completion event in an installed system state, and the lowest number for a task becoming busy. </p>
 
 <p>Reimplemented in <a class="el" href="classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#a88deb553fd93cd9ff730b1330f2da21e">BPMNOS::Execution::StochasticDataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00298">298</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
-
-</div>
-</div>
-<a id="a79d1e46f5b27bf32853aa475fea781a2" name="a79d1e46f5b27bf32853aa475fea781a2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a79d1e46f5b27bf32853aa475fea781a2">&#9670;&#160;</a></span>getData()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> StaticDataProvider::getData </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html">Scenario</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>scenario</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>instanceId</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *</td>          <td class="paramname"><span class="paramname"><em>node</em></span>&#160;) const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00381">381</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00311">311</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -588,7 +551,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Execution_1_1DataProvider.html#acb9a02aee1a81713d461134c3c93bb24">BPMNOS::Execution::DataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00158">158</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00171">171</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -607,7 +570,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00150">150</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00163">163</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -636,7 +599,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Execution_1_1DataProvider.html#a9a1b0adc6894899bb4cd92813b59603c">BPMNOS::Execution::DataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00154">154</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00167">167</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -663,7 +626,40 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00265">265</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00280">280</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a24ecbf29ec9bf4c58f0c5a4a9eb331a3" name="a24ecbf29ec9bf4c58f0c5a4a9eb331a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24ecbf29ec9bf4c58f0c5a4a9eb331a3">&#9670;&#160;</a></span>getInstanceObjects()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *, std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; &gt; &amp; StaticDataProvider::getInstanceObjects </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html">Scenario</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>scenario</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>instanceId</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#a2ad222b141f13059ef4b321f19a9aa8d">BPMNOS::Execution::StochasticDataProvider</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00288">288</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -696,7 +692,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#afc57d982c77221188b527f28b7426acb">BPMNOS::Execution::StochasticDataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00269">269</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00284">284</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -729,38 +725,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classBPMNOS_1_1Execution_1_1DynamicDataProvider.html#ac7d46002c3a636873238dacd12501a37">BPMNOS::Execution::DynamicDataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00273">273</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
-
-</div>
-</div>
-<a id="ac1bc6eac88bd25b4d74d1d0c1f90ccc5" name="ac1bc6eac88bd25b4d74d1d0c1f90ccc5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac1bc6eac88bd25b4d74d1d0c1f90ccc5">&#9670;&#160;</a></span>getObject()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; &amp; StaticDataProvider::getObject </td>
-          <td>(</td>
-          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>instanceId</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *</td>          <td class="paramname"><span class="paramname"><em>object</em></span>&#160;) const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00393">393</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00292">292</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -793,12 +758,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classBPMNOS_1_1Execution_1_1DynamicDataProvider.html#a43232be1de2d5e6ca1898234a01c4d21">BPMNOS::Execution::DynamicDataProvider</a>, and <a class="el" href="classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#aa73b2c5f28f307b038088d9b254e4c10">BPMNOS::Execution::StochasticDataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00277">277</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00296">296</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a636514177654d99f350f6e21216b77aa" name="a636514177654d99f350f6e21216b77aa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a636514177654d99f350f6e21216b77aa">&#9670;&#160;</a></span>getStatus()</h2>
+<a id="a0e9cc519cae88c1b0997a92f2f296d53" name="a0e9cc519cae88c1b0997a92f2f296d53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e9cc519cae88c1b0997a92f2f296d53">&#9670;&#160;</a></span>getReadyTimestamp()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -807,65 +772,32 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> StaticDataProvider::getStatus </td>
+          <td class="memname">std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; StaticDataProvider::getReadyTimestamp </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html">Scenario</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>scenario</em></span>, </td>
+          <td class="paramtype"><a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html">Scenario</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>scenario</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>instanceId</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> *</td>          <td class="paramname"><span class="paramname"><em>token</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *</td>          <td class="paramname"><span class="paramname"><em>node</em></span>&#160;) const</td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></td>          <td class="paramname"><span class="paramname"><em>earliest</em></span>&#160;) const</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel virtual">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>The timestamp is determined when the token arrives, since the time at which the ready event becomes due depends on it. For a token awaiting its ready event in an installed system state it is determined anew and must not precede the given time, which is the time of that state; for a token arriving at the activity, the given time is the lowest number. </p>
 
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00369">369</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
+<p>Reimplemented in <a class="el" href="classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#af7cde54260f7425d42457dc341abac23">BPMNOS::Execution::StochasticDataProvider</a>.</p>
 
-</div>
-</div>
-<a id="acee10ce877b7e946648fc6020ecd2828" name="acee10ce877b7e946648fc6020ecd2828"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acee10ce877b7e946648fc6020ecd2828">&#9670;&#160;</a></span>getValue()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; StaticDataProvider::getValue </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html">Scenario</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>scenario</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>instanceId</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *</td>          <td class="paramname"><span class="paramname"><em>attribute</em></span>&#160;) const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00332">332</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00300">300</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -903,7 +835,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Execution_1_1DataProvider.html#afbc3fc922848c640dcc3df2e5830a705">BPMNOS::Execution::DataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00166">166</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00179">179</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -930,7 +862,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00401">401</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00385">385</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -1004,7 +936,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classBPMNOS_1_1Execution_1_1DynamicDataProvider.html#a7a04544ff93b4314084d4d454ef661f5">BPMNOS::Execution::DynamicDataProvider</a>, and <a class="el" href="classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#a2d6637ab67cd958ea09996f8a2c8c7a1">BPMNOS::Execution::StochasticDataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00135">135</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00145">145</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -1024,7 +956,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>The end time applies to every run on a scenario of the data provider. </p>
 
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00146">146</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8cpp_source.html#l00159">159</a> of file <a class="el" href="StaticDataProvider_8cpp_source.html">StaticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -1049,7 +981,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8h_source.html#l00164">164</a> of file <a class="el" href="StaticDataProvider_8h_source.html">StaticDataProvider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8h_source.html#l00163">163</a> of file <a class="el" href="StaticDataProvider_8h_source.html">StaticDataProvider.h</a>.</p>
 
 </div>
 </div>
@@ -1073,7 +1005,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8h_source.html#l00163">163</a> of file <a class="el" href="StaticDataProvider_8h_source.html">StaticDataProvider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8h_source.html#l00162">162</a> of file <a class="el" href="StaticDataProvider_8h_source.html">StaticDataProvider.h</a>.</p>
 
 </div>
 </div>
@@ -1097,7 +1029,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8h_source.html#l00162">162</a> of file <a class="el" href="StaticDataProvider_8h_source.html">StaticDataProvider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8h_source.html#l00161">161</a> of file <a class="el" href="StaticDataProvider_8h_source.html">StaticDataProvider.h</a>.</p>
 
 </div>
 </div>
@@ -1122,7 +1054,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>The instances in the order of their first rows, which is the order in which instances becoming known at the same time are instantiated. The identifier of an instance is an index of the string registry, which depends on what was registered before, so an order following identifiers would make a run depend on it. </p>
 
-<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8h_source.html#l00161">161</a> of file <a class="el" href="StaticDataProvider_8h_source.html">StaticDataProvider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StaticDataProvider_8h_source.html#l00160">160</a> of file <a class="el" href="StaticDataProvider_8h_source.html">StaticDataProvider.h</a>.</p>
 
 </div>
 </div>

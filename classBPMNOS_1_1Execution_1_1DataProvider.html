@@ -139,7 +139,7 @@ $(function(){initNavTree('classBPMNOS_1_1Execution_1_1DataProvider.html','','cla
 <div class="dynheader">
 Inheritance diagram for BPMNOS::Execution::DataProvider:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1DataProvider__inherit__graph.svg" width="439" height="1867"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1DataProvider__inherit__graph.svg" width="439" height="1912"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -164,6 +164,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ad5cf7f81a28ab0266d0e2470940ca575"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method letting the data provider advance, if it has not done so already, called when neither the data provider nor the controller has supplied an event at the current time.  <br /></td></tr>
 <tr class="memitem:ae7fcd7e49e7a3960e34053cbb06afb28" id="r_ae7fcd7e49e7a3960e34053cbb06afb28"><td class="memItemLeft" align="right" valign="top">const std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae7fcd7e49e7a3960e34053cbb06afb28">getDefaultObject</a> (const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *object) const</td></tr>
 <tr class="memdesc:ae7fcd7e49e7a3960e34053cbb06afb28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the object an object attribute holds where no instance data gives it a value: the model's initial value, or an object with undefined values in the sizes declared, an open dimension having no elements.  <br /></td></tr>
+<tr class="memitem:a4b893ca233f9c1ea7da04b655e1b8bf5" id="r_a4b893ca233f9c1ea7da04b655e1b8bf5"><td class="memItemLeft" align="right" valign="top">const std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4b893ca233f9c1ea7da04b655e1b8bf5">getDefaultContent</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> signalName) const</td></tr>
+<tr class="memdesc:a4b893ca233f9c1ea7da04b655e1b8bf5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the content object a signal of the given name starts from, with undefined values in the sizes declared by its name, so that a signal raised by the environment has the layout of one thrown within the model.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -175,6 +177,8 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:a1ee135e62b41f4990a3c0f5c45d15cd1" id="r_a1ee135e62b41f4990a3c0f5c45d15cd1"><td class="memItemLeft" align="right" valign="top">const std::shared_ptr&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Model.html">BPMNOS::Model::Model</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1ee135e62b41f4990a3c0f5c45d15cd1">model</a></td></tr>
 <tr class="memitem:ad47d4be227d21a6373f3992af84cb85a" id="r_ad47d4be227d21a6373f3992af84cb85a"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *, std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad47d4be227d21a6373f3992af84cb85a">defaultObjects</a></td></tr>
 <tr class="memdesc:ad47d4be227d21a6373f3992af84cb85a"><td class="mdescLeft">&#160;</td><td class="mdescRight">The default object of each object attribute.  <br /></td></tr>
+<tr class="memitem:a4e958158168d3912b222f743dfed7f67" id="r_a4e958158168d3912b222f743dfed7f67"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>, std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4e958158168d3912b222f743dfed7f67">defaultContents</a></td></tr>
+<tr class="memdesc:a4e958158168d3912b222f743dfed7f67"><td class="mdescLeft">&#160;</td><td class="mdescRight">The default content object of each signal, by its name.  <br /></td></tr>
 </table>
 <a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a090e84d3d79b6dacae3c7bd6d23f6aeb" name="a090e84d3d79b6dacae3c7bd6d23f6aeb"></a>
@@ -203,7 +207,7 @@ Protected Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="DataProvider_8cpp_source.html#l00008">8</a> of file <a class="el" href="DataProvider_8cpp_source.html">DataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DataProvider_8cpp_source.html#l00009">9</a> of file <a class="el" href="DataProvider_8cpp_source.html">DataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -268,7 +272,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider.html#a8491ea4c048f5a1b2b9a4650b5e72b55">BPMNOS::Execution::StaticDataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DataProvider_8cpp_source.html#l00031">31</a> of file <a class="el" href="DataProvider_8cpp_source.html">DataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DataProvider_8cpp_source.html#l00055">55</a> of file <a class="el" href="DataProvider_8cpp_source.html">DataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -365,7 +369,26 @@ Protected Attributes</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#ab1b1a309ea678e2e7deb89354dcfa642">BPMNOS::Execution::StochasticDataProvider</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DataProvider_8cpp_source.html#l00014">14</a> of file <a class="el" href="DataProvider_8cpp_source.html">DataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DataProvider_8cpp_source.html#l00030">30</a> of file <a class="el" href="DataProvider_8cpp_source.html">DataProvider.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a4b893ca233f9c1ea7da04b655e1b8bf5" name="a4b893ca233f9c1ea7da04b655e1b8bf5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b893ca233f9c1ea7da04b655e1b8bf5">&#9670;&#160;</a></span>getDefaultContent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; &amp; DataProvider::getDefaultContent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></td>          <td class="paramname"><span class="paramname"><em>signalName</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="DataProvider_8cpp_source.html#l00047">47</a> of file <a class="el" href="DataProvider_8cpp_source.html">DataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -383,9 +406,10 @@ Protected Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>This is also the value of the objects of the scopes the engine creates itself, event subprocesses, compensation activities and instances started by a trigger. </p>
+<p>This is also the value of the objects of the scopes the engine creates itself, event subprocesses and instances started by a trigger.</p>
+<p>The content attribute of a node stating a message, signal, error or escalation has a default object as well, with undefined values in the sizes declared at the node throwing it or, for a signal, by its name, from which a throwing node starts the content its operators write. </p>
 
-<p class="definition">Definition at line <a class="el" href="DataProvider_8cpp_source.html#l00023">23</a> of file <a class="el" href="DataProvider_8cpp_source.html">DataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DataProvider_8cpp_source.html#l00039">39</a> of file <a class="el" href="DataProvider_8cpp_source.html">DataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -458,7 +482,7 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DataProvider_8cpp_source.html#l00019">19</a> of file <a class="el" href="DataProvider_8cpp_source.html">DataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DataProvider_8cpp_source.html#l00035">35</a> of file <a class="el" href="DataProvider_8cpp_source.html">DataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -515,6 +539,30 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a4e958158168d3912b222f743dfed7f67" name="a4e958158168d3912b222f743dfed7f67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e958158168d3912b222f743dfed7f67">&#9670;&#160;</a></span>defaultContents</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>, std::shared_ptr&lt;const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a>&gt; &gt; BPMNOS::Execution::DataProvider::defaultContents</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="DataProvider_8h_source.html#l00126">126</a> of file <a class="el" href="DataProvider_8h_source.html">DataProvider.h</a>.</p>
+
+</div>
+</div>
 <a id="ad47d4be227d21a6373f3992af84cb85a" name="ad47d4be227d21a6373f3992af84cb85a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad47d4be227d21a6373f3992af84cb85a">&#9670;&#160;</a></span>defaultObjects</h2>
 
@@ -535,7 +583,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DataProvider_8h_source.html#l00113">113</a> of file <a class="el" href="DataProvider_8h_source.html">DataProvider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DataProvider_8h_source.html#l00124">124</a> of file <a class="el" href="DataProvider_8h_source.html">DataProvider.h</a>.</p>
 
 </div>
 </div>
@@ -560,7 +608,7 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>The model the data provider is built on, whose ownership it shares </p>
 
-<p class="definition">Definition at line <a class="el" href="DataProvider_8h_source.html#l00111">111</a> of file <a class="el" href="DataProvider_8h_source.html">DataProvider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DataProvider_8h_source.html#l00122">122</a> of file <a class="el" href="DataProvider_8h_source.html">DataProvider.h</a>.</p>
 
 </div>
 </div>

@@ -1,11 +1,7 @@
 var classBPMNOS_1_1Model_1_1SignalDefinition =
 [
-    [ "SignalDefinition", "classBPMNOS_1_1Model_1_1SignalDefinition.html#a080f3a6b4a912a45d9edc09e47e48eae", null ],
-    [ "attributeRegistry", "classBPMNOS_1_1Model_1_1SignalDefinition.html#a856ee3c7af52adf3eff1a4bd688352a9", null ],
-    [ "attributes", "classBPMNOS_1_1Model_1_1SignalDefinition.html#a5b41b12e717cadd7e227ee8e51b6bc77", null ],
-    [ "contentMap", "classBPMNOS_1_1Model_1_1SignalDefinition.html#a89ca9a8480ae18103b2a0347bd3d2fa4", null ],
-    [ "dataUpdate", "classBPMNOS_1_1Model_1_1SignalDefinition.html#a26fc0fe6bac4363e0c34db066c5685a0", null ],
+    [ "SignalDefinition", "classBPMNOS_1_1Model_1_1SignalDefinition.html#a98d0ad3efd1c67dc79c533e5f896c4f3", null ],
+    [ "element", "classBPMNOS_1_1Model_1_1SignalDefinition.html#ad58a0264c4aded87b21361a088e8a846", null ],
     [ "name", "classBPMNOS_1_1Model_1_1SignalDefinition.html#a3f783c098d817d5b626ee4c412b753bc", null ],
-    [ "parent", "classBPMNOS_1_1Model_1_1SignalDefinition.html#a406946b63ccaf8e08561af598b39f308", null ],
-    [ "signal", "classBPMNOS_1_1Model_1_1SignalDefinition.html#a3f5fbd3e784a2ce2b0f3f8872d6ce668", null ]
+    [ "schema", "classBPMNOS_1_1Model_1_1SignalDefinition.html#a6208adc71c55411569cf530ca7c3b37c", null ]
 ];

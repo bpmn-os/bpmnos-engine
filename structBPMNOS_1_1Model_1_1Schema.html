@@ -142,6 +142,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a9d43c1b423c3eafdd84ab0f16f6fdc41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the schema describes a scalar attribute.  <br /></td></tr>
 <tr class="memitem:ae10176137d7493b0a97737a4dafe8c15" id="r_ae10176137d7493b0a97737a4dafe8c15"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae10176137d7493b0a97737a4dafe8c15">stringify</a> () const</td></tr>
 <tr class="memdesc:ae10176137d7493b0a97737a4dafe8c15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the text of the type in its canonical form.  <br /></td></tr>
+<tr class="memitem:ab23b9340ad51f80294a71f78fc585dce" id="r_ab23b9340ad51f80294a71f78fc585dce"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab23b9340ad51f80294a71f78fc585dce">agrees</a> (const <a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">Schema</a> &amp;other) const</td></tr>
+<tr class="memdesc:ab23b9340ad51f80294a71f78fc585dce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the schemas agree: they have the same scalar type or the same set of field names, each field agreeing in turn, regardless of the order of the fields, and the same dimensions with the same sizes.  <br /></td></tr>
 <tr class="memitem:aef42695c99b3cdb8484b8ce699330aa2" id="r_aef42695c99b3cdb8484b8ce699330aa2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aef42695c99b3cdb8484b8ce699330aa2">declareSizes</a> (const std::string &amp;steps)</td></tr>
 <tr class="memdesc:aef42695c99b3cdb8484b8ce699330aa2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fixes the sizes a size declaration states, given as the text following the name of the attribute.  <br /></td></tr>
 <tr class="memitem:a5be6e35d5e2c5479f27eacf9906322fc" id="r_a5be6e35d5e2c5479f27eacf9906322fc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5be6e35d5e2c5479f27eacf9906322fc">isFixed</a> () const</td></tr>
@@ -170,6 +172,25 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:a8f67857a1ca62395e0e19c1b44cc597a"><td class="mdescLeft">&#160;</td><td class="mdescRight">The sizes of the dimensions in index order, nullopt if open.  <br /></td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="ab23b9340ad51f80294a71f78fc585dce" name="ab23b9340ad51f80294a71f78fc585dce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab23b9340ad51f80294a71f78fc585dce">&#9670;&#160;</a></span>agrees()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Schema::agrees </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Model_1_1Schema.html">Schema</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>other</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Schema_8cpp_source.html#l00174">174</a> of file <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a>.</p>
+
+</div>
+</div>
 <a id="a7ea9a098f348721e676e857ed61682a9" name="a7ea9a098f348721e676e857ed61682a9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7ea9a098f348721e676e857ed61682a9">&#9670;&#160;</a></span>conform()</h2>
 
@@ -186,7 +207,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>The constant object must have as many dimensions as the schema at the base and at every field, its scalar values must be convertible to the types of the schema, and its fields must be fields of the schema. A dimension of fixed size is padded with undefined values and must not be exceeded, an open dimension takes the length of the constant object, and a field it lacks is undefined. If the constant object has exactly the layout of the schema, it is returned itself, so that it is shared. </p>
 
-<p class="definition">Definition at line <a class="el" href="Schema_8cpp_source.html#l00381">381</a> of file <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Schema_8cpp_source.html#l00398">398</a> of file <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a>.</p>
 
 </div>
 </div>
@@ -206,7 +227,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>The text is a path of dimensions and fields, e.g. <span class="tt">[6].flags[3]</span>, in which every number in brackets is the size of the next dimension of the base or field it follows and <span class="tt">[]</span> leaves that dimension as it is. A size contradicting a size fixed before, more dimensions than the type has, and an unknown field are errors. </p>
 
-<p class="definition">Definition at line <a class="el" href="Schema_8cpp_source.html#l00174">174</a> of file <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Schema_8cpp_source.html#l00188">188</a> of file <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a>.</p>
 
 </div>
 </div>
@@ -226,7 +247,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>An array is a dimension, whose elements have equal lengths at an open dimension and at most the declared length at a fixed one, an object is a value with fields, whose keys must be fields of the schema, and a number, truth value or string is a value of the type the schema states, <span class="tt">null</span> being undefined. A fixed dimension is padded with undefined values, an open dimension takes the length of the JSON array, and a field the JSON lacks is undefined. </p>
 
-<p class="definition">Definition at line <a class="el" href="Schema_8cpp_source.html#l00539">539</a> of file <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Schema_8cpp_source.html#l00558">558</a> of file <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a>.</p>
 
 </div>
 </div>
@@ -245,7 +266,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Schema_8cpp_source.html#l00242">242</a> of file <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Schema_8cpp_source.html#l00256">256</a> of file <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a>.</p>
 
 </div>
 </div>
@@ -304,7 +325,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>A value assigned to the whole object keeps the sizes of the fixed dimensions and takes those of the open ones. A value assigned to an element keeps every size, except a size zero of an open dimension, which the value determines. </p>
 
-<p class="definition">Definition at line <a class="el" href="Schema_8cpp_source.html#l00398">398</a> of file <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Schema_8cpp_source.html#l00415">415</a> of file <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a>.</p>
 
 </div>
 </div>
@@ -369,7 +390,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Schema_8cpp_source.html#l00370">370</a> of file <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Schema_8cpp_source.html#l00387">387</a> of file <a class="el" href="Schema_8cpp_source.html">Schema.cpp</a>.</p>
 
 </div>
 </div>

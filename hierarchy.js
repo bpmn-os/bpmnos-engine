@@ -11,7 +11,7 @@ var hierarchy =
     [ "BPMNOS::Execution::FirstFeasibleEntry::Config", "structBPMNOS_1_1Execution_1_1FirstFeasibleEntry_1_1Config.html", null ],
     [ "BPMNOS::Execution::GreedyController::Config", "structBPMNOS_1_1Execution_1_1GreedyController_1_1Config.html", null ],
     [ "BPMNOS::Execution::Recorder::Config", "structBPMNOS_1_1Execution_1_1Recorder_1_1Config.html", null ],
-    [ "BPMNOS::Model::ContentDefinition", "classBPMNOS_1_1Model_1_1ContentDefinition.html", null ],
+    [ "BPMNOS::Execution::Content", "structBPMNOS_1_1Execution_1_1Content.html", null ],
     [ "BPMNOS::CSVReader", "classBPMNOS_1_1CSVReader.html", null ],
     [ "BPMNOS::Data", "structBPMNOS_1_1Data.html", null ],
     [ "BPMNOS::Execution::descending", "structBPMNOS_1_1Execution_1_1descending.html", null ],
@@ -36,11 +36,8 @@ var hierarchy =
         ] ]
       ] ],
       [ "BPMN::ExtensionElements", "https://bpmn-os.github.io/bpmnpp/classBPMN_1_1ExtensionElements.html", [
-        [ "BPMNOS::Model::Conditions", "classBPMNOS_1_1Model_1_1Conditions.html", null ],
         [ "BPMNOS::Model::ExtensionElements", "classBPMNOS_1_1Model_1_1ExtensionElements.html", null ],
-        [ "BPMNOS::Model::Gatekeeper", "classBPMNOS_1_1Model_1_1Gatekeeper.html", null ],
-        [ "BPMNOS::Model::SignalDefinition", "classBPMNOS_1_1Model_1_1SignalDefinition.html", null ],
-        [ "BPMNOS::Model::Timer", "classBPMNOS_1_1Model_1_1Timer.html", null ]
+        [ "BPMNOS::Model::Gatekeeper", "classBPMNOS_1_1Model_1_1Gatekeeper.html", null ]
       ] ]
     ] ],
     [ "std::enable_shared_from_this", null, [
@@ -88,6 +85,8 @@ var hierarchy =
       [ "BPMNOS::Execution::StateMachine", "classBPMNOS_1_1Execution_1_1StateMachine.html", null ],
       [ "BPMNOS::Execution::Token", "classBPMNOS_1_1Execution_1_1Token.html", null ]
     ] ],
+    [ "BPMNOS::Model::ErrorDefinition", "classBPMNOS_1_1Model_1_1ErrorDefinition.html", null ],
+    [ "BPMNOS::Model::EscalationDefinition", "classBPMNOS_1_1Model_1_1EscalationDefinition.html", null ],
     [ "BPMNOS::Execution::Evaluator", "classBPMNOS_1_1Execution_1_1Evaluator.html", [
       [ "BPMNOS::Execution::LocalEvaluator", "classBPMNOS_1_1Execution_1_1LocalEvaluator.html", [
         [ "BPMNOS::Execution::GuidedEvaluator", "classBPMNOS_1_1Execution_1_1GuidedEvaluator.html", null ]
@@ -130,11 +129,13 @@ var hierarchy =
     [ "BPMNOS::InputEncoder", "classBPMNOS_1_1InputEncoder.html", null ],
     [ "BPMNOS::Execution::StaticDataProvider::Instance", "structBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Instance.html", null ],
     [ "BPMNOS::Execution::InstanceDataReader", "classBPMNOS_1_1Execution_1_1InstanceDataReader.html", null ],
+    [ "BPMNOS::Execution::InstanceValues", "classBPMNOS_1_1Execution_1_1InstanceValues.html", null ],
     [ "BPMNOS::Execution::CompetingCandidates::Iterator", "classBPMNOS_1_1Execution_1_1CompetingCandidates_1_1Iterator.html", null ],
     [ "BPMNOS::Execution::auto_list&lt; U &gt;::iterator", "structBPMNOS_1_1Execution_1_1auto__list_1_1iterator.html", null ],
     [ "BPMNOS::Execution::auto_set&lt; V, Compare, U &gt;::iterator", "structBPMNOS_1_1Execution_1_1auto__set_1_1iterator.html", null ],
     [ "BPMNOS::Object::Layout", "structBPMNOS_1_1Object_1_1Layout.html", null ],
     [ "BPMNOS::Model::LookupTable", "classBPMNOS_1_1Model_1_1LookupTable.html", null ],
+    [ "BPMNOS::ObjectInitializer::Member", "structBPMNOS_1_1ObjectInitializer_1_1Member.html", null ],
     [ "BPMNOS::Model::MessageDefinition", "classBPMNOS_1_1Model_1_1MessageDefinition.html", null ],
     [ "BPMN::Model", "https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html", [
       [ "BPMNOS::Model::Model", "classBPMNOS_1_1Model_1_1Model.html", null ]
@@ -144,6 +145,7 @@ var hierarchy =
       [ "BPMNOS::Execution::Mediator", "structBPMNOS_1_1Execution_1_1Mediator.html", null ]
     ] ],
     [ "BPMNOS::Object", "structBPMNOS_1_1Object.html", null ],
+    [ "BPMNOS::ObjectInitializer", "classBPMNOS_1_1ObjectInitializer.html", null ],
     [ "BPMNOS::ObjectRegistry", "structBPMNOS_1_1ObjectRegistry.html", null ],
     [ "BPMNOS::Execution::Observable", "structBPMNOS_1_1Execution_1_1Observable.html", [
       [ "BPMNOS::Execution::DataUpdate", "structBPMNOS_1_1Execution_1_1DataUpdate.html", null ],
@@ -196,6 +198,7 @@ var hierarchy =
     [ "BPMNOS::Model::Schema", "structBPMNOS_1_1Model_1_1Schema.html", null ],
     [ "BPMNOS::Execution::CompetingCandidates::Sentinel", "structBPMNOS_1_1Execution_1_1CompetingCandidates_1_1Sentinel.html", null ],
     [ "BPMNOS::SharedData", "structBPMNOS_1_1SharedData.html", null ],
+    [ "BPMNOS::Model::SignalDefinition", "classBPMNOS_1_1Model_1_1SignalDefinition.html", null ],
     [ "BPMNOS::InputEncoder::Span", "structBPMNOS_1_1InputEncoder_1_1Span.html", null ],
     [ "BPMNOS::Status", "structBPMNOS_1_1Status.html", null ],
     [ "BPMNOS::StringRegistry", "structBPMNOS_1_1StringRegistry.html", null ],
@@ -212,14 +215,17 @@ var hierarchy =
       [ "XML::bpmnos::tAttributes", "classXML_1_1bpmnos_1_1tAttributes.html", [
         [ "XML::bpmnos::attributes", "classXML_1_1bpmnos_1_1attributes.html", null ]
       ] ],
-      [ "XML::bpmnos::tContent", "classXML_1_1bpmnos_1_1tContent.html", [
-        [ "XML::bpmnos::content", "classXML_1_1bpmnos_1_1content.html", null ]
-      ] ],
       [ "XML::bpmnos::tDecision", "classXML_1_1bpmnos_1_1tDecision.html", [
         [ "XML::bpmnos::decision", "classXML_1_1bpmnos_1_1decision.html", null ]
       ] ],
       [ "XML::bpmnos::tDecisions", "classXML_1_1bpmnos_1_1tDecisions.html", [
         [ "XML::bpmnos::decisions", "classXML_1_1bpmnos_1_1decisions.html", null ]
+      ] ],
+      [ "XML::bpmnos::tError", "classXML_1_1bpmnos_1_1tError.html", [
+        [ "XML::bpmnos::error", "classXML_1_1bpmnos_1_1error.html", null ]
+      ] ],
+      [ "XML::bpmnos::tEscalation", "classXML_1_1bpmnos_1_1tEscalation.html", [
+        [ "XML::bpmnos::escalation", "classXML_1_1bpmnos_1_1escalation.html", null ]
       ] ],
       [ "XML::bpmnos::tGuidance", "classXML_1_1bpmnos_1_1tGuidance.html", [
         [ "XML::bpmnos::guidance", "classXML_1_1bpmnos_1_1guidance.html", null ]

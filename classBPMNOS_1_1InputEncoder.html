@@ -135,9 +135,10 @@ $(function(){initNavTree('classBPMNOS_1_1InputEncoder.html','','classBPMNOS_1_1I
 <p>A quoted span is read to its closing quote and emitted as its index in the string registry. A quote within it does not occur, quotes not being escaped, and a comma or a bracket within it is text rather than structure.</p>
 <p>A bracket either opens an array literal or belongs to the expression it stands in, and which of the two is decided by what has been emitted last. After a name, a closing bracket or a closing parenthesis it indexes, and after a membership operator it states a set the expression parser reads itself, so in both cases the bracketed text is copied and its contents are scanned where they stand. Everywhere else the bracket opens a literal. A brace opens a literal with fields, <span class="tt">{ name := value, ... }</span>, where a literal may stand and a name followed by <span class="tt">:=</span> follows it; any other brace is a set or the body of an aggregation and is copied. The members of an array and the values of the fields are read one by one, each by the same rules, so that each is a quoted string, a truth value, a number, or a literal of its own, to any depth. A numeric value is recorded as a decimal, so that a literal may hold whole and fractional numbers alike and both are written out as they were read. The members of an array are uniform: they agree in type and, being arrays or values with fields themselves, in the sizes of their arrays and in their fields. The literal is registered in the object registry as a constant object, stored flat, and emitted as its index there.</p>
 <p>Everything else, which is to say names, numbers, operators, whitespace, and the delimiters of a line, is copied unchanged, a membership operator included. Of the grammar the expression parser applies, the scan knows what decides a bracket and nothing besides, so that the text it emits is read as the text it was given.</p>
-<p>A text that cannot be read is refused, naming it: a quote that is not closed, a literal that is not closed, an array without members, a member without a value, a member that is neither a truth value nor a number nor a literal, members that are not uniform, and a field without a name, without <span class="tt">:=</span> or stated twice. </p>
+<p>A text that cannot be read is refused, naming it: a quote that is not closed, a literal that is not closed, an array without members, a member without a value, a member that is neither a truth value nor a number nor a literal, members that are not uniform, and a field without a name, without <span class="tt">:=</span> or stated twice.</p>
+<p>A text may be scanned admitting object initializers, as the instance data are, where an object is given a literal whose members may be expressions. A literal with an expression member is then neither registered nor refused but copied unchanged, so that it is read by <a class="el" href="classBPMNOS_1_1ObjectInitializer.html">ObjectInitializer</a> where it initialises an object, and its span tells a reader splitting the text that no delimiter within it separates anything. </p>
 
-<p class="definition">Definition at line <a class="el" href="InputEncoder_8h_source.html#l00050">50</a> of file <a class="el" href="InputEncoder_8h_source.html">InputEncoder.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InputEncoder_8h_source.html#l00058">58</a> of file <a class="el" href="InputEncoder_8h_source.html">InputEncoder.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="InputEncoder_8h_source.html">InputEncoder.h</a>&gt;</code></p>
 <table class="memberdecls">
@@ -147,8 +148,8 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aff0d0db5b6853735f9b17165e71d9044" id="r_aff0d0db5b6853735f9b17165e71d9044"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aff0d0db5b6853735f9b17165e71d9044">InputEncoder</a> (const std::string &amp;input)</td></tr>
-<tr class="memdesc:aff0d0db5b6853735f9b17165e71d9044"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor scanning the given text.  <br /></td></tr>
+<tr class="memitem:a297b93529a7a324540383c7c778f8f60" id="r_a297b93529a7a324540383c7c778f8f60"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a297b93529a7a324540383c7c778f8f60">InputEncoder</a> (const std::string &amp;input, bool initializers=false)</td></tr>
+<tr class="memdesc:a297b93529a7a324540383c7c778f8f60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor scanning the given text, admitting object initializers if requested.  <br /></td></tr>
 <tr class="memitem:a8e767b4c2a2239c747a1bd0df3071a8e" id="r_a8e767b4c2a2239c747a1bd0df3071a8e"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8e767b4c2a2239c747a1bd0df3071a8e">text</a> () const</td></tr>
 <tr class="memdesc:a8e767b4c2a2239c747a1bd0df3071a8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the text with every literal replaced by the number encoding it.  <br /></td></tr>
 <tr class="memitem:a19786fd7f5803511ed7bc3cb1f5f5c50" id="r_a19786fd7f5803511ed7bc3cb1f5f5c50"><td class="memItemLeft" align="right" valign="top">const std::optional&lt; size_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a19786fd7f5803511ed7bc3cb1f5f5c50">object</a> () const</td></tr>
@@ -157,11 +158,11 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a2cf2ddd64534dfa4700e478bb5cfdbf7" id="r_a2cf2ddd64534dfa4700e478bb5cfdbf7"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="#aff0d0db5b6853735f9b17165e71d9044">InputEncoder</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2cf2ddd64534dfa4700e478bb5cfdbf7">fragment</a> (std::string <a class="el" href="#a8e767b4c2a2239c747a1bd0df3071a8e">text</a>)</td></tr>
+<tr class="memitem:a2cf2ddd64534dfa4700e478bb5cfdbf7" id="r_a2cf2ddd64534dfa4700e478bb5cfdbf7"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="#a297b93529a7a324540383c7c778f8f60">InputEncoder</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2cf2ddd64534dfa4700e478bb5cfdbf7">fragment</a> (std::string <a class="el" href="#a8e767b4c2a2239c747a1bd0df3071a8e">text</a>)</td></tr>
 </table>
 <a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="aff0d0db5b6853735f9b17165e71d9044" name="aff0d0db5b6853735f9b17165e71d9044"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aff0d0db5b6853735f9b17165e71d9044">&#9670;&#160;</a></span>InputEncoder()</h2>
+<a id="a297b93529a7a324540383c7c778f8f60" name="a297b93529a7a324540383c7c778f8f60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a297b93529a7a324540383c7c778f8f60">&#9670;&#160;</a></span>InputEncoder()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -169,13 +170,17 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">InputEncoder::InputEncoder </td>
           <td>(</td>
-          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>input</em></span></td><td>)</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>input</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>initializers</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="InputEncoder_8cpp_source.html#l00440">440</a> of file <a class="el" href="InputEncoder_8cpp_source.html">InputEncoder.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InputEncoder_8cpp_source.html#l00549">549</a> of file <a class="el" href="InputEncoder_8cpp_source.html">InputEncoder.cpp</a>.</p>
 
 </div>
 </div>
@@ -190,7 +195,7 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="#aff0d0db5b6853735f9b17165e71d9044">InputEncoder</a> InputEncoder::fragment </td>
+          <td class="memname"><a class="el" href="#a297b93529a7a324540383c7c778f8f60">InputEncoder</a> InputEncoder::fragment </td>
           <td>(</td>
           <td class="paramtype">std::string</td>          <td class="paramname"><span class="paramname"><em>text</em></span></td><td>)</td>
           <td></td>
@@ -204,7 +209,7 @@ Static Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Returns a part of a text that has been scanned already, such as one alternative of an enumeration. No type is stated, a part of a text being no literal of its own. </p>
 
-<p class="definition">Definition at line <a class="el" href="InputEncoder_8cpp_source.html#l00454">454</a> of file <a class="el" href="InputEncoder_8cpp_source.html">InputEncoder.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InputEncoder_8cpp_source.html#l00563">563</a> of file <a class="el" href="InputEncoder_8cpp_source.html">InputEncoder.cpp</a>.</p>
 
 </div>
 </div>
@@ -232,7 +237,7 @@ Static Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Returns the index in the object registry of the constant object if the text states one literal array or value with fields and nothing besides whitespace, and no value otherwise. This is what a caller needs where the text states an object rather than an expression. </p>
 
-<p class="definition">Definition at line <a class="el" href="InputEncoder_8h_source.html#l00061">61</a> of file <a class="el" href="InputEncoder_8h_source.html">InputEncoder.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InputEncoder_8h_source.html#l00069">69</a> of file <a class="el" href="InputEncoder_8h_source.html">InputEncoder.h</a>.</p>
 
 </div>
 </div>
@@ -260,7 +265,7 @@ Static Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Returns the indices in the object registry of the constant objects the literals of the text state, in their order, so that a caller can tell a number standing for a constant object from a number. A part of a text scanned already states none. </p>
 
-<p class="definition">Definition at line <a class="el" href="InputEncoder_8h_source.html#l00079">79</a> of file <a class="el" href="InputEncoder_8h_source.html">InputEncoder.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InputEncoder_8h_source.html#l00088">88</a> of file <a class="el" href="InputEncoder_8h_source.html">InputEncoder.h</a>.</p>
 
 </div>
 </div>
@@ -288,7 +293,7 @@ Static Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Returns where each literal stands in the text with every literal replaced, in their order, so that a reader splitting that text can tell a cell stating a literal from a cell stating a number. </p>
 
-<p class="definition">Definition at line <a class="el" href="InputEncoder_8h_source.html#l00074">74</a> of file <a class="el" href="InputEncoder_8h_source.html">InputEncoder.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InputEncoder_8h_source.html#l00083">83</a> of file <a class="el" href="InputEncoder_8h_source.html">InputEncoder.h</a>.</p>
 
 </div>
 </div>
@@ -315,7 +320,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="InputEncoder_8h_source.html#l00056">56</a> of file <a class="el" href="InputEncoder_8h_source.html">InputEncoder.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="InputEncoder_8h_source.html#l00064">64</a> of file <a class="el" href="InputEncoder_8h_source.html">InputEncoder.h</a>.</p>
 
 </div>
 </div>

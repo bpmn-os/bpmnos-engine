@@ -298,7 +298,7 @@ Message</h3>
 <em>Name</em> Unloaded</h4>
 <h5 class="doxsection"><a class="anchor" id="header-0-9"></a>
 Header (0)</h5>
-<h5 class="doxsection"><a class="anchor" id="content-0-6"></a>
+<h5 class="doxsection"><a class="anchor" id="content-0-14"></a>
 Content (0)</h5>
 <h2 class="doxsection"><a class="anchor" id="endevent-endeventcustomer"></a>
 EndEvent (EndEventCustomer)</h2>
@@ -394,7 +394,7 @@ Inherited (2)</summary>
 </ul>
 <p></p>
 </details>
-<h3 class="doxsection"><a class="anchor" id="operators-13"></a>
+<h3 class="doxsection"><a class="anchor" id="operators-19"></a>
 Operators</h3>
 <ul>
 <li><span class="tt">timestamp += delivery_duration</span></li>
@@ -498,7 +498,7 @@ Inherited (2)</summary>
 </ul>
 <p></p>
 </details>
-<h3 class="doxsection"><a class="anchor" id="operators-14"></a>
+<h3 class="doxsection"><a class="anchor" id="operators-20"></a>
 Operators</h3>
 <ul>
 <li><span class="tt">timestamp += pickup_duration</span></li>
@@ -608,7 +608,7 @@ Message</h3>
 <em>Name</em> Arrival</h4>
 <h5 class="doxsection"><a class="anchor" id="header-0-10"></a>
 Header (0)</h5>
-<h5 class="doxsection"><a class="anchor" id="content-0-7"></a>
+<h5 class="doxsection"><a class="anchor" id="content-0-15"></a>
 Content (0)</h5>
 <h2 class="doxsection"><a class="anchor" id="intermediatethrowevent-throwshipmentloaded"></a>
 IntermediateThrowEvent (ThrowShipmentLoaded)</h2>
@@ -663,7 +663,7 @@ Message</h3>
 <em>Name</em> Loaded</h4>
 <h5 class="doxsection"><a class="anchor" id="header-0-11"></a>
 Header (0)</h5>
-<h5 class="doxsection"><a class="anchor" id="content-0-8"></a>
+<h5 class="doxsection"><a class="anchor" id="content-0-16"></a>
 Content (0)</h5>
 <h2 class="doxsection"><a class="anchor" id="intermediatecatchevent-catchdestinationarrival"></a>
 IntermediateCatchEvent (CatchDestinationArrival)</h2>
@@ -718,7 +718,7 @@ Message</h3>
 <em>Name</em> Arrival</h4>
 <h5 class="doxsection"><a class="anchor" id="header-0-12"></a>
 Header (0)</h5>
-<h5 class="doxsection"><a class="anchor" id="content-0-9"></a>
+<h5 class="doxsection"><a class="anchor" id="content-0-17"></a>
 Content (0)</h5>
 <h2 class="doxsection"><a class="anchor" id="sendtask-requestactivity-1"></a>
 SendTask (RequestActivity)</h2>
@@ -767,28 +767,30 @@ Inherited (2)</summary>
 </ul>
 <p></p>
 </details>
+<h3 class="doxsection"><a class="anchor" id="operators-21"></a>
+Operators</h3>
+<ul>
+<li><span class="tt">Request.quantity := quantity</span></li>
+<li><span class="tt">Request.pickup_location := pickup_location</span></li>
+<li><span class="tt">Request.delivery_location := delivery_location</span></li>
+<li><span class="tt">Request.customer := instance</span></li>
+<li><span class="tt">Request.pickup_duration := pickup_duration</span></li>
+<li><span class="tt">Request.earliest_pickup := earliest_pickup</span></li>
+<li><span class="tt">Request.latest_pickup := latest_pickup</span></li>
+<li><span class="tt">Request.delivery_duration := delivery_duration</span></li>
+<li><span class="tt">Request.earliest_delivery := earliest_delivery</span></li>
+<li><span class="tt">Request.latest_delivery := latest_delivery</span></li>
+<li><span class="tt">Request.late_pickup_penalty := late_pickup_penalty</span></li>
+<li><span class="tt">Request.late_delivery_penalty := late_delivery_penalty</span></li>
+</ul>
 <h3 class="doxsection"><a class="anchor" id="message-18"></a>
 Message</h3>
 <h4 class="doxsection"><a class="anchor" id="name-request-6"></a>
 <em>Name</em> Request</h4>
 <h5 class="doxsection"><a class="anchor" id="header-0-13"></a>
 Header (0)</h5>
-<h5 class="doxsection"><a class="anchor" id="content-12"></a>
-Content (12)</h5>
-<ul>
-<li><em>Quantity:</em> <b>quantity</b></li>
-<li><em>PickupLocation:</em> <b>pickup_location</b></li>
-<li><em>DeliveryLocation:</em> <b>delivery_location</b></li>
-<li><em>Customer:</em> <b>instance</b></li>
-<li><em>PickupDuration:</em> <b>pickup_duration</b></li>
-<li><em>EarliestPickup:</em> <b>earliest_pickup</b></li>
-<li><em>LatestPickup:</em> <b>latest_pickup</b></li>
-<li><em>DeliveryDuration:</em> <b>delivery_duration</b></li>
-<li><em>EarliestDelivery:</em> <b>earliest_delivery</b></li>
-<li><em>LatestDelivery:</em> <b>latest_delivery</b></li>
-<li><em>LatePickupPenaty:</em> <b>late_pickup_penalty</b></li>
-<li><em>LateDeliveryPenalty:</em> <b>late_delivery_penalty</b></li>
-</ul>
+<h5 class="doxsection"><a class="anchor" id="content-0-18"></a>
+Content (0)</h5>
 <h2 class="doxsection"><a class="anchor" id="datastorereference-datastorereference_1-2"></a>
 DataStoreReference (DataStoreReference_1)</h2>
 <h3 class="doxsection"><a class="anchor" id="status-94"></a>
@@ -952,12 +954,6 @@ Inherited (2)</summary>
 </ul>
 <p></p>
 </details>
-<h3 class="doxsection"><a class="anchor" id="operators-15"></a>
-Operators</h3>
-<ul>
-<li><span class="tt">pending += 1</span></li>
-<li><span class="tt">requests_made += 1</span></li>
-</ul>
 <h2 class="doxsection"><a class="anchor" id="startevent-starteventrequest"></a>
 StartEvent (StartEventRequest)</h2>
 <h3 class="doxsection"><a class="anchor" id="status-97"></a>
@@ -1024,21 +1020,25 @@ Message</h3>
 <em>Name</em> Request</h4>
 <h5 class="doxsection"><a class="anchor" id="header-0-14"></a>
 Header (0)</h5>
-<h5 class="doxsection"><a class="anchor" id="content-12-1"></a>
-Content (12)</h5>
+<h5 class="doxsection"><a class="anchor" id="content-0-19"></a>
+Content (0)</h5>
+<h3 class="doxsection"><a class="anchor" id="operators-22"></a>
+Operators</h3>
 <ul>
-<li><em>Quantity:</em> <b>quantity</b></li>
-<li><em>PickupLocation:</em> <b>pickup_location</b></li>
-<li><em>DeliveryLocation:</em> <b>delivery_location</b></li>
-<li><em>Customer:</em> <b>customer</b></li>
-<li><em>EarliestPickup:</em> <b>earliest_pickup</b></li>
-<li><em>LatestPickup:</em> <b>latest_pickup</b></li>
-<li><em>DeliveryDuration:</em> <b>delivery_duration</b></li>
-<li><em>EarliestDelivery:</em> <b>earliest_delivery</b></li>
-<li><em>LatestDelivery:</em> <b>latest_delivery</b></li>
-<li><em>LatePickupPenaty:</em> <b>late_pickup_penalty</b></li>
-<li><em>LateDeliveryPenalty:</em> <b>late_delivery_penalty</b></li>
-<li><em>PickupDuration:</em> <b>pickup_duration</b></li>
+<li><span class="tt">quantity := Request.quantity</span></li>
+<li><span class="tt">pickup_location := Request.pickup_location</span></li>
+<li><span class="tt">delivery_location := Request.delivery_location</span></li>
+<li><span class="tt">customer := Request.customer</span></li>
+<li><span class="tt">earliest_pickup := Request.earliest_pickup</span></li>
+<li><span class="tt">latest_pickup := Request.latest_pickup</span></li>
+<li><span class="tt">delivery_duration := Request.delivery_duration</span></li>
+<li><span class="tt">earliest_delivery := Request.earliest_delivery</span></li>
+<li><span class="tt">latest_delivery := Request.latest_delivery</span></li>
+<li><span class="tt">late_pickup_penalty := Request.late_pickup_penalty</span></li>
+<li><span class="tt">late_delivery_penalty := Request.late_delivery_penalty</span></li>
+<li><span class="tt">pickup_duration := Request.pickup_duration</span></li>
+<li><span class="tt">pending += 1</span></li>
+<li><span class="tt">requests_made += 1</span></li>
 </ul>
 <h2 class="doxsection"><a class="anchor" id="adhocsubprocess-adhocsubprocessrequest"></a>
 AdHocSubProcess (AdHocSubProcessRequest)</h2>
@@ -1302,7 +1302,7 @@ Inherited (2)</summary>
 </ul>
 <p></p>
 </details>
-<h3 class="doxsection"><a class="anchor" id="operators-16"></a>
+<h3 class="doxsection"><a class="anchor" id="operators-23"></a>
 Operators</h3>
 <ul>
 <li><span class="tt">timestamp += duration</span></li>
@@ -1378,7 +1378,7 @@ Header (1)</h5>
 <ul>
 <li><em>recipient:</em> <span class="tt">customer</span></li>
 </ul>
-<h5 class="doxsection"><a class="anchor" id="content-0-10"></a>
+<h5 class="doxsection"><a class="anchor" id="content-0-20"></a>
 Content (0)</h5>
 <h2 class="doxsection"><a class="anchor" id="endevent-endeventpickup"></a>
 EndEvent (EndEventPickup)</h2>
@@ -1509,9 +1509,9 @@ Header (1)</h5>
 <ul>
 <li><em>sender:</em> <span class="tt">customer</span></li>
 </ul>
-<h5 class="doxsection"><a class="anchor" id="content-0-11"></a>
+<h5 class="doxsection"><a class="anchor" id="content-0-21"></a>
 Content (0)</h5>
-<h3 class="doxsection"><a class="anchor" id="operators-17"></a>
+<h3 class="doxsection"><a class="anchor" id="operators-24"></a>
 Operators</h3>
 <ul>
 <li><span class="tt">load += quantity</span></li>
@@ -1706,7 +1706,7 @@ Inherited (2)</summary>
 </ul>
 <p></p>
 </details>
-<h3 class="doxsection"><a class="anchor" id="operators-18"></a>
+<h3 class="doxsection"><a class="anchor" id="operators-25"></a>
 Operators</h3>
 <ul>
 <li><span class="tt">timestamp += duration</span></li>
@@ -1782,7 +1782,7 @@ Header (1)</h5>
 <ul>
 <li><em>recipient:</em> <span class="tt">customer</span></li>
 </ul>
-<h5 class="doxsection"><a class="anchor" id="content-0-12"></a>
+<h5 class="doxsection"><a class="anchor" id="content-0-22"></a>
 Content (0)</h5>
 <h2 class="doxsection"><a class="anchor" id="endevent-endeventdelivery"></a>
 EndEvent (EndEventDelivery)</h2>
@@ -1913,9 +1913,9 @@ Header (1)</h5>
 <ul>
 <li><em>sender:</em> <span class="tt">customer</span></li>
 </ul>
-<h5 class="doxsection"><a class="anchor" id="content-0-13"></a>
+<h5 class="doxsection"><a class="anchor" id="content-0-23"></a>
 Content (0)</h5>
-<h3 class="doxsection"><a class="anchor" id="operators-19"></a>
+<h3 class="doxsection"><a class="anchor" id="operators-26"></a>
 Operators</h3>
 <ul>
 <li><span class="tt">load -= quantity</span></li>
@@ -2195,7 +2195,7 @@ Owned (2)</summary>
 </ul>
 <p></p>
 </details>
-<h3 class="doxsection"><a class="anchor" id="operators-20"></a>
+<h3 class="doxsection"><a class="anchor" id="operators-27"></a>
 Operators</h3>
 <ul>
 <li><span class="tt">timestamp += duration</span></li>

@@ -223,7 +223,7 @@ Inherited (4)</summary>
 Owned (4)</summary>
 <p></p>
 <ul>
-<li><span class="tt">string[]</span>: <b>destinations</b> (initialized by <span class="tt">destinations := destinations(current_location)</span>)</li>
+<li><span class="tt">string[]</span>: <b>destinations</b></li>
 <li><em>decimal:</em> <b>duration</b></li>
 <li><em>decimal:</em> <b>departure</b></li>
 <li><em>string:</em> <b>next_location</b></li>
@@ -280,6 +280,11 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
+<h3 class="doxsection"><a class="anchor" id="operators-7"></a>
+Operators</h3>
+<ul>
+<li><span class="tt">destinations := destinations(current_location)</span></li>
+</ul>
 <h2 class="doxsection"><a class="anchor" id="endevent-endeventtrip"></a>
 EndEvent (EndEventTrip)</h2>
 <h3 class="doxsection"><a class="anchor" id="status-33"></a>
@@ -363,7 +368,7 @@ Choices</h3>
 <ul>
 <li><span class="tt">1 &lt;= index &lt;= count(destinations)</span></li>
 </ul>
-<h3 class="doxsection"><a class="anchor" id="operators-5"></a>
+<h3 class="doxsection"><a class="anchor" id="operators-8"></a>
 Operators</h3>
 <ul>
 <li><span class="tt">next_location := destinations[index]</span></li>
@@ -392,7 +397,7 @@ Attributes</h4>
 </ul>
 </li>
 </ul>
-<h4 class="doxsection"><a class="anchor" id="operators-6"></a>
+<h4 class="doxsection"><a class="anchor" id="operators-9"></a>
 Operators</h4>
 <ul>
 <li><span class="tt">heuristic := departure - timestamp + duration + heuristic(next_location)</span></li>
@@ -431,7 +436,7 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
-<h3 class="doxsection"><a class="anchor" id="operators-7"></a>
+<h3 class="doxsection"><a class="anchor" id="operators-10"></a>
 Operators</h3>
 <ul>
 <li><span class="tt">timestamp += duration</span></li>

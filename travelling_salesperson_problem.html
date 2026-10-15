@@ -253,8 +253,8 @@ Owned (3)</summary>
 <p></p>
 <ul>
 <li><em>integer:</em> <b>index</b></li>
-<li><em>string:</em> <b>location</b> (initialized by <span class="tt">location := locations[index]</span>)</li>
-<li><em>decimal:</em> <b>distance</b> (initialized by <span class="tt">distance := distance(current_location,location)</span>)</li>
+<li><em>string:</em> <b>location</b></li>
+<li><em>decimal:</em> <b>distance</b></li>
 </ul>
 <p></p>
 </details>
@@ -277,9 +277,11 @@ Multi-instance</h3>
 <li><em>index:</em> <span class="tt">index</span></li>
 <li><em>cardinality:</em> <span class="tt">count(locations)</span></li>
 </ul>
-<h3 class="doxsection"><a class="anchor" id="operators-21"></a>
+<h3 class="doxsection"><a class="anchor" id="operators-28"></a>
 Operators</h3>
 <ul>
+<li><span class="tt">location := locations[index]</span></li>
+<li><span class="tt">distance := distance(current_location,location)</span></li>
 <li><span class="tt">current_location := location</span></li>
 <li><span class="tt">timestamp += distance / speed</span></li>
 </ul>
@@ -323,7 +325,7 @@ Inherited (3)</summary>
 </ul>
 <p></p>
 </details>
-<h3 class="doxsection"><a class="anchor" id="operators-22"></a>
+<h3 class="doxsection"><a class="anchor" id="operators-29"></a>
 Operators</h3>
 <ul>
 <li><span class="tt">current_location := origin</span></li>

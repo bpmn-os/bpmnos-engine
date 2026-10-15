@@ -145,7 +145,7 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5dbadc9dcb3397eb8b943f1b95b3202e" id="r_a5dbadc9dcb3397eb8b943f1b95b3202e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5dbadc9dcb3397eb8b943f1b95b3202e">CSVReader</a> (const std::string &amp;<a class="el" href="#a7a6586e5a3c927d8d9c9cccff738d2ed">instanceFileOrString</a>, const std::string &amp;<a class="el" href="#ae85cf32a6a10cf71a6be25dd979fd73c">delimiters</a>=&quot;,;\t&quot;)</td></tr>
+<tr class="memitem:a501cb3a3e453b79eb769179a0868d8c7" id="r_a501cb3a3e453b79eb769179a0868d8c7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a501cb3a3e453b79eb769179a0868d8c7">CSVReader</a> (const std::string &amp;<a class="el" href="#a7a6586e5a3c927d8d9c9cccff738d2ed">instanceFileOrString</a>, const std::string &amp;<a class="el" href="#ae85cf32a6a10cf71a6be25dd979fd73c">delimiters</a>=&quot;,;\t&quot;, bool <a class="el" href="#afc6bc386badd47617f326134446a0e4d">initializers</a>=false)</td></tr>
 <tr class="memitem:ad3418795f85d8d82dacb12e9b8ee44f1" id="r_ad3418795f85d8d82dacb12e9b8ee44f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a2ba873a3bd4c200c6c39ecc42c29f0b6">Table</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad3418795f85d8d82dacb12e9b8ee44f1">read</a> ()</td></tr>
 <tr class="memdesc:ad3418795f85d8d82dacb12e9b8ee44f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads the table, every literal being replaced by the number encoding it.  <br /></td></tr>
 <tr class="memitem:ac3eb4c633301063f26b2df4e077cfedf" id="r_ac3eb4c633301063f26b2df4e077cfedf"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::vector&lt; <a class="el" href="#a089c016a3f1ed7f4fea9a4af711a3c8f">Type</a> &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac3eb4c633301063f26b2df4e077cfedf">types</a> () const</td></tr>
@@ -155,6 +155,7 @@ Public Member Functions</h2></td></tr>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a7a6586e5a3c927d8d9c9cccff738d2ed" id="r_a7a6586e5a3c927d8d9c9cccff738d2ed"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7a6586e5a3c927d8d9c9cccff738d2ed">instanceFileOrString</a></td></tr>
 <tr class="memitem:ae85cf32a6a10cf71a6be25dd979fd73c" id="r_ae85cf32a6a10cf71a6be25dd979fd73c"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae85cf32a6a10cf71a6be25dd979fd73c">delimiters</a></td></tr>
+<tr class="memitem:afc6bc386badd47617f326134446a0e4d" id="r_afc6bc386badd47617f326134446a0e4d"><td class="memItemLeft" align="right" valign="top">const bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afc6bc386badd47617f326134446a0e4d">initializers</a></td></tr>
 </table>
 <a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Member Typedef Documentation</h2>
 <a id="a9992903a693882e7110019c5301fe781" name="a9992903a693882e7110019c5301fe781"></a>
@@ -221,8 +222,8 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a5dbadc9dcb3397eb8b943f1b95b3202e" name="a5dbadc9dcb3397eb8b943f1b95b3202e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5dbadc9dcb3397eb8b943f1b95b3202e">&#9670;&#160;</a></span>CSVReader()</h2>
+<a id="a501cb3a3e453b79eb769179a0868d8c7" name="a501cb3a3e453b79eb769179a0868d8c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a501cb3a3e453b79eb769179a0868d8c7">&#9670;&#160;</a></span>CSVReader()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -238,7 +239,12 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>delimiters</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;,;\t&quot;</span>&#160;)</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>delimiters</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;,;\t&quot;</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>initializers</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -247,6 +253,7 @@ Public Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Constructor for a reader of the given file or content, admitting object initializers in the cells if requested, as the instance data do; a cell holding one keeps its text. </p>
 
 <p class="definition">Definition at line <a class="el" href="CSVReader_8cpp_source.html#l00013">13</a> of file <a class="el" href="CSVReader_8cpp_source.html">CSVReader.cpp</a>.</p>
 
@@ -268,7 +275,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="CSVReader_8cpp_source.html#l00019">19</a> of file <a class="el" href="CSVReader_8cpp_source.html">CSVReader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CSVReader_8cpp_source.html#l00020">20</a> of file <a class="el" href="CSVReader_8cpp_source.html">CSVReader.cpp</a>.</p>
 
 </div>
 </div>
@@ -295,7 +302,7 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="CSVReader_8h_source.html#l00023">23</a> of file <a class="el" href="CSVReader_8h_source.html">CSVReader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CSVReader_8h_source.html#l00025">25</a> of file <a class="el" href="CSVReader_8h_source.html">CSVReader.h</a>.</p>
 
 </div>
 </div>
@@ -312,7 +319,23 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="CSVReader_8h_source.html#l00025">25</a> of file <a class="el" href="CSVReader_8h_source.html">CSVReader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CSVReader_8h_source.html#l00027">27</a> of file <a class="el" href="CSVReader_8h_source.html">CSVReader.h</a>.</p>
+
+</div>
+</div>
+<a id="afc6bc386badd47617f326134446a0e4d" name="afc6bc386badd47617f326134446a0e4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc6bc386badd47617f326134446a0e4d">&#9670;&#160;</a></span>initializers</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const bool BPMNOS::CSVReader::initializers</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="CSVReader_8h_source.html#l00028">28</a> of file <a class="el" href="CSVReader_8h_source.html">CSVReader.h</a>.</p>
 
 </div>
 </div>
@@ -328,7 +351,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="CSVReader_8h_source.html#l00024">24</a> of file <a class="el" href="CSVReader_8h_source.html">CSVReader.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="CSVReader_8h_source.html#l00026">26</a> of file <a class="el" href="CSVReader_8h_source.html">CSVReader.h</a>.</p>
 
 </div>
 </div>

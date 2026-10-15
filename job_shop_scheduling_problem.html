@@ -286,8 +286,8 @@ Owned (3)</summary>
 <p></p>
 <ul>
 <li><em>integer:</em> <b>index</b></li>
-<li><em>string:</em> <b>machine</b> (initialized by <span class="tt">machine := machines[index]</span>)</li>
-<li><em>decimal:</em> <b>duration</b> (initialized by <span class="tt">duration := durations[index]</span>)</li>
+<li><em>string:</em> <b>machine</b></li>
+<li><em>decimal:</em> <b>duration</b></li>
 </ul>
 <p></p>
 </details>
@@ -367,6 +367,12 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
+<h3 class="doxsection"><a class="anchor" id="operators-11"></a>
+Operators</h3>
+<ul>
+<li><span class="tt">machine := machines[index]</span></li>
+<li><span class="tt">duration := durations[index]</span></li>
+</ul>
 <h2 class="doxsection"><a class="anchor" id="endevent-jobendevent"></a>
 EndEvent (JobEndEvent)</h2>
 <h3 class="doxsection"><a class="anchor" id="status-44"></a>
@@ -453,6 +459,12 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
+<h3 class="doxsection"><a class="anchor" id="operators-12"></a>
+Operators</h3>
+<ul>
+<li><span class="tt">Request.order := instance</span></li>
+<li><span class="tt">Request.duration := duration</span></li>
+</ul>
 <h3 class="doxsection"><a class="anchor" id="message-4"></a>
 Message</h3>
 <h4 class="doxsection"><a class="anchor" id="name-request-2"></a>
@@ -462,12 +474,8 @@ Header (1)</h5>
 <ul>
 <li><em>machine:</em> <span class="tt">machine</span></li>
 </ul>
-<h5 class="doxsection"><a class="anchor" id="content-2-2"></a>
-Content (2)</h5>
-<ul>
-<li><em>Order:</em> <b>instance</b></li>
-<li><em>Duration:</em> <b>duration</b></li>
-</ul>
+<h5 class="doxsection"><a class="anchor" id="content-0-4"></a>
+Content (0)</h5>
 <h2 class="doxsection"><a class="anchor" id="receivetask-noticejobcompletiontask"></a>
 ReceiveTask (NoticeJobCompletionTask)</h2>
 <h3 class="doxsection"><a class="anchor" id="status-46"></a>
@@ -517,9 +525,9 @@ Message</h3>
 <em>Name</em> Completion</h4>
 <h5 class="doxsection"><a class="anchor" id="header-0-4"></a>
 Header (0)</h5>
-<h5 class="doxsection"><a class="anchor" id="content-0"></a>
+<h5 class="doxsection"><a class="anchor" id="content-0-5"></a>
 Content (0)</h5>
-<h3 class="doxsection"><a class="anchor" id="operators-8"></a>
+<h3 class="doxsection"><a class="anchor" id="operators-13"></a>
 Operators</h3>
 <ul>
 <li><span class="tt">makespan := timestamp</span></li>
@@ -696,11 +704,6 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
-<h3 class="doxsection"><a class="anchor" id="operators-9"></a>
-Operators</h3>
-<ul>
-<li><span class="tt">job_requests += 1</span></li>
-</ul>
 <h2 class="doxsection"><a class="anchor" id="adhocsubprocess-adhocsubprocess-1"></a>
 AdHocSubProcess (AdHocSubProcess)</h2>
 <h3 class="doxsection"><a class="anchor" id="status-51"></a>
@@ -787,7 +790,7 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
-<h3 class="doxsection"><a class="anchor" id="operators-10"></a>
+<h3 class="doxsection"><a class="anchor" id="operators-14"></a>
 Operators</h3>
 <ul>
 <li><span class="tt">timestamp += duration</span></li>
@@ -844,11 +847,14 @@ Header (1)</h5>
 <ul>
 <li><em>machine:</em> <span class="tt">machine</span></li>
 </ul>
-<h5 class="doxsection"><a class="anchor" id="content-2-3"></a>
-Content (2)</h5>
+<h5 class="doxsection"><a class="anchor" id="content-0-6"></a>
+Content (0)</h5>
+<h3 class="doxsection"><a class="anchor" id="operators-15"></a>
+Operators</h3>
 <ul>
-<li><em>Duration:</em> <b>duration</b></li>
-<li><em>Order:</em> <b>order</b></li>
+<li><span class="tt">duration := Request.duration</span></li>
+<li><span class="tt">order := Request.order</span></li>
+<li><span class="tt">job_requests += 1</span></li>
 </ul>
 <h2 class="doxsection"><a class="anchor" id="endevent-throwcompletionmessage"></a>
 EndEvent (ThrowCompletionMessage)</h2>
@@ -902,7 +908,7 @@ Header (1)</h5>
 <ul>
 <li><em>recipient:</em> <span class="tt">order</span></li>
 </ul>
-<h5 class="doxsection"><a class="anchor" id="content-0-1"></a>
+<h5 class="doxsection"><a class="anchor" id="content-0-7"></a>
 Content (0)</h5>
 <h2 class="doxsection"><a class="anchor" id="endevent-endeventmachine"></a>
 EndEvent (EndEventMachine)</h2>
@@ -1068,7 +1074,7 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
-<h3 class="doxsection"><a class="anchor" id="conditions"></a>
+<h3 class="doxsection"><a class="anchor" id="conditions-1"></a>
 Conditions</h3>
 <ul>
 <li><span class="tt">job_requests == jobs</span> </li>

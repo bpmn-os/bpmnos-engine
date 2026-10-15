@@ -138,16 +138,22 @@ $(function(){initNavTree('ExtensionElements_8cpp.html','',''); });
 <code>#include &quot;model/bpmnos/src/xml/bpmnos/tDecisions.h&quot;</code><br />
 <code>#include &quot;model/bpmnos/src/xml/bpmnos/tDecision.h&quot;</code><br />
 <code>#include &quot;model/bpmnos/src/xml/bpmnos/tMessage.h&quot;</code><br />
+<code>#include &quot;model/bpmnos/src/xml/bpmnos/tSignal.h&quot;</code><br />
+<code>#include &quot;model/bpmnos/src/xml/bpmnos/tTimer.h&quot;</code><br />
+<code>#include &quot;model/bpmnos/src/xml/bpmnos/tParameter.h&quot;</code><br />
 <code>#include &quot;model/bpmnos/src/xml/bpmnos/tLoopCharacteristics.h&quot;</code><br />
 <code>#include &quot;model/bpmnos/src/xml/bpmnos/tGuidance.h&quot;</code><br />
 <code>#include &quot;<a class="el" href="Keywords_8h_source.html">model/utility/src/Keywords.h</a>&quot;</code><br />
 <code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cassert&gt;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
 </div>
 <p><a href="ExtensionElements_8cpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ae5480cfc1efae6bebed1cf33fc2bf1f4" id="r_ae5480cfc1efae6bebed1cf33fc2bf1f4"><td class="memItemLeft" align="right" valign="top">template bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae5480cfc1efae6bebed1cf33fc2bf1f4">ExtensionElements::conditionsSatisfied&lt; BPMNOS::Data &gt;</a> (const <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, const <a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &amp;data) const</td></tr>
+<tr class="memitem:ab42913671dfe9285eb9639a3ca303fbf" id="r_ab42913671dfe9285eb9639a3ca303fbf"><td class="memItemLeft" align="right" valign="top">template bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab42913671dfe9285eb9639a3ca303fbf">ExtensionElements::conditionsSatisfied&lt; BPMNOS::SharedData &gt;</a> (const <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, const <a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &amp;data) const</td></tr>
 <tr class="memitem:a13bf39c64a09d12e841ba6273c38a638" id="r_a13bf39c64a09d12e841ba6273c38a638"><td class="memItemLeft" align="right" valign="top">template bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a13bf39c64a09d12e841ba6273c38a638">ExtensionElements::feasibleEntry&lt; BPMNOS::Data &gt;</a> (const <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, const <a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &amp;data) const</td></tr>
 <tr class="memitem:afe411c8ca9cfd0d858e02704abd4d299" id="r_afe411c8ca9cfd0d858e02704abd4d299"><td class="memItemLeft" align="right" valign="top">template bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afe411c8ca9cfd0d858e02704abd4d299">ExtensionElements::feasibleEntry&lt; BPMNOS::SharedData &gt;</a> (const <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, const <a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &amp;data) const</td></tr>
 <tr class="memitem:aa87e333920390b5295c74a0600eb61e1" id="r_aa87e333920390b5295c74a0600eb61e1"><td class="memItemLeft" align="right" valign="top">template bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa87e333920390b5295c74a0600eb61e1">ExtensionElements::feasibleCompletion&lt; BPMNOS::Data &gt;</a> (const <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, const <a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &amp;data) const</td></tr>
@@ -158,104 +164,102 @@ Functions</h2></td></tr>
 <tr class="memitem:aaabdce2a24158f0aeb86a964339a3ac2" id="r_aaabdce2a24158f0aeb86a964339a3ac2"><td class="memItemLeft" align="right" valign="top">template bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaabdce2a24158f0aeb86a964339a3ac2">ExtensionElements::satisfiesInheritedRestrictions&lt; BPMNOS::SharedData &gt;</a> (const <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, const <a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &amp;data) const</td></tr>
 <tr class="memitem:ae224627c73afdc8e34e81812f2e01d66" id="r_ae224627c73afdc8e34e81812f2e01d66"><td class="memItemLeft" align="right" valign="top">template bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae224627c73afdc8e34e81812f2e01d66">ExtensionElements::fullScopeRestrictionsSatisfied&lt; BPMNOS::Data &gt;</a> (const <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, const <a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &amp;data) const</td></tr>
 <tr class="memitem:a24df52f7dc4a8bc2831f55cc2d3c4a1b" id="r_a24df52f7dc4a8bc2831f55cc2d3c4a1b"><td class="memItemLeft" align="right" valign="top">template bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a24df52f7dc4a8bc2831f55cc2d3c4a1b">ExtensionElements::fullScopeRestrictionsSatisfied&lt; BPMNOS::SharedData &gt;</a> (const <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, const <a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &amp;data) const</td></tr>
-<tr class="memitem:a9565b4ca7800aa98bbb137a320efc8aa" id="r_a9565b4ca7800aa98bbb137a320efc8aa"><td class="memItemLeft" align="right" valign="top">template <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9565b4ca7800aa98bbb137a320efc8aa">ExtensionElements::computeInitialValues&lt; BPMNOS::Data &gt;</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime, Status &amp;status, <a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &amp;data) const</td></tr>
-<tr class="memitem:aaa23793404d10cfd84b179b8037bcefb" id="r_aaa23793404d10cfd84b179b8037bcefb"><td class="memItemLeft" align="right" valign="top">template <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaa23793404d10cfd84b179b8037bcefb">ExtensionElements::computeInitialValues&lt; BPMNOS::SharedData &gt;</a> (<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> currentTime, Status &amp;status, <a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &amp;data) const</td></tr>
-<tr class="memitem:af266ab20ae66e93ad0f0be355a44904c" id="r_af266ab20ae66e93ad0f0be355a44904c"><td class="memItemLeft" align="right" valign="top">template <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af266ab20ae66e93ad0f0be355a44904c">ExtensionElements::applyOperators&lt; BPMNOS::Data &gt;</a> (Status &amp;status, <a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &amp;data) const</td></tr>
-<tr class="memitem:ab685937b417288955620ada61eff164b" id="r_ab685937b417288955620ada61eff164b"><td class="memItemLeft" align="right" valign="top">template <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab685937b417288955620ada61eff164b">ExtensionElements::applyOperators&lt; BPMNOS::SharedData &gt;</a> (Status &amp;status, <a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &amp;data) const</td></tr>
+<tr class="memitem:a560ba06850f7d8755ca00994d832d92b" id="r_a560ba06850f7d8755ca00994d832d92b"><td class="memItemLeft" align="right" valign="top">template <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a560ba06850f7d8755ca00994d832d92b">ExtensionElements::applyOperators&lt; BPMNOS::Data &gt;</a> (Status &amp;status, <a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &amp;data, std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; *contentObject) const</td></tr>
+<tr class="memitem:aac2d47413d56ad01d8e38fcad08d8a63" id="r_aac2d47413d56ad01d8e38fcad08d8a63"><td class="memItemLeft" align="right" valign="top">template <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aac2d47413d56ad01d8e38fcad08d8a63">ExtensionElements::applyOperators&lt; BPMNOS::SharedData &gt;</a> (Status &amp;status, <a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &amp;data, std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; *contentObject) const</td></tr>
 <tr class="memitem:a59f1f0ea8dc167b5ee853d11d38860ff" id="r_a59f1f0ea8dc167b5ee853d11d38860ff"><td class="memItemLeft" align="right" valign="top">template <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a59f1f0ea8dc167b5ee853d11d38860ff">ExtensionElements::getObjective&lt; BPMNOS::Data &gt;</a> (const <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, const <a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &amp;data) const</td></tr>
 <tr class="memitem:a4b3caeb28dea4868961f8ae7aae97c7f" id="r_a4b3caeb28dea4868961f8ae7aae97c7f"><td class="memItemLeft" align="right" valign="top">template <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4b3caeb28dea4868961f8ae7aae97c7f">ExtensionElements::getObjective&lt; BPMNOS::SharedData &gt;</a> (const <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, const <a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &amp;data) const</td></tr>
 <tr class="memitem:abf976809925db2f7b8e8b49c382267e3" id="r_abf976809925db2f7b8e8b49c382267e3"><td class="memItemLeft" align="right" valign="top">template std::vector&lt; std::pair&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a> *, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abf976809925db2f7b8e8b49c382267e3">ExtensionElements::getContributionsToObjective&lt; BPMNOS::Data &gt;</a> (const <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, const <a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &amp;data) const</td></tr>
 <tr class="memitem:ac6faf5a4560c97abaa3526770779c816" id="r_ac6faf5a4560c97abaa3526770779c816"><td class="memItemLeft" align="right" valign="top">template std::vector&lt; std::pair&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a> *, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac6faf5a4560c97abaa3526770779c816">ExtensionElements::getContributionsToObjective&lt; BPMNOS::SharedData &gt;</a> (const <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, const <a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &amp;data) const</td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
-<a id="af266ab20ae66e93ad0f0be355a44904c" name="af266ab20ae66e93ad0f0be355a44904c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af266ab20ae66e93ad0f0be355a44904c">&#9670;&#160;</a></span>ExtensionElements::applyOperators&lt; BPMNOS::Data &gt;()</h2>
+<a id="a560ba06850f7d8755ca00994d832d92b" name="a560ba06850f7d8755ca00994d832d92b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a560ba06850f7d8755ca00994d832d92b">&#9670;&#160;</a></span>ExtensionElements::applyOperators&lt; BPMNOS::Data &gt;()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">template <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> <a class="el" href="classBPMNOS_1_1Model_1_1ExtensionElements.html#aa7074adb81e4d6b755599a4f18a46953">ExtensionElements::applyOperators</a>&lt; <a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &gt; </td>
+          <td class="memname">template <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> <a class="el" href="classBPMNOS_1_1Model_1_1ExtensionElements.html#afda243f636c77903a5a9e0e9fe057765">ExtensionElements::applyOperators</a>&lt; <a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &gt; </td>
           <td>(</td>
           <td class="paramtype">Status &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;) const</td>
+          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; *</td>          <td class="paramname"><span class="paramname"><em>contentObject</em></span>&#160;) const</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="ab685937b417288955620ada61eff164b" name="ab685937b417288955620ada61eff164b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab685937b417288955620ada61eff164b">&#9670;&#160;</a></span>ExtensionElements::applyOperators&lt; BPMNOS::SharedData &gt;()</h2>
+<a id="aac2d47413d56ad01d8e38fcad08d8a63" name="aac2d47413d56ad01d8e38fcad08d8a63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac2d47413d56ad01d8e38fcad08d8a63">&#9670;&#160;</a></span>ExtensionElements::applyOperators&lt; BPMNOS::SharedData &gt;()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">template <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> <a class="el" href="classBPMNOS_1_1Model_1_1ExtensionElements.html#aa7074adb81e4d6b755599a4f18a46953">ExtensionElements::applyOperators</a>&lt; <a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &gt; </td>
+          <td class="memname">template <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> <a class="el" href="classBPMNOS_1_1Model_1_1ExtensionElements.html#afda243f636c77903a5a9e0e9fe057765">ExtensionElements::applyOperators</a>&lt; <a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &gt; </td>
           <td>(</td>
           <td class="paramtype">Status &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;) const</td>
+          <td class="paramtype"><a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; *</td>          <td class="paramname"><span class="paramname"><em>contentObject</em></span>&#160;) const</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a9565b4ca7800aa98bbb137a320efc8aa" name="a9565b4ca7800aa98bbb137a320efc8aa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9565b4ca7800aa98bbb137a320efc8aa">&#9670;&#160;</a></span>ExtensionElements::computeInitialValues&lt; BPMNOS::Data &gt;()</h2>
+<a id="ae5480cfc1efae6bebed1cf33fc2bf1f4" name="ae5480cfc1efae6bebed1cf33fc2bf1f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5480cfc1efae6bebed1cf33fc2bf1f4">&#9670;&#160;</a></span>ExtensionElements::conditionsSatisfied&lt; BPMNOS::Data &gt;()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">template <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> <a class="el" href="classBPMNOS_1_1Model_1_1ExtensionElements.html#a04e973e7982aa9421cdcb102189e5b9a">ExtensionElements::computeInitialValues</a>&lt; <a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &gt; </td>
+          <td class="memname">template bool <a class="el" href="classBPMNOS_1_1Model_1_1ExtensionElements.html#a73c7c3b8ae88a97d3dfebfa9ac4518c6">ExtensionElements::conditionsSatisfied</a>&lt; <a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &gt; </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></td>          <td class="paramname"><span class="paramname"><em>currentTime</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Status &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;) const</td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;) const</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="aaa23793404d10cfd84b179b8037bcefb" name="aaa23793404d10cfd84b179b8037bcefb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaa23793404d10cfd84b179b8037bcefb">&#9670;&#160;</a></span>ExtensionElements::computeInitialValues&lt; BPMNOS::SharedData &gt;()</h2>
+<a id="ab42913671dfe9285eb9639a3ca303fbf" name="ab42913671dfe9285eb9639a3ca303fbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab42913671dfe9285eb9639a3ca303fbf">&#9670;&#160;</a></span>ExtensionElements::conditionsSatisfied&lt; BPMNOS::SharedData &gt;()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">template <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> <a class="el" href="classBPMNOS_1_1Model_1_1ExtensionElements.html#a04e973e7982aa9421cdcb102189e5b9a">ExtensionElements::computeInitialValues</a>&lt; <a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &gt; </td>
+          <td class="memname">template bool <a class="el" href="classBPMNOS_1_1Model_1_1ExtensionElements.html#a73c7c3b8ae88a97d3dfebfa9ac4518c6">ExtensionElements::conditionsSatisfied</a>&lt; <a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &gt; </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></td>          <td class="paramname"><span class="paramname"><em>currentTime</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Status &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;) const</td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;) const</td>
         </tr>
       </table>
 </div><div class="memdoc">

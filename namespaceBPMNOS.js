@@ -11,6 +11,7 @@ var namespaceBPMNOS =
     [ "Execution", "namespaceBPMNOS_1_1Execution.html", "namespaceBPMNOS_1_1Execution" ],
     [ "CSVReader", "classBPMNOS_1_1CSVReader.html", "classBPMNOS_1_1CSVReader" ],
     [ "InputEncoder", "classBPMNOS_1_1InputEncoder.html", "classBPMNOS_1_1InputEncoder" ],
+    [ "ObjectInitializer", "classBPMNOS_1_1ObjectInitializer.html", "classBPMNOS_1_1ObjectInitializer" ],
     [ "Object", "structBPMNOS_1_1Object.html", "structBPMNOS_1_1Object" ],
     [ "ObjectRegistry", "structBPMNOS_1_1ObjectRegistry.html", "structBPMNOS_1_1ObjectRegistry" ],
     [ "StringRegistry", "structBPMNOS_1_1StringRegistry.html", "structBPMNOS_1_1StringRegistry" ],

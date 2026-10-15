@@ -59,7 +59,8 @@ var bpmnos =
       ] ],
       [ "Restrictions", "extension.html#restrictions", [
         [ "Node restrictions", "extension.html#node-restrictions", null ],
-        [ "Gatekeeper restrictions", "extension.html#gatekeeper-restrictions", null ]
+        [ "Gatekeeper restrictions", "extension.html#gatekeeper-restrictions", null ],
+        [ "Conditions", "extension.html#conditions", null ]
       ] ],
       [ "Operators", "extension.html#operators", [
         [ "Writing objects", "extension.html#writing-objects", null ]
@@ -67,6 +68,7 @@ var bpmnos =
       [ "Choices", "extension.html#choices", null ],
       [ "Messages", "extension.html#messages", null ],
       [ "Signals", "extension.html#signals", null ],
+      [ "Errors and escalations", "extension.html#errors-and-escalations", null ],
       [ "Timer", "extension.html#timer", null ],
       [ "Inputs", "extension.html#inputs", null ],
       [ "Loop parameters", "extension.html#loop-parameters", null ]

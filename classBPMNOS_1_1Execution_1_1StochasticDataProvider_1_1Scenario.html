@@ -131,13 +131,13 @@ $(function(){initNavTree('classBPMNOS_1_1Execution_1_1StochasticDataProvider_1_1
  <a href="#details">More...</a></p>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00052">52</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00064">64</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for BPMNOS::Execution::StochasticDataProvider::Scenario:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1StochasticDataProvider_1_1Scenario__inherit__graph.svg" width="240" height="604"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1StochasticDataProvider_1_1Scenario__inherit__graph.svg" width="240" height="627"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -156,6 +156,8 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:ab5ae5adf04d012ba6061d073419a14ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">The seed of the realisation.  <br /></td></tr>
 <tr class="memitem:ad4b63e0a5a21e7260aa7393cbe2b8089" id="r_ad4b63e0a5a21e7260aa7393cbe2b8089"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad4b63e0a5a21e7260aa7393cbe2b8089">values</a></td></tr>
 <tr class="memdesc:ad4b63e0a5a21e7260aa7393cbe2b8089"><td class="mdescLeft">&#160;</td><td class="mdescRight">The values sampled for each instance.  <br /></td></tr>
+<tr class="memitem:a6fb6cc9decc6e4e1abd79ee96b8c4d38" id="r_a6fb6cc9decc6e4e1abd79ee96b8c4d38"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, std::unordered_map&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> *, std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6fb6cc9decc6e4e1abd79ee96b8c4d38">objects</a></td></tr>
+<tr class="memdesc:a6fb6cc9decc6e4e1abd79ee96b8c4d38"><td class="mdescLeft">&#160;</td><td class="mdescRight">The objects sampled for each instance.  <br /></td></tr>
 <tr class="memitem:ab3cd885af338f34b9d6e2906e163fe2c" id="r_ab3cd885af338f34b9d6e2906e163fe2c"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab3cd885af338f34b9d6e2906e163fe2c">instantiationTimes</a></td></tr>
 <tr class="memdesc:ab3cd885af338f34b9d6e2906e163fe2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">The instantiation time sampled for each instance.  <br /></td></tr>
 <tr class="memitem:a1923a9a9795036b5dad3f37b585dc521" id="r_a1923a9a9795036b5dad3f37b585dc521"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; size_t, std::unordered_map&lt; const <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html">BPMN::Node</a> *, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1923a9a9795036b5dad3f37b585dc521">disclosureTimes</a></td></tr>
@@ -163,8 +165,7 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a8603a6a30a084ca6015af9c2df101684" id="r_a8603a6a30a084ca6015af9c2df101684"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8603a6a30a084ca6015af9c2df101684">initializationDisclosureTimes</a></td></tr>
 <tr class="memdesc:a8603a6a30a084ca6015af9c2df101684"><td class="mdescLeft">&#160;</td><td class="mdescRight">The disclosure time sampled for each initialization, in the order of the rows.  <br /></td></tr>
 <tr class="inherit_header pub_attribs_classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html">BPMNOS::Execution::StaticDataProvider::Scenario</a></td></tr>
-<tr class="memitem:abfbd3de91c38512d35a64f7b2688386a inherit pub_attribs_classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario" id="r_abfbd3de91c38512d35a64f7b2688386a"><td class="memItemLeft" align="right" valign="top">std::multimap&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>, std::shared_ptr&lt; <a class="el" href="structBPMNOS_1_1Execution_1_1Event.html">Event</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html#abfbd3de91c38512d35a64f7b2688386a">scheduledEvents</a></td></tr>
-<tr class="memdesc:abfbd3de91c38512d35a64f7b2688386a inherit pub_attribs_classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">Events due later, by the time they are due.  <br /></td></tr>
+<tr class="memitem:ac9ad82c30e6d2fd5fd4db78dc8d48b5f inherit pub_attribs_classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario" id="r_ac9ad82c30e6d2fd5fd4db78dc8d48b5f"><td class="memItemLeft" align="right" valign="top">std::multimap&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>, std::function&lt; std::shared_ptr&lt; <a class="el" href="structBPMNOS_1_1Execution_1_1Event.html">Event</a> &gt;(<a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html#a7448ce5b3a706eec69c9d44cb2c110ff">Scenario</a> &amp;)&gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html#ac9ad82c30e6d2fd5fd4db78dc8d48b5f">scheduledEvents</a></td></tr>
 <tr class="memitem:a997f0b964d3cdb45929ec4a53912c1d3 inherit pub_attribs_classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario" id="r_a997f0b964d3cdb45929ec4a53912c1d3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html#a997f0b964d3cdb45929ec4a53912c1d3">time</a> = std::numeric_limits&lt;<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&gt;::lowest()</td></tr>
 <tr class="memdesc:a997f0b964d3cdb45929ec4a53912c1d3 inherit pub_attribs_classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current time of the run.  <br /></td></tr>
 <tr class="inherit_header pub_attribs_classBPMNOS_1_1Execution_1_1Scenario"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_classBPMNOS_1_1Execution_1_1Scenario')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Attributes inherited from <a class="el" href="classBPMNOS_1_1Execution_1_1Scenario.html">BPMNOS::Execution::Scenario</a></td></tr>
@@ -198,7 +199,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00031">31</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00042">42</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -222,7 +223,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00037">37</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00048">48</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
 
 </div>
 </div>
@@ -239,7 +240,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00059">59</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00072">72</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
 
 </div>
 </div>
@@ -255,7 +256,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00060">60</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00073">73</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
 
 </div>
 </div>
@@ -271,7 +272,23 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00058">58</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00071">71</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
+
+</div>
+</div>
+<a id="a6fb6cc9decc6e4e1abd79ee96b8c4d38" name="a6fb6cc9decc6e4e1abd79ee96b8c4d38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fb6cc9decc6e4e1abd79ee96b8c4d38">&#9670;&#160;</a></span>objects</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;size_t, std::unordered_map&lt;const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a>*, std::shared_ptr&lt;const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a>&gt; &gt; &gt; BPMNOS::Execution::StochasticDataProvider::Scenario::objects</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00070">70</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
 
 </div>
 </div>
@@ -287,7 +304,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00056">56</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00068">68</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
 
 </div>
 </div>
@@ -303,7 +320,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00057">57</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8h_source.html#l00069">69</a> of file <a class="el" href="StochasticDataProvider_8h_source.html">StochasticDataProvider.h</a>.</p>
 
 </div>
 </div>

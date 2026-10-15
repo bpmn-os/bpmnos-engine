@@ -35,23 +35,23 @@
 <text xml:space="preserve" text-anchor="start" x="16.25" y="-225" font-family="Helvetica,sans-Serif" font-size="10.00">completionDependencies</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-208.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text xml:space="preserve" text-anchor="start" x="16.25" y="-208.25" font-family="Helvetica,sans-Serif" font-size="10.00">exitDependencies</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-191.5" font-family="Helvetica,sans-Serif" font-size="10.00">and 19 more...</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-191.5" font-family="Helvetica,sans-Serif" font-size="10.00">and 26 more...</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-174.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text xml:space="preserve" text-anchor="start" x="16.25" y="-174.75" font-family="Helvetica,sans-Serif" font-size="10.00">ExtensionElements()</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-158" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text xml:space="preserve" text-anchor="start" x="16.25" y="-158" font-family="Helvetica,sans-Serif" font-size="10.00">getMessageDefinition()</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-141.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-141.25" font-family="Helvetica,sans-Serif" font-size="10.00">feasibleEntry()</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-141.25" font-family="Helvetica,sans-Serif" font-size="10.00">conditionsSatisfied()</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-124.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-124.5" font-family="Helvetica,sans-Serif" font-size="10.00">feasibleCompletion()</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-124.5" font-family="Helvetica,sans-Serif" font-size="10.00">feasibleEntry()</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-107.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-107.75" font-family="Helvetica,sans-Serif" font-size="10.00">feasibleExit()</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-107.75" font-family="Helvetica,sans-Serif" font-size="10.00">feasibleCompletion()</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-91" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-91" font-family="Helvetica,sans-Serif" font-size="10.00">satisfiesInheritedRestrictions()</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-91" font-family="Helvetica,sans-Serif" font-size="10.00">feasibleExit()</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-74.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-74.25" font-family="Helvetica,sans-Serif" font-size="10.00">fullScopeRestrictionsSatisfied()</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-74.25" font-family="Helvetica,sans-Serif" font-size="10.00">satisfiesInheritedRestrictions()</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-57.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-57.5" font-family="Helvetica,sans-Serif" font-size="10.00">computeInitialValues()</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-57.5" font-family="Helvetica,sans-Serif" font-size="10.00">fullScopeRestrictionsSatisfied()</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-40.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text xml:space="preserve" text-anchor="start" x="16.25" y="-40.75" font-family="Helvetica,sans-Serif" font-size="10.00">applyOperators()</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-24" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>

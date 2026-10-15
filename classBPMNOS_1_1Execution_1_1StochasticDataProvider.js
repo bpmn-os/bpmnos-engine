@@ -2,14 +2,16 @@ var classBPMNOS_1_1Execution_1_1StochasticDataProvider =
 [
     [ "Scenario", "classBPMNOS_1_1Execution_1_1StochasticDataProvider_1_1Scenario.html", "classBPMNOS_1_1Execution_1_1StochasticDataProvider_1_1Scenario" ],
     [ "StochasticDataProvider", "classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#afdb58d597a65254ea373747d69fa16f3", null ],
+    [ "applyReadyValues", "classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#a58d51df23d1129b465b073bb6afc438b", null ],
     [ "createScenario", "classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#af1cb15ce7ebf375f28ca337b74e97e1c", null ],
     [ "forkScenario", "classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#ab1b1a309ea678e2e7deb89354dcfa642", null ],
-    [ "getActivityReadyStatus", "classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#a29afe3beb60f2d0450ca2035558ee6d0", null ],
-    [ "getActivityReadyTime", "classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#a52b8d945c2d5d660ea86a3b026fed350", null ],
+    [ "getActivityReadyTime", "classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#a6cd285d2c843efb43c14b9ad3bf17a84", null ],
     [ "getCompletionStatus", "classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#a88deb553fd93cd9ff730b1330f2da21e", null ],
     [ "getDisclosureTimes", "classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#a5e55ef674ef2c3b26a2b97197ef86796", null ],
+    [ "getInstanceObjects", "classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#a2ad222b141f13059ef4b321f19a9aa8d", null ],
     [ "getInstanceValues", "classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#afc57d982c77221188b527f28b7426acb", null ],
     [ "getProcessReadyTime", "classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#aa73b2c5f28f307b038088d9b254e4c10", null ],
+    [ "getReadyTimestamp", "classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#af7cde54260f7425d42457dc341abac23", null ],
     [ "readValue", "classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#a2d6637ab67cd958ea09996f8a2c8c7a1", null ],
     [ "maxResamplingTries", "classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#ab43f981afe6b4ed7e0b79e99d0d19630", null ]
 ];
