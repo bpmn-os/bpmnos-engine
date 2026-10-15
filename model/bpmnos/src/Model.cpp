@@ -315,28 +315,87 @@ std::unique_ptr<BPMN::FlowNode> Model::createTask(XML::bpmn::tTask* task, BPMN::
 
 std::unique_ptr<BPMN::FlowNode> Model::createEvent(XML::bpmn::tEvent* event, BPMN::Scope* parent) {
   auto baseElement = BPMN::Model::createEvent(event,parent);
-  if ( baseElement->extensionElements && baseElement->extensionElements->represents<ExtensionElements>() ) {
-    // the event's factory has bound extension elements already
-    return baseElement;
-  }
-  // bind attributes, restrictions, operators, timer, and conditions
-  return bind<BPMN::FlowNode>(
-    std::move(baseElement),
-    std::make_unique<ExtensionElements>(event,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent)
-  );
-}
+  auto extensionElements = std::make_unique<ExtensionElements>(event,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent);
 
-std::unique_ptr<BPMN::FlowNode> Model::createBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) {
-  auto baseElement = BPMN::Model::createBoundaryEvent(boundaryEvent,parent);
-  if ( baseElement->extensionElements && baseElement->extensionElements->represents<ExtensionElements>() ) {
-    // the event's factory has bound extension elements already
-    return baseElement;
+  if ( baseElement->represents<BPMN::CatchEvent>() ) {
+    if ( baseElement->represents<BPMN::MessageCatchEvent>() ) {
+      auto name = baseElement->represents<BPMN::MessageStartEvent>() ? "start" : ( baseElement->represents<BPMN::BoundaryEvent>() ? "boundary" : "catch" );
+      if ( !extensionElements->messageDefinition ) {
+        throw std::runtime_error("Model: No message defined for message " + std::string(name) + " event '" + baseElement->id + "'");
+      }
+      // Lambda function to compare unique_ptrs by their raw pointers
+      auto contains = [](const std::vector<std::unique_ptr<Attribute>>& attributes, Attribute* attribute) {
+        return std::any_of(attributes.begin(), attributes.end(),[attribute](const std::unique_ptr<Attribute>& ptr) {
+          return ptr.get() == attribute;
+        });
+      };
+      if ( baseElement->represents<BPMN::MessageStartEvent>() ) {
+        if ( auto process = parent->represents<BPMN::Process>() ) {
+          // the process is instantiated whenever a message with this name is thrown
+          auto [ entry, inserted ] = processesTriggeredByMessage.emplace( extensionElements->messageDefinition->name, process );
+          if ( !inserted ) {
+            throw std::runtime_error("Model: message '" + BPMNOS::to_string(extensionElements->messageDefinition->name,STRING) + "' instantiates process '" + entry->second->id + "' and process '" + process->id + "'");
+          }
+        }
+        auto parentExtension = parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+        for ( auto& [_,content] : extensionElements->messageDefinition->contentMap ) {
+          Attribute* attribute = content->attribute;
+          if ( attribute->isGlobal ) {
+            throw std::runtime_error("Model: Message start event '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
+          }
+          else if ( attribute->category == Attribute::Category::DATA ) {
+            if ( !contains(parentExtension->data,attribute) && !contains(parentExtension->dataObjects,attribute) ) {
+              throw std::runtime_error("Model: Message start event '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "' which is not owned by the scope it starts");
+            }
+            // data attributes owned by event-subprocesses are considered immutable even if they are modified by the message start event
+          }
+          else if ( attribute->category == Attribute::Category::STATUS ) {
+            // status attributes owned by event-subprocesses are considered immutable even if they are modified by the message start event
+            if ( !contains(parentExtension->attributes,attribute) && !contains(parentExtension->statusObjects,attribute) ) {
+              attribute->isImmutable = false;
+            }
+          }
+        }
+      }
+      else {
+        auto label = baseElement->represents<BPMN::BoundaryEvent>() ? "Message boundary event '" : "Message catch event '";
+        for ( auto& [_,content] : extensionElements->messageDefinition->contentMap ) {
+          Attribute* attribute = content->attribute;
+          if ( attribute->isGlobal ) {
+            throw std::runtime_error("Model: " + std::string(label) + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
+          }
+          else if ( attribute->category == Attribute::Category::DATA ) {
+            throw std::runtime_error("Model: " + std::string(label) + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "'");
+          }
+          attribute->isImmutable = false;
+        }
+      }
+    }
+    else if ( baseElement->represents<BPMN::SignalCatchEvent>() ) {
+      auto name = baseElement->represents<BPMN::SignalStartEvent>() ? "start" : ( baseElement->represents<BPMN::BoundaryEvent>() ? "boundary" : "catch" );
+      if ( !extensionElements->signal ) {
+        throw std::runtime_error("Model: No signal defined for signal " + std::string(name) + " event '" + baseElement->id + "'");
+      }
+      if ( auto process = parent->represents<BPMN::Process>(); process && baseElement->represents<BPMN::SignalStartEvent>() ) {
+        // the process is instantiated whenever a signal with this name is thrown
+        auto [ entry, inserted ] = processesTriggeredBySignal.emplace( extensionElements->signalName, process );
+        if ( !inserted ) {
+          throw std::runtime_error("Model: signal '" + BPMNOS::to_string(extensionElements->signalName,STRING) + "' instantiates process '" + entry->second->id + "' and process '" + process->id + "'");
+        }
+      }
+    }
   }
-  // bind attributes, restrictions, operators, timer, and conditions
-  return bind<BPMN::FlowNode>(
-    std::move(baseElement),
-    std::make_unique<ExtensionElements>(boundaryEvent,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent)
-  );
+  else if ( baseElement->represents<BPMN::ThrowEvent>() ) {
+    if ( baseElement->represents<BPMN::MessageThrowEvent>() && !extensionElements->messageDefinition ) {
+      throw std::runtime_error("Model: No message defined for message throw event '" + baseElement->id + "'");
+    }
+    else if ( baseElement->represents<BPMN::SignalThrowEvent>() && !extensionElements->signal ) {
+      throw std::runtime_error("Model: No signal defined for signal throw event '" + baseElement->id + "'");
+    }
+  }
+
+  // bind attributes, restrictions, operators, message, signal, timer, and conditions
+  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
 }
 
 std::unique_ptr<BPMN::FlowNode> Model::createTimerStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) {
@@ -346,169 +405,11 @@ std::unique_ptr<BPMN::FlowNode> Model::createTimerStartEvent(XML::bpmn::tStartEv
   return BPMN::Model::createTimerStartEvent(startEvent,parent);
 }
 
-std::unique_ptr<BPMN::FlowNode> Model::createSignalStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) {
-  auto baseElement = BPMN::Model::createSignalStartEvent(startEvent,parent);
-  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(startEvent,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent);
-
-  if ( !extensionElements->signal ) {
-    throw std::runtime_error("Model: No signal defined for signal start event '" + baseElement->id + "'");
-  }
-
-  if ( auto process = parent->represents<BPMN::Process>() ) {
-    // the process is instantiated whenever a signal with this name is thrown
-    auto [ entry, inserted ] = processesTriggeredBySignal.emplace( extensionElements->signalName, process );
-    if ( !inserted ) {
-      throw std::runtime_error("Model: signal '" + BPMNOS::to_string(extensionElements->signalName,STRING) + "' instantiates process '" + entry->second->id + "' and process '" + process->id + "'");
-    }
-  }
-
-  // bind signal
-  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
-}
-
-std::unique_ptr<BPMN::FlowNode> Model::createSignalBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) {
-  auto baseElement = BPMN::Model::createSignalBoundaryEvent(boundaryEvent,parent);
-  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(boundaryEvent,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent);
-
-  if ( !extensionElements->signal ) {
-    throw std::runtime_error("Model: No signal defined for signal boundary event '" + baseElement->id + "'");
-  }
-
-  // bind signal
-  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
-}
-
-std::unique_ptr<BPMN::FlowNode> Model::createSignalCatchEvent(XML::bpmn::tCatchEvent* catchEvent, BPMN::Scope* parent) {
-  auto baseElement = BPMN::Model::createSignalCatchEvent(catchEvent,parent);
-  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(catchEvent,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent);
-
-  if ( !extensionElements->signal ) {
-    throw std::runtime_error("Model: No signal defined for signal catch event '" + baseElement->id + "'");
-  }
-
-  // bind signal
-  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
-}
-
-std::unique_ptr<BPMN::FlowNode> Model::createSignalThrowEvent(XML::bpmn::tThrowEvent* throwEvent, BPMN::Scope* parent) {
-  auto baseElement = BPMN::Model::createSignalThrowEvent(throwEvent,parent);
-  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(throwEvent,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent);
-
-  if ( !extensionElements->signal ) {
-    throw std::runtime_error("Model: No signal defined for signal throw event '" + baseElement->id + "'");
-  }
-
-  // bind signal
-  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
-}
-
 std::unique_ptr<BPMN::FlowNode> Model::createConditionalStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) {
   if ( parent->represents<BPMN::Process>() ) {
     throw std::runtime_error("Model: conditional start event of process '" + parent->id + "' is not supported");
   }
   return BPMN::Model::createConditionalStartEvent(startEvent,parent);
-}
-
-std::unique_ptr<BPMN::FlowNode> Model::createMessageStartEvent(XML::bpmn::tStartEvent* startEvent, BPMN::Scope* parent) {
-  auto baseElement = BPMN::Model::createMessageStartEvent(startEvent,parent);
-  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(startEvent,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent);
-  
-  // Lambda function to compare unique_ptrs by their raw pointers
-  auto contains = [](const std::vector<std::unique_ptr<Attribute>>& attributes, Attribute* attribute) {
-    return std::any_of(attributes.begin(), attributes.end(),[attribute](const std::unique_ptr<Attribute>& ptr) {
-      return ptr.get() == attribute;
-    });
-  };
-  
-  if ( !extensionElements->messageDefinition ) {
-    throw std::runtime_error("Model: No message defined for message start event '" + baseElement->id + "'");
-  }
-
-  if ( auto process = parent->represents<BPMN::Process>() ) {
-    // the process is instantiated whenever a message with this name is thrown
-    auto [ entry, inserted ] = processesTriggeredByMessage.emplace( extensionElements->messageDefinition->name, process );
-    if ( !inserted ) {
-      throw std::runtime_error("Model: message '" + BPMNOS::to_string(extensionElements->messageDefinition->name,STRING) + "' instantiates process '" + entry->second->id + "' and process '" + process->id + "'");
-    }
-  }
-
-  for ( auto& [_,content] : extensionElements->messageDefinition->contentMap ) {
-    Attribute* attribute = content->attribute;
-    auto parentExtension = parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-    if ( attribute->isGlobal ) {
-      throw std::runtime_error("Model: Message start event '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
-    }
-    else if ( attribute->category == Attribute::Category::DATA ) {
-      if ( !contains(parentExtension->data,attribute) && !contains(parentExtension->dataObjects,attribute) ) {
-        throw std::runtime_error("Model: Message start event '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "' which is not owned by the scope it starts");
-      }
-      // data attributes owned by event-subprocesses are considered immutable even if they are modified by the message start event
-    }
-    else if ( attribute->category == Attribute::Category::STATUS ) {
-      // status attributes owned by event-subprocesses are considered immutable even if they are modified by the message start event
-      if ( !contains(parentExtension->attributes,attribute) && !contains(parentExtension->statusObjects,attribute) ) {
-        attribute->isImmutable = false;
-      }
-    }
-  }
-  // bind attributes, restrictions, and operators to all event subprocesses
-  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
-}
-
-std::unique_ptr<BPMN::FlowNode> Model::createMessageBoundaryEvent(XML::bpmn::tBoundaryEvent* boundaryEvent, BPMN::Scope* parent) {
-  auto baseElement = BPMN::Model::createMessageBoundaryEvent(boundaryEvent,parent);
-  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(boundaryEvent,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent);
-  
-  if ( !extensionElements->messageDefinition ) {
-    throw std::runtime_error("Model: No message defined for message boundary event '" + baseElement->id + "'");
-  }
-
-  for ( auto& [_,content] : extensionElements->messageDefinition->contentMap ) {
-    Attribute* attribute = content->attribute;
-    if ( attribute->isGlobal ) {
-      throw std::runtime_error("Model: Message boundary event '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
-    }
-    else if ( attribute->category == Attribute::Category::DATA ) {
-      throw std::runtime_error("Model: Message boundary event '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "'");
-    }
-    attribute->isImmutable = false;
-  }
-  // bind attributes, restrictions, and operators to all event subprocesses
-  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
-}
-
-std::unique_ptr<BPMN::FlowNode> Model::createMessageCatchEvent(XML::bpmn::tCatchEvent* catchEvent, BPMN::Scope* parent) {
-  auto baseElement = BPMN::Model::createMessageCatchEvent(catchEvent,parent);
-  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(catchEvent,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent);
-  
-  if ( !extensionElements->messageDefinition ) {
-    throw std::runtime_error("Model: No message defined for message catch event '" + baseElement->id + "'");
-  }
-
-  for ( auto& [_,content] : extensionElements->messageDefinition->contentMap ) {
-    Attribute* attribute = content->attribute;
-    if ( attribute->isGlobal ) {
-      throw std::runtime_error("Model: Message catch event '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
-    }
-    else if ( attribute->category == Attribute::Category::DATA ) {
-      throw std::runtime_error("Model: Message catch event '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "'");
-    }
-    attribute->isImmutable = false;
-  }
-  // bind attributes, restrictions, and operators to all event subprocesses
-  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
-}
-
-std::unique_ptr<BPMN::FlowNode> Model::createMessageThrowEvent(XML::bpmn::tThrowEvent* throwEvent, BPMN::Scope* parent) {
-  auto baseElement = BPMN::Model::createMessageThrowEvent(throwEvent,parent);
-  auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(throwEvent,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent);
-
-  if ( !extensionElements->messageDefinition ) {
-    throw std::runtime_error("Model: No message defined for message throw event '" + baseElement->id + "'");
-  }
-
-  // bind message content
-  return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );
 }
 
 void Model::createMessageFlows() {

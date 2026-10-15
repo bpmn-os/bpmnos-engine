@@ -713,9 +713,9 @@ void Token::advanceToCompleted() {
     auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
     applyOperators( *extensionElements );
 
-    // the data the message content writes are announced by the update the operators notify, which names the same
-    // attributes, and here only if there are no operators
-    if ( node->represents<BPMN::MessageCatchEvent>() && extensionElements->operators.empty() ) {
+    // the data the content of a message or signal writes are announced by the update the operators notify, which
+    // names the same attributes, and here only if there are no operators
+    if ( ( node->represents<BPMN::MessageCatchEvent>() || node->represents<BPMN::SignalCatchEvent>() ) && extensionElements->operators.empty() ) {
       // the observers decide by the index of each attribute whether it concerns this instance or all of them
       owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdate.attributes ) );
     }
@@ -1414,11 +1414,8 @@ void Token::setSignalContent(ContentMap& sourceMap) {
     }
   }
 
+  // the data update is notified on completion
   const_cast<Engine*>(owner->systemState->engine)->addToObjective(objectiveChange);
-
-  // notify about data update
-  // the observers decide by the index of each attribute whether it concerns this instance or all of them
-  owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdate.attributes ) );
 }
 
 
