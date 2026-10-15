@@ -212,7 +212,8 @@ Node restrictions</h2>
 <div class="line">    &lt;/<span class="keywordtype">bpmnos:restrictions</span>&gt;</div>
 <div class="line">  &lt;/<span class="keywordtype">bpmnos:status</span>&gt;</div>
 <div class="line">&lt;/<span class="keywordtype">bpmn2:extensionElements</span>&gt;</div>
-</div><!-- fragment --><h2 class="doxsection"><a class="anchor" id="gatekeeper-restrictions"></a>
+</div><!-- fragment --><p>A restriction of scope <span class="tt">full</span> of a process or subprocess also applies to every node within it, at the entry, completion and exit of that node, and is evaluated against the status and data of that node. An error or compensate event subprocess and a compensation activity do not inherit the restrictions of the scopes enclosing them, so that a violation within those scopes does not prevent its handling; the nodes within such an event subprocess inherit its own restrictions of scope <span class="tt">full</span>.</p>
+<h2 class="doxsection"><a class="anchor" id="gatekeeper-restrictions"></a>
 Gatekeeper restrictions</h2>
 <p>Gatekeeper restrictions can be added to a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tSequenceFlow.html">sequence flow element</a> as shown in the following example.</p>
 <div class="fragment"><div class="line">&lt;<span class="keywordtype">bpmn2:extensionElements</span>&gt;</div>

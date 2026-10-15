@@ -1,5 +1,7 @@
 var NAVTREEINDEX12 =
 {
+"earliest_arrival_problem.html#process-earliestarrival_process":[6,0,0],
+"earliest_arrival_problem.html#startevent-startevent_1":[6,0,0,4],
 "earliest_arrival_problem.html#startevent-starteventtrip":[6,0,0,6],
 "earliest_arrival_problem.html#status-29":[6,0,0,1],
 "earliest_arrival_problem.html#status-30":[6,0,0,4,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX12 =
 "knapsack_problem.html#message-10":[6,2,0,7,2],
 "knapsack_problem.html#message-11":[6,2,0,15,2],
 "knapsack_problem.html#message-12":[6,2,0,17,2],
-"knapsack_problem.html#message-13":[6,2,0,19,2],
-"knapsack_problem.html#message-8":[6,2,0,3,3],
-"knapsack_problem.html#message-9":[6,2,0,5,2]
+"knapsack_problem.html#message-13":[6,2,0,19,2]
 };

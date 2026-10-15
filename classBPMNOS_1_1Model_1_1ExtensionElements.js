@@ -34,6 +34,7 @@ var classBPMNOS_1_1Model_1_1ExtensionElements =
     [ "exitDependencies", "classBPMNOS_1_1Model_1_1ExtensionElements.html#a469dcb783aa1c2c9d5257f97eab667ba", null ],
     [ "exitGuidance", "classBPMNOS_1_1Model_1_1ExtensionElements.html#a6a8320f42e7132f556200211cbc96212", null ],
     [ "hasSequentialPerformer", "classBPMNOS_1_1Model_1_1ExtensionElements.html#ae04e1a65fe94b5e99e22dfda38073d6b", null ],
+    [ "inheritedRestrictions", "classBPMNOS_1_1Model_1_1ExtensionElements.html#a32f1b1c37b4631caaed6b795df628d06", null ],
     [ "isInstantaneous", "classBPMNOS_1_1Model_1_1ExtensionElements.html#a56b118d3de86fdb678be9e734a715874", null ],
     [ "loopCardinality", "classBPMNOS_1_1Model_1_1ExtensionElements.html#a88fdef6b724036f26f05caaf25c11575", null ],
     [ "loopCondition", "classBPMNOS_1_1Model_1_1ExtensionElements.html#aa739219d1a80ab91ed57bd4cdd5dc9a5", null ],

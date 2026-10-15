@@ -26,16 +26,16 @@
 <text xml:space="preserve" text-anchor="start" x="4" y="-292" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text xml:space="preserve" text-anchor="start" x="16.25" y="-292" font-family="Helvetica,sans-Serif" font-size="10.00">restrictions</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-275.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-275.25" font-family="Helvetica,sans-Serif" font-size="10.00">operators</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-275.25" font-family="Helvetica,sans-Serif" font-size="10.00">inheritedRestrictions</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-258.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-258.5" font-family="Helvetica,sans-Serif" font-size="10.00">choices</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-258.5" font-family="Helvetica,sans-Serif" font-size="10.00">operators</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-241.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-241.75" font-family="Helvetica,sans-Serif" font-size="10.00">entryDependencies</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-241.75" font-family="Helvetica,sans-Serif" font-size="10.00">choices</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-225" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-225" font-family="Helvetica,sans-Serif" font-size="10.00">completionDependencies</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-225" font-family="Helvetica,sans-Serif" font-size="10.00">entryDependencies</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-208.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-208.25" font-family="Helvetica,sans-Serif" font-size="10.00">exitDependencies</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-191.5" font-family="Helvetica,sans-Serif" font-size="10.00">and 26 more...</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-208.25" font-family="Helvetica,sans-Serif" font-size="10.00">completionDependencies</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-191.5" font-family="Helvetica,sans-Serif" font-size="10.00">and 27 more...</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-174.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text xml:space="preserve" text-anchor="start" x="16.25" y="-174.75" font-family="Helvetica,sans-Serif" font-size="10.00">ExtensionElements()</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-158" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>

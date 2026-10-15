@@ -1,5 +1,7 @@
 var NAVTREEINDEX13 =
 {
+"knapsack_problem.html#message-8":[6,2,0,3,3],
+"knapsack_problem.html#message-9":[6,2,0,5,2],
 "knapsack_problem.html#name-acceptance":[6,2,0,5,2,0],
 "knapsack_problem.html#name-acceptance-1":[6,2,0,17,2,0],
 "knapsack_problem.html#name-rejection":[6,2,0,7,2,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX13 =
 "pickup_delivery_problem.html#globals-51":[6,6,0,11,2],
 "pickup_delivery_problem.html#globals-52":[6,6,0,12,2],
 "pickup_delivery_problem.html#globals-53":[6,6,0,13,2],
-"pickup_delivery_problem.html#globals-54":[6,6,0,14,2],
-"pickup_delivery_problem.html#globals-55":[6,6,0,15,2],
-"pickup_delivery_problem.html#globals-56":[6,6,0,16,2]
+"pickup_delivery_problem.html#globals-54":[6,6,0,14,2]
 };
