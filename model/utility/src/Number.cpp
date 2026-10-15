@@ -30,9 +30,11 @@ SharedData::SharedData(Data& data) {
 }
 
 void SharedData::add(Data& data) {
+  attributes.reserve(attributes.size() + data.attributes.size());
   for ( auto& value : data.attributes ) {
     attributes.push_back(value);
   }
+  objects.reserve(objects.size() + data.objects.size());
   for ( auto& object : data.objects ) {
     objects.push_back(object);
   }

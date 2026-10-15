@@ -113,6 +113,8 @@ template bool Guidance::restrictionsSatisfied<BPMNOS::Data>(const BPMNOS::Status
 
 template <typename DataType>
 void Guidance::apply(BPMNOS::Status& status, DataType& data) const {
+  // the status grows by the attributes of the guidance, so that it is reallocated once
+  status.attributes.reserve(status.attributes.size() + attributes.size());
 
   for ( auto& attribute : attributes ) {
     status.attributes.push_back( std::nullopt );

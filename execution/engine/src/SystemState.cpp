@@ -43,6 +43,7 @@ SystemState::SystemState(const Engine* engine, const Scenario* scenario, const S
   }
 
   // Copy messages sent from MessageThrowEvent, messages sent from SendTask are created when copying the associated Token
+  messages.reserve(other->messages.size());
   for (const auto& otherMessage : other->messages) {
     if (!otherMessage->waitingToken) {
       messages.push_back(std::make_shared<Message>(otherMessage.get()));

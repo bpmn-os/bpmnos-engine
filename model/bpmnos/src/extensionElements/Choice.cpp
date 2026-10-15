@@ -196,6 +196,8 @@ std::vector<BPMNOS::number> Choice::getEnumeration(const BPMNOS::Status& status,
   assert( !enumeration.empty() || multipleOf );  
   std::vector<BPMNOS::number> allowedValues;
   if ( !enumeration.empty() ) {
+    // at most one value per alternative
+    allowedValues.reserve(enumeration.size());
     for ( auto& alternative : enumeration ) {
       auto allowedValue = alternative->execute(status,data);
       if ( allowedValue.has_value() ) {

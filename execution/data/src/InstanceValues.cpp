@@ -34,9 +34,11 @@ InstanceValues::InstanceValues(
     }
     return dataProvider.getDefaultObject(object);
   };
+  status.objects.reserve(status.objects.size() + extensionElements->statusObjects.size());
   for ( auto& object : extensionElements->statusObjects ) {
     status.objects.push_back( objectOf(object.get()) );
   }
+  data.objects.reserve(data.objects.size() + extensionElements->dataObjects.size());
   for ( auto& object : extensionElements->dataObjects ) {
     data.objects.push_back( objectOf(object.get()) );
   }

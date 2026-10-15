@@ -150,6 +150,7 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
   }
 
   // Copy tokens
+  tokens.reserve(other->tokens.size());
   for (const auto& otherToken : other->tokens) {
     tokens.push_back(std::make_shared<Token>(const_cast<StateMachine*>(this), otherToken.get()));
 
@@ -356,12 +357,14 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
   }
 
   // Copy compensableSubProcesses (tokens owning compensable subprocesses)
+  compensableSubProcesses.reserve(other->compensableSubProcesses.size());
   for (const auto& otherToken : other->compensableSubProcesses) {
     compensableSubProcesses.push_back(std::make_shared<Token>(const_cast<StateMachine*>(this), otherToken.get()));
   }
 
   // Copy compensationEventSubProcesses, each with the copy of the token owning the subprocess it compensates as
   // parent token, so that it inherits the data of that subprocess
+  compensationEventSubProcesses.reserve(other->compensationEventSubProcesses.size());
   for (const auto& otherEventSubProcess : other->compensationEventSubProcesses) {
     auto it = std::ranges::find_if(other->compensableSubProcesses, [&](const auto& candidate) { return candidate.get() == otherEventSubProcess->parentToken; });
     assert( it != other->compensableSubProcesses.end() );
@@ -371,6 +374,7 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
 
   // Copy compensationTokens (at CompensateBoundaryEvent or CompensateStartEvent in BUSY state), the token at a
   // compensate start event being owned by the copy of its compensation event subprocess
+  compensationTokens.reserve(other->compensationTokens.size());
   for (const auto& otherToken : other->compensationTokens) {
     auto tokenOwner = const_cast<StateMachine*>(this);
     if ( otherToken->owner != other ) {
@@ -403,12 +407,14 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
   }
 
   // Copy event subprocesses (pending, interrupting, non-interrupting)
+  pendingEventSubProcesses.reserve(other->pendingEventSubProcesses.size());
   for (const auto& otherEventSubProcess : other->pendingEventSubProcesses) {
     pendingEventSubProcesses.push_back(std::make_shared<StateMachine>(systemState, parentToken, otherEventSubProcess.get(), this));
   }
   if (other->interruptingEventSubProcess) {
     interruptingEventSubProcess = std::make_shared<StateMachine>(systemState, parentToken, other->interruptingEventSubProcess.get(), this);
   }
+  nonInterruptingEventSubProcesses.reserve(other->nonInterruptingEventSubProcesses.size());
   for (const auto& otherEventSubProcess : other->nonInterruptingEventSubProcesses) {
     nonInterruptingEventSubProcesses.push_back(std::make_shared<StateMachine>(systemState, parentToken, otherEventSubProcess.get(), this));
   }
@@ -493,6 +499,7 @@ std::shared_ptr<StateMachine> StateMachine::createPendingEventSubProcess(const B
 
 void StateMachine::initiateEventSubprocesses(Token* token) {
 //std::cerr << "initiate " << scope->eventSubProcesses.size() << " eventSubprocesses for token at " << token->node->id << "/" << parentToken << "/" << token << " owned by " << token->owner << std::endl;
+  pendingEventSubProcesses.reserve(pendingEventSubProcesses.size() + scope->eventSubProcesses.size());
   for ( auto& eventSubProcess : scope->eventSubProcesses ) {
     pendingEventSubProcesses.push_back( createPendingEventSubProcess(eventSubProcess, token->status) );
   }
@@ -548,6 +555,9 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
 
   Token* tokenCopy = nullptr;
   size_t counter = 0;
+  // one token per instance
+  tokens.reserve(tokens.size() + valueMaps.size());
+  const_cast<SystemState*>(systemState)->tokensAtActivityInstance[token].reserve(valueMaps.size());
   for ( auto valueMap : valueMaps ) {
     counter++;
     // disambiguate instance id
@@ -833,6 +843,7 @@ void StateMachine::run(Status status) {
   assert( status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp].has_value() );
 
 //std::cerr << "Run " << scope->id << "/" << this << "/" << parentToken << std::endl;
+  tokens.reserve(tokens.size() + scope->startNodes.size());
   for ( auto startNode : scope->startNodes ) {
     tokens.push_back( std::make_shared<Token>(this,startNode,std::move(status)) );
     // the content object of the trigger of an instance is read by the operators of its start event
@@ -922,6 +933,8 @@ void StateMachine::compensateActivity(Token* token) {
 std::vector<Token*> StateMachine::createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows) {
   std::vector<Token*> tokenCopies;
   // create a token copy for each new destination
+  tokenCopies.reserve(sequenceFlows.size());
+  tokens.reserve(tokens.size() + sequenceFlows.size());
   for ( [[maybe_unused]] auto _ : sequenceFlows ) {
     tokens.push_back( std::make_shared<Token>( token ) );
     tokenCopies.push_back(tokens.back().get());
@@ -1258,6 +1271,7 @@ Tokens StateMachine::getCompensationTokens(const BPMN::Activity* activity) const
   if ( activity ) {
     // every completed instance of the activity is compensated, in particular every instance of a multi-instance
     // activity
+    result.reserve(compensationTokens.size());
     for ( auto& token : compensationTokens ) {
       if ( auto boundaryEvent = token->node->represents<BPMN::BoundaryEvent>() ) {
         // a token at a compensate boundary event compensates the activity the event is attached to

@@ -274,9 +274,12 @@ namespace {
 BPMNOS::Object::Layout layoutOf(const Schema& schema, const Schema& declared) {
   BPMNOS::Object::Layout layout;
   layout.scalar = schema.scalar;
+  layout.fields.reserve(schema.fields.size());
   for ( size_t k = 0; k < schema.fields.size(); k++ ) {
     layout.fields.push_back( BPMNOS::Object::Layout::Field{ schema.fields[k].first, 0, layoutOf(schema.fields[k].second, declared.fields[k].second) } );
   }
+  layout.dimensions.reserve(schema.dimensions.size());
+  layout.fixed.reserve(schema.dimensions.size());
   for ( size_t d = 0; d < schema.dimensions.size(); d++ ) {
     assert( schema.dimensions[d].has_value() );
     layout.dimensions.push_back( schema.dimensions[d].value() );
@@ -412,9 +415,11 @@ std::shared_ptr<const BPMNOS::Object> Schema::conform(const std::shared_ptr<cons
 Schema Schema::of(const BPMNOS::Object::Layout& layout, bool element) {
   Schema schema;
   schema.scalar = layout.scalar;
+  schema.fields.reserve(layout.fields.size());
   for ( auto& field : layout.fields ) {
     schema.fields.emplace_back( field.name, of(field.layout, element) );
   }
+  schema.dimensions.reserve(layout.dimensions.size());
   for ( size_t d = 0; d < layout.dimensions.size(); d++ ) {
     bool fixed = d < layout.fixed.size() && layout.fixed[d];
     // an element keeps every length but one still undetermined, whereas an object replaced keeps only the

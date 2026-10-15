@@ -534,7 +534,9 @@ template BPMNOS::number ExtensionElements::getObjective<BPMNOS::SharedData>(cons
 
 template <typename DataType>
 std::vector<std::pair<const Attribute*, BPMNOS::number>> ExtensionElements::getContributionsToObjective(const BPMNOS::Status& status, const DataType& data) const {
-  std::vector<std::pair<const Attribute*, BPMNOS::number>> contributions;  
+  std::vector<std::pair<const Attribute*, BPMNOS::number>> contributions;
+  // at most one contribution per attribute
+  contributions.reserve(attributes.size() + this->data.size());
   for ( auto& attribute : attributes ) {
     auto value = attributeRegistry.getValue(attribute.get(),status,data);
     if ( value.has_value() ) {

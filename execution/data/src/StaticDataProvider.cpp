@@ -320,11 +320,13 @@ std::shared_ptr<Event> StaticDataProvider::instantiate(const Scenario& scenario,
   BPMNOS::Status status( extensionElements->attributes.size() );
   auto timestampAttribute = extensionElements->attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp].get();
   status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = getInstanceValues(scenario, instance.id).at(timestampAttribute);
+  status.objects.reserve(extensionElements->statusObjects.size());
   for ( auto& object : extensionElements->statusObjects ) {
     status.objects.push_back( getDefaultObject(object.get()) );
   }
   BPMNOS::Data data( extensionElements->data.size() );
   data.attributes[BPMNOS::Model::ExtensionElements::Position::Instance] = BPMNOS::number(instance.id);
+  data.objects.reserve(extensionElements->dataObjects.size());
   for ( auto& object : extensionElements->dataObjects ) {
     data.objects.push_back( getDefaultObject(object.get()) );
   }

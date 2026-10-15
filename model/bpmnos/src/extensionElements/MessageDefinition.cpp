@@ -79,6 +79,7 @@ MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, const Attri
 template <typename DataType>
 BPMNOS::Values MessageDefinition::getSenderHeader(const AttributeRegistry& attributeRegistry, const BPMNOS::Status& status, const DataType& data, BPMNOS::number instance) const {
   BPMNOS::Values headerValues;
+  headerValues.reserve(header.size());
 
   for ( auto& [key,type] : header ) {
     if ( key == "sender" ) {
@@ -98,6 +99,7 @@ template  BPMNOS::Values MessageDefinition::getSenderHeader<BPMNOS::SharedData>(
 template <typename DataType>
 BPMNOS::Values MessageDefinition::getRecipientHeader(const AttributeRegistry& attributeRegistry, const BPMNOS::Status& status, const DataType& data, BPMNOS::number instance) const {
   BPMNOS::Values headerValues;
+  headerValues.reserve(header.size());
 
   for ( auto& [key,type] : header ) {
     if ( key == "recipient" ) {

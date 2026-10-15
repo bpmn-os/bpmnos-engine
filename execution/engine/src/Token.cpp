@@ -234,6 +234,8 @@ nlohmann::ordered_json Token::jsonify() const {
   };
 
   std::vector<Entry> statusEntries;
+  // at most one entry per attribute and object
+  statusEntries.reserve(attributeRegistry.statusAttributes.size() + attributeRegistry.statusObjects.size());
   for ( auto attribute : attributeRegistry.statusAttributes ) {
     // an attribute that is not yet included in the status is skipped
     if ( attribute->index < status.attributes.size() ) {
@@ -251,6 +253,9 @@ nlohmann::ordered_json Token::jsonify() const {
   // the global attributes and objects are reported apart from the data of the scopes
   std::vector<Entry> dataEntries;
   std::vector<Entry> globalEntries;
+  // at most one entry per attribute and object, each in one of the two
+  dataEntries.reserve(attributeRegistry.dataAttributes.size() + attributeRegistry.dataObjects.size());
+  globalEntries.reserve(attributeRegistry.dataAttributes.size() + attributeRegistry.dataObjects.size());
   for ( auto attribute : attributeRegistry.dataAttributes ) {
     // an attribute that is not yet included in the data is skipped
     if ( attribute->index < data->attributes.size() ) {
