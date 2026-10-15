@@ -119,6 +119,8 @@ Restrictions can be added to a @ref XML::bpmn::tProcess "process element" and an
 </bpmn2:extensionElements>
 ```
 
+A restriction of scope `full` of a process or subprocess also applies to every node within it, at the entry, completion and exit of that node, and is evaluated against the status and data of that node. An error or compensate event subprocess and a compensation activity do not inherit the restrictions of the scopes enclosing them, so that a violation within those scopes does not prevent its handling; the nodes within such an event subprocess inherit its own restrictions of scope `full`.
+
 ### Gatekeeper restrictions 
 Gatekeeper restrictions can be added to a @ref XML::bpmn::tSequenceFlow "sequence flow element" as shown in the following example.
 

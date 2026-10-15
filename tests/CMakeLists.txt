@@ -56,6 +56,7 @@ list(APPEND tests_SOURCES
   execution/signal/test.cpp
   execution/triggeredprocess/test.cpp
   execution/condition/test.cpp
+  execution/restriction/test.cpp
   execution/errorevent/test.cpp
   execution/escalationevent/test.cpp
   execution/message/test.cpp

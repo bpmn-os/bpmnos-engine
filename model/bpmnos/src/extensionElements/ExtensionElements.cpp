@@ -110,6 +110,45 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     }
   }
 
+  // error and compensate event subprocesses and compensation activities do not inherit restrictions, every other node
+  // inherits the full-scope restrictions of its parent and those its parent inherits, the parent being created first
+  auto inheritsRestrictions = [baseElement]() {
+    if ( auto activity = baseElement->is<XML::bpmn::tActivity>();
+      activity && activity->isForCompensation.has_value() && activity->isForCompensation.value().get().value
+    ) {
+      return false;
+    }
+    if ( auto subProcess = baseElement->is<XML::bpmn::tSubProcess>();
+      subProcess && subProcess->triggeredByEvent.has_value() && (bool)subProcess->triggeredByEvent->get().value
+    ) {
+      for ( XML::bpmn::tStartEvent& startEvent : subProcess->getChildren<XML::bpmn::tStartEvent>() ) {
+        for ( XML::bpmn::tEventDefinition& eventDefinition : startEvent.getChildren<XML::bpmn::tEventDefinition>() ) {
+          if ( eventDefinition.is<XML::bpmn::tErrorEventDefinition>() || eventDefinition.is<XML::bpmn::tCompensateEventDefinition>() ) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  };
+  if ( parent && inheritsRestrictions() ) {
+    assert( parent->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
+    auto parentExtensionElements = parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    inheritedRestrictions = parentExtensionElements->inheritedRestrictions;
+    for ( auto& restriction : parentExtensionElements->restrictions ) {
+      if ( restriction->scope == Restriction::Scope::FULL ) {
+        inheritedRestrictions.push_back(restriction.get());
+      }
+    }
+    for ( auto restriction : inheritedRestrictions ) {
+      for ( auto input : restriction->expression.inputs ) {
+        entryDependencies.insert(input);
+        completionDependencies.insert(input);
+        exitDependencies.insert(input);
+      }
+    }
+  }
+
   if ( !element ) return;
 
   // add message definition
@@ -178,28 +217,6 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
             exitDependencies.insert(input);
           }
         }
-      }
-    }
-
-    // recursively determine dependencies
-    auto ancestor = parent;
-    while ( ancestor ) {
-      if ( auto extensionElements = ancestor->extensionElements->represents<BPMNOS::Model::ExtensionElements>() ) {
-        for ( auto& restriction : extensionElements->restrictions ) {
-          for ( auto input : restriction->expression.inputs ) {
-            if ( restriction->scope == Restriction::Scope::FULL ) {
-              entryDependencies.insert(input);
-              completionDependencies.insert(input);
-              exitDependencies.insert(input);
-            }
-          }
-        }
-      }
-      if ( auto child = ancestor->represents<BPMN::ChildNode>() ) {
-        ancestor = child->parent;
-      }
-      else {
-        break;
       }
     }
 
@@ -435,35 +452,9 @@ template bool ExtensionElements::feasibleExit<BPMNOS::SharedData>(const BPMNOS::
 
 template <typename DataType>
 bool ExtensionElements::satisfiesInheritedRestrictions(const BPMNOS::Status& status, const DataType& data) const {
-  auto base = baseElement->represents<BPMN::ChildNode>();
-  
-  if ( !base ) return true;
-  
-  // check restrictions within ancestor scopes
-  const BPMN::Node* ancestor = base->parent;
-  while ( ancestor ) {
-    assert( ancestor->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-    if ( !ancestor->extensionElements->as<BPMNOS::Model::ExtensionElements>()->fullScopeRestrictionsSatisfied(status,data) ) {
+  for ( auto restriction : inheritedRestrictions ) {
+    if ( !restriction->isSatisfied(status,data) ) {
       return false;
-    }
-    if ( auto eventSubProcess = ancestor->represents<BPMN::EventSubProcess>();
-      eventSubProcess && 
-      ( eventSubProcess->startEvent->represents<BPMN::ErrorStartEvent>() || eventSubProcess->startEvent->represents<BPMN::CompensateStartEvent>() )
-    ) {
-      // error and compensate event subprocesses do not inherit restrictions
-      break;
-    }
-    else if ( auto activity = ancestor->represents<BPMN::Activity>();
-      activity && activity->isForCompensation
-    ) {
-      // compensation activities do not inherit restrictions
-      break;
-    }
-    else if ( auto child = ancestor->represents<BPMN::ChildNode>() ) {
-      ancestor = child->parent;
-    }
-    else {
-      break;
     }
   }
   return true;

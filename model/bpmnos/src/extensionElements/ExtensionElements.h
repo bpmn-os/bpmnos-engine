@@ -43,6 +43,11 @@ public:
   std::vector< std::unique_ptr<Attribute> > attributes; ///< Vector containing new scalar status attributes declared for the node.
   std::vector< std::unique_ptr<Attribute> > statusObjects; ///< Vector containing new status objects declared for the node.
   std::vector< std::unique_ptr<Restriction> > restrictions; ///< Vector containing new restrictions provided for the node.
+  /// The full-scope restrictions of the enclosing scopes the node is subject to, outermost first: those of its parent
+  /// and those its parent inherits, none for an error or compensate event subprocess or a compensation activity, which
+  /// do not inherit restrictions. Each is evaluated against the status and data of the node, which begin with those of
+  /// the scope declaring it.
+  std::vector< const Restriction* > inheritedRestrictions;
   std::vector< std::unique_ptr<Operator> > operators;
   std::vector< std::unique_ptr<Choice> > choices;
 
