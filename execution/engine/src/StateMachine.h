@@ -168,8 +168,6 @@ private:
   void completeCompensationEventSubProcess(); ///< Method handling the completion of a compensation event subprocess
   void advanceTokenWaitingForCompensation(Token* waitingToken); ///< Method advancing a token that was waiting for a compensation to be completed
   void compensate(Tokens compensations, Token* waitingToken); ///< Method compensating all activities in reverse order before the waiting token may advance
-
-  Token* findTokenAwaitingErrorBoundaryEvent(Token* activityToken); ///< Method finding the token at a boundary event catching an error thrown in activity 
 };
 
 

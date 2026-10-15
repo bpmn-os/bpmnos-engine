@@ -1122,16 +1122,6 @@ void StateMachine::handleFailure(Token* token) {
   engine->commands.emplace_back(std::bind(&Token::advanceToFailed,upperToken), upperToken);
 }
 
-Token* StateMachine::findTokenAwaitingErrorBoundaryEvent(Token* activityToken) {
-  auto& tokensAwaitingBoundaryEvent = const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[activityToken];
-  for ( auto eventToken : tokensAwaitingBoundaryEvent) {
-    if ( eventToken->node->represents<BPMN::ErrorBoundaryEvent>() ) {
-      return eventToken;
-    }
-  }
-  return nullptr;
-}
-
 void StateMachine::attemptGatewayActivation(const BPMN::FlowNode* node) {
   if ( node->represents<BPMN::ParallelGateway>() ) {
 
