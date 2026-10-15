@@ -90,7 +90,7 @@ bool LocalEvaluator::updateValues(MessageDeliveryDecision* decision, Status& sta
   assert( dynamic_cast<const MessageDeliveryEvent*>(decision) );
   auto message = static_cast<const MessageDeliveryEvent*>(decision)->message.lock();
   // the operators of the catching node read the content object of the message, as they do when it is delivered
-  auto content = message->content;
+  auto content = message->content.object;
   extensionElements->applyOperators(status,data,&content);
 
   // check feasibility

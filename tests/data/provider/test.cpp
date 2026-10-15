@@ -354,7 +354,7 @@ public:
     }
     if ( !scenario.signalRaised && systemState->getTime() >= signalTime ) {
       scenario.signalRaised = true;
-      queue.push_back(std::make_shared<Execution::SignalBroadcastEvent>(Execution::Signal(BPMNOS::to_number(std::string("Signal"),STRING), signalContent)));
+      queue.push_back(std::make_shared<Execution::SignalBroadcastEvent>(Execution::Signal(Execution::Content{ BPMNOS::to_number(std::string("Signal"),STRING), signalContent })));
       return;
     }
     if ( systemState->getTime() >= terminationTime ) {

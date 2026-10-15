@@ -219,7 +219,7 @@ protected:
   /// content object of the trigger is handed to the start event of the instance, whose operators read it.
   /// The trigger being the condition for the start, the instance is started at once rather than upon a
   /// @ref ReadyEvent.
-  void triggerInstance(const BPMN::Process* process, std::shared_ptr<const BPMNOS::Object> content);
+  void triggerInstance(const BPMN::Process* process, Content content);
 
   /// @brief Method creating an instance of a process from the message triggering it, and consuming that
   /// message.

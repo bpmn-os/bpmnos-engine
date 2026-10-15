@@ -7,7 +7,7 @@
 #include <bpmn++.h>
 #include "Observable.h"
 #include "model/utility/src/Value.h"
-#include "model/utility/src/Object.h"
+#include "Content.h"
 #include "model/bpmnos/src/extensionElements/AttributeRegistry.h"
 #include <nlohmann/json.hpp>
 
@@ -32,7 +32,7 @@ public:
   Token* waitingToken;
   std::optional< BPMNOS::number > recipient;
   BPMNOS::Values header;
-  std::shared_ptr<const BPMNOS::Object> content; ///< The content object the operators of the sender wrote, shared until written
+  Content content; ///< The name of the message and the content object the operators of the sender wrote, shared until written
 
   bool matches(const BPMNOS::Values& otherHeader) const; ///< Returns true if headers have the same size and all values that are defined are the same.
 

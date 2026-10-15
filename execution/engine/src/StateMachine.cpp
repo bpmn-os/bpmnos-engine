@@ -15,6 +15,7 @@
 #include "bpmn++.h"
 #include <cassert>
 #include <ranges>
+#include <utility>
 
 using namespace BPMNOS::Execution;
 
@@ -808,7 +809,7 @@ void StateMachine::run(Status status) {
   for ( auto startNode : scope->startNodes ) {
     tokens.push_back( std::make_shared<Token>(this,startNode,std::move(status)) );
     // the content object of the trigger of an instance is read by the operators of its start event
-    tokens.back()->content = std::move(parentToken->content);
+    tokens.back()->content = std::exchange(parentToken->content, std::nullopt);
   }
 
   for ( auto token : tokens ) {

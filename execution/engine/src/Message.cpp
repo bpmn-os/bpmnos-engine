@@ -32,9 +32,9 @@ Message::Message(Token* token)
     recipient = header[ BPMNOS::Model::MessageDefinition::Index::Recipient ].value();
   }
 
-  // the content object the operators of the sender wrote
-  assert( token->content );
-  content = token->content;
+  // the name of the message and the content object the operators of the sender wrote
+  assert( token->content && token->content->object );
+  content = token->content.value();
 }
 
 bool Message::matches(const BPMNOS::Values& otherHeader) const {
@@ -58,7 +58,7 @@ nlohmann::ordered_json Message::jsonify() const {
   jsonObject["state"] = stateName[(int)state];
 
   auto messageDefinition = origin->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getMessageDefinition();
-  jsonObject["name"] = BPMNOS::to_string(messageDefinition->name,STRING);
+  jsonObject["name"] = BPMNOS::to_string(content.name,STRING);
   size_t i = 0;
   for ( auto& [key,type] : messageDefinition->header ) {
     if ( !header[i].has_value() ) {
@@ -73,7 +73,7 @@ nlohmann::ordered_json Message::jsonify() const {
   }
 
   // the content object is rendered as JSON, its fields being named as the type of the message names them
-  jsonObject["content"] = BPMNOS::to_json(*content);
+  jsonObject["content"] = BPMNOS::to_json(*content.object);
 
   return jsonObject;
 }

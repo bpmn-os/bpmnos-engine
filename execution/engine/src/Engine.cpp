@@ -189,7 +189,7 @@ void Engine::broadcastSignal(Signal signal) {
   // rather than what it causes
   notify(&signal);
 
-  auto& waitingTokens = systemState->tokensAwaitingSignal[signal.name];
+  auto& waitingTokens = systemState->tokensAwaitingSignal[signal.content.name];
   for ( auto& [token_ptr] : waitingTokens ) {
     auto token = token_ptr.lock();
     assert( token );
@@ -203,14 +203,14 @@ void Engine::broadcastSignal(Signal signal) {
 
   // instantiate the process the signal triggers, if any
   auto& processesTriggeredBySignal = model->processesTriggeredBySignal;
-  if ( auto it = processesTriggeredBySignal.find(signal.name); it != processesTriggeredBySignal.end() ) {
+  if ( auto it = processesTriggeredBySignal.find(signal.content.name); it != processesTriggeredBySignal.end() ) {
     // the instantiation is enqueued rather than performed here, so that a process throwing the signal
     // instantiating it does not recurse through the stack of the broadcast
     commands.emplace_back( std::bind(&Engine::triggerInstance, this, it->second, signal.content) );
   }
 }
 
-void Engine::triggerInstance(const BPMN::Process* process, std::shared_ptr<const BPMNOS::Object> content) {
+void Engine::triggerInstance(const BPMN::Process* process, Content content) {
   // the identifier is generated, an instance created by a trigger being declared nowhere
   auto counter = ++systemState->instantiationCounter[process];
   auto instanceId = process->id + StateMachine::delimiters[1] + std::to_string(counter);

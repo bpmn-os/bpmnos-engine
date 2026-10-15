@@ -1334,15 +1334,17 @@ void Token::applyOperators(const BPMNOS::Model::ExtensionElements& extensionElem
   assert( status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] == owner->systemState->getTime() );
 
   if ( extensionElements.content && node->represents<BPMN::ThrowEvent>() ) {
-    // the content object a throwing node sends is written from an undefined object of its type
-    content = extensionElements.content->schema->undefinedObject();
+    // the content a throwing node sends is named by its definition, and its object is written from an undefined
+    // object of its type
+    auto name = node->represents<BPMN::MessageThrowEvent>() ? extensionElements.messageDefinition->name : extensionElements.signalDefinition->name;
+    content = Content{ name, extensionElements.content->schema->undefinedObject() };
   }
 
   if ( extensionElements.operators.empty() ) {
     return;
   }
 
-  const_cast<Engine*>(owner->systemState->engine)->addToObjective( extensionElements.applyOperators(status, *data, &content) );
+  const_cast<Engine*>(owner->systemState->engine)->addToObjective( extensionElements.applyOperators(status, *data, content ? &content->object : nullptr) );
 
   // notify about data update
   // the observers decide by the index of each attribute whether it concerns this instance or all of them
@@ -1350,13 +1352,13 @@ void Token::applyOperators(const BPMNOS::Model::ExtensionElements& extensionElem
 }
 
 void Token::emitSignal() {
-  auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+  [[maybe_unused]] auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert( extensionElements->signalDefinition );
 
   // the content object the operators wrote is fixed before the signal is received anywhere, a recipient writing
   // it copying it
-  assert( content );
-  Signal signal( extensionElements->signalDefinition->name, std::move(content) );
+  assert( content && content->name == extensionElements->signalDefinition->name );
+  Signal signal( std::move(content.value()) );
   content.reset();
 
   // the broadcast is enqueued so that token advances already scheduled are made before the signal is
