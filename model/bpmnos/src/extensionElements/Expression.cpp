@@ -521,8 +521,11 @@ std::optional<double> Expression::execute(const BPMNOS::Status& status, const Da
     return (double)value.has_value();
   }
 
+  // the number of values is fixed by the expression, so that each vector is allocated once
   std::vector<double> variableValues;
+  variableValues.reserve(variables.size());
   std::vector<const BPMNOS::Object*> pathObjects;
+  pathObjects.reserve(paths.size());
   if ( !setValues(status, data, variableValues, pathObjects, false) ) {
     // return nullopt because a required value is not given
     return std::nullopt;
@@ -577,8 +580,11 @@ bool Expression::setValues(const BPMNOS::Status& status, const DataType& data, s
 template <typename DataType>
 void Expression::writeToObject(BPMNOS::Status& status, DataType& data) const {
   assert( objectTarget );
+  // the number of values is fixed by the expression, so that each vector is allocated once
   std::vector<double> variableValues;
+  variableValues.reserve(variables.size());
   std::vector<const BPMNOS::Object*> pathObjects;
+  pathObjects.reserve(paths.size());
   if ( !setValues(status, data, variableValues, pathObjects, true) ) {
     throw std::runtime_error("Expression: '" + expression + "' reads an array without a value");
   }
