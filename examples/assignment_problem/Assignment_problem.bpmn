@@ -27,8 +27,8 @@ and the total cost that of all assignment is minimised.</bpmn2:documentation>
       <bpmn2:documentation>The task creates a message containing the instance identifier of the client and waits until the message is delivered to a server.</bpmn2:documentation>
       <bpmn2:extensionElements>
         
-          <bpmnos:message name="Message">
-            <bpmnos:content key="ClientId" attribute="instance" />
+          <bpmnos:message name="Message" type="{ client_id: string }">
+            <bpmnos:content key="client_id" attribute="instance" />
           </bpmnos:message>
         
       </bpmn2:extensionElements>
@@ -63,8 +63,8 @@ and the total cost that of all assignment is minimised.</bpmn2:documentation>
       <bpmn2:documentation>The task waits for a message from a client. When the message is received, it looks up the cost of the assignment in the table `costs.csv` and sets the `cost` attribute accordingly.</bpmn2:documentation>
       <bpmn2:extensionElements>
         
-          <bpmnos:message name="Message">
-            <bpmnos:content key="ClientId" attribute="client" />
+          <bpmnos:message name="Message" type="{ client_id: string }">
+            <bpmnos:content key="client_id" attribute="client" />
           </bpmnos:message>
         
         <bpmnos:status>

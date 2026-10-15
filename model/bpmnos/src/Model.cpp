@@ -443,6 +443,22 @@ void Model::createMessageFlows() {
   }
 
   validateTriggeringMessages();
+  validateSignals();
+}
+
+void Model::validateSignals() {
+  // every thrower and catcher of a signal agree on its type, the first one found standing for all of them
+  std::unordered_map< BPMNOS::number, const BPMN::FlowNode* > firstSignalEvents;
+  for ( auto& process : processes ) {
+    for ( auto node : process->find_all( [](const BPMN::Node* node) { return node->represents<BPMN::SignalCatchEvent>() || node->represents<BPMN::SignalThrowEvent>(); } ) ) {
+      auto signalEvent = node->as<BPMN::FlowNode>();
+      auto extensionElements = signalEvent->extensionElements->as<ExtensionElements>();
+      auto [ entry, inserted ] = firstSignalEvents.emplace( extensionElements->signalName, signalEvent );
+      if ( !inserted && !extensionElements->signalSchema.agrees( entry->second->extensionElements->as<ExtensionElements>()->signalSchema ) ) {
+        throw std::runtime_error("Model: signal '" + BPMNOS::to_string(extensionElements->signalName,STRING) + "' of '" + entry->second->id + "' and of '" + signalEvent->id + "' must have the same type");
+      }
+    }
+  }
 }
 
 void Model::validateTriggeringMessages() {
@@ -455,7 +471,7 @@ void Model::validateTriggeringMessages() {
   // states about a message and what the engine does with it the same thing. They are checked here because
   // this is the first point at which every process has been read.
 
-  // the standard keys "name", "sender", and "recipient" every message definition holds
+  // the standard keys "sender" and "recipient" every message definition holds
   constexpr size_t standardHeaderKeys = size_t(MessageDefinition::Index::Recipient) + 1;
 
   for ( auto& process : processes ) {
@@ -633,6 +649,10 @@ void Model::createMessageCandidates( BPMN::Process* sendingProcess, BPMN::FlowNo
   if ( messageMayBeCaught(sendingProcess, throwingMessageEvent, receivingProcess, catchingMessageEvent) &&
     messageMayBeThrown(sendingProcess, throwingMessageEvent, receivingProcess, catchingMessageEvent)
   ) {
+    // a sender and a receiver that may exchange a message agree on its type
+    if ( !outgoingMessageDefinition->schema.agrees(incomingMessageDefinition->schema) ) {
+      throw std::runtime_error("Model: message '" + BPMNOS::to_string(outgoingMessageDefinition->name,STRING) + "' sent by '" + throwingMessageEvent->id + "' and received by '" + catchingMessageEvent->id + "' must have the same type");
+    }
     // a key the sender and the recipient both declare is an object on both sides or on neither; whether the
     // shapes fit is only known when the message is delivered, the sizes depending on the instance data
     for ( auto& [key,sent] : outgoingMessageDefinition->contentMap ) {

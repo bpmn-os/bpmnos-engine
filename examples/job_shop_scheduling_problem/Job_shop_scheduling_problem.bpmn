@@ -62,10 +62,10 @@
       <bpmn2:sendTask id="SendJobTask" name="Send job request">
         <bpmn2:extensionElements>
           
-            <bpmnos:message name="Request">
+            <bpmnos:message name="Request" type="{ order: string, duration: decimal }">
               <bpmnos:parameter name="machine" value="machine" />
-              <bpmnos:content key="Order" attribute="instance" />
-              <bpmnos:content key="Duration" attribute="duration" />
+              <bpmnos:content key="order" attribute="instance" />
+              <bpmnos:content key="duration" attribute="duration" />
             </bpmnos:message>
           
         </bpmn2:extensionElements>
@@ -136,10 +136,10 @@
       <bpmn2:sequenceFlow id="Flow_0d3x89n" sourceRef="AdHocSubProcess" targetRef="ThrowCompletionMessage" />
       <bpmn2:startEvent id="CatchRequestMessage" name="Job request" isInterrupting="false">
         <bpmn2:extensionElements>
-          <bpmnos:message name="Request">
+          <bpmnos:message name="Request" type="{ order: string, duration: decimal }">
             <bpmnos:parameter name="machine" value="machine" />
-            <bpmnos:content key="Duration" attribute="duration" />
-            <bpmnos:content key="Order" attribute="order" />
+            <bpmnos:content key="duration" attribute="duration" />
+            <bpmnos:content key="order" attribute="order" />
           </bpmnos:message>
           <bpmnos:status>
             <bpmnos:operators>

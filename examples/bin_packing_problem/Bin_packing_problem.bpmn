@@ -32,9 +32,9 @@ I the stochastic case, where actual item size is only revaled when handling the 
     <bpmn2:sendTask id="RequestActivity" name="Request">
       <bpmn2:extensionElements>
         
-          <bpmnos:message name="Request">
-            <bpmnos:content key="Item" attribute="instance" />
-            <bpmnos:content key="Size" attribute="size" />
+          <bpmnos:message name="Request" type="{ item: string, size: decimal }">
+            <bpmnos:content key="item" attribute="instance" />
+            <bpmnos:content key="size" attribute="size" />
           </bpmnos:message>
         
         <bpmnos:status />
@@ -101,9 +101,9 @@ I the stochastic case, where actual item size is only revaled when handling the 
       </bpmn2:endEvent>
       <bpmn2:startEvent id="CatchRequestMessage" name="Request" isInterrupting="false">
         <bpmn2:extensionElements>
-          <bpmnos:message name="Request">
-            <bpmnos:content key="Item" attribute="item" />
-            <bpmnos:content key="Size" attribute="size" />
+          <bpmnos:message name="Request" type="{ item: string, size: decimal }">
+            <bpmnos:content key="item" attribute="item" />
+            <bpmnos:content key="size" attribute="size" />
           </bpmnos:message>
           <bpmnos:status>
             <bpmnos:operators>

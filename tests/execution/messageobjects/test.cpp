@@ -35,10 +35,10 @@ std::string messagingModel(const std::string& stopsType) {
     <bpmn2:sequenceFlow id="Flow_1" sourceRef="Start_1" targetRef="Throw_1" />
     <bpmn2:intermediateThrowEvent id="Throw_1">
       <bpmn2:extensionElements>
-        <bpmnos:message name="Message">
+        <bpmnos:message name="Message" type="{ route: integer[], depot: { x: decimal } }">
           <bpmnos:parameter name="recipient" value="&#34;Instance_2&#34;" />
-          <bpmnos:content key="Route" attribute="route" />
-          <bpmnos:content key="Depot" attribute="depot" />
+          <bpmnos:content key="route" attribute="route" />
+          <bpmnos:content key="depot" attribute="depot" />
         </bpmnos:message>
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_1</bpmn2:incoming>
@@ -85,9 +85,9 @@ std::string messagingModel(const std::string& stopsType) {
     <bpmn2:sequenceFlow id="Flow_4" sourceRef="Start_2" targetRef="Catch_2" />
     <bpmn2:intermediateCatchEvent id="Catch_2">
       <bpmn2:extensionElements>
-        <bpmnos:message name="Message">
-          <bpmnos:content key="Route" attribute="stops" />
-          <bpmnos:content key="Depot" attribute="place" />
+        <bpmnos:message name="Message" type="{ route: integer[], depot: { x: decimal } }">
+          <bpmnos:content key="route" attribute="stops" />
+          <bpmnos:content key="depot" attribute="place" />
         </bpmnos:message>
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_4</bpmn2:incoming>
@@ -192,20 +192,20 @@ TEST_CASE( "Content is applied to the receiving attribute", "[execution][message
 
   SECTION( "Text raised from outside the model states an array as a literal" ) {
     Execution::ContentMap::mapped_type content = std::string("[4, 5]");
-    Execution::receiveContent(registry, "Route", stops, &content, status, data);
+    Execution::receiveContent(registry, "route", stops, &content, status, data);
     REQUIRE( to_string(*status.objects[stops->index]) == "[ 4, 5 ]" );
   }
   SECTION( "Text that is no literal is refused for an object" ) {
     Execution::ContentMap::mapped_type content = std::string("4");
-    REQUIRE_THROWS_WITH( Execution::receiveContent(registry, "Route", stops, &content, status, data), Catch::Matchers::ContainsSubstring("is no literal") );
+    REQUIRE_THROWS_WITH( Execution::receiveContent(registry, "route", stops, &content, status, data), Catch::Matchers::ContainsSubstring("is no literal") );
   }
   SECTION( "A value is refused for an object" ) {
     Execution::ContentMap::mapped_type content = BPMNOS::Value(BPMNOS::number(4));
-    REQUIRE_THROWS_WITH( Execution::receiveContent(registry, "Route", stops, &content, status, data), Catch::Matchers::ContainsSubstring("a value is sent") );
+    REQUIRE_THROWS_WITH( Execution::receiveContent(registry, "route", stops, &content, status, data), Catch::Matchers::ContainsSubstring("a value is sent") );
   }
   SECTION( "An object the content does not mention keeps its value" ) {
     auto before = status.objects[stops->index];
-    Execution::receiveContent<BPMNOS::Data>(registry, "Route", stops, nullptr, status, data);
+    Execution::receiveContent<BPMNOS::Data>(registry, "route", stops, nullptr, status, data);
     REQUIRE( status.objects[stops->index] == before );
   }
 }
@@ -226,6 +226,6 @@ TEST_CASE( "The log shows the objects of message content as JSON", "[execution][
 
   auto messages = recorder.find(nlohmann::json{{"origin","Throw_1"}});
   REQUIRE( !messages.empty() );
-  REQUIRE( messages[0]["content"]["Route"] == nlohmann::ordered_json::array({ 1, 2 }) );
-  REQUIRE( messages[0]["content"]["Depot"] == nlohmann::ordered_json::parse(R"({ "x": 3.0 })") );
+  REQUIRE( messages[0]["content"]["route"] == nlohmann::ordered_json::array({ 1, 2 }) );
+  REQUIRE( messages[0]["content"]["depot"] ==nlohmann::ordered_json::parse(R"({ "x": 3.0 })") );
 }

@@ -32,6 +32,9 @@ struct Schema {
   bool isScalar() const { return scalar.has_value() && dimensions.empty(); }
   /// @brief Returns the text of the type in its canonical form.
   std::string stringify() const;
+  /// @brief Returns true if the schemas agree: they have the same scalar type or the same set of field names, each
+  /// field agreeing in turn, regardless of the order of the fields, and the same dimensions with the same sizes.
+  bool agrees(const Schema& other) const;
 
   /**
    * @brief Fixes the sizes a size declaration states, given as the text following the name of the attribute.

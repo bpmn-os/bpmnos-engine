@@ -198,26 +198,28 @@ Each condition constrains the values that may be chosen for the specified attrib
 ## Messages
 @ref BPMNOS::Model::MessageDefinition "Messages" can be used to exchange information by delivering a @ref BPMNOS::Model::ContentDefinition "content" from one process to another. 
 
-For @ref BPMN::MessageThrowEvent "message throw events" and @ref BPMN::MessageCatchEvent "message catch events" a `<bpmnos:message>` element must be provided with field `name` representing a name of the message.
+For @ref BPMN::MessageThrowEvent "message throw events" and @ref BPMN::MessageCatchEvent "message catch events" a `<bpmnos:message>` element must be provided with field `name` representing a name of the message and, if the message has content, field `type` stating the type of its content in the syntax of attribute types.
+The type is an object, `{ order: string, duration: decimal }`, a scalar type being refused; a single value is sent as the field of an object. A message without content states no type.
+Every sender and receiver that may exchange a message states the same type, two types being the same if they have the same fields, in any order, of the same types, at every depth, and the same dimensions with the same sizes; a model in which they differ is refused.
 Message definitions may contain one or more parameters defining a message header, where the `name` field represents a name for the header entry and the `value` field states the value held under it.
 The value states the name of a declared attribute, in which case the entry holds the value of that attribute and is of the type the attribute is declared with, or a quoted string, in which case the entry holds that string.
 Nothing else may be stated, so that the type of every entry is known when the model is read.
 A parameter that states no value at all is permitted and means that the entry holds no value, which every value held under that name matches.
-By default, every header contains entries with names `sender` and `recipient`, which hold instance identifiers, and an entry with name `name`, which holds the message name.
+By default, every header contains entries with names `sender` and `recipient`, which hold instance identifiers; the name of the message is no entry of the header, and a parameter named `name` is refused.
 Messages can only be delivered to a recipient if the recipient specifies the same message name as the sender, the entry names of the headers are identical, the entries of the same name are of the same type wherever both sender and recipient state one, and all header values match, i.e. either have the same value or one of both is undefined.
  
 Moreover, message definitions may contain one or more `<bpmnos:content>` element defining a message content.
 For each such element the following fields can be provided
-- `key`: a key allowing to refer to the content,
+- `key`: a key allowing to refer to the content, which must be a field of the message's type,
 - `attribute`: the attribute name containing the value to be added to the message content or the name of the attribute for which the value is set to the message content.
 
 The following shows an example of an outgoing message definition for a @ref BPMN::SendTask "send task" sending a message with name `Request` to a recipient that must also have a parameter named `machine` having the value of the `machine` attribute. The message content is populated with the values of the `instance` and `duration`  attributes.
 ```xml
 <bpmn2:extensionElements>
-  <bpmnos:message name="Request">
+  <bpmnos:message name="Request" type="{ order: string, duration: decimal }">
     <bpmnos:parameter name="machine" value="machine" />
-    <bpmnos:content key="Order" attribute="instance" />
-    <bpmnos:content key="Duration" attribute="duration" />
+    <bpmnos:content key="order" attribute="instance" />
+    <bpmnos:content key="duration" attribute="duration" />
   </bpmnos:message>
 </bpmn2:extensionElements>
 ```
@@ -225,10 +227,10 @@ The following shows an example of an outgoing message definition for a @ref BPMN
 The following shows an example of an incoming message definition for a @ref BPMN::MessageCatchEvent "message catch event" receiving a message with name `Request` from a sender that must also have a parameter named `machine` having the value of the `machine` attribute. The recipient attributes `order` and `duration` are set to the values of the respective message content.
 ```xml
 <bpmn2:extensionElements>
-  <bpmnos:message name="Request">
+  <bpmnos:message name="Request" type="{ order: string, duration: decimal }">
     <bpmnos:parameter name="machine" value="machine" />
-    <bpmnos:content key="Order" attribute="order" />
-    <bpmnos:content key="Duration" attribute="duration" />
+    <bpmnos:content key="order" attribute="order" />
+    <bpmnos:content key="duration" attribute="duration" />
   </bpmnos:message>
 </bpmn2:extensionElements>
 ```
@@ -245,15 +247,15 @@ The instance receives a generated identifier and is created with the content of 
 ## Signals
 Signals can be used to broadcast a @ref BPMNOS::Model::ContentDefinition "content" to whoever is listening for them.
 
-For @ref BPMN::SignalThrowEvent "signal throw events" and @ref BPMN::SignalCatchEvent "signal catch events" a `<bpmnos:signal>` element must be provided with field `name` representing a name of the signal, and it may contain one or more `<bpmnos:content>` elements defining the content the signal carries, each with the fields `key` and `attribute` that a message content has.
+For @ref BPMN::SignalThrowEvent "signal throw events" and @ref BPMN::SignalCatchEvent "signal catch events" a `<bpmnos:signal>` element must be provided with field `name` representing a name of the signal and, if the signal has content, field `type` stating the type of its content, an object as for a message; every thrower and catcher of a signal states the same type. It may contain one or more `<bpmnos:content>` elements defining the content the signal carries, each with the fields `key` and `attribute` that a message content has, the key being a field of the signal's type.
 
 A signal has no header and no parameters, and this is what distinguishes it from a message. A message is delivered to one recipient, which is chosen among those a message flow and a matching header admit; a signal is broadcast to every element waiting for a signal of that name at the moment it is thrown, and to none if nothing is waiting, in which case it is simply lost. It states no sender and no recipient, so a model that wants the thrower known declares it as part of the content, as the following example does.
 
 ```xml
 <bpmn2:extensionElements>
-  <bpmnos:signal name="Cancellation">
-    <bpmnos:content key="Origin" attribute="instance" />
-    <bpmnos:content key="Reason" attribute="reason" />
+  <bpmnos:signal name="Cancellation" type="{ origin: string, reason: string }">
+    <bpmnos:content key="origin" attribute="instance" />
+    <bpmnos:content key="reason" attribute="reason" />
   </bpmnos:signal>
 </bpmn2:extensionElements>
 ```

@@ -40,14 +40,14 @@
     <bpmn2:sendTask id="RequestActivity" name="Request">
       <bpmn2:extensionElements>
         
-          <bpmnos:message name="Request">
-            <bpmnos:content key="Quantity" attribute="quantity" />
-            <bpmnos:content key="Location" attribute="location" />
-            <bpmnos:content key="Customer" attribute="instance" />
-            <bpmnos:content key="HandlingDuration" attribute="handling_duration" />
-            <bpmnos:content key="EarliestVisit" attribute="earliest_visit" />
-            <bpmnos:content key="LatestVisit" attribute="latest_visit" />
-            <bpmnos:content key="LatenessPenaty" attribute="lateness_penalty" />
+          <bpmnos:message name="Request" type="{ quantity: decimal, location: string, customer: string, handling_duration: decimal, earliest_visit: decimal, latest_visit: decimal, lateness_penalty: decimal }">
+            <bpmnos:content key="quantity" attribute="quantity" />
+            <bpmnos:content key="location" attribute="location" />
+            <bpmnos:content key="customer" attribute="instance" />
+            <bpmnos:content key="handling_duration" attribute="handling_duration" />
+            <bpmnos:content key="earliest_visit" attribute="earliest_visit" />
+            <bpmnos:content key="latest_visit" attribute="latest_visit" />
+            <bpmnos:content key="lateness_penalty" attribute="lateness_penalty" />
           </bpmnos:message>
         
       </bpmn2:extensionElements>
@@ -178,13 +178,13 @@
       </bpmn2:extensionElements>
       <bpmn2:startEvent id="StartEventRequest" name="Request" isInterrupting="false">
         <bpmn2:extensionElements>
-          <bpmnos:message name="Request">
-            <bpmnos:content key="Quantity" attribute="quantity" />
-            <bpmnos:content key="Location" attribute="customer_location" />
-            <bpmnos:content key="Customer" attribute="customer" />
-            <bpmnos:content key="EarliestVisit" attribute="earliest_visit" />
-            <bpmnos:content key="LatestVisit" attribute="latest_visit" />
-            <bpmnos:content key="LatenessPenaty" attribute="lateness_penalty" />
+          <bpmnos:message name="Request" type="{ quantity: decimal, location: string, customer: string, handling_duration: decimal, earliest_visit: decimal, latest_visit: decimal, lateness_penalty: decimal }">
+            <bpmnos:content key="quantity" attribute="quantity" />
+            <bpmnos:content key="location" attribute="customer_location" />
+            <bpmnos:content key="customer" attribute="customer" />
+            <bpmnos:content key="earliest_visit" attribute="earliest_visit" />
+            <bpmnos:content key="latest_visit" attribute="latest_visit" />
+            <bpmnos:content key="lateness_penalty" attribute="lateness_penalty" />
           </bpmnos:message>
           <bpmnos:status>
             <bpmnos:operators>

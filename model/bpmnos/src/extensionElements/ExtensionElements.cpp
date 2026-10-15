@@ -276,8 +276,19 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
   if ( auto definition = element->getOptionalChild<XML::bpmnos::tSignal>(); definition.has_value() ) {
     signal = &definition->get();
     signalName = BPMNOS::to_number(signal->name.value.value,STRING);
+    // the content is an object, without fields if the signal states no type
+    if ( signal->type.has_value() ) {
+      signalSchema = Schema::parse(signal->type->get().value.value);
+      if ( signalSchema.isScalar() ) {
+        throw std::runtime_error("ExtensionElements: the type of signal '" + signal->name.value.value + "' must be an object");
+      }
+    }
     for ( XML::bpmnos::tContent& content : signal->content ) {
-      signalContentMap.emplace(content.key.value.value,std::make_unique<ContentDefinition>(&content,attributeRegistry));
+      auto& key = content.key.value.value;
+      if ( std::ranges::none_of(signalSchema.fields, [&key](auto& field) { return field.first == key; }) ) {
+        throw std::runtime_error("ExtensionElements: content '" + key + "' of signal '" + signal->name.value.value + "' is no field of its type");
+      }
+      signalContentMap.emplace(key,std::make_unique<ContentDefinition>(&content,attributeRegistry));
     }
     if ( baseElement->is<XML::bpmn::tCatchEvent>() ) {
       // add data attributes modified by signal content to dataUpdate

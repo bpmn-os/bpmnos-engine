@@ -65,6 +65,7 @@ public:
 
   XML::bpmnos::tSignal* signal; ///< The `<bpmnos:signal>` element the signal is declared by, or nullptr if the node declares none.
   BPMNOS::number signalName; ///< Name of the signal. Temporary: removed once a signal is declared by a named definition.
+  Schema signalSchema; ///< Type of the content of the signal, an object, without fields if the signal states no type. Temporary: removed once a signal is declared by a named definition.
   ContentDefinitionMap signalContentMap; ///< Content of the signal by key. Temporary: removed once the content of a signal is one object.
 
   std::vector< std::unique_ptr<Restriction> > conditions; ///< Vector containing the conditions of a conditional event.

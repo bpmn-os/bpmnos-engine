@@ -65,6 +65,7 @@ nlohmann::ordered_json Message::jsonify() const {
   jsonObject["state"] = stateName[(int)state];
 
   auto messageDefinition = origin->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getMessageDefinition();
+  jsonObject["name"] = BPMNOS::to_string(messageDefinition->name,STRING);
   size_t i = 0;
   for ( auto& [key,type] : messageDefinition->header ) {
     if ( !header[i].has_value() ) {

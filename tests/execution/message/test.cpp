@@ -35,7 +35,8 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
       AND_THEN( "The header of the message is reported with the type of each of its keys" ) {
         auto messageLog = recorder.find(nlohmann::json{{"origin", "MessageThrowEvent_1"},{"state", "CREATED"}});
         REQUIRE( messageLog.size() == 1 );
-        REQUIRE( messageLog[0]["header"]["name"] == "Message" );
+        REQUIRE( messageLog[0]["name"] == "Message" );
+        REQUIRE( !messageLog[0]["header"].contains("name") );
         REQUIRE( messageLog[0]["header"]["sender"] == "Instance_1" );
         REQUIRE( messageLog[0]["header"]["recipient"] == "Instance_2" );
         REQUIRE( messageLog[0]["header"]["time"] == "0" );

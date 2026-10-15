@@ -3,7 +3,9 @@
 #include "ExtensionElements.h"
 #include "model/bpmnos/src/xml/bpmnos/tContent.h"
 #include "model/utility/src/string_utility.h"
+#include <algorithm>
 #include <map>
+#include <stdexcept>
 
 using namespace BPMNOS::Model;
 
@@ -44,9 +46,16 @@ MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, const Attri
   : element(message)
   , name( BPMNOS::to_number(message->name.value.value,STRING) )
 {
-  header.resize(3);
-  // these hold the message name and the instance identifiers of the sending and the receiving token
-  header[ Index::Name ] = { "name", STRING };
+  // the content is an object, without fields if the message states no type
+  if ( message->type.has_value() ) {
+    schema = Schema::parse(message->type->get().value.value);
+    if ( schema.isScalar() ) {
+      throw std::runtime_error("MessageDefinition: the type of message '" + message->name.value.value + "' must be an object");
+    }
+  }
+
+  header.resize(2);
+  // these hold the instance identifiers of the sending and the receiving token
   header[ Index::Sender ] = { "sender", STRING };
   header[ Index::Recipient ] = { "recipient", STRING };
 
@@ -56,7 +65,11 @@ MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, const Attri
     auto& inserted = parameterMap.emplace(key,std::make_unique<Parameter>(&parameter,attributeRegistry)).first->second;
     auto type = getHeaderType(parameter,*inserted);
 
-    if ( key == "name" || key == "sender" || key == "recipient" ) {
+    if ( key == "name" ) {
+      // the name is the message's own and pairs senders and receivers
+      throw std::runtime_error("MessageDefinition: message '" + message->name.value.value + "' must not have a header parameter 'name'");
+    }
+    if ( key == "sender" || key == "recipient" ) {
       if ( type.has_value() && type.value() != STRING ) {
         throw std::runtime_error("MessageDefinition: header parameter '" + key + "' must state a string");
       }
@@ -70,7 +83,11 @@ MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, const Attri
   }
 
   for ( XML::bpmnos::tContent& content : element->content ) {
-    contentMap.emplace(content.key.value.value,std::make_unique<ContentDefinition>(&content,attributeRegistry));
+    auto& key = content.key.value.value;
+    if ( std::ranges::none_of(schema.fields, [&key](auto& field) { return field.first == key; }) ) {
+      throw std::runtime_error("MessageDefinition: content '" + key + "' of message '" + message->name.value.value + "' is no field of its type");
+    }
+    contentMap.emplace(key,std::make_unique<ContentDefinition>(&content,attributeRegistry));
   }
 }
 
@@ -79,10 +96,7 @@ BPMNOS::Values MessageDefinition::getSenderHeader(const AttributeRegistry& attri
   BPMNOS::Values headerValues;
 
   for ( auto& [key,type] : header ) {
-    if ( key == "name" ) {
-      headerValues.push_back( name );
-    }
-    else if ( key == "sender" ) {
+    if ( key == "sender" ) {
       headerValues.push_back( instance );
     }
     else {
@@ -101,10 +115,7 @@ BPMNOS::Values MessageDefinition::getRecipientHeader(const AttributeRegistry& at
   BPMNOS::Values headerValues;
 
   for ( auto& [key,type] : header ) {
-    if ( key == "name" ) {
-      headerValues.push_back( name );
-    }
-    else if ( key == "recipient" ) {
+    if ( key == "recipient" ) {
       headerValues.push_back( instance );
     }
     else {

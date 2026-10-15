@@ -19,8 +19,8 @@
     <bpmn2:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="SignalEvent_1" />
     <bpmn2:intermediateThrowEvent id="SignalEvent_1">
       <bpmn2:extensionElements>
-        <bpmnos:signal name="Signal">
-          <bpmnos:content key="Payload" attribute="payload" />
+        <bpmnos:signal name="Signal" type="{ payload: integer }">
+          <bpmnos:content key="payload" attribute="payload" />
         </bpmnos:signal>
         <bpmnos:status>
           <bpmnos:operators>
@@ -60,8 +60,8 @@
     <bpmn2:sequenceFlow id="Flow_3" sourceRef="StartEvent_2" targetRef="SignalEvent_2" />
     <bpmn2:intermediateCatchEvent id="SignalEvent_2">
       <bpmn2:extensionElements>
-        <bpmnos:signal name="Signal">
-          <bpmnos:content key="Payload" attribute="received" />
+        <bpmnos:signal name="Signal" type="{ payload: integer }">
+          <bpmnos:content key="payload" attribute="received" />
         </bpmnos:signal>
         <bpmnos:status>
           <bpmnos:operators>

@@ -33,7 +33,7 @@ SCENARIO( "Two processes with signal", "[execution][signal]" ) {
       AND_THEN( "The signal is recorded although nobody receives it" ) {
         auto signalLog = recorder.find(nlohmann::json{{"name","Signal"}});
         REQUIRE( signalLog.size() == 1 );
-        REQUIRE( !signalLog.front()["content"]["Emitter"].is_null() );
+        REQUIRE( !signalLog.front()["content"]["emitter"].is_null() );
       }
     }
 
@@ -65,7 +65,7 @@ SCENARIO( "Two processes with signal", "[execution][signal]" ) {
       AND_THEN( "The signal is recorded once, with the content it carries" ) {
         auto signalLog = recorder.find(nlohmann::json{{"name","Signal"}});
         REQUIRE( signalLog.size() == 1 );
-        REQUIRE( !signalLog.front()["content"]["Emitter"].is_null() );
+        REQUIRE( !signalLog.front()["content"]["emitter"].is_null() );
       }
     }
 
@@ -131,7 +131,7 @@ SCENARIO( "Two processes with signal", "[execution][signal]" ) {
       AND_THEN( "Each emitter records a signal of its own, the second reaching nobody" ) {
         auto signalLog = recorder.find(nlohmann::json{{"name","Signal"}});
         REQUIRE( signalLog.size() == 2 );
-        REQUIRE( signalLog.front()["content"]["Emitter"] != signalLog.back()["content"]["Emitter"] );
+        REQUIRE( signalLog.front()["content"]["emitter"] != signalLog.back()["content"]["emitter"] );
       }
     }
 

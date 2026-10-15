@@ -387,7 +387,7 @@ SCENARIO( "Signal raised by the environment", "[data][provider][signal]" ) {
     auto process = model->processes.back().get();
     REQUIRE( process->id == "Process_2" );
     Execution::ContentMap content;
-    content.emplace( "Emitter", std::string("World") );
+    content.emplace( "emitter", std::string("World") );
     auto dataProvider = std::make_shared<const ScriptedDataProvider>(model, process, "Instance_2", 2, content, 5);
 
     WHEN( "The environment raises the signal at time 2" ) {
@@ -415,13 +415,13 @@ SCENARIO( "Signal raised by the environment", "[data][provider][signal]" ) {
         REQUIRE( eventIndex.has_value() );
         REQUIRE( signalIndex.has_value() );
         REQUIRE( eventIndex.value() < signalIndex.value() );
-        REQUIRE( recorder.log[eventIndex.value()]["signal"]["content"]["Emitter"] == "World" );
+        REQUIRE( recorder.log[eventIndex.value()]["signal"]["content"]["emitter"] == "World" );
       }
 
       AND_THEN( "The signal is recorded like one thrown within the model" ) {
         auto signalLog = recorder.find(nlohmann::json{{"name","Signal"}});
         REQUIRE( signalLog.size() == 1 );
-        REQUIRE( signalLog.front()["content"]["Emitter"] == "World" );
+        REQUIRE( signalLog.front()["content"]["emitter"] == "World" );
       }
 
       AND_THEN( "The waiting token receives it at time 2" ) {

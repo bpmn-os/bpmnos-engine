@@ -76,6 +76,11 @@ public:
   /// within the process it instantiates.
   void validateTriggeringMessages();
 
+  /// @brief Validates that every thrower and catcher of a signal agree on its type.
+  ///
+  /// Called at the end of @ref createMessageFlows, this being the first point at which every process has been read.
+  void validateSignals();
+
   bool messageMayBeCaught( BPMN::Process* sendingProcess, BPMN::FlowNode* throwingMessageEvent, BPMN::Process* receivingProcess, BPMN::FlowNode* catchingMessageEvent );
   bool messageMayBeThrown( BPMN::Process* sendingProcess, BPMN::FlowNode* throwingMessageEvent, BPMN::Process* receivingProcess, BPMN::FlowNode* catchingMessageEvent );
   void createMessageCandidates( BPMN::Process* sendingProcess, BPMN::FlowNode* throwingMessageEvent, BPMN::Process* receivingProcess, BPMN::FlowNode* catchingMessageEvent );

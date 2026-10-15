@@ -128,19 +128,19 @@
     <bpmn2:sendTask id="RequestActivity" name="Request">
       <bpmn2:extensionElements>
         
-          <bpmnos:message name="Request">
-            <bpmnos:content key="Quantity" attribute="quantity" />
-            <bpmnos:content key="PickupLocation" attribute="pickup_location" />
-            <bpmnos:content key="DeliveryLocation" attribute="delivery_location" />
-            <bpmnos:content key="Customer" attribute="instance" />
-            <bpmnos:content key="PickupDuration" attribute="pickup_duration" />
-            <bpmnos:content key="EarliestPickup" attribute="earliest_pickup" />
-            <bpmnos:content key="LatestPickup" attribute="latest_pickup" />
-            <bpmnos:content key="DeliveryDuration" attribute="delivery_duration" />
-            <bpmnos:content key="EarliestDelivery" attribute="earliest_delivery" />
-            <bpmnos:content key="LatestDelivery" attribute="latest_delivery" />
-            <bpmnos:content key="LatePickupPenaty" attribute="late_pickup_penalty" />
-            <bpmnos:content key="LateDeliveryPenalty" attribute="late_delivery_penalty" />
+          <bpmnos:message name="Request" type="{ quantity: decimal, pickup_location: string, delivery_location: string, customer: string, pickup_duration: decimal, earliest_pickup: decimal, latest_pickup: decimal, delivery_duration: decimal, earliest_delivery: decimal, latest_delivery: decimal, late_pickup_penalty: decimal, late_delivery_penalty: decimal }">
+            <bpmnos:content key="quantity" attribute="quantity" />
+            <bpmnos:content key="pickup_location" attribute="pickup_location" />
+            <bpmnos:content key="delivery_location" attribute="delivery_location" />
+            <bpmnos:content key="customer" attribute="instance" />
+            <bpmnos:content key="pickup_duration" attribute="pickup_duration" />
+            <bpmnos:content key="earliest_pickup" attribute="earliest_pickup" />
+            <bpmnos:content key="latest_pickup" attribute="latest_pickup" />
+            <bpmnos:content key="delivery_duration" attribute="delivery_duration" />
+            <bpmnos:content key="earliest_delivery" attribute="earliest_delivery" />
+            <bpmnos:content key="latest_delivery" attribute="latest_delivery" />
+            <bpmnos:content key="late_pickup_penalty" attribute="late_pickup_penalty" />
+            <bpmnos:content key="late_delivery_penalty" attribute="late_delivery_penalty" />
           </bpmnos:message>
         
       </bpmn2:extensionElements>
@@ -185,19 +185,19 @@
       </bpmn2:extensionElements>
       <bpmn2:startEvent id="StartEventRequest" name="Request" isInterrupting="false">
         <bpmn2:extensionElements>
-          <bpmnos:message name="Request">
-            <bpmnos:content key="Quantity" attribute="quantity" />
-            <bpmnos:content key="PickupLocation" attribute="pickup_location" />
-            <bpmnos:content key="DeliveryLocation" attribute="delivery_location" />
-            <bpmnos:content key="Customer" attribute="customer" />
-            <bpmnos:content key="EarliestPickup" attribute="earliest_pickup" />
-            <bpmnos:content key="LatestPickup" attribute="latest_pickup" />
-            <bpmnos:content key="DeliveryDuration" attribute="delivery_duration" />
-            <bpmnos:content key="EarliestDelivery" attribute="earliest_delivery" />
-            <bpmnos:content key="LatestDelivery" attribute="latest_delivery" />
-            <bpmnos:content key="LatePickupPenaty" attribute="late_pickup_penalty" />
-            <bpmnos:content key="LateDeliveryPenalty" attribute="late_delivery_penalty" />
-            <bpmnos:content key="PickupDuration" attribute="pickup_duration" />
+          <bpmnos:message name="Request" type="{ quantity: decimal, pickup_location: string, delivery_location: string, customer: string, pickup_duration: decimal, earliest_pickup: decimal, latest_pickup: decimal, delivery_duration: decimal, earliest_delivery: decimal, latest_delivery: decimal, late_pickup_penalty: decimal, late_delivery_penalty: decimal }">
+            <bpmnos:content key="quantity" attribute="quantity" />
+            <bpmnos:content key="pickup_location" attribute="pickup_location" />
+            <bpmnos:content key="delivery_location" attribute="delivery_location" />
+            <bpmnos:content key="customer" attribute="customer" />
+            <bpmnos:content key="earliest_pickup" attribute="earliest_pickup" />
+            <bpmnos:content key="latest_pickup" attribute="latest_pickup" />
+            <bpmnos:content key="delivery_duration" attribute="delivery_duration" />
+            <bpmnos:content key="earliest_delivery" attribute="earliest_delivery" />
+            <bpmnos:content key="latest_delivery" attribute="latest_delivery" />
+            <bpmnos:content key="late_pickup_penalty" attribute="late_pickup_penalty" />
+            <bpmnos:content key="late_delivery_penalty" attribute="late_delivery_penalty" />
+            <bpmnos:content key="pickup_duration" attribute="pickup_duration" />
           </bpmnos:message>
           <bpmnos:status>
             <bpmnos:operators>

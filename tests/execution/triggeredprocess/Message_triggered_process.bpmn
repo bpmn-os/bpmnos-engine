@@ -22,8 +22,8 @@
     <bpmn2:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="ThrowEvent_1" />
     <bpmn2:endEvent id="ThrowEvent_1">
       <bpmn2:extensionElements>
-        <bpmnos:message name="Trigger">
-          <bpmnos:content key="Amount" attribute="amount" />
+        <bpmnos:message name="Trigger" type="{ amount: integer }">
+          <bpmnos:content key="amount" attribute="amount" />
         </bpmnos:message>
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_1</bpmn2:incoming>
@@ -52,8 +52,8 @@
     <bpmn2:sequenceFlow id="Flow_2" sourceRef="StartEvent_2" targetRef="SendTask_1" />
     <bpmn2:sendTask id="SendTask_1">
       <bpmn2:extensionElements>
-        <bpmnos:message name="Trigger">
-          <bpmnos:content key="Amount" attribute="amount" />
+        <bpmnos:message name="Trigger" type="{ amount: integer }">
+          <bpmnos:content key="amount" attribute="amount" />
         </bpmnos:message>
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_2</bpmn2:incoming>
@@ -85,8 +85,8 @@
     <bpmn2:sequenceFlow id="Flow_4" sourceRef="StartEvent_3" targetRef="MultiSendTask_1" />
     <bpmn2:sendTask id="MultiSendTask_1">
       <bpmn2:extensionElements>
-        <bpmnos:message name="Trigger">
-          <bpmnos:content key="Amount" attribute="index" />
+        <bpmnos:message name="Trigger" type="{ amount: integer }">
+          <bpmnos:content key="amount" attribute="index" />
         </bpmnos:message>
         <bpmnos:status>
           <bpmnos:attributes>
@@ -129,8 +129,8 @@
     <bpmn2:sequenceFlow id="Flow_6" sourceRef="StartEvent_4" targetRef="ThrowEvent_2" />
     <bpmn2:endEvent id="ThrowEvent_2">
       <bpmn2:extensionElements>
-        <bpmnos:message name="Other">
-          <bpmnos:content key="Amount" attribute="amount" />
+        <bpmnos:message name="Other" type="{ amount: integer }">
+          <bpmnos:content key="amount" attribute="amount" />
         </bpmnos:message>
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_6</bpmn2:incoming>
@@ -155,8 +155,8 @@
     </bpmn2:extensionElements>
     <bpmn2:startEvent id="MessageStartEvent">
       <bpmn2:extensionElements>
-        <bpmnos:message name="Trigger">
-          <bpmnos:content key="Amount" attribute="received" />
+        <bpmnos:message name="Trigger" type="{ amount: integer }">
+          <bpmnos:content key="amount" attribute="received" />
         </bpmnos:message>
         <bpmnos:status>
           <bpmnos:operators>

@@ -9,6 +9,7 @@
 #include <bpmn++.h>
 #include "Parameter.h"
 #include "ContentDefinition.h"
+#include "Schema.h"
 #include "model/utility/src/Value.h"
 #include "model/bpmnos/src/xml/bpmnos/tMessage.h"
 
@@ -19,6 +20,7 @@ public:
   MessageDefinition(XML::bpmnos::tMessage* message, const AttributeRegistry& attributeRegistry);
   XML::bpmnos::tMessage* element;
   BPMNOS::number name; ///< Message name
+  Schema schema; ///< The type of the content, an object, without fields if the message states no type
   ParameterMap parameterMap; ///< Map allowing to look up parameters by their names.
 
   /**
@@ -42,15 +44,15 @@ public:
     }
   };
 
-  std::vector< HeaderKey > header; ///< Keys of the header always beginning with "name", "sender", and "recipient"
-  enum Index { Name, Sender, Recipient };
+  std::vector< HeaderKey > header; ///< Keys of the header always beginning with "sender" and "recipient"
+  enum Index { Sender, Recipient };
   ContentDefinitionMap contentMap; ///< Map allowing to look up contents by their keys.
 
   template <typename DataType>
-  BPMNOS::Values getSenderHeader(const AttributeRegistry& attributeRegistry, const BPMNOS::Status& status, const DataType& data, BPMNOS::number instance) const; /// Returns a vector of values including message name, recipient, sender (the given instance), and all other header parameters
+  BPMNOS::Values getSenderHeader(const AttributeRegistry& attributeRegistry, const BPMNOS::Status& status, const DataType& data, BPMNOS::number instance) const; /// Returns a vector of values including sender (the given instance), recipient, and all other header parameters
 
   template <typename DataType>
-  BPMNOS::Values getRecipientHeader(const AttributeRegistry& attributeRegistry, const BPMNOS::Status& status, const DataType& data, BPMNOS::number instance) const; /// Returns a vector of values including message name, recipient (the given instance), sender, and all other header parameters
+  BPMNOS::Values getRecipientHeader(const AttributeRegistry& attributeRegistry, const BPMNOS::Status& status, const DataType& data, BPMNOS::number instance) const; /// Returns a vector of values including sender, recipient (the given instance), and all other header parameters
 private:
 
   template <typename DataType>

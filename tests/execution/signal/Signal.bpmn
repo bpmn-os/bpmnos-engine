@@ -27,8 +27,8 @@
     </bpmn2:endEvent>
     <bpmn2:intermediateThrowEvent id="SignalEvent_1">
       <bpmn2:extensionElements>
-        <bpmnos:signal name="Signal">
-          <bpmnos:content key="Emitter" attribute="instance" />
+        <bpmnos:signal name="Signal" type="{ emitter: string }">
+          <bpmnos:content key="emitter" attribute="instance" />
         </bpmnos:signal>
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_0zxeqac</bpmn2:incoming>
@@ -57,8 +57,8 @@
     <bpmn2:sequenceFlow id="Flow_0vfvthb" sourceRef="SignalEvent_2" targetRef="EndEvent_2" />
     <bpmn2:intermediateCatchEvent id="SignalEvent_2">
       <bpmn2:extensionElements>
-        <bpmnos:signal name="Signal">
-          <bpmnos:content key="Emitter" attribute="emitter" />
+        <bpmnos:signal name="Signal" type="{ emitter: string }">
+          <bpmnos:content key="emitter" attribute="emitter" />
         </bpmnos:signal>
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_0itql86</bpmn2:incoming>

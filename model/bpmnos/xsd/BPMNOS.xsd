@@ -110,6 +110,7 @@
   <xsd:element name="message" type="tMessage"/>
   <xsd:complexType name="tMessage">
     <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="type" type="xsd:string" use="optional"/>
     <xsd:sequence>
       <xsd:element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
@@ -121,6 +122,7 @@
   <xsd:element name="signal" type="tSignal"/>
   <xsd:complexType name="tSignal">
     <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="type" type="xsd:string" use="optional"/>
     <xsd:sequence>
       <xsd:element ref="content" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>

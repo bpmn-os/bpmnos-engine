@@ -20,8 +20,8 @@
     <bpmn2:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="ThrowEvent_1" />
     <bpmn2:endEvent id="ThrowEvent_1">
       <bpmn2:extensionElements>
-        <bpmnos:signal name="Trigger">
-          <bpmnos:content key="Amount" attribute="amount" />
+        <bpmnos:signal name="Trigger" type="{ amount: integer }">
+          <bpmnos:content key="amount" attribute="amount" />
         </bpmnos:signal>
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_1</bpmn2:incoming>
@@ -46,8 +46,8 @@
     </bpmn2:extensionElements>
     <bpmn2:startEvent id="SignalStartEvent">
       <bpmn2:extensionElements>
-        <bpmnos:signal name="Trigger">
-          <bpmnos:content key="Amount" attribute="received" />
+        <bpmnos:signal name="Trigger" type="{ amount: integer }">
+          <bpmnos:content key="amount" attribute="received" />
         </bpmnos:signal>
         <bpmnos:status>
           <bpmnos:operators>
@@ -81,8 +81,8 @@
     <bpmn2:sequenceFlow id="Flow_2" sourceRef="StartEvent_2" targetRef="ThrowEvent_2" />
     <bpmn2:endEvent id="ThrowEvent_2">
       <bpmn2:extensionElements>
-        <bpmnos:signal name="Other">
-          <bpmnos:content key="Amount" attribute="amount" />
+        <bpmnos:signal name="Other" type="{ amount: integer }">
+          <bpmnos:content key="amount" attribute="amount" />
         </bpmnos:signal>
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_2</bpmn2:incoming>

@@ -171,6 +171,20 @@ std::string Schema::stringify() const {
   return result;
 }
 
+bool Schema::agrees(const Schema& other) const {
+  if ( scalar != other.scalar || dimensions != other.dimensions || fields.size() != other.fields.size() ) {
+    return false;
+  }
+  // fields are matched by name, their order being irrelevant
+  for ( auto& [name, field] : fields ) {
+    auto it = std::find_if(other.fields.begin(), other.fields.end(), [&name](auto& candidate) { return candidate.first == name; });
+    if ( it == other.fields.end() || !field.agrees(it->second) ) {
+      return false;
+    }
+  }
+  return true;
+}
+
 void Schema::declareSizes(const std::string& steps) {
   Schema* node = this;
   size_t dimension = 0;
