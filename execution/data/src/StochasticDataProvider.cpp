@@ -157,14 +157,23 @@ void StochasticDataProvider::readValue(InstanceDataReader& reader, const Instanc
   auto& ready = row.cells[READY];
   auto& completion = row.cells[COMPLETION];
 
+  auto activity = row.node->represents<BPMN::Activity>();
   if ( !ready.empty() ) {
-    // the engine creates event subprocesses and compensation activities itself
-    auto activity = row.node->represents<BPMN::Activity>();
-    if ( !activity || row.node->represents<BPMN::EventSubProcess>() || activity->isForCompensation ) {
+    // the engine creates event subprocesses itself
+    if ( !activity || row.node->represents<BPMN::EventSubProcess>() ) {
       throw std::runtime_error("StochasticDataProvider: no ready expression may be given for '" + row.node->id + "'");
     }
     auto compiled = compileReadyExpression(row, ready);
+    if ( activity->isForCompensation && assignsTimestamp(*compiled) ) {
+      // a compensation activity becomes ready when compensation is triggered
+      throw std::runtime_error("StochasticDataProvider: the ready expression of compensation activity '" + row.node->id + "' must not assign the timestamp");
+    }
     readyExpressions[row.instanceId][row.node].push_back(std::move(compiled));
+  }
+
+  if ( activity && activity->isForCompensation && !disclosure.empty() ) {
+    // a compensation activity becomes ready when compensation is triggered, the disclosure of its scope having passed
+    throw std::runtime_error("StochasticDataProvider: no disclosure may be given for compensation activity '" + row.node->id + "'");
   }
 
   if ( !completion.empty() ) {

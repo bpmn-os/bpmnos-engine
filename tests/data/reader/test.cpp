@@ -128,15 +128,17 @@ SCENARIO( "Reading instance data", "[data][reader]" ) {
   }
 
   GIVEN( "A value for an attribute of a compensation activity" ) {
-    Model::Model compensationModel("tests/execution/compensationactivity/Compensation_task.bpmn");
+    Model::Model compensationModel("tests/execution/compensationactivity/Compensation_values.bpmn");
     std::string csv =
       "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
       "Instance_1; Process_1;\n"
-      "Instance_1; CompensationActivity_1; timestamp := 1\n"
+      "Instance_1; CompensationActivity_1; given := 2\n"
     ;
-    THEN( "The lookup of the attribute rejects it" ) {
+    THEN( "The lookup of the attribute accepts it, as for any activity" ) {
       Execution::InstanceDataReader reader(&compensationModel, csv, columns);
-      REQUIRE_THROWS( reader.lookupAttribute(reader.rows[1].node, reader.rows[1].initialization) );
+      auto [attribute, expression] = reader.lookupAttribute(reader.rows[1].node, reader.rows[1].initialization);
+      REQUIRE( attribute->name == "given" );
+      REQUIRE( expression == "2" );
     }
   }
 

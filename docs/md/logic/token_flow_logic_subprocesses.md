@@ -102,7 +102,7 @@ An (ad-hoc) subprocess also completes if an @ref BPMN::EventSubProcess "event su
 
 ## COMPLETED
 
-When a token at the (ad-hoc) subprocess with an @ref BPMN::EventSubProcess "event subprocess" with a @ref BPMN::CompensateStartEvent "compensate start event" reaches  @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state, a token is created at this start event.
+When a token at the (ad-hoc) subprocess with an @ref BPMN::EventSubProcess "event subprocess" with a @ref BPMN::CompensateStartEvent "compensate start event" reaches  @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state, the event subprocess comes into being and a token is created at this start event. The event subprocess inherits the status the subprocess completed with and the data of the subprocess at its completion, which remain as they were when the subprocess completed, and its own attributes take the values the model assigns to them. When compensation is triggered, the start event completes and the event subprocess proceeds.
 If the (ad-hoc) subprocess has a @ref BPMN::CompensateBoundaryEvent "compensate boundary event", a token is created at this boundary event.
 
 After completion, feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.

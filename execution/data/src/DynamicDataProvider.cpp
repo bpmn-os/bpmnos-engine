@@ -20,6 +20,11 @@ void DynamicDataProvider::readValue(InstanceDataReader& reader, const InstanceDa
   auto& disclosure = row.cells[DISCLOSURE];
   auto& nodeDisclosureTimes = disclosureTimes[row.instanceId];
 
+  if ( auto activity = row.node->represents<BPMN::Activity>(); activity && activity->isForCompensation && !disclosure.empty() ) {
+    // a compensation activity becomes ready when compensation is triggered, the disclosure of its scope having passed
+    throw std::runtime_error("DynamicDataProvider: no disclosure may be given for compensation activity '" + row.node->id + "'");
+  }
+
   // the disclosure time of a node is at least that of the scope containing it
   BPMNOS::number disclosureTime = 0;
   if ( auto childNode = row.node->represents<BPMN::ChildNode>() ) {

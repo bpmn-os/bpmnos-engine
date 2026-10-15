@@ -102,8 +102,8 @@ public:
    * model's initial value, or an object with undefined values in the sizes declared, an open dimension having no
    * elements.
    *
-   * This is also the value of the objects of the scopes the engine creates itself, event subprocesses,
-   * compensation activities and instances started by a trigger.
+   * This is also the value of the objects of the scopes the engine creates itself, event subprocesses and
+   * instances started by a trigger.
    */
   const std::shared_ptr<const BPMNOS::Object>& getDefaultObject(const BPMNOS::Model::Attribute* object) const;
 

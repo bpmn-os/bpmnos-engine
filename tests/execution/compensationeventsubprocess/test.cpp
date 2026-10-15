@@ -159,3 +159,75 @@ SCENARIO( "Recursive named compensations", "[execution][compensation]" ) {
   }
 }
 
+SCENARIO( "Compensation event subprocess of a subprocess with data", "[execution][compensation]" ) {
+  const std::string modelFile = "tests/execution/compensationeventsubprocess/Compensation_event_subprocess_snapshot.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "A single instance with no input values" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+    ;
+
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine(model);
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      Execution::Recorder recorder;
+      recorder.subscribe(&engine);
+      engine.run(std::move(scenario));
+      THEN( "The event subprocess comes into being with the status and data of the subprocess at its completion" ) {
+        auto completionLog = recorder.find(nlohmann::json{{"nodeId","CompensateStartEvent_1"},{"state","COMPLETED"}});
+        REQUIRE( completionLog.size() == 1 );
+        REQUIRE( completionLog[0]["status"]["timestamp"] == 10 );
+        REQUIRE( completionLog[0]["status"]["seen_kept"] == 4 );
+        REQUIRE( completionLog[0]["status"]["seen_stock"] == 0 );
+        REQUIRE( completionLog[0]["status"]["created"] == 0 );
+        REQUIRE( completionLog[0]["data"]["kept"] == 4 );
+        REQUIRE( completionLog[0]["data"]["stock"] == 7 );
+      }
+    }
+  }
+}
+
+
+SCENARIO( "Named compensation of a subprocess with a compensation event subprocess", "[execution][compensation]" ) {
+  const std::string modelFile = "tests/execution/compensationeventsubprocess/Named_compensation_event_subprocess.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "A single instance with no input values" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+    ;
+
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine(model);
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      Execution::Recorder recorder;
+      recorder.subscribe(&engine);
+      engine.run(std::move(scenario));
+      THEN( "The compensation event subprocess of the named subprocess is triggered" ) {
+        auto completionLog = recorder.find(nlohmann::json{{"state", "COMPLETED"}}, nlohmann::json{{"nodeId","StartEvent_1"}});
+        REQUIRE( completionLog[0]["nodeId"] == "StartEvent_2" );
+        REQUIRE( completionLog[1]["nodeId"] == "SubProcess_1" );
+        REQUIRE( completionLog[2]["nodeId"] == "CompensateStartEvent_1" );
+        REQUIRE( completionLog[3]["nodeId"] == "CompensateThrowEvent_1" );
+        REQUIRE( completionLog[4]["nodeId"] == nullptr );
+      }
+    }
+  }
+}

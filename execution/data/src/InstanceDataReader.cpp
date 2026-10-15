@@ -132,11 +132,10 @@ std::pair<std::string, std::string> InstanceDataReader::splitInitialization(cons
 }
 
 std::pair<const BPMNOS::Model::Attribute*, std::string> InstanceDataReader::lookupAttribute(const BPMN::Node* node, const std::string& initialization) const {
-  // the engine creates event subprocesses and compensation activities itself, with the values the model
-  // assigns to their attributes, so the data may give them none
-  auto activity = node->represents<BPMN::Activity>();
-  if ( node->represents<BPMN::EventSubProcess>() || ( activity && activity->isForCompensation ) ) {
-    throw std::runtime_error("InstanceDataReader: no values may be given for event subprocess or compensation activity '" + node->id + "'");
+  // the engine creates event subprocesses itself, with the values the model assigns to their attributes, so the
+  // data may give them none
+  if ( node->represents<BPMN::EventSubProcess>() ) {
+    throw std::runtime_error("InstanceDataReader: no values may be given for event subprocess '" + node->id + "'");
   }
 
   auto [attributeName, expression] = splitInitialization(initialization);

@@ -66,8 +66,8 @@ public:
   /**
    * @brief Method returning the attribute of the node an initialization gives a value to, and the expression.
    *
-   * It rejects a value for an event subprocess or a compensation activity, which the engine creates itself,
-   * for an attribute of a guidance, and for an attribute the model assigns a value to.
+   * It rejects a value for an event subprocess, which the engine creates itself, for an attribute of a guidance,
+   * and for an attribute the model assigns a value to.
    */
   std::pair<const BPMNOS::Model::Attribute*, std::string> lookupAttribute(const BPMN::Node* node, const std::string& initialization) const;
   /**

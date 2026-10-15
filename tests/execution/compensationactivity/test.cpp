@@ -372,12 +372,14 @@ SCENARIO( "Failing compensations of  multi instance activity", "[execution][comp
       engine.run(std::move(scenario));
       THEN( "The dump of each entry of the recorder log is correct" ) {
 //        REQUIRE_THROWS( engine.run(scenario.get()) );
-        auto compensationLog = recorder.find(nlohmann::json{{"nodeId","CompensationActivity_1"}});
-        REQUIRE( compensationLog[0]["state"] == "ENTERED" );
-        REQUIRE( compensationLog[1]["state"] == "BUSY" );
-        REQUIRE( compensationLog[2]["state"] == "FAILED" );
+        auto compensationLog = recorder.find(nlohmann::json{{"nodeId","CompensationActivity_1"},{"state",nullptr}});
+        REQUIRE( compensationLog[0]["state"] == "ARRIVED" );
+        REQUIRE( compensationLog[1]["state"] == "READY" );
+        REQUIRE( compensationLog[2]["state"] == "ENTERED" );
+        REQUIRE( compensationLog[3]["state"] == "BUSY" );
+        REQUIRE( compensationLog[4]["state"] == "FAILED" );
 
-        REQUIRE( compensationLog.size() == 3 );
+        REQUIRE( compensationLog.size() == 5 );
 
         auto failureLog = recorder.find(nlohmann::json{{"state","FAILED"}});
         REQUIRE( failureLog[0]["nodeId"] == "ErrorEvent_1" );
@@ -438,3 +440,122 @@ SCENARIO( "Two compensations triggered in reverse order", "[execution][compensat
   }
 }
 
+SCENARIO( "Values of a compensation activity", "[execution][compensation]" ) {
+  const std::string modelFile = "tests/execution/compensationactivity/Compensation_values.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  auto model = std::make_shared<const Model::Model>(modelFile);
+
+  auto run = [&](std::shared_ptr<Execution::DataProvider> dataProvider, const std::string& state = "") {
+    Execution::Engine engine(model);
+    Execution::InstantEntry entryHandler;
+    Execution::InstantExit exitHandler;
+    entryHandler.connect(&engine);
+    exitHandler.connect(&engine);
+    Execution::Recorder recorder;
+    recorder.subscribe(&engine);
+    engine.run(dataProvider->createScenario());
+    if ( state.empty() ) {
+      // the tokens only, not the ready event
+      return recorder.find(nlohmann::json{{"nodeId","CompensationActivity_1"},{"state",nullptr}});
+    }
+    return recorder.find(nlohmann::json{{"nodeId","CompensationActivity_1"},{"state",state}});
+  };
+
+  GIVEN( "Instance data giving a value to an attribute of the compensation activity" ) {
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+      "Instance_1; CompensationActivity_1; given := 2\n"
+    ;
+    auto log = run(std::make_shared<Execution::StaticDataProvider>(model, csv));
+    THEN( "The token arrives, becomes ready and enters when compensation is triggered" ) {
+      REQUIRE( log.size() >= 3 );
+      REQUIRE( log[0]["state"] == "ARRIVED" );
+      REQUIRE( log[1]["state"] == "READY" );
+      REQUIRE( log[2]["state"] == "ENTERED" );
+    }
+    THEN( "The compensation activity holds the status of the completion, the data and the time of the trigger, and the given value" ) {
+      auto& entered = log[2];
+      REQUIRE( entered["status"]["timestamp"] == 10 );
+      REQUIRE( entered["status"]["level"] == 5 );
+      REQUIRE( entered["status"]["seen_level"] == 5 );
+      REQUIRE( entered["status"]["seen_stock"] == 7 );
+      REQUIRE( entered["status"]["seen_time"] == 10 );
+      REQUIRE( entered["status"]["given"] == 2 );
+      REQUIRE( entered["status"]["sampled"].is_null() );
+    }
+  }
+
+  const std::string header = "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n";
+  const std::string process = "Instance_1; Process_1; timestamp := 0; ; ;\n";
+
+  GIVEN( "A ready expression of the compensation activity" ) {
+    auto enteredLog = run(std::make_shared<Execution::StochasticDataProvider>(model, header + process +
+      "Instance_1; CompensationActivity_1; given := 2; ; ;\n"
+      "Instance_1; CompensationActivity_1; ; ; sampled := given + 1;\n"
+    ), "ENTERED");
+    THEN( "The ready value is applied over the initial values" ) {
+      REQUIRE( enteredLog.size() == 1 );
+      REQUIRE( enteredLog[0]["status"]["timestamp"] == 10 );
+      REQUIRE( enteredLog[0]["status"]["given"] == 2 );
+      REQUIRE( enteredLog[0]["status"]["sampled"] == 3 );
+    }
+  }
+
+  GIVEN( "A ready expression assigning the timestamp of the compensation activity" ) {
+    THEN( "The data provider refuses it" ) {
+      REQUIRE_THROWS_WITH( std::make_shared<Execution::StochasticDataProvider>(model, header + process +
+        "Instance_1; CompensationActivity_1; ; ; timestamp := timestamp + 1;\n"
+      ), Catch::Matchers::ContainsSubstring("must not assign the timestamp") );
+    }
+  }
+
+  GIVEN( "A disclosure of the compensation activity" ) {
+    THEN( "The stochastic data provider refuses it" ) {
+      REQUIRE_THROWS_WITH( std::make_shared<Execution::StochasticDataProvider>(model, header + process +
+        "Instance_1; CompensationActivity_1; given := 2; 5; ;\n"
+      ), Catch::Matchers::ContainsSubstring("no disclosure may be given for compensation activity") );
+    }
+    THEN( "The dynamic data provider refuses it" ) {
+      REQUIRE_THROWS_WITH( std::make_shared<Execution::DynamicDataProvider>(model,
+        "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE\n"
+        "Instance_1; Process_1; timestamp := 0; 0\n"
+        "Instance_1; CompensationActivity_1; given := 2; 5\n"
+      ), Catch::Matchers::ContainsSubstring("no disclosure may be given for compensation activity") );
+    }
+  }
+}
+
+
+SCENARIO( "Named compensation of a multi-instance task", "[execution][compensation]" ) {
+  const std::string modelFile = "tests/execution/compensationactivity/Named_compensation_multi-instance_task.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "A single instance with no input values" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+    ;
+
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine(model);
+      Execution::InstantEntry entryHandler;
+      Execution::InstantExit exitHandler;
+      entryHandler.connect(&engine);
+      exitHandler.connect(&engine);
+      Execution::Recorder recorder;
+      recorder.subscribe(&engine);
+      engine.run(std::move(scenario));
+      THEN( "Every completed instance of the named activity is compensated" ) {
+        auto compensationLog = recorder.find(nlohmann::json{{"nodeId","CompensationActivity_1"},{"state", "COMPLETED"}});
+        REQUIRE( compensationLog.size() == 3 );
+        auto throwLog = recorder.find(nlohmann::json{{"nodeId","CompensateThrowEvent_1"},{"state", "COMPLETED"}});
+        REQUIRE( throwLog.size() == 1 );
+      }
+    }
+  }
+}

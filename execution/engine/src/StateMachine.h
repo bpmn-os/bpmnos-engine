@@ -132,7 +132,9 @@ private:
   void createCompensationTokenForBoundaryEvent(const BPMN::BoundaryEvent* compensateBoundaryEvent, BPMNOS::Status status); ///< Method creating a compensation token at a compensate boundary event of an activity
 //  void createCompensationTokenForEventSubProcess(const BPMN::EventSubProcess* compensationEventSubProcess, Token* token); ///< Method creating a compensation token at a compensation event subproces of an activity
 
-  void createCompensationEventSubProcess(const BPMN::EventSubProcess* eventSubProcess, BPMNOS::Status status); ///< Method creating the compensation event subproces of an activity
+  /// Method creating the compensation event subprocess of a completed subprocess, with the status the subprocess
+  /// completed with and, through the token owning the state machine of the completed subprocess, its data
+  void createCompensationEventSubProcess(const BPMN::EventSubProcess* eventSubProcess, BPMNOS::Status status, Token* compensableSubProcess);
 
 //  void createInterruptingEventSubprocess(const StateMachine* pendingEventSubProcess, const BPMNOS::Status& status); ///< Method creating the state machine for an interrupting event subprocess
 
@@ -144,7 +146,7 @@ private:
   void createMultiInstanceActivityTokens(Token* token); ///< Method creating tokens for multi-instance activities
   void deleteMultiInstanceActivityToken(Token* token); ///< Method creating tokens for multi-instance activities
   void deleteAdHocSubProcessToken(Token* token);
-  void compensateActivity(Token* token); ///< Method creating the compensation activity of an activity
+  void compensateActivity(Token* token); ///< Method moving the token of a triggered compensate boundary event to the compensation activity, where it awaits its ready event
 
   std::vector<Token*> createTokenCopies(Token* token, const std::vector<BPMN::SequenceFlow*>& sequenceFlows);
   void createMergedToken(const BPMN::FlowNode* gateway);
