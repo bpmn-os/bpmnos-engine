@@ -40,15 +40,18 @@
     <bpmn2:sendTask id="RequestActivity" name="Request">
       <bpmn2:extensionElements>
         
-          <bpmnos:message name="Request" type="{ quantity: decimal, location: string, customer: string, handling_duration: decimal, earliest_visit: decimal, latest_visit: decimal, lateness_penalty: decimal }">
-            <bpmnos:content key="quantity" attribute="quantity" />
-            <bpmnos:content key="location" attribute="location" />
-            <bpmnos:content key="customer" attribute="instance" />
-            <bpmnos:content key="handling_duration" attribute="handling_duration" />
-            <bpmnos:content key="earliest_visit" attribute="earliest_visit" />
-            <bpmnos:content key="latest_visit" attribute="latest_visit" />
-            <bpmnos:content key="lateness_penalty" attribute="lateness_penalty" />
-          </bpmnos:message>
+          <bpmnos:status>
+            <bpmnos:operators>
+              <bpmnos:operator id="Operator_RequestActivity_quantity" expression="Request.quantity := quantity" />
+              <bpmnos:operator id="Operator_RequestActivity_location" expression="Request.location := location" />
+              <bpmnos:operator id="Operator_RequestActivity_customer" expression="Request.customer := instance" />
+              <bpmnos:operator id="Operator_RequestActivity_handling_duration" expression="Request.handling_duration := handling_duration" />
+              <bpmnos:operator id="Operator_RequestActivity_earliest_visit" expression="Request.earliest_visit := earliest_visit" />
+              <bpmnos:operator id="Operator_RequestActivity_latest_visit" expression="Request.latest_visit := latest_visit" />
+              <bpmnos:operator id="Operator_RequestActivity_lateness_penalty" expression="Request.lateness_penalty := lateness_penalty" />
+            </bpmnos:operators>
+          </bpmnos:status>
+          <bpmnos:message name="Request" type="{ quantity: decimal, location: string, customer: string, handling_duration: decimal, earliest_visit: decimal, latest_visit: decimal, lateness_penalty: decimal }" />
         
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_03kr6t6</bpmn2:incoming>
@@ -178,16 +181,15 @@
       </bpmn2:extensionElements>
       <bpmn2:startEvent id="StartEventRequest" name="Request" isInterrupting="false">
         <bpmn2:extensionElements>
-          <bpmnos:message name="Request" type="{ quantity: decimal, location: string, customer: string, handling_duration: decimal, earliest_visit: decimal, latest_visit: decimal, lateness_penalty: decimal }">
-            <bpmnos:content key="quantity" attribute="quantity" />
-            <bpmnos:content key="location" attribute="customer_location" />
-            <bpmnos:content key="customer" attribute="customer" />
-            <bpmnos:content key="earliest_visit" attribute="earliest_visit" />
-            <bpmnos:content key="latest_visit" attribute="latest_visit" />
-            <bpmnos:content key="lateness_penalty" attribute="lateness_penalty" />
-          </bpmnos:message>
+          <bpmnos:message name="Request" type="{ quantity: decimal, location: string, customer: string, handling_duration: decimal, earliest_visit: decimal, latest_visit: decimal, lateness_penalty: decimal }" />
           <bpmnos:status>
             <bpmnos:operators>
+              <bpmnos:operator id="Operator_StartEventRequest_quantity" expression="quantity := Request.quantity" />
+              <bpmnos:operator id="Operator_StartEventRequest_location" expression="customer_location := Request.location" />
+              <bpmnos:operator id="Operator_StartEventRequest_customer" expression="customer := Request.customer" />
+              <bpmnos:operator id="Operator_StartEventRequest_earliest_visit" expression="earliest_visit := Request.earliest_visit" />
+              <bpmnos:operator id="Operator_StartEventRequest_latest_visit" expression="latest_visit := Request.latest_visit" />
+              <bpmnos:operator id="Operator_StartEventRequest_lateness_penalty" expression="lateness_penalty := Request.lateness_penalty" />
               <bpmnos:operator id="Operator_15659lk" expression="pending += 1" />
               <bpmnos:operator id="Operator_36m5puq" expression="requests_made += 1" />
               <bpmnos:operator id="Operator_1h6f9d5" expression="load += quantity" />

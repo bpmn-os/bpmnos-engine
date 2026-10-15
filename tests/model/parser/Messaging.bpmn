@@ -17,7 +17,7 @@
     <bpmn2:sequenceFlow id="Flow_1245tlj" sourceRef="ThrowEvent_A1" targetRef="CatchEvent_A2" />
     <bpmn2:endEvent id="ThrowEvent_A2">
       <bpmn2:extensionElements>
-        <bpmnos:message name="Default message" />
+        <bpmnos:message name="Default_message" />
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_0albes8</bpmn2:incoming>
       <bpmn2:messageEventDefinition id="MessageEventDefinition_0iuws5h" />
@@ -28,7 +28,7 @@
     <bpmn2:sequenceFlow id="Flow_0start_a" sourceRef="StartEvent_A" targetRef="CatchEvent_A1" />
     <bpmn2:intermediateCatchEvent id="CatchEvent_A1">
       <bpmn2:extensionElements>
-        <bpmnos:message name="Default message" />
+        <bpmnos:message name="Default_message" />
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_0start_a</bpmn2:incoming>
       <bpmn2:outgoing>Flow_1331gwy</bpmn2:outgoing>
@@ -36,7 +36,7 @@
     </bpmn2:intermediateCatchEvent>
     <bpmn2:intermediateThrowEvent id="ThrowEvent_A1">
       <bpmn2:extensionElements>
-        <bpmnos:message name="Default message" />
+        <bpmnos:message name="Default_message" />
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_1331gwy</bpmn2:incoming>
       <bpmn2:outgoing>Flow_1245tlj</bpmn2:outgoing>
@@ -44,7 +44,7 @@
     </bpmn2:intermediateThrowEvent>
     <bpmn2:intermediateCatchEvent id="CatchEvent_A2">
       <bpmn2:extensionElements>
-        <bpmnos:message name="Default message" />
+        <bpmnos:message name="Default_message" />
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_1245tlj</bpmn2:incoming>
       <bpmn2:outgoing>Flow_0albes8</bpmn2:outgoing>
@@ -62,7 +62,7 @@
     <bpmn2:sequenceFlow id="Flow_0up7xgl" sourceRef="CatchEvent_B1" targetRef="ThrowEvent_B1" />
     <bpmn2:endEvent id="ThrowEvent_B2">
       <bpmn2:extensionElements>
-        <bpmnos:message name="Default message" />
+        <bpmnos:message name="Default_message" />
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_0h57oup</bpmn2:incoming>
       <bpmn2:messageEventDefinition id="MessageEventDefinition_1ln1zvy" />
@@ -73,7 +73,7 @@
     <bpmn2:sequenceFlow id="Flow_0start_b" sourceRef="StartEvent_B" targetRef="CatchEvent_B1" />
     <bpmn2:intermediateCatchEvent id="CatchEvent_B1">
       <bpmn2:extensionElements>
-        <bpmnos:message name="Default message" />
+        <bpmnos:message name="Default_message" />
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_0start_b</bpmn2:incoming>
       <bpmn2:outgoing>Flow_0up7xgl</bpmn2:outgoing>
@@ -83,7 +83,7 @@
     <bpmn2:sequenceFlow id="Flow_0h57oup" sourceRef="CatchEvent_B2" targetRef="ThrowEvent_B2" />
     <bpmn2:intermediateThrowEvent id="ThrowEvent_B1">
       <bpmn2:extensionElements>
-        <bpmnos:message name="Default message" />
+        <bpmnos:message name="Default_message" />
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_0up7xgl</bpmn2:incoming>
       <bpmn2:outgoing>Flow_1hbi7p3</bpmn2:outgoing>
@@ -91,7 +91,7 @@
     </bpmn2:intermediateThrowEvent>
     <bpmn2:intermediateCatchEvent id="CatchEvent_B2">
       <bpmn2:extensionElements>
-        <bpmnos:message name="Default message" />
+        <bpmnos:message name="Default_message" />
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_1hbi7p3</bpmn2:incoming>
       <bpmn2:outgoing>Flow_0h57oup</bpmn2:outgoing>
@@ -112,7 +112,7 @@
     <bpmn2:sequenceFlow id="Flow_0start_c" sourceRef="StartEvent_C" targetRef="CatchEvent_C1" />
     <bpmn2:intermediateCatchEvent id="CatchEvent_C1">
       <bpmn2:extensionElements>
-        <bpmnos:message name="Default message" />
+        <bpmnos:message name="Default_message" />
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_0start_c</bpmn2:incoming>
       <bpmn2:outgoing>Flow_1t2j42z</bpmn2:outgoing>
@@ -133,7 +133,7 @@
       <bpmn2:sequenceFlow id="Flow_184qxhl" sourceRef="CatchEvent_C2" targetRef="EndEvent_1" />
       <bpmn2:intermediateThrowEvent id="ThrowEvent_C1">
         <bpmn2:extensionElements>
-          <bpmnos:message name="Default message" />
+          <bpmnos:message name="Default_message" />
         </bpmn2:extensionElements>
         <bpmn2:incoming>Flow_0o5xq0r</bpmn2:incoming>
         <bpmn2:outgoing>Flow_0ud09ue</bpmn2:outgoing>
@@ -141,7 +141,7 @@
       </bpmn2:intermediateThrowEvent>
       <bpmn2:intermediateCatchEvent id="CatchEvent_C2">
         <bpmn2:extensionElements>
-          <bpmnos:message name="Default message" />
+          <bpmnos:message name="Default_message" />
         </bpmn2:extensionElements>
         <bpmn2:incoming>Flow_0ud09ue</bpmn2:incoming>
         <bpmn2:outgoing>Flow_184qxhl</bpmn2:outgoing>
@@ -151,7 +151,7 @@
     <bpmn2:sequenceFlow id="Flow_1t2j42z" sourceRef="CatchEvent_C1" targetRef="Activity_C" />
     <bpmn2:endEvent id="ThrowEvent_C2">
       <bpmn2:extensionElements>
-        <bpmnos:message name="Default message" />
+        <bpmnos:message name="Default_message" />
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_0trjwfr</bpmn2:incoming>
       <bpmn2:messageEventDefinition id="MessageEventDefinition_0119f1e" />

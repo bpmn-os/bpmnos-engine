@@ -32,10 +32,13 @@ I the stochastic case, where actual item size is only revaled when handling the 
     <bpmn2:sendTask id="RequestActivity" name="Request">
       <bpmn2:extensionElements>
         
-          <bpmnos:message name="Request" type="{ item: string, size: decimal }">
-            <bpmnos:content key="item" attribute="instance" />
-            <bpmnos:content key="size" attribute="size" />
-          </bpmnos:message>
+          <bpmnos:status>
+            <bpmnos:operators>
+              <bpmnos:operator id="Operator_RequestActivity_item" expression="Request.item := instance" />
+              <bpmnos:operator id="Operator_RequestActivity_size" expression="Request.size := size" />
+            </bpmnos:operators>
+          </bpmnos:status>
+          <bpmnos:message name="Request" type="{ item: string, size: decimal }" />
         
         <bpmnos:status />
       </bpmn2:extensionElements>
@@ -101,12 +104,11 @@ I the stochastic case, where actual item size is only revaled when handling the 
       </bpmn2:endEvent>
       <bpmn2:startEvent id="CatchRequestMessage" name="Request" isInterrupting="false">
         <bpmn2:extensionElements>
-          <bpmnos:message name="Request" type="{ item: string, size: decimal }">
-            <bpmnos:content key="item" attribute="item" />
-            <bpmnos:content key="size" attribute="size" />
-          </bpmnos:message>
+          <bpmnos:message name="Request" type="{ item: string, size: decimal }" />
           <bpmnos:status>
             <bpmnos:operators>
+              <bpmnos:operator id="Operator_CatchRequestMessage_item" expression="item := Request.item" />
+              <bpmnos:operator id="Operator_CatchRequestMessage_size" expression="size := Request.size" />
               <bpmnos:operator id="Operator_2bo3f0c" expression="usage_count := max{usage_count,1}" />
               <bpmnos:operator id="Operator_3cjc7m2" expression="items_allocated += 1" />
               <bpmnos:operator id="Operator_1vlbcn0" expression="total_size += size" />

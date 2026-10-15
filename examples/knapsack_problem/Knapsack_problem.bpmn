@@ -25,11 +25,14 @@
     <bpmn2:sendTask id="SendRequestTask" name="Request">
       <bpmn2:extensionElements>
         
-          <bpmnos:message name="Request" type="{ item: string, value: decimal, weight: decimal }">
-            <bpmnos:content key="item" attribute="instance" />
-            <bpmnos:content key="value" attribute="value" />
-            <bpmnos:content key="weight" attribute="weight" />
-          </bpmnos:message>
+          <bpmnos:status>
+            <bpmnos:operators>
+              <bpmnos:operator id="Operator_SendRequestTask_item" expression="Request.item := instance" />
+              <bpmnos:operator id="Operator_SendRequestTask_value" expression="Request.value := value" />
+              <bpmnos:operator id="Operator_SendRequestTask_weight" expression="Request.weight := weight" />
+            </bpmnos:operators>
+          </bpmnos:status>
+          <bpmnos:message name="Request" type="{ item: string, value: decimal, weight: decimal }" />
         
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_0ld08n6</bpmn2:incoming>
@@ -165,13 +168,12 @@ It has a data object containing the `capacity`as well as the `total_weight` and 
       <bpmn2:sequenceFlow id="Flow_0d3x89n" sourceRef="AdHocSubProcess" targetRef="EndEventSubProcess" />
       <bpmn2:startEvent id="CatchRequestMessage" name="Request" isInterrupting="false">
         <bpmn2:extensionElements>
-          <bpmnos:message name="Request" type="{ item: string, value: decimal, weight: decimal }">
-            <bpmnos:content key="item" attribute="item" />
-            <bpmnos:content key="weight" attribute="weight" />
-            <bpmnos:content key="value" attribute="value" />
-          </bpmnos:message>
+          <bpmnos:message name="Request" type="{ item: string, value: decimal, weight: decimal }" />
           <bpmnos:status>
             <bpmnos:operators>
+              <bpmnos:operator id="Operator_CatchRequestMessage_item" expression="item := Request.item" />
+              <bpmnos:operator id="Operator_CatchRequestMessage_weight" expression="weight := Request.weight" />
+              <bpmnos:operator id="Operator_CatchRequestMessage_value" expression="value := Request.value" />
               <bpmnos:operator id="Operator_Items" expression="items_requested += 1" />
             </bpmnos:operators>
           </bpmnos:status>

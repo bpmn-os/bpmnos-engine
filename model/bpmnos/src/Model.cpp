@@ -258,20 +258,8 @@ std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* acti
     throw std::runtime_error("Model: No message defined for send task '" + baseElement->id + "'");
   }
 
-  if ( baseElement->represents<BPMN::ReceiveTask>() ) {
-    if ( !extensionElements->messageDefinition ) {
-      throw std::runtime_error("Model: No message defined for receive task '" + baseElement->id + "'");
-    }
-    for ( auto& [_,content] : extensionElements->messageDefinition->contentMap ) {
-      auto attribute = content->attribute;
-      if ( attribute->isGlobal ) {
-        throw std::runtime_error("Model: Message received by task '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
-      }
-      else if ( attribute->category == Attribute::Category::DATA ) {
-        throw std::runtime_error("Model: Message received by task '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "'");
-      }
-      attribute->isImmutable = false;
-    }
+  if ( baseElement->represents<BPMN::ReceiveTask>() && !extensionElements->messageDefinition ) {
+    throw std::runtime_error("Model: No message defined for receive task '" + baseElement->id + "'");
   }
 
   if ( auto adHocSubProcess = baseElement->represents<SequentialAdHocSubProcess>();
@@ -323,51 +311,11 @@ std::unique_ptr<BPMN::FlowNode> Model::createEvent(XML::bpmn::tEvent* event, BPM
       if ( !extensionElements->messageDefinition ) {
         throw std::runtime_error("Model: No message defined for message " + std::string(name) + " event '" + baseElement->id + "'");
       }
-      // Lambda function to compare unique_ptrs by their raw pointers
-      auto contains = [](const std::vector<std::unique_ptr<Attribute>>& attributes, Attribute* attribute) {
-        return std::any_of(attributes.begin(), attributes.end(),[attribute](const std::unique_ptr<Attribute>& ptr) {
-          return ptr.get() == attribute;
-        });
-      };
-      if ( baseElement->represents<BPMN::MessageStartEvent>() ) {
-        if ( auto process = parent->represents<BPMN::Process>() ) {
-          // the process is instantiated whenever a message with this name is thrown
-          auto [ entry, inserted ] = processesTriggeredByMessage.emplace( extensionElements->messageDefinition->name, process );
-          if ( !inserted ) {
-            throw std::runtime_error("Model: message '" + BPMNOS::to_string(extensionElements->messageDefinition->name,STRING) + "' instantiates process '" + entry->second->id + "' and process '" + process->id + "'");
-          }
-        }
-        auto parentExtension = parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-        for ( auto& [_,content] : extensionElements->messageDefinition->contentMap ) {
-          Attribute* attribute = content->attribute;
-          if ( attribute->isGlobal ) {
-            throw std::runtime_error("Model: Message start event '" + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
-          }
-          else if ( attribute->category == Attribute::Category::DATA ) {
-            if ( !contains(parentExtension->data,attribute) && !contains(parentExtension->dataObjects,attribute) ) {
-              throw std::runtime_error("Model: Message start event '" + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "' which is not owned by the scope it starts");
-            }
-            // data attributes owned by event-subprocesses are considered immutable even if they are modified by the message start event
-          }
-          else if ( attribute->category == Attribute::Category::STATUS ) {
-            // status attributes owned by event-subprocesses are considered immutable even if they are modified by the message start event
-            if ( !contains(parentExtension->attributes,attribute) && !contains(parentExtension->statusObjects,attribute) ) {
-              attribute->isImmutable = false;
-            }
-          }
-        }
-      }
-      else {
-        auto label = baseElement->represents<BPMN::BoundaryEvent>() ? "Message boundary event '" : "Message catch event '";
-        for ( auto& [_,content] : extensionElements->messageDefinition->contentMap ) {
-          Attribute* attribute = content->attribute;
-          if ( attribute->isGlobal ) {
-            throw std::runtime_error("Model: " + std::string(label) + baseElement->id + "' attempts to modify global attribute '" + attribute->id + "'");
-          }
-          else if ( attribute->category == Attribute::Category::DATA ) {
-            throw std::runtime_error("Model: " + std::string(label) + baseElement->id + "' attempts to modify data attribute '" + attribute->id + "'");
-          }
-          attribute->isImmutable = false;
+      if ( auto process = parent->represents<BPMN::Process>(); process && baseElement->represents<BPMN::MessageStartEvent>() ) {
+        // the process is instantiated whenever a message with this name is thrown
+        auto [ entry, inserted ] = processesTriggeredByMessage.emplace( extensionElements->messageDefinition->name, process );
+        if ( !inserted ) {
+          throw std::runtime_error("Model: message '" + BPMNOS::to_string(extensionElements->messageDefinition->name,STRING) + "' instantiates process '" + entry->second->id + "' and process '" + process->id + "'");
         }
       }
     }
@@ -652,15 +600,6 @@ void Model::createMessageCandidates( BPMN::Process* sendingProcess, BPMN::FlowNo
     // a sender and a receiver that may exchange a message agree on its type
     if ( !outgoingMessageDefinition->schema.agrees(incomingMessageDefinition->schema) ) {
       throw std::runtime_error("Model: message '" + BPMNOS::to_string(outgoingMessageDefinition->name,STRING) + "' sent by '" + throwingMessageEvent->id + "' and received by '" + catchingMessageEvent->id + "' must have the same type");
-    }
-    // a key the sender and the recipient both declare is an object on both sides or on neither; whether the
-    // shapes fit is only known when the message is delivered, the sizes depending on the instance data
-    for ( auto& [key,sent] : outgoingMessageDefinition->contentMap ) {
-      if ( auto received = incomingMessageDefinition->contentMap.find(key);
-        received != incomingMessageDefinition->contentMap.end() && sent->attribute->isObject() != received->second->attribute->isObject()
-      ) {
-        throw std::runtime_error("Model: content '" + key + "' sent by '" + throwingMessageEvent->id + "' and received by '" + catchingMessageEvent->id + "' must be an object on both sides or on neither");
-      }
     }
     // add message events to collection of candidates of each other
     if( find(

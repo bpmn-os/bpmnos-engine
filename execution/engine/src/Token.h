@@ -3,11 +3,10 @@
 
 #include <bpmn++.h>
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
-#include "model/bpmnos/src/extensionElements/ContentDefinition.h"
 #include "model/utility/src/Value.h"
+#include "model/utility/src/Object.h"
 #include "execution/utility/src/auto_list.h"
 #include "Observable.h"
-#include "ContentMap.h"
 #include <nlohmann/json.hpp>
 #include <iostream>
 #include <cassert>
@@ -95,6 +94,9 @@ public:
   Status status;
   SharedData* data; ///< Pointer to the data of the owner or owned state machine subprocesses)
   std::shared_ptr<DecisionRequest> decisionRequest;
+  /// The content object of a message or signal at a node stating one: written by the operators of a throwing node
+  /// before the message or signal is sent, or received by a catching node and held until its operators read it.
+  std::shared_ptr<const BPMNOS::Object> content;
   Token* performing; ///< Pointer to the activity token currently performed (only applies if node is a performer referenced by sequential ad-hoc subprocesses)
   auto_list< std::weak_ptr<Token> > pendingSequentialEntries; ///< List of tokens awaiting an activity entry (only applies if node is a performer referenced by sequential ad-hoc subprocesses)
   
@@ -125,6 +127,10 @@ private:
   void advanceToEntered();
 
   /// @brief Applies the given operators to the token and notifies about the values they modify.
+  ///
+  /// At a node stating a message or signal, the operators also write or read the content object: those of a
+  /// throwing node write it, starting from an undefined object of its type, and leave it in @ref content for the
+  /// message or signal to be sent; those of a catching node read the content object received.
   /// @param extensionElements The extension elements holding the operators, those of the node the token is at.
   /// @note The timestamp must be the current time, which the caller is responsible for.
   void applyOperators(const BPMNOS::Model::ExtensionElements& extensionElements);
@@ -168,10 +174,7 @@ private:
   void withdraw(); ///< Remove token
 
   void emitSignal();
-  
-  ContentMap getSignalContent(const BPMNOS::Model::ContentDefinitionMap& contentMap); ///< Returns content of signal
-  void setSignalContent(ContentMap& sourceMap); // Applies content of signal
-  
+
   void sendMessage();
 public:
   Token* getSequentialPerformerToken() const; ///< Returns token at sequential performer for tokens at activities within sequential adhoc subprocesses

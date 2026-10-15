@@ -216,10 +216,10 @@ protected:
   /// thrown.
   ///
   /// The identifier is generated, an instance created by a trigger being declared nowhere, and the
-  /// content of the trigger is applied to the initial status of the instance, which is where it is
-  /// needed and after which it is of no further concern. The trigger being the condition for the start,
-  /// the instance is started at once rather than upon a @ref ReadyEvent.
-  void triggerInstance(const BPMN::Process* process, ContentMap content);
+  /// content object of the trigger is handed to the start event of the instance, whose operators read it.
+  /// The trigger being the condition for the start, the instance is started at once rather than upon a
+  /// @ref ReadyEvent.
+  void triggerInstance(const BPMN::Process* process, std::shared_ptr<const BPMNOS::Object> content);
 
   /// @brief Method creating an instance of a process from the message triggering it, and consuming that
   /// message.

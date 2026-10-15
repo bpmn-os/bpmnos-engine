@@ -35,10 +35,14 @@ std::string messagingModel(const std::string& stopsType) {
     <bpmn2:sequenceFlow id="Flow_1" sourceRef="Start_1" targetRef="Throw_1" />
     <bpmn2:intermediateThrowEvent id="Throw_1">
       <bpmn2:extensionElements>
+        <bpmnos:status>
+          <bpmnos:operators>
+            <bpmnos:operator id="Operator_Route" expression="Message.route := route" />
+            <bpmnos:operator id="Operator_Depot" expression="Message.depot := depot" />
+          </bpmnos:operators>
+        </bpmnos:status>
         <bpmnos:message name="Message" type="{ route: integer[], depot: { x: decimal } }">
           <bpmnos:parameter name="recipient" value="&#34;Instance_2&#34;" />
-          <bpmnos:content key="route" attribute="route" />
-          <bpmnos:content key="depot" attribute="depot" />
         </bpmnos:message>
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_1</bpmn2:incoming>
@@ -85,10 +89,13 @@ std::string messagingModel(const std::string& stopsType) {
     <bpmn2:sequenceFlow id="Flow_4" sourceRef="Start_2" targetRef="Catch_2" />
     <bpmn2:intermediateCatchEvent id="Catch_2">
       <bpmn2:extensionElements>
-        <bpmnos:message name="Message" type="{ route: integer[], depot: { x: decimal } }">
-          <bpmnos:content key="route" attribute="stops" />
-          <bpmnos:content key="depot" attribute="place" />
-        </bpmnos:message>
+        <bpmnos:status>
+          <bpmnos:operators>
+            <bpmnos:operator id="Operator_Stops" expression="stops := Message.route" />
+            <bpmnos:operator id="Operator_Place" expression="place := Message.depot" />
+          </bpmnos:operators>
+        </bpmnos:status>
+        <bpmnos:message name="Message" type="{ route: integer[], depot: { x: decimal } }" />
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_4</bpmn2:incoming>
       <bpmn2:outgoing>Flow_5</bpmn2:outgoing>
@@ -163,9 +170,6 @@ TEST_CASE( "A message carries arrays and objects", "[execution][message][objects
     auto& sender = registryOf(*model, 0);
     auto& [senderStatus, senderData] = capture.states.at({"End_1", "DONE"});
     REQUIRE( to_string(*sender.getObject(sender["route"], senderStatus, senderData)) == "[ 9, 2 ]" );
-
-    // an object of the very layout is shared with the sender
-    REQUIRE( receiver.getObject(receiver["place"], status, data).get() == sender.getObject(sender["depot"], senderStatus, senderData).get() );
   }
 
   SECTION( "An array longer than a fixed dimension is refused" ) {
@@ -174,39 +178,8 @@ TEST_CASE( "A message carries arrays and objects", "[execution][message][objects
     REQUIRE_THROWS_WITH( run(model, capture), Catch::Matchers::ContainsSubstring("2 elements where 1 are declared") );
   }
 
-  SECTION( "A key that is an object on one side only is refused when the model is parsed" ) {
-    REQUIRE_THROWS_WITH( modelFrom(messagingModel("integer")), Catch::Matchers::ContainsSubstring("must be an object on both sides or on neither") );
-  }
-}
-
-TEST_CASE( "Content is applied to the receiving attribute", "[execution][message][objects]" ) {
-  auto model = modelFrom(messagingModel("integer[]"));
-  auto& registry = registryOf(*model, 1);
-  auto provider = std::make_shared<Execution::StaticDataProvider>(model, instances);
-  auto scenario = provider->createScenario();
-  BPMNOS::Status status( registry.statusAttributes.size() );
-  status.objects.resize( registry.statusObjects.size() );
-  auto stops = registry["stops"];
-  status.objects[stops->index] = Model::Schema::parse("integer[]").undefinedObject();
-  BPMNOS::Data data = provider->getGlobals(*scenario);
-
-  SECTION( "Text raised from outside the model states an array as a literal" ) {
-    Execution::ContentMap::mapped_type content = std::string("[4, 5]");
-    Execution::receiveContent(registry, "route", stops, &content, status, data);
-    REQUIRE( to_string(*status.objects[stops->index]) == "[ 4, 5 ]" );
-  }
-  SECTION( "Text that is no literal is refused for an object" ) {
-    Execution::ContentMap::mapped_type content = std::string("4");
-    REQUIRE_THROWS_WITH( Execution::receiveContent(registry, "route", stops, &content, status, data), Catch::Matchers::ContainsSubstring("is no literal") );
-  }
-  SECTION( "A value is refused for an object" ) {
-    Execution::ContentMap::mapped_type content = BPMNOS::Value(BPMNOS::number(4));
-    REQUIRE_THROWS_WITH( Execution::receiveContent(registry, "route", stops, &content, status, data), Catch::Matchers::ContainsSubstring("a value is sent") );
-  }
-  SECTION( "An object the content does not mention keeps its value" ) {
-    auto before = status.objects[stops->index];
-    Execution::receiveContent<BPMNOS::Data>(registry, "route", stops, nullptr, status, data);
-    REQUIRE( status.objects[stops->index] == before );
+  SECTION( "An array field of the content assigned to a scalar attribute is refused when the model is parsed" ) {
+    REQUIRE_THROWS( modelFrom(messagingModel("integer")) );
   }
 }
 

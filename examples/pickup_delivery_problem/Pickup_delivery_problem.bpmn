@@ -128,20 +128,23 @@
     <bpmn2:sendTask id="RequestActivity" name="Request">
       <bpmn2:extensionElements>
         
-          <bpmnos:message name="Request" type="{ quantity: decimal, pickup_location: string, delivery_location: string, customer: string, pickup_duration: decimal, earliest_pickup: decimal, latest_pickup: decimal, delivery_duration: decimal, earliest_delivery: decimal, latest_delivery: decimal, late_pickup_penalty: decimal, late_delivery_penalty: decimal }">
-            <bpmnos:content key="quantity" attribute="quantity" />
-            <bpmnos:content key="pickup_location" attribute="pickup_location" />
-            <bpmnos:content key="delivery_location" attribute="delivery_location" />
-            <bpmnos:content key="customer" attribute="instance" />
-            <bpmnos:content key="pickup_duration" attribute="pickup_duration" />
-            <bpmnos:content key="earliest_pickup" attribute="earliest_pickup" />
-            <bpmnos:content key="latest_pickup" attribute="latest_pickup" />
-            <bpmnos:content key="delivery_duration" attribute="delivery_duration" />
-            <bpmnos:content key="earliest_delivery" attribute="earliest_delivery" />
-            <bpmnos:content key="latest_delivery" attribute="latest_delivery" />
-            <bpmnos:content key="late_pickup_penalty" attribute="late_pickup_penalty" />
-            <bpmnos:content key="late_delivery_penalty" attribute="late_delivery_penalty" />
-          </bpmnos:message>
+          <bpmnos:status>
+            <bpmnos:operators>
+              <bpmnos:operator id="Operator_RequestActivity_quantity" expression="Request.quantity := quantity" />
+              <bpmnos:operator id="Operator_RequestActivity_pickup_location" expression="Request.pickup_location := pickup_location" />
+              <bpmnos:operator id="Operator_RequestActivity_delivery_location" expression="Request.delivery_location := delivery_location" />
+              <bpmnos:operator id="Operator_RequestActivity_customer" expression="Request.customer := instance" />
+              <bpmnos:operator id="Operator_RequestActivity_pickup_duration" expression="Request.pickup_duration := pickup_duration" />
+              <bpmnos:operator id="Operator_RequestActivity_earliest_pickup" expression="Request.earliest_pickup := earliest_pickup" />
+              <bpmnos:operator id="Operator_RequestActivity_latest_pickup" expression="Request.latest_pickup := latest_pickup" />
+              <bpmnos:operator id="Operator_RequestActivity_delivery_duration" expression="Request.delivery_duration := delivery_duration" />
+              <bpmnos:operator id="Operator_RequestActivity_earliest_delivery" expression="Request.earliest_delivery := earliest_delivery" />
+              <bpmnos:operator id="Operator_RequestActivity_latest_delivery" expression="Request.latest_delivery := latest_delivery" />
+              <bpmnos:operator id="Operator_RequestActivity_late_pickup_penalty" expression="Request.late_pickup_penalty := late_pickup_penalty" />
+              <bpmnos:operator id="Operator_RequestActivity_late_delivery_penalty" expression="Request.late_delivery_penalty := late_delivery_penalty" />
+            </bpmnos:operators>
+          </bpmnos:status>
+          <bpmnos:message name="Request" type="{ quantity: decimal, pickup_location: string, delivery_location: string, customer: string, pickup_duration: decimal, earliest_pickup: decimal, latest_pickup: decimal, delivery_duration: decimal, earliest_delivery: decimal, latest_delivery: decimal, late_pickup_penalty: decimal, late_delivery_penalty: decimal }" />
         
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_03kr6t6</bpmn2:incoming>
@@ -185,22 +188,21 @@
       </bpmn2:extensionElements>
       <bpmn2:startEvent id="StartEventRequest" name="Request" isInterrupting="false">
         <bpmn2:extensionElements>
-          <bpmnos:message name="Request" type="{ quantity: decimal, pickup_location: string, delivery_location: string, customer: string, pickup_duration: decimal, earliest_pickup: decimal, latest_pickup: decimal, delivery_duration: decimal, earliest_delivery: decimal, latest_delivery: decimal, late_pickup_penalty: decimal, late_delivery_penalty: decimal }">
-            <bpmnos:content key="quantity" attribute="quantity" />
-            <bpmnos:content key="pickup_location" attribute="pickup_location" />
-            <bpmnos:content key="delivery_location" attribute="delivery_location" />
-            <bpmnos:content key="customer" attribute="customer" />
-            <bpmnos:content key="earliest_pickup" attribute="earliest_pickup" />
-            <bpmnos:content key="latest_pickup" attribute="latest_pickup" />
-            <bpmnos:content key="delivery_duration" attribute="delivery_duration" />
-            <bpmnos:content key="earliest_delivery" attribute="earliest_delivery" />
-            <bpmnos:content key="latest_delivery" attribute="latest_delivery" />
-            <bpmnos:content key="late_pickup_penalty" attribute="late_pickup_penalty" />
-            <bpmnos:content key="late_delivery_penalty" attribute="late_delivery_penalty" />
-            <bpmnos:content key="pickup_duration" attribute="pickup_duration" />
-          </bpmnos:message>
+          <bpmnos:message name="Request" type="{ quantity: decimal, pickup_location: string, delivery_location: string, customer: string, pickup_duration: decimal, earliest_pickup: decimal, latest_pickup: decimal, delivery_duration: decimal, earliest_delivery: decimal, latest_delivery: decimal, late_pickup_penalty: decimal, late_delivery_penalty: decimal }" />
           <bpmnos:status>
             <bpmnos:operators>
+              <bpmnos:operator id="Operator_StartEventRequest_quantity" expression="quantity := Request.quantity" />
+              <bpmnos:operator id="Operator_StartEventRequest_pickup_location" expression="pickup_location := Request.pickup_location" />
+              <bpmnos:operator id="Operator_StartEventRequest_delivery_location" expression="delivery_location := Request.delivery_location" />
+              <bpmnos:operator id="Operator_StartEventRequest_customer" expression="customer := Request.customer" />
+              <bpmnos:operator id="Operator_StartEventRequest_earliest_pickup" expression="earliest_pickup := Request.earliest_pickup" />
+              <bpmnos:operator id="Operator_StartEventRequest_latest_pickup" expression="latest_pickup := Request.latest_pickup" />
+              <bpmnos:operator id="Operator_StartEventRequest_delivery_duration" expression="delivery_duration := Request.delivery_duration" />
+              <bpmnos:operator id="Operator_StartEventRequest_earliest_delivery" expression="earliest_delivery := Request.earliest_delivery" />
+              <bpmnos:operator id="Operator_StartEventRequest_latest_delivery" expression="latest_delivery := Request.latest_delivery" />
+              <bpmnos:operator id="Operator_StartEventRequest_late_pickup_penalty" expression="late_pickup_penalty := Request.late_pickup_penalty" />
+              <bpmnos:operator id="Operator_StartEventRequest_late_delivery_penalty" expression="late_delivery_penalty := Request.late_delivery_penalty" />
+              <bpmnos:operator id="Operator_StartEventRequest_pickup_duration" expression="pickup_duration := Request.pickup_duration" />
               <bpmnos:operator id="Operator_15659lk" expression="pending += 1" />
               <bpmnos:operator id="Operator_36m5puq" expression="requests_made += 1" />
             </bpmnos:operators>

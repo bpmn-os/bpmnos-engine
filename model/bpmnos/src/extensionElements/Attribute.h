@@ -23,7 +23,10 @@ class Attribute {
 public:
   enum class Category { STATUS, DATA };
   Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category category, AttributeRegistry& attributeRegistry);
-  XML::bpmnos::tAttribute* element;
+  /// @brief Constructor for the content object of a message or signal, a status object named after the message or
+  /// signal and of its type, which the operators of the node stating it write or read.
+  Attribute(std::string& name, const Schema& schema, AttributeRegistry& attributeRegistry);
+  XML::bpmnos::tAttribute* element; ///< The element declaring the attribute, nullptr for the content object of a message or signal
 
   Category category;
   size_t index; ///< Index of attribute (is automatically set by attribute registry).

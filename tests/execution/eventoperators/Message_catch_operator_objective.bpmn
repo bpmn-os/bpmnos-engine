@@ -19,9 +19,12 @@
     <bpmn2:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="MessageThrowEvent_1" />
     <bpmn2:endEvent id="MessageThrowEvent_1">
       <bpmn2:extensionElements>
-        <bpmnos:message name="Offer" type="{ payload: integer }">
-          <bpmnos:content key="payload" attribute="payload" />
-        </bpmnos:message>
+        <bpmnos:status>
+          <bpmnos:operators>
+            <bpmnos:operator id="Operator_MessageThrowEvent_1_payload" expression="Offer.payload := payload" />
+          </bpmnos:operators>
+        </bpmnos:status>
+        <bpmnos:message name="Offer" type="{ payload: integer }" />
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_1</bpmn2:incoming>
       <bpmn2:messageEventDefinition id="MessageEventDefinition_1" />
@@ -50,11 +53,10 @@
     <bpmn2:sequenceFlow id="Flow_2" sourceRef="StartEvent_2" targetRef="MessageCatchEvent_2" />
     <bpmn2:intermediateCatchEvent id="MessageCatchEvent_2">
       <bpmn2:extensionElements>
-        <bpmnos:message name="Offer" type="{ payload: integer }">
-          <bpmnos:content key="payload" attribute="received" />
-        </bpmnos:message>
+        <bpmnos:message name="Offer" type="{ payload: integer }" />
         <bpmnos:status>
           <bpmnos:operators>
+            <bpmnos:operator id="Operator_MessageCatchEvent_2_payload" expression="received := Offer.payload" />
             <bpmnos:operator id="Operator_1" expression="score := received" />
           </bpmnos:operators>
         </bpmnos:status>

@@ -6,6 +6,9 @@
 #include "model/utility/src/InputEncoder.h"
 #include "model/utility/src/ObjectRegistry.h"
 #include "model/utility/src/string_utility.h"
+#include <algorithm>
+#include <cctype>
+#include <limits>
 
 using namespace BPMNOS::Model;
 
@@ -70,6 +73,26 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category cat
   }
   
   isImmutable = (id != Keyword::Timestamp);
+}
+
+Attribute::Attribute(std::string& name, const Schema& schema, AttributeRegistry& attributeRegistry)
+  : element(nullptr)
+  , category(Category::STATUS)
+  , index(std::numeric_limits<size_t>::max())
+  , id(name)
+  , schema(std::make_unique<const Schema>(schema))
+  , name(name)
+  , type(schema.scalar.value_or(ValueType::DECIMAL))
+  , weight(0)
+  , isImmutable(false)
+{
+  // the operators refer to the content object by the name, which is therefore a name of an expression
+  bool isName = !name.empty() && ( std::isalpha((unsigned char)name.front()) || name.front() == '_' ) &&
+    std::ranges::all_of(name, [](char character) { return std::isalnum((unsigned char)character) || character == '_'; });
+  if ( !isName ) {
+    throw std::runtime_error("Attribute: '" + name + "' is no valid name of a message or signal");
+  }
+  attributeRegistry.add(this);
 }
 
 std::unique_ptr<const Expression> Attribute::getExpression(std::string& input, AttributeRegistry& attributeRegistry) {

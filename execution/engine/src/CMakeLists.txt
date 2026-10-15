@@ -1,6 +1,5 @@
 list(APPEND engine_SOURCES
   Notifier.cpp
-  ContentMap.cpp
   Message.cpp
   Signal.cpp
   MessageDeliveryRequest.cpp
@@ -31,7 +30,6 @@ list(APPEND engine_HEADERS
   Observable.h
   Observer.h
   Notifier.h
-  ContentMap.h
   Message.h
   Signal.h
   Token.h

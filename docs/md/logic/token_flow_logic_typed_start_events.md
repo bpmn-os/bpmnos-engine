@@ -2,7 +2,7 @@
 @page token_flow_logic_typed_start_events Typed start events
 
 A token at a typed start event is generated when the trigger occurs, and its state advances from @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED" through @ref BPMNOS::Execution::Token::State::BUSY "BUSY" to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" instantaneously.
-The @ref BPMNOS::Model::ContentDefinition "content" of the message or signal that triggered it is part of the @ref BPMNOS::Execution::Token::status "status" the token is generated with.
+The content object of the message or signal that triggered it is held by the token until the @ref BPMNOS::Model::ExtensionElements::operators "operators" of the start event read it.
 
 Upon completion, the @ref BPMNOS::Model::ExtensionElements::operators "operators" of the start event are applied. If the scope is an @ref BPMN::EventSubProcess "event-subprocess", its @ref BPMNOS::Model::ExtensionElements::attributes "attributes" and data attributes hold the values the model assigned to them when the event-subprocess was created, while it awaited its trigger, the event-subprocess taking no values from the data; the trigger replaces the values the token holds for the attributes of the enclosing scopes and keeps those of the event-subprocess.
 If the start event belongs to an interrupting @ref BPMN::EventSubProcess "event-subprocess", all other tokens within the scope of the event-subprocess are withdrawn.

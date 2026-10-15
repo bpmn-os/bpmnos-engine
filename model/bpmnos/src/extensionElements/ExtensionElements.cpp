@@ -11,13 +11,13 @@
 #include "model/bpmnos/src/xml/bpmnos/tDecision.h"
 #include "model/bpmnos/src/xml/bpmnos/tMessage.h"
 #include "model/bpmnos/src/xml/bpmnos/tSignal.h"
-#include "model/bpmnos/src/xml/bpmnos/tContent.h"
 #include "model/bpmnos/src/xml/bpmnos/tTimer.h"
 #include "model/bpmnos/src/xml/bpmnos/tParameter.h"
 #include "model/bpmnos/src/xml/bpmnos/tLoopCharacteristics.h"
 #include "model/bpmnos/src/xml/bpmnos/tGuidance.h"
 #include "model/utility/src/Keywords.h"
 #include <algorithm>
+#include <cassert>
 #include <iostream>
 
 using namespace BPMNOS::Model;
@@ -112,7 +112,35 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     }
   }
 
-  if ( !element ) return; 
+  if ( !element ) return;
+
+  // add message definition
+  if ( auto message = element->getOptionalChild<XML::bpmnos::tMessage>(); message.has_value() ) {
+    messageDefinition = std::make_unique<MessageDefinition>(&message->get(),attributeRegistry);
+  }
+
+  // add signal
+  if ( auto definition = element->getOptionalChild<XML::bpmnos::tSignal>(); definition.has_value() ) {
+    signal = &definition->get();
+    signalName = BPMNOS::to_number(signal->name.value.value,STRING);
+    // the content is an object, without fields if the signal states no type
+    if ( signal->type.has_value() ) {
+      signalSchema = Schema::parse(signal->type->get().value.value);
+      if ( signalSchema.isScalar() ) {
+        throw std::runtime_error("ExtensionElements: the type of signal '" + signal->name.value.value + "' must be an object");
+      }
+    }
+  }
+
+  // the operators see the content object of the message or signal the node states, named after it
+  if ( messageDefinition ) {
+    augmentedAttributeRegistry = std::make_unique<AttributeRegistry>(attributeRegistry);
+    content = std::make_unique<Attribute>(messageDefinition->element->name.value.value, messageDefinition->schema, *augmentedAttributeRegistry);
+  }
+  else if ( signal ) {
+    augmentedAttributeRegistry = std::make_unique<AttributeRegistry>(attributeRegistry);
+    content = std::make_unique<Attribute>(signal->name.value.value, signalSchema, *augmentedAttributeRegistry);
+  }
 
   if ( auto status = element->getOptionalChild<XML::bpmnos::tStatus>(); status.has_value() ) {
     // add all restrictions
@@ -177,12 +205,16 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
 
       for ( XML::bpmnos::tOperator& operator_ : status->get().operators.value().get().operator_ ) {
         try {
-          operators.push_back( std::make_unique<Operator>(&operator_,attributeRegistry) );
+          operators.push_back( std::make_unique<Operator>(&operator_, augmentedAttributeRegistry ? *augmentedAttributeRegistry : attributeRegistry) );
         }
         catch ( const std::exception& error ) {
           throw std::runtime_error("ExtensionElements: illegal operator '" + (std::string)operator_.id.value + "'.\n" + error.what() );
         }
         auto attribute = operators.back()->attribute;
+        if ( attribute == content.get() && !baseElement->is<XML::bpmn::tThrowEvent>() && !baseElement->is<XML::bpmn::tSendTask>() ) {
+          // the content object is written by the node that throws it, and only read by the node catching it
+          throw std::runtime_error("ExtensionElements: operator '" + (std::string)operator_.id.value + "' of a catching node writes the content of '" + content->name + "'");
+        }
         if ( attribute->category == Attribute::Category::STATUS && !attribute->isObject() && attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
           isInstantaneous = false;
         }
@@ -191,7 +223,10 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
         }
         
         for ( auto input : operators.back()->expression.inputs ) {
-          operatorDependencies.insert(input);
+          // the content object is no attribute whose change could invalidate anything
+          if ( input != content.get() ) {
+            operatorDependencies.insert(input);
+          }
         }
       }
 
@@ -248,56 +283,10 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     }
   }
 
-  // add message definition
-  if ( auto message = element->getOptionalChild<XML::bpmnos::tMessage>(); message.has_value() ) {
-    messageDefinition = std::make_unique<MessageDefinition>(&message->get(),attributeRegistry);
-  }
-
-  if ( messageDefinition &&
-    ( baseElement->is<XML::bpmn::tReceiveTask>() || baseElement->is<XML::bpmn::tCatchEvent>() )
-  ) {
-    // add data attributes modified by message to dataUpdate
-    for ( auto& [key,content] : messageDefinition->contentMap ) {
-      Attribute* attribute = content->attribute;
-      if ( attribute->category != Attribute::Category::STATUS ) {
-        dataUpdate.attributes.push_back(attribute);
-      }
-    }
-  }
-
   // add timer trigger
   if ( auto timer = element->getOptionalChild<XML::bpmnos::tTimer>(); timer.has_value() ) {
     if ( auto& parameter = timer->get().parameter; parameter.name.value.value == "trigger" ) {
       trigger = std::make_unique<Parameter>(&parameter,attributeRegistry);
-    }
-  }
-
-  // add signal
-  if ( auto definition = element->getOptionalChild<XML::bpmnos::tSignal>(); definition.has_value() ) {
-    signal = &definition->get();
-    signalName = BPMNOS::to_number(signal->name.value.value,STRING);
-    // the content is an object, without fields if the signal states no type
-    if ( signal->type.has_value() ) {
-      signalSchema = Schema::parse(signal->type->get().value.value);
-      if ( signalSchema.isScalar() ) {
-        throw std::runtime_error("ExtensionElements: the type of signal '" + signal->name.value.value + "' must be an object");
-      }
-    }
-    for ( XML::bpmnos::tContent& content : signal->content ) {
-      auto& key = content.key.value.value;
-      if ( std::ranges::none_of(signalSchema.fields, [&key](auto& field) { return field.first == key; }) ) {
-        throw std::runtime_error("ExtensionElements: content '" + key + "' of signal '" + signal->name.value.value + "' is no field of its type");
-      }
-      signalContentMap.emplace(key,std::make_unique<ContentDefinition>(&content,attributeRegistry));
-    }
-    if ( baseElement->is<XML::bpmn::tCatchEvent>() ) {
-      // add data attributes modified by signal content to dataUpdate
-      for ( auto& [key,content] : signalContentMap ) {
-        Attribute* attribute = content->attribute;
-        if ( attribute->category != Attribute::Category::STATUS ) {
-          dataUpdate.attributes.push_back(attribute);
-        }
-      }
     }
   }
 
@@ -484,6 +473,8 @@ template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::SharedDa
 
 template <typename DataType>
 BPMNOS::number ExtensionElements::applyOperators(BPMNOS::Status& status, DataType& data) const {
+  // operators that may refer to a content object are applied with the content object
+  assert( !content );
   BPMNOS::number change = 0;
   for ( auto& operator_ : operators ) {
     change += operator_->apply(status,data);
@@ -493,6 +484,24 @@ BPMNOS::number ExtensionElements::applyOperators(BPMNOS::Status& status, DataTyp
 
 template BPMNOS::number ExtensionElements::applyOperators<BPMNOS::Data>(Status& status, BPMNOS::Data& data) const;
 template BPMNOS::number ExtensionElements::applyOperators<BPMNOS::SharedData>(Status& status, BPMNOS::SharedData& data) const;
+
+template <typename DataType>
+BPMNOS::number ExtensionElements::applyOperators(BPMNOS::Status& status, DataType& data, std::shared_ptr<const BPMNOS::Object>& contentObject) const {
+  // the content object is held in the slot following the status objects while the operators run
+  assert( content );
+  assert( status.objects.size() == content->index );
+  status.objects.push_back( std::move(contentObject) );
+  BPMNOS::number change = 0;
+  for ( auto& operator_ : operators ) {
+    change += operator_->apply(status,data);
+  }
+  contentObject = std::move(status.objects.back());
+  status.objects.pop_back();
+  return change;
+}
+
+template BPMNOS::number ExtensionElements::applyOperators<BPMNOS::Data>(Status& status, BPMNOS::Data& data, std::shared_ptr<const BPMNOS::Object>& contentObject) const;
+template BPMNOS::number ExtensionElements::applyOperators<BPMNOS::SharedData>(Status& status, BPMNOS::SharedData& data, std::shared_ptr<const BPMNOS::Object>& contentObject) const;
 
 template <typename DataType>
 BPMNOS::number ExtensionElements::getObjective(const BPMNOS::Status& status, const DataType& data) const {

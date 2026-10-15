@@ -1,9 +1,10 @@
 #ifndef BPMNOS_Execution_Signal_H
 #define BPMNOS_Execution_Signal_H
 
+#include <memory>
 #include "Observable.h"
-#include "ContentMap.h"
 #include "model/utility/src/Value.h"
+#include "model/utility/src/Object.h"
 #include <nlohmann/json.hpp>
 
 namespace BPMNOS::Execution {
@@ -26,10 +27,10 @@ namespace BPMNOS::Execution {
 class Signal : public Observable {
 public:
   constexpr Type getObservableType() const override { return Type::Signal; };
-  Signal(BPMNOS::number name, ContentMap content);
+  Signal(BPMNOS::number name, std::shared_ptr<const BPMNOS::Object> content);
 
   BPMNOS::number name;            ///< Signal name
-  ContentMap content; ///< Content the signal carries
+  std::shared_ptr<const BPMNOS::Object> content; ///< The content object the signal carries, shared until written
 
   nlohmann::ordered_json jsonify() const;
 };

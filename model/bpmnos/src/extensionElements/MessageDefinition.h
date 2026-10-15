@@ -8,7 +8,6 @@
 #include <string>
 #include <bpmn++.h>
 #include "Parameter.h"
-#include "ContentDefinition.h"
 #include "Schema.h"
 #include "model/utility/src/Value.h"
 #include "model/bpmnos/src/xml/bpmnos/tMessage.h"
@@ -46,7 +45,6 @@ public:
 
   std::vector< HeaderKey > header; ///< Keys of the header always beginning with "sender" and "recipient"
   enum Index { Sender, Recipient };
-  ContentDefinitionMap contentMap; ///< Map allowing to look up contents by their keys.
 
   template <typename DataType>
   BPMNOS::Values getSenderHeader(const AttributeRegistry& attributeRegistry, const BPMNOS::Status& status, const DataType& data, BPMNOS::number instance) const; /// Returns a vector of values including sender (the given instance), recipient, and all other header parameters

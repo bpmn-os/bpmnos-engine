@@ -20,9 +20,12 @@
     <bpmn2:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="ThrowEvent_1" />
     <bpmn2:endEvent id="ThrowEvent_1">
       <bpmn2:extensionElements>
-        <bpmnos:signal name="Trigger" type="{ amount: integer }">
-          <bpmnos:content key="amount" attribute="amount" />
-        </bpmnos:signal>
+        <bpmnos:status>
+          <bpmnos:operators>
+            <bpmnos:operator id="Operator_ThrowEvent_1_amount" expression="Trigger.amount := amount" />
+          </bpmnos:operators>
+        </bpmnos:status>
+        <bpmnos:signal name="Trigger" type="{ amount: integer }" />
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_1</bpmn2:incoming>
       <bpmn2:signalEventDefinition id="SignalEventDefinition_1" />
@@ -46,11 +49,10 @@
     </bpmn2:extensionElements>
     <bpmn2:startEvent id="SignalStartEvent">
       <bpmn2:extensionElements>
-        <bpmnos:signal name="Trigger" type="{ amount: integer }">
-          <bpmnos:content key="amount" attribute="received" />
-        </bpmnos:signal>
+        <bpmnos:signal name="Trigger" type="{ amount: integer }" />
         <bpmnos:status>
           <bpmnos:operators>
+            <bpmnos:operator id="Operator_SignalStartEvent_amount" expression="received := Trigger.amount" />
             <bpmnos:operator id="Operator_1" expression="total := total + received" />
             <bpmnos:operator id="Operator_2" expression="instantiations := instantiations + 1" />
           </bpmnos:operators>
@@ -81,9 +83,12 @@
     <bpmn2:sequenceFlow id="Flow_2" sourceRef="StartEvent_2" targetRef="ThrowEvent_2" />
     <bpmn2:endEvent id="ThrowEvent_2">
       <bpmn2:extensionElements>
-        <bpmnos:signal name="Other" type="{ amount: integer }">
-          <bpmnos:content key="amount" attribute="amount" />
-        </bpmnos:signal>
+        <bpmnos:status>
+          <bpmnos:operators>
+            <bpmnos:operator id="Operator_ThrowEvent_2_amount" expression="Other.amount := amount" />
+          </bpmnos:operators>
+        </bpmnos:status>
+        <bpmnos:signal name="Other" type="{ amount: integer }" />
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_2</bpmn2:incoming>
       <bpmn2:signalEventDefinition id="SignalEventDefinition_3" />

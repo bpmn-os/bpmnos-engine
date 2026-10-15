@@ -1,9 +1,6 @@
 #include "MessageDefinition.h"
-#include "ContentDefinition.h"
 #include "ExtensionElements.h"
-#include "model/bpmnos/src/xml/bpmnos/tContent.h"
 #include "model/utility/src/string_utility.h"
-#include <algorithm>
 #include <map>
 #include <stdexcept>
 
@@ -80,14 +77,6 @@ MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, const Attri
   }
   for ( auto& [key,type] : additionalHeader ) {
     header.push_back({key,type});
-  }
-
-  for ( XML::bpmnos::tContent& content : element->content ) {
-    auto& key = content.key.value.value;
-    if ( std::ranges::none_of(schema.fields, [&key](auto& field) { return field.first == key; }) ) {
-      throw std::runtime_error("MessageDefinition: content '" + key + "' of message '" + message->name.value.value + "' is no field of its type");
-    }
-    contentMap.emplace(key,std::make_unique<ContentDefinition>(&content,attributeRegistry));
   }
 }
 

@@ -304,7 +304,7 @@ public:
     std::list< std::weak_ptr<const Execution::Token> > tokensAwaitingReadyEvent;
   };
 
-  ScriptedDataProvider(std::shared_ptr<const Model::Model> model, const BPMN::Process* process, std::string instanceId, BPMNOS::number signalTime, Execution::ContentMap signalContent, BPMNOS::number terminationTime)
+  ScriptedDataProvider(std::shared_ptr<const Model::Model> model, const BPMN::Process* process, std::string instanceId, BPMNOS::number signalTime, std::shared_ptr<const BPMNOS::Object> signalContent, BPMNOS::number terminationTime)
     : DataProvider(model)
     , model(std::move(model))
     , process(process)
@@ -374,7 +374,7 @@ public:
   const BPMN::Process* const process;
   const BPMNOS::number instanceId;
   const BPMNOS::number signalTime;
-  const Execution::ContentMap signalContent;
+  const std::shared_ptr<const BPMNOS::Object> signalContent;
   const BPMNOS::number terminationTime;
 };
 
@@ -386,8 +386,9 @@ SCENARIO( "Signal raised by the environment", "[data][provider][signal]" ) {
     auto model = std::make_shared<const Model::Model>(modelFile);
     auto process = model->processes.back().get();
     REQUIRE( process->id == "Process_2" );
-    Execution::ContentMap content;
-    content.emplace( "emitter", std::string("World") );
+    // the environment builds the content object from the type of the signal
+    auto catcher = process->find([](BPMN::Node* node) { return node->id == "SignalEvent_2"; });
+    auto content = catcher->extensionElements->as<Model::ExtensionElements>()->signalSchema.fromJSON(R"({ "emitter": "World" })");
     auto dataProvider = std::make_shared<const ScriptedDataProvider>(model, process, "Instance_2", 2, content, 5);
 
     WHEN( "The environment raises the signal at time 2" ) {

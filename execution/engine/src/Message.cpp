@@ -11,7 +11,7 @@ Message::Message(const Message* other, Token* waitingToken)
   , waitingToken(waitingToken)
   , recipient(other->recipient)
   , header(other->header)
-  , contentValueMap(other->contentValueMap)
+  , content(other->content)
 {
 }
 
@@ -32,16 +32,9 @@ Message::Message(Token* token)
     recipient = header[ BPMNOS::Model::MessageDefinition::Index::Recipient ].value();
   }
 
-  for (auto& [key,contentDefinition] : messageDefinition->contentMap) {
-    auto attribute = contentDefinition->attribute;
-    if ( attribute->isObject() ) {
-      // the object is shared, a later write by the sender copying it
-      contentValueMap.emplace( key, attributeRegistry.getObject(attribute,token->status,*token->data) );
-    }
-    else {
-      contentValueMap.emplace( key, attributeRegistry.getValue(attribute,token->status,*token->data) );
-    }
-  }
+  // the content object the operators of the sender wrote
+  assert( token->content );
+  content = token->content;
 }
 
 bool Message::matches(const BPMNOS::Values& otherHeader) const {
@@ -79,64 +72,8 @@ nlohmann::ordered_json Message::jsonify() const {
     ++i;
   }
 
-  for ( auto& [key,contentValue] : contentValueMap ) {
-//std::cerr << "Key: " << key << std::endl;  
-    if ( std::holds_alternative< std::optional<number> >(contentValue) && std::get< std::optional<number> >(contentValue).has_value() ) {
-//std::cerr << "has value" << std::endl;  
-      auto it = messageDefinition->contentMap.find(key);
-      if ( it == messageDefinition->contentMap.end() ) {
-        // the content was filled from this very definition, so a key it does not know is no value to render
-        throw std::runtime_error("Message: unknown content key '" + key + "'");
-      }
-      number value = std::get< std::optional<number> >(contentValue).value();
-      jsonObject["content"][key] = BPMNOS::to_string(value,it->second->attribute->type);
-    }
-    else if (std::holds_alternative<std::string>(contentValue)) {
-//std::cerr << "has string" << std::endl;  
-      jsonObject["content"][key] = std::get< std::string >(contentValue);
-    }
-    else if ( std::holds_alternative< std::shared_ptr<const BPMNOS::Object> >(contentValue) ) {
-      // an object is rendered as JSON
-      jsonObject["content"][key] = BPMNOS::to_json( *std::get< std::shared_ptr<const BPMNOS::Object> >(contentValue) );
-    }
-    else {
-//std::cerr << "else" << std::endl;  
-      jsonObject["content"][key] = nullptr;
-    }
-  }
+  // the content object is rendered as JSON, its fields being named as the type of the message names them
+  jsonObject["content"] = BPMNOS::to_json(*content);
 
   return jsonObject;
 }
-
-
-template <typename DataType>
-BPMNOS::number Message::apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Status& status, DataType& data) const {
-  auto& targetContentDefinition = node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->getMessageDefinition()->contentMap;
-
-  BPMNOS::number objectiveChange = 0;
-  size_t counter = 0;
-  for (auto& [key,contentValue] : contentValueMap) {
-    if ( auto it = targetContentDefinition.find(key); it != targetContentDefinition.end() ) {
-      objectiveChange += receiveContent(attributeRegistry, key, it->second->attribute, &contentValue, status, data);
-    }
-    else {
-      // key in message content, but not in recipient content
-      counter++;
-    }
-  }
-
-  if ( targetContentDefinition.size() > contentValueMap.size() - counter ) {
-    // recipient has keys in content that are not in message content
-    for (auto& [key,definition] : targetContentDefinition) {
-      if ( !contentValueMap.contains(key) ) {
-        // key in recipient content, but not in message content
-        objectiveChange += receiveContent<DataType>(attributeRegistry, key, definition->attribute, nullptr, status, data);
-      }
-    }
-  }
-  return objectiveChange;
-}
-
-template BPMNOS::number Message::apply<BPMNOS::Data>(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Status& status, Data& data) const;
-template BPMNOS::number Message::apply<BPMNOS::SharedData>(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Status& status, SharedData& data) const;
-

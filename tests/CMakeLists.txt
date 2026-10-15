@@ -39,6 +39,7 @@ list(APPEND tests_SOURCES
   data/provider/test.cpp
   data/objects/test.cpp
   data/initializers/test.cpp
+  execution/contentobject/test.cpp
   execution/process/test.cpp
   execution/task/test.cpp
   execution/subprocess/test.cpp

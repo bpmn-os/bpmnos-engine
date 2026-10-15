@@ -64,6 +64,7 @@ Token::Token(StateMachine* owner, const Token* other)
   , state(other->state)
   , status(other->status)
   , data(&owner->data)
+  , content(other->content)
   , performing(nullptr)
 {
   // Copy decisionRequest (uses raw this pointer, not weak_ptr)
@@ -712,13 +713,8 @@ void Token::advanceToCompleted() {
     assert( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
     auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
     applyOperators( *extensionElements );
-
-    // the data the content of a message or signal writes are announced by the update the operators notify, which
-    // names the same attributes, and here only if there are no operators
-    if ( ( node->represents<BPMN::MessageCatchEvent>() || node->represents<BPMN::SignalCatchEvent>() ) && extensionElements->operators.empty() ) {
-      // the observers decide by the index of each attribute whether it concerns this instance or all of them
-      owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements->dataUpdate.attributes ) );
-    }
+    // the content object received is of no further concern once the operators have read it
+    content.reset();
   }
 
   update(State::COMPLETED);
@@ -1345,11 +1341,23 @@ void Token::withdraw() {
 void Token::applyOperators(const BPMNOS::Model::ExtensionElements& extensionElements) {
   assert( status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] == owner->systemState->getTime() );
 
+  if ( extensionElements.content && node->represents<BPMN::ThrowEvent>() ) {
+    // the content object a throwing node sends is written from an undefined object of its type
+    content = extensionElements.content->schema->undefinedObject();
+  }
+
   if ( extensionElements.operators.empty() ) {
     return;
   }
 
-  const_cast<Engine*>(owner->systemState->engine)->addToObjective( extensionElements.applyOperators(status,*data) );
+  auto engine = const_cast<Engine*>(owner->systemState->engine);
+  if ( extensionElements.content ) {
+    assert( content );
+    engine->addToObjective( extensionElements.applyOperators(status,*data,content) );
+  }
+  else {
+    engine->addToObjective( extensionElements.applyOperators(status,*data) );
+  }
 
   // notify about data update
   // the observers decide by the index of each attribute whether it concerns this instance or all of them
@@ -1360,9 +1368,11 @@ void Token::emitSignal() {
   auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert( extensionElements->signal );
 
-  // determine signal content before it is received anywhere; a recipient writing a global would
-  // otherwise change what a later reader of the content obtains
-  Signal signal( extensionElements->signalName, getSignalContent(extensionElements->signalContentMap) );
+  // the content object the operators wrote is fixed before the signal is received anywhere, a recipient writing
+  // it copying it
+  assert( content );
+  Signal signal( extensionElements->signalName, std::move(content) );
+  content.reset();
 
   // the broadcast is enqueued so that token advances already scheduled are made before the signal is
   // delivered: a token on its way to a catching signal event when the signal is thrown still receives it
@@ -1370,58 +1380,11 @@ void Token::emitSignal() {
   engine->commands.emplace_back( std::bind(&Engine::broadcastSignal, engine, std::move(signal)) );
 }
 
-ContentMap Token::getSignalContent(const BPMNOS::Model::ContentDefinitionMap& contentMap) {
-  auto& attributeRegistry = getAttributeRegistry();
-  ContentMap contentValueMap;
-  for (auto& [key,contentDefinition] : contentMap) {
-    auto attribute = contentDefinition->attribute;
-    if ( attribute->isObject() ) {
-      // the object is shared, a later write by the emitter copying it
-      contentValueMap.emplace( key, attributeRegistry.getObject(attribute,status,*data) );
-    }
-    else {
-      contentValueMap.emplace( key, attributeRegistry.getValue(attribute,status,*data) );
-    }
-  }
-  return contentValueMap;
-}
-
-void Token::setSignalContent(ContentMap& sourceMap) {
-  auto& attributeRegistry = getAttributeRegistry();
-  auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  assert( extensionElements->signal );
-
-  BPMNOS::number objectiveChange = 0;
-
-  size_t counter = 0;
-  for (auto& [key,contentValue] : sourceMap) {
-    if ( auto it = extensionElements->signalContentMap.find(key); it != extensionElements->signalContentMap.end() ) {
-      objectiveChange += receiveContent(attributeRegistry, key, it->second->attribute, &contentValue, status, *data);
-    }
-    else {
-      // key in signal content, but not in recipient content
-      counter++;
-    }
-  }
-
-  if ( extensionElements->signalContentMap.size() > sourceMap.size() - counter ) {
-    // recipient has keys in content that are not in signal content
-    for (auto& [key,definition] : extensionElements->signalContentMap) {
-      if ( !sourceMap.contains(key) ) {
-        // key in recipient content, but not in message content
-        objectiveChange += receiveContent(attributeRegistry, key, definition->attribute, nullptr, status, *data);
-      }
-    }
-  }
-
-  // the data update is notified on completion
-  const_cast<Engine*>(owner->systemState->engine)->addToObjective(objectiveChange);
-}
-
-
 void Token::sendMessage() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
   systemState->messages.emplace_back(std::make_shared<Message>(this));
+  // the message holds the content object the operators wrote
+  content.reset();
   auto& message = systemState->messages.back();
 
   if ( message->recipient.has_value() ) {

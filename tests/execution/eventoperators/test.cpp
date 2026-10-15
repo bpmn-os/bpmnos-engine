@@ -169,7 +169,7 @@ SCENARIO( "Operators of message events", "[execution][eventoperators]" ) {
       THEN( "The message end event applies its operators before the message is built" ) {
         auto messageLog = recorder.find(nlohmann::json{{"origin","MessageThrowEvent_1"},{"state","CREATED"}});
         REQUIRE( messageLog.size() == 1 );
-        REQUIRE( messageLog[0]["content"]["payload"] == "42" );
+        REQUIRE( messageLog[0]["content"]["payload"] == 42 );
       }
       THEN( "The message end event does not become busy" ) {
         auto throwLog = recorder.find(nlohmann::json{{"nodeId","MessageThrowEvent_1"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});

@@ -16,7 +16,7 @@ std::string typeOf(const std::string& type) {
 }
 
 /// Two processes, the first throwing a message or signal by an intermediate throw event, the second catching it by an
-/// intermediate catch event, each element stating the given definition and content.
+/// intermediate catch event, each element stating the given definition.
 std::string exchangeModel(const std::string& element, const std::string& definition, const std::string& thrown, const std::string& caught) {
   auto eventDefinition = ( element == "message" ? "messageEventDefinition" : "signalEventDefinition" );
   auto process = [&](const std::string& id, const std::string& event, const std::string& definitionAndContent) {
@@ -62,9 +62,9 @@ std::string exchangeModel(const std::string& element, const std::string& definit
     + "\n</bpmn2:definitions>\n";
 }
 
-/// The rest of the definition of a message or signal following its name: its type, if any, and its content.
-std::string stated(const std::string& type, const std::string& content = "") {
-  return typeOf(type) + ">" + content;
+/// The rest of the definition of a message or signal following its name: its type, if any, and its children.
+std::string stated(const std::string& type, const std::string& children = "") {
+  return typeOf(type) + ">" + children;
 }
 
 } // namespace
@@ -104,20 +104,6 @@ TEST_CASE( "Definitions of messages and signals", "[model][definitions]" ) {
         REQUIRE_THROWS_WITH(
           modelFrom(exchangeModel(element, "Exchange", stated("integer"), stated("integer"))),
           Catch::Matchers::ContainsSubstring("must be an object")
-        );
-      }
-
-      SECTION( "A content key is a field of the type" ) {
-        REQUIRE_NOTHROW( modelFrom(exchangeModel(element, "Exchange",
-          stated("{ value: integer }", "<bpmnos:content key=\"value\" attribute=\"value\" />"),
-          stated("{ value: integer }", "<bpmnos:content key=\"value\" attribute=\"value\" />")
-        )) );
-        REQUIRE_THROWS_WITH(
-          modelFrom(exchangeModel(element, "Exchange",
-            stated("{ value: integer }", "<bpmnos:content key=\"other\" attribute=\"value\" />"),
-            stated("{ value: integer }")
-          )),
-          Catch::Matchers::ContainsSubstring("is no field of its type")
         );
       }
     }

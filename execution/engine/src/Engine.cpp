@@ -193,8 +193,8 @@ void Engine::broadcastSignal(Signal signal) {
   for ( auto& [token_ptr] : waitingTokens ) {
     auto token = token_ptr.lock();
     assert( token );
-    // receive signal content
-    token->setSignalContent(signal.content);
+    // the content object is held until the operators of the catching node read it
+    token->content = signal.content;
 
     // advance receiving token
     commands.emplace_back(std::bind(&Token::advanceToCompleted,token.get()), token.get());
@@ -210,47 +210,18 @@ void Engine::broadcastSignal(Signal signal) {
   }
 }
 
-void Engine::triggerInstance(const BPMN::Process* process, ContentMap content) {
-  auto extensionElements = process->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  auto& attributeRegistry = extensionElements->attributeRegistry;
-
+void Engine::triggerInstance(const BPMN::Process* process, std::shared_ptr<const BPMNOS::Object> content) {
   // the identifier is generated, an instance created by a trigger being declared nowhere
   auto counter = ++systemState->instantiationCounter[process];
   auto instanceId = process->id + StateMachine::delimiters[1] + std::to_string(counter);
 
-  // the instance comes into being with the trigger, so that it is initialised before the content of the trigger
-  // is written, an instance created by a trigger being given no instance data
+  // the instance comes into being with the trigger, an instance created by a trigger being given no instance data
   InstanceValues values(*systemState->scenario->dataProvider, process, systemState->getTime(), BPMNOS::Status{}, systemState->stateMachine->data, BPMNOS::to_number(instanceId,STRING), {}, {});
-
-  // the instance is created before the content of the trigger is applied, so that the content is written
-  // through the data of the token at the process, which holds the global attributes and those of the instance
   auto token = systemState->stateMachine->createInstance(process, std::move(values.data), std::move(values.status));
 
-  // the content of the trigger is applied to the initial status of the instance, which is where it is
-  // needed and after which it is of no further concern
+  // the content object of the trigger is handed to the start event of the instance, whose operators read it
   assert( process->startNodes.size() == 1 );
-  auto startNode = process->startNodes.front();
-
-  // the start event is triggered by a signal or by a message, whose content it declares
-  auto startNodeExtensionElements = startNode->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  const BPMNOS::Model::ContentDefinitionMap* contentMap = startNodeExtensionElements->signal ?
-    &startNodeExtensionElements->signalContentMap :
-    &startNodeExtensionElements->getMessageDefinition()->contentMap;
-  const std::vector<const BPMNOS::Model::Attribute*>* dataUpdateAttributes = &startNodeExtensionElements->dataUpdate.attributes;
-
-  BPMNOS::number objectiveChange = 0;
-  for ( auto& [key,definition] : *contentMap ) {
-    // a key in the content of the start event, but not in the content of the trigger, is given nothing
-    auto it = content.find(key);
-    objectiveChange += receiveContent(attributeRegistry, key, definition->attribute, it == content.end() ? nullptr : &it->second, token->status, *token->data);
-  }
-
-  addToObjective(objectiveChange);
-
-  if ( !dataUpdateAttributes->empty() ) {
-    // the observers decide by the index of each attribute whether it concerns this instance or all of them
-    notify( DataUpdate( token->getInstanceId(), *dataUpdateAttributes ) );
-  }
+  token->content = std::move(content);
 
   // the trigger is the condition for the start, so the instance is started at once and not upon a ready
   // event: the token at the process advances through READY
@@ -264,7 +235,7 @@ void Engine::triggerInstanceByMessage(const BPMN::Process* process, std::weak_pt
     return;
   }
 
-  triggerInstance( process, message->contentValueMap );
+  triggerInstance( process, message->content );
 
   // the message is consumed here, no delivery event being dispatched for a message instantiating a process
   message->state = Message::State::DELIVERED;
@@ -428,8 +399,8 @@ void Engine::process(const MessageDeliveryEvent* event) {
   auto message_ptr = event->message.lock();
   assert( message_ptr );
   Message* message = const_cast<Message*>(message_ptr.get());
-  // update token status
-  addToObjective( message->apply(token->node->as<BPMN::FlowNode>(),token->getAttributeRegistry(),token->status,*token->data) );
+  // the content object is held until the operators of the catching node read it
+  token->content = message->content;
 
   message->state = Message::State::DELIVERED;
   notify(message);

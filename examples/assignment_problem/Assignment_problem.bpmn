@@ -27,9 +27,12 @@ and the total cost that of all assignment is minimised.</bpmn2:documentation>
       <bpmn2:documentation>The task creates a message containing the instance identifier of the client and waits until the message is delivered to a server.</bpmn2:documentation>
       <bpmn2:extensionElements>
         
-          <bpmnos:message name="Message" type="{ client_id: string }">
-            <bpmnos:content key="client_id" attribute="instance" />
-          </bpmnos:message>
+          <bpmnos:status>
+            <bpmnos:operators>
+              <bpmnos:operator id="Operator_SendRequestTask_client_id" expression="Message.client_id := instance" />
+            </bpmnos:operators>
+          </bpmnos:status>
+          <bpmnos:message name="Message" type="{ client_id: string }" />
         
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_0v1jo6i</bpmn2:incoming>
@@ -63,15 +66,14 @@ and the total cost that of all assignment is minimised.</bpmn2:documentation>
       <bpmn2:documentation>The task waits for a message from a client. When the message is received, it looks up the cost of the assignment in the table `costs.csv` and sets the `cost` attribute accordingly.</bpmn2:documentation>
       <bpmn2:extensionElements>
         
-          <bpmnos:message name="Message" type="{ client_id: string }">
-            <bpmnos:content key="client_id" attribute="client" />
-          </bpmnos:message>
+          <bpmnos:message name="Message" type="{ client_id: string }" />
         
         <bpmnos:status>
           <bpmnos:attributes>
             <bpmnos:attribute id="Attribute_20a021k" type="decimal" name="cost" objective="minimize" weight="1" />
           </bpmnos:attributes>
           <bpmnos:operators>
+              <bpmnos:operator id="Operator_ReceiveRequestTask_client_id" expression="client := Message.client_id" />
             <bpmnos:operator id="Operator_2ldkdhd" expression="cost := costs(client,instance)" />
           </bpmnos:operators>
         </bpmnos:status>

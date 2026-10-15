@@ -11,7 +11,6 @@
 #include "Operator.h"
 #include "Choice.h"
 #include "MessageDefinition.h"
-#include "ContentDefinition.h"
 #include "Parameter.h"
 #include "Guidance.h"
 #include "model/bpmnos/src/xml/bpmnos/tAttribute.h"
@@ -54,7 +53,17 @@ public:
   std::vector< std::unique_ptr<Attribute> > data;  ///< Vector containing scalar data attributes declared for data objects within the node's scope.
   std::vector< std::unique_ptr<Attribute> > dataObjects;  ///< Vector containing objects declared for data objects within the node's scope.
 
-  struct { std::vector<const Attribute*> attributes; } dataUpdate; ///< Struct containing the data attributes, global or not, that are modified through operators, choices, or message content.
+  struct { std::vector<const Attribute*> attributes; } dataUpdate; ///< Struct containing the data attributes, global or not, that are modified through operators or choices.
+
+  /// The registry the operators are compiled with if the node states a message or signal: the registry of the node,
+  /// augmented by the content object of the message or signal, so that only the operators see the content object;
+  /// nullptr if the node states none, the operators being compiled with the registry of the node.
+  std::unique_ptr<AttributeRegistry> augmentedAttributeRegistry;
+  /// The content object of the message or signal the node states, a status object named after the message or
+  /// signal and of its type, nullptr if the node states none. Its slot follows the status objects of the node, and
+  /// it is held there only while the operators run: the operators of a throwing node write it, starting from an
+  /// undefined object of its type, and those of a catching node read the object received.
+  std::unique_ptr<Attribute> content;
 
   std::unique_ptr<MessageDefinition> messageDefinition; ///< Message definition provided for the node, or nullptr if the node exchanges no message.
   const MessageDefinition* getMessageDefinition() const;
@@ -66,7 +75,6 @@ public:
   XML::bpmnos::tSignal* signal; ///< The `<bpmnos:signal>` element the signal is declared by, or nullptr if the node declares none.
   BPMNOS::number signalName; ///< Name of the signal. Temporary: removed once a signal is declared by a named definition.
   Schema signalSchema; ///< Type of the content of the signal, an object, without fields if the signal states no type. Temporary: removed once a signal is declared by a named definition.
-  ContentDefinitionMap signalContentMap; ///< Content of the signal by key. Temporary: removed once the content of a signal is one object.
 
   std::vector< std::unique_ptr<Restriction> > conditions; ///< Vector containing the conditions of a conditional event.
   std::set<const Attribute*> conditionDependencies; ///< Set containing all input attributes influencing whether the conditions are satisfied.
@@ -101,6 +109,11 @@ public:
   /// @brief Method applying the operators and returning the change of the objective.
   template <typename DataType>
   BPMNOS::number applyOperators(BPMNOS::Status& status, DataType& data) const;
+
+  /// @brief Method applying the operators to the status, the data and the given content object of the message or
+  /// signal the node states, which they write or read, and returning the change of the objective.
+  template <typename DataType>
+  BPMNOS::number applyOperators(BPMNOS::Status& status, DataType& data, std::shared_ptr<const BPMNOS::Object>& contentObject) const;
 
   template <typename DataType>
   BPMNOS::number getObjective(const BPMNOS::Status& status, const DataType& data) const; ///< Returns the total objective of all attributes provided.

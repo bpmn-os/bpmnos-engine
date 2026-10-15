@@ -18,10 +18,14 @@
     <bpmn2:sequenceFlow id="Flow_0ldsxx0" sourceRef="StartEvent_1" targetRef="MessageThrowEvent_1" />
     <bpmn2:endEvent id="MessageThrowEvent_1">
       <bpmn2:extensionElements>
+        <bpmnos:status>
+          <bpmnos:operators>
+            <bpmnos:operator id="Operator_MessageThrowEvent_1_sender" expression="Message.sender := instance" />
+          </bpmnos:operators>
+        </bpmnos:status>
         <bpmnos:message name="Message" type="{ sender: string }">
           <bpmnos:parameter name="recipient" value="&#34;Instance_2&#34;" />
           <bpmnos:parameter name="time" value="timestamp" />
-          <bpmnos:content key="sender" attribute="instance" />
         </bpmnos:message>
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_0ldsxx0</bpmn2:incoming>
@@ -50,10 +54,14 @@
     <bpmn2:sequenceFlow id="Flow_0exyqrt" sourceRef="StartEvent_2" targetRef="MessageCatchEvent_2" />
     <bpmn2:intermediateCatchEvent id="MessageCatchEvent_2">
       <bpmn2:extensionElements>
+        <bpmnos:status>
+          <bpmnos:operators>
+            <bpmnos:operator id="Operator_MessageCatchEvent_2_sender" expression="sender := Message.sender" />
+          </bpmnos:operators>
+        </bpmnos:status>
         <bpmnos:message name="Message" type="{ sender: string }">
           <bpmnos:parameter name="sender" value="&#34;Instance_1&#34;" />
           <bpmnos:parameter name="time" value="timestamp" />
-          <bpmnos:content key="sender" attribute="sender" />
         </bpmnos:message>
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_0exyqrt</bpmn2:incoming>

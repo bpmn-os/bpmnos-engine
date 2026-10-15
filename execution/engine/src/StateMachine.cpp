@@ -794,6 +794,8 @@ void StateMachine::run(Status status) {
 //std::cerr << "Run " << scope->id << "/" << this << "/" << parentToken << std::endl;
   for ( auto startNode : scope->startNodes ) {
     tokens.push_back( std::make_shared<Token>(this,startNode,std::move(status)) );
+    // the content object of the trigger of an instance is read by the operators of its start event
+    tokens.back()->content = std::move(parentToken->content);
   }
 
   for ( auto token : tokens ) {

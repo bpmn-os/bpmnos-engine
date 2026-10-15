@@ -62,10 +62,14 @@
       <bpmn2:sendTask id="SendJobTask" name="Send job request">
         <bpmn2:extensionElements>
           
+            <bpmnos:status>
+              <bpmnos:operators>
+                <bpmnos:operator id="Operator_SendJobTask_order" expression="Request.order := instance" />
+                <bpmnos:operator id="Operator_SendJobTask_duration" expression="Request.duration := duration" />
+              </bpmnos:operators>
+            </bpmnos:status>
             <bpmnos:message name="Request" type="{ order: string, duration: decimal }">
               <bpmnos:parameter name="machine" value="machine" />
-              <bpmnos:content key="order" attribute="instance" />
-              <bpmnos:content key="duration" attribute="duration" />
             </bpmnos:message>
           
         </bpmn2:extensionElements>
@@ -138,11 +142,11 @@
         <bpmn2:extensionElements>
           <bpmnos:message name="Request" type="{ order: string, duration: decimal }">
             <bpmnos:parameter name="machine" value="machine" />
-            <bpmnos:content key="duration" attribute="duration" />
-            <bpmnos:content key="order" attribute="order" />
           </bpmnos:message>
           <bpmnos:status>
             <bpmnos:operators>
+              <bpmnos:operator id="Operator_CatchRequestMessage_duration" expression="duration := Request.duration" />
+              <bpmnos:operator id="Operator_CatchRequestMessage_order" expression="order := Request.order" />
               <bpmnos:operator id="OperatorJobRequests" expression="job_requests += 1" />
             </bpmnos:operators>
           </bpmnos:status>

@@ -19,12 +19,11 @@
     <bpmn2:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="SignalEvent_1" />
     <bpmn2:intermediateThrowEvent id="SignalEvent_1">
       <bpmn2:extensionElements>
-        <bpmnos:signal name="Signal" type="{ payload: integer }">
-          <bpmnos:content key="payload" attribute="payload" />
-        </bpmnos:signal>
+        <bpmnos:signal name="Signal" type="{ payload: integer }" />
         <bpmnos:status>
           <bpmnos:operators>
             <bpmnos:operator id="Operator_1" expression="payload := 42" />
+            <bpmnos:operator id="Operator_SignalEvent_1_payload" expression="Signal.payload := payload" />
           </bpmnos:operators>
         </bpmnos:status>
       </bpmn2:extensionElements>
@@ -60,11 +59,10 @@
     <bpmn2:sequenceFlow id="Flow_3" sourceRef="StartEvent_2" targetRef="SignalEvent_2" />
     <bpmn2:intermediateCatchEvent id="SignalEvent_2">
       <bpmn2:extensionElements>
-        <bpmnos:signal name="Signal" type="{ payload: integer }">
-          <bpmnos:content key="payload" attribute="received" />
-        </bpmnos:signal>
+        <bpmnos:signal name="Signal" type="{ payload: integer }" />
         <bpmnos:status>
           <bpmnos:operators>
+            <bpmnos:operator id="Operator_SignalEvent_2_payload" expression="received := Signal.payload" />
             <bpmnos:operator id="Operator_2" expression="doubled := received * 2" />
           </bpmnos:operators>
         </bpmnos:status>

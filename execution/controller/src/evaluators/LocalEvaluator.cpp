@@ -33,7 +33,15 @@ bool LocalEvaluator::updateValues(EntryDecision* decision, Status& status, Data&
   ) {
     // apply operators after checking entry restrictions and before applying guidance
     // receive tasks and decision tasks require further decision before operators are applied
-    extensionElements->applyOperators(status,data);
+    if ( extensionElements->content ) {
+      // the operators of a send task write the content object, starting from an undefined object of its type, as
+      // they do when the task is performed
+      auto content = extensionElements->content->schema->undefinedObject();
+      extensionElements->applyOperators(status,data,content);
+    }
+    else {
+      extensionElements->applyOperators(status,data);
+    }
   }
   return extensionElements->fullScopeRestrictionsSatisfied(status,data);
 }
@@ -83,9 +91,9 @@ bool LocalEvaluator::updateValues(MessageDeliveryDecision* decision, Status& sta
   assert(extensionElements);
   assert( dynamic_cast<const MessageDeliveryEvent*>(decision) );
   auto message = static_cast<const MessageDeliveryEvent*>(decision)->message.lock();
-  message->apply(token->node->as<BPMN::FlowNode>(),token->getAttributeRegistry(),status,data);
-  // the operators of the catching node are applied after the content is received
-  extensionElements->applyOperators(status,data);
+  // the operators of the catching node read the content object of the message, as they do when it is delivered
+  auto content = message->content;
+  extensionElements->applyOperators(status,data,content);
 
   // check feasibility
   if ( token->node->represents<BPMN::ReceiveTask>() ) {

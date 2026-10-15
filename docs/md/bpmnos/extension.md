@@ -196,7 +196,7 @@ Within a `<bpmnos:decisions>` container any number of `<bpmnos:decision>` elemen
 Each condition constrains the values that may be chosen for the specified attribute.
 
 ## Messages
-@ref BPMNOS::Model::MessageDefinition "Messages" can be used to exchange information by delivering a @ref BPMNOS::Model::ContentDefinition "content" from one process to another. 
+@ref BPMNOS::Model::MessageDefinition "Messages" can be used to exchange information by delivering a content object from one process to another. 
 
 For @ref BPMN::MessageThrowEvent "message throw events" and @ref BPMN::MessageCatchEvent "message catch events" a `<bpmnos:message>` element must be provided with field `name` representing a name of the message and, if the message has content, field `type` stating the type of its content in the syntax of attribute types.
 The type is an object, `{ order: string, duration: decimal }`, a scalar type being refused; a single value is sent as the field of an object. A message without content states no type.
@@ -208,59 +208,68 @@ A parameter that states no value at all is permitted and means that the entry ho
 By default, every header contains entries with names `sender` and `recipient`, which hold instance identifiers; the name of the message is no entry of the header, and a parameter named `name` is refused.
 Messages can only be delivered to a recipient if the recipient specifies the same message name as the sender, the entry names of the headers are identical, the entries of the same name are of the same type wherever both sender and recipient state one, and all header values match, i.e. either have the same value or one of both is undefined.
  
-Moreover, message definitions may contain one or more `<bpmnos:content>` element defining a message content.
-For each such element the following fields can be provided
-- `key`: a key allowing to refer to the content, which must be a field of the message's type,
-- `attribute`: the attribute name containing the value to be added to the message content or the name of the attribute for which the value is set to the message content.
+The content of a message is one object of its type, the content object, which the operators of the throwing and the catching element refer to by the name of the message and which no other expression sees.
+The operators of a throwing element, a @ref BPMN::SendTask "send task" or a message throw event, write the content object, field by field, `Request.order := instance`, or as a whole, starting from an object of the type whose values are all undefined; the object they leave is sent, a field no operator assigns being undefined.
+The operators of a catching element, a @ref BPMN::ReceiveTask "receive task" or a message catch event, read the content object received, `order := Request.order`, and may not write it.
+A field holding an array or object is assigned to an attribute as a whole assignment is: the attribute keeps the lengths of its fixed dimensions, a shorter array being padded with undefined values and a longer one being an error, and takes the lengths of its open ones.
 
-The following shows an example of an outgoing message definition for a @ref BPMN::SendTask "send task" sending a message with name `Request` to a recipient that must also have a parameter named `machine` having the value of the `machine` attribute. The message content is populated with the values of the `instance` and `duration`  attributes.
+The following shows an example of an outgoing message definition for a @ref BPMN::SendTask "send task" sending a message with name `Request` to a recipient that must also have a parameter named `machine` having the value of the `machine` attribute. Its operators write the values of the `instance` and `duration` attributes into the content object.
 ```xml
 <bpmn2:extensionElements>
+  <bpmnos:status>
+    <bpmnos:operators>
+      <bpmnos:operator id="Operator_Order" expression="Request.order := instance" />
+      <bpmnos:operator id="Operator_Duration" expression="Request.duration := duration" />
+    </bpmnos:operators>
+  </bpmnos:status>
   <bpmnos:message name="Request" type="{ order: string, duration: decimal }">
     <bpmnos:parameter name="machine" value="machine" />
-    <bpmnos:content key="order" attribute="instance" />
-    <bpmnos:content key="duration" attribute="duration" />
   </bpmnos:message>
 </bpmn2:extensionElements>
 ```
 
-The following shows an example of an incoming message definition for a @ref BPMN::MessageCatchEvent "message catch event" receiving a message with name `Request` from a sender that must also have a parameter named `machine` having the value of the `machine` attribute. The recipient attributes `order` and `duration` are set to the values of the respective message content.
+The following shows an example of an incoming message definition for a @ref BPMN::MessageCatchEvent "message catch event" receiving a message with name `Request` from a sender that must also have a parameter named `machine` having the value of the `machine` attribute. Its operators set the attributes `order` and `duration` to the fields of the content object.
 ```xml
 <bpmn2:extensionElements>
+  <bpmnos:status>
+    <bpmnos:operators>
+      <bpmnos:operator id="Operator_Order" expression="order := Request.order" />
+      <bpmnos:operator id="Operator_Duration" expression="duration := Request.duration" />
+    </bpmnos:operators>
+  </bpmnos:status>
   <bpmnos:message name="Request" type="{ order: string, duration: decimal }">
     <bpmnos:parameter name="machine" value="machine" />
-    <bpmnos:content key="order" attribute="order" />
-    <bpmnos:content key="duration" attribute="duration" />
   </bpmnos:message>
 </bpmn2:extensionElements>
 ```
-
-Content may carry arrays and objects as well as values, a key referring to an object attribute on both sides or on neither, which is checked where a message flow pairs a sender with a recipient. The object sent is shared with the sender until either side writes it, so that sending copies nothing and a later write by the sender does not change what was sent. The receiving object takes the object sent as a whole assignment does: it keeps the lengths of its fixed dimensions, a shorter array being padded with undefined values and a longer one being an error, and takes the lengths of its open ones. An object the content does not mention keeps its value. The same holds for signals, and content a data provider raises from outside the model states an array or object as a literal.
 
 A message may also instantiate a process, which it does where the process has a @ref BPMN::MessageStartEvent "message start event".
 Such a message names no recipient, the instance not existing before the message arrives, and is matched by its name alone.
 No element other than that start event may therefore catch a message of that name, and neither the start event nor any element throwing the message may state header parameters or a recipient.
 Several elements may throw it, each instantiating a process of its own, and a multi-instance @ref BPMN::SendTask "send task" instantiates one process per instance.
 A process cannot send itself a message, a message flow connecting two participants, so the message must be thrown outside the process it instantiates.
-The instance receives a generated identifier and is created with the content of the message in its status.
+The instance receives a generated identifier, and the operators of its start event read the content object of the message.
 
 ## Signals
-Signals can be used to broadcast a @ref BPMNOS::Model::ContentDefinition "content" to whoever is listening for them.
+Signals can be used to broadcast a content object to whoever is listening for them.
 
-For @ref BPMN::SignalThrowEvent "signal throw events" and @ref BPMN::SignalCatchEvent "signal catch events" a `<bpmnos:signal>` element must be provided with field `name` representing a name of the signal and, if the signal has content, field `type` stating the type of its content, an object as for a message; every thrower and catcher of a signal states the same type. It may contain one or more `<bpmnos:content>` elements defining the content the signal carries, each with the fields `key` and `attribute` that a message content has, the key being a field of the signal's type.
+For @ref BPMN::SignalThrowEvent "signal throw events" and @ref BPMN::SignalCatchEvent "signal catch events" a `<bpmnos:signal>` element must be provided with field `name` representing a name of the signal and, if the signal has content, field `type` stating the type of its content, an object as for a message; every thrower and catcher of a signal states the same type. The operators of the throwing element write the content object and those of each catching element read it, as for a message.
 
 A signal has no header and no parameters, and this is what distinguishes it from a message. A message is delivered to one recipient, which is chosen among those a message flow and a matching header admit; a signal is broadcast to every element waiting for a signal of that name at the moment it is thrown, and to none if nothing is waiting, in which case it is simply lost. It states no sender and no recipient, so a model that wants the thrower known declares it as part of the content, as the following example does.
 
 ```xml
 <bpmn2:extensionElements>
-  <bpmnos:signal name="Cancellation" type="{ origin: string, reason: string }">
-    <bpmnos:content key="origin" attribute="instance" />
-    <bpmnos:content key="reason" attribute="reason" />
-  </bpmnos:signal>
+  <bpmnos:status>
+    <bpmnos:operators>
+      <bpmnos:operator id="Operator_Origin" expression="Cancellation.origin := instance" />
+      <bpmnos:operator id="Operator_Reason" expression="Cancellation.reason := reason" />
+    </bpmnos:operators>
+  </bpmnos:status>
+  <bpmnos:signal name="Cancellation" type="{ origin: string, reason: string }" />
 </bpmn2:extensionElements>
 ```
 
-The content is read from the attributes of the throwing element when the signal is thrown, and it is fixed at that moment, so that a recipient modifying a global attribute cannot change what another recipient receives. Each recipient declares under the same key the attribute the value is written to, and those attributes need not be named alike, which is what the key is for. A key a recipient declares but the signal does not carry leaves that attribute undefined.
+The content object is fixed when the signal is thrown, so that a recipient modifying a global attribute cannot change what another recipient receives. Each recipient writes the fields it needs to attributes of its own, which need not be named alike.
 
 A signal may also instantiate a process, which it does where the process has a @ref BPMN::SignalStartEvent "signal start event". Such a process is instantiated whenever a signal of that name is thrown, including by itself, the specification giving no ground to forbid a process instantiating itself where a signal rather than a message carries the trigger. An unguarded re-throw does not terminate.
 

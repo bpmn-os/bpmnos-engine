@@ -6,8 +6,8 @@
 #include <memory>
 #include <bpmn++.h>
 #include "Observable.h"
-#include "ContentMap.h"
 #include "model/utility/src/Value.h"
+#include "model/utility/src/Object.h"
 #include "model/bpmnos/src/extensionElements/AttributeRegistry.h"
 #include <nlohmann/json.hpp>
 
@@ -32,12 +32,9 @@ public:
   Token* waitingToken;
   std::optional< BPMNOS::number > recipient;
   BPMNOS::Values header;
-  ContentMap contentValueMap;
+  std::shared_ptr<const BPMNOS::Object> content; ///< The content object the operators of the sender wrote, shared until written
 
   bool matches(const BPMNOS::Values& otherHeader) const; ///< Returns true if headers have the same size and all values that are defined are the same.
-
-  template <typename DataType>
-  BPMNOS::number apply(const BPMN::FlowNode* node, const BPMNOS::Model::AttributeRegistry& attributeRegistry, BPMNOS::Status& status, DataType& data) const; ///< Updates the status at a node based on the message content and returns the change of the objective.
 
   nlohmann::ordered_json jsonify() const;
 };
