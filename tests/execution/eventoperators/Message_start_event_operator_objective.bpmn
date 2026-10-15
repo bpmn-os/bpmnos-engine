@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmnos="https://bpmnos.telematique.eu" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn2:collaboration id="Collaboration_1">
+    <bpmn2:participant id="Participant_1" processRef="Process_1" />
+    <bpmn2:participant id="Participant_2" processRef="Process_2" />
+  </bpmn2:collaboration>
+  <bpmn2:process id="Process_1" isExecutable="true">
+    <bpmn2:extensionElements>
+      <bpmnos:status>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Timestamp_1" type="decimal" name="timestamp" />
+          <bpmnos:attribute id="Payload" type="integer" name="payload" />
+        </bpmnos:attributes>
+      </bpmnos:status>
+    </bpmn2:extensionElements>
+    <bpmn2:dataObject id="DataObject_1">
+      <bpmn2:extensionElements>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Instance" type="string" name="instance" />
+        </bpmnos:attributes>
+      </bpmn2:extensionElements>
+    </bpmn2:dataObject>
+    <bpmn2:startEvent id="StartEvent_1">
+      <bpmn2:outgoing>Flow_1</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="MessageThrowEvent_1" />
+    <bpmn2:endEvent id="MessageThrowEvent_1">
+      <bpmn2:extensionElements>
+        <bpmnos:status>
+          <bpmnos:operators>
+            <bpmnos:operator id="Operator_Payload" expression="Offer.payload := payload" />
+          </bpmnos:operators>
+        </bpmnos:status>
+        <bpmnos:message name="Offer" type="{ payload: integer }" />
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>Flow_1</bpmn2:incoming>
+      <bpmn2:messageEventDefinition id="MessageEventDefinition_1" />
+    </bpmn2:endEvent>
+  </bpmn2:process>
+  <bpmn2:process id="Process_2" isExecutable="true">
+    <bpmn2:extensionElements>
+      <bpmnos:status>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Timestamp_2" type="decimal" name="timestamp" />
+          <bpmnos:attribute id="Score" type="integer" name="score := 0" objective="maximize" weight="1" />
+          <bpmnos:attribute id="Bias" type="integer" name="bias := 0" />
+        </bpmnos:attributes>
+      </bpmnos:status>
+    </bpmn2:extensionElements>
+    <bpmn2:dataObject id="DataObject_2">
+      <bpmn2:extensionElements>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Instance" type="string" name="instance" />
+        </bpmnos:attributes>
+      </bpmn2:extensionElements>
+    </bpmn2:dataObject>
+    <bpmn2:startEvent id="StartEvent_2">
+      <bpmn2:outgoing>Flow_2</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:sequenceFlow id="Flow_2" sourceRef="StartEvent_2" targetRef="TimerEvent_2" />
+    <bpmn2:intermediateCatchEvent id="TimerEvent_2">
+      <bpmn2:extensionElements>
+        <bpmnos:timer>
+          <bpmnos:parameter name="trigger" value="100" />
+        </bpmnos:timer>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>Flow_2</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_3</bpmn2:outgoing>
+      <bpmn2:timerEventDefinition id="TimerEventDefinition_2" />
+    </bpmn2:intermediateCatchEvent>
+    <bpmn2:sequenceFlow id="Flow_3" sourceRef="TimerEvent_2" targetRef="EndEvent_2" />
+    <bpmn2:endEvent id="EndEvent_2">
+      <bpmn2:incoming>Flow_3</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:subProcess id="EventSubProcess_2" triggeredByEvent="true">
+      <bpmn2:startEvent id="MessageStartEvent_2">
+        <bpmn2:extensionElements>
+          <bpmnos:status>
+            <bpmnos:operators>
+              <bpmnos:operator id="Operator_Score" expression="score := Offer.payload + bias" />
+            </bpmnos:operators>
+          </bpmnos:status>
+          <bpmnos:message name="Offer" type="{ payload: integer }" />
+        </bpmn2:extensionElements>
+        <bpmn2:outgoing>Flow_4</bpmn2:outgoing>
+        <bpmn2:messageEventDefinition id="MessageEventDefinition_2" />
+      </bpmn2:startEvent>
+      <bpmn2:sequenceFlow id="Flow_4" sourceRef="MessageStartEvent_2" targetRef="EndEvent_3" />
+      <bpmn2:endEvent id="EndEvent_3">
+        <bpmn2:incoming>Flow_4</bpmn2:incoming>
+      </bpmn2:endEvent>
+    </bpmn2:subProcess>
+  </bpmn2:process>
+</bpmn2:definitions>

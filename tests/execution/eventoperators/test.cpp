@@ -319,3 +319,124 @@ SCENARIO( "Operators of scopes", "[execution][eventoperators]" ) {
     REQUIRE_THROWS_WITH( Model::Model("tests/execution/eventoperators/Event_subprocess_with_operators.bpmn"), Catch::Matchers::ContainsSubstring("scope 'EventSubProcess_1' must not have operators") );
   }
 }
+
+SCENARIO( "Operators of the start event of a subprocess in the evaluation of an entry", "[execution][eventoperators]" ) {
+  std::string csv =
+    "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+    "Instance_1; Process_1;\n"
+  ;
+
+  GIVEN( "Two subprocesses of a sequential ad-hoc subprocess whose start events raise the objective differently" ) {
+    // the greedy controller ranks the entries competing in a sequential ad-hoc subprocess by their evaluations
+    const std::string modelFile = "tests/execution/eventoperators/Start_event_operator_sequential_entry.bpmn";
+    REQUIRE_NOTHROW( Model::Model(modelFile) );
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+
+    WHEN( "The engine is started with the greedy controller" ) {
+      Execution::Engine engine(model);
+      auto evaluator = std::make_shared<Execution::LocalEvaluator>();
+      Execution::GreedyController controller(evaluator);
+      controller.connect(&engine);
+      Execution::Recorder recorder;
+      recorder.subscribe(&engine);
+      engine.run(dataProvider->createScenario());
+
+      THEN( "The subprocess whose start event raises the objective more is entered first" ) {
+        auto entered = [&](const std::string& nodeId) {
+          for ( size_t i = 0; i < recorder.log.size(); i++ ) {
+            if ( recorder.log[i].contains("nodeId") && recorder.log[i]["nodeId"] == nodeId && recorder.log[i]["state"] == "ENTERED" ) {
+              return i;
+            }
+          }
+          FAIL( nodeId << " is not entered" );
+          return recorder.log.size();
+        };
+        REQUIRE( entered("SubProcess_B") < entered("SubProcess_A") );
+      }
+    }
+  }
+
+  GIVEN( "Two subprocesses after a parallel split whose start events raise the objective, one of them by an attribute" ) {
+    const std::string modelFile = "tests/execution/eventoperators/Start_event_operator_entry.bpmn";
+    REQUIRE_NOTHROW( Model::Model(modelFile) );
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+
+    WHEN( "The run stops with both entries pending" ) {
+      Execution::Engine engine(model);
+      dataProvider->setEndTime(0);
+      engine.run(dataProvider->createScenario());
+      auto systemState = engine.getSystemState();
+      REQUIRE( systemState->pendingEntryDecisions.count() == 2 );
+
+      THEN( "The entry depends on what the operators of the start event read" ) {
+        Execution::LocalEvaluator evaluator;
+        auto bonus = model->processes.front()->extensionElements->as<Model::ExtensionElements>()->attributeRegistry["bonus"];
+        for ( auto& [token_ptr, request_ptr] : systemState->pendingEntryDecisions ) {
+          auto token = token_ptr.lock();
+          auto request = request_ptr.lock();
+          REQUIRE( token );
+          REQUIRE( request );
+          Execution::EntryDecision decision(request.get(), &evaluator);
+          auto dependencies = evaluator.getDependencies(&decision);
+          REQUIRE( dependencies.contains(bonus) == ( token->node->id == "SubProcess_A" ) );
+        }
+      }
+    }
+  }
+}
+
+SCENARIO( "Operators of a message start event in the evaluation of a delivery", "[execution][eventoperators]" ) {
+  const std::string modelFile = "tests/execution/eventoperators/Message_start_event_operator_objective.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "Two offers to an event subprocess whose message start event computes the objective" ) {
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Sender_1; Process_1; payload := 1\n"
+      "Sender_2; Process_1; payload := 5\n"
+      "Recipient_1; Process_2;\n"
+    ;
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+
+    WHEN( "The engine is started with the greedy controller" ) {
+      Execution::Engine engine(model);
+      auto evaluator = std::make_shared<Execution::LocalEvaluator>();
+      Execution::GreedyController controller(evaluator);
+      controller.connect(&engine);
+      Execution::Recorder recorder;
+      recorder.subscribe(&engine);
+      engine.run(dataProvider->createScenario());
+
+      THEN( "The delivery the operator of the start event values highest is chosen" ) {
+        auto startLog = recorder.find(nlohmann::json{{"nodeId","MessageStartEvent_2"},{"state","DEPARTED"}});
+        REQUIRE( startLog.size() == 1 );
+        REQUIRE( startLog[0]["status"]["score"] == 5 );
+      }
+    }
+
+    WHEN( "The run stops with the deliveries pending" ) {
+      Execution::Engine engine(model);
+      dataProvider->setEndTime(0);
+      engine.run(dataProvider->createScenario());
+      auto systemState = engine.getSystemState();
+      REQUIRE( systemState->pendingMessageDeliveryDecisions.count() == 1 );
+      REQUIRE( systemState->messages.size() == 2 );
+
+      THEN( "A delivery depends on what the operators of the start event read" ) {
+        Execution::LocalEvaluator evaluator;
+        auto bias = model->processes.back()->extensionElements->as<Model::ExtensionElements>()->attributeRegistry["bias"];
+        for ( auto& [_, request_ptr] : systemState->pendingMessageDeliveryDecisions ) {
+          auto request = request_ptr.lock();
+          REQUIRE( request );
+          for ( auto& message : systemState->messages ) {
+            Execution::MessageDeliveryDecision decision(request.get(), message.get(), &evaluator);
+            REQUIRE( evaluator.getDependencies(&decision).contains(bias) );
+          }
+        }
+      }
+    }
+  }
+}
