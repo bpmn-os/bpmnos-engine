@@ -240,3 +240,55 @@ SCENARIO( "Condition on global attribute", "[execution][condition]" ) {
   }
 }
 
+
+SCENARIO( "Conditions stated by a node other than a conditional event", "[execution][condition]" ) {
+  GIVEN( "A task placing restrictions directly in its extension elements" ) {
+    std::string xml = R"xml(<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmnos="https://bpmnos.telematique.eu" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn2:process id="Process_1" isExecutable="true">
+    <bpmn2:extensionElements>
+      <bpmnos:status>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Timestamp" type="decimal" name="timestamp" />
+          <bpmnos:attribute id="Ready" type="boolean" name="ready" />
+        </bpmnos:attributes>
+      </bpmnos:status>
+    </bpmn2:extensionElements>
+    <bpmn2:dataObject id="DataObject_1">
+      <bpmn2:extensionElements>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Instance" type="string" name="instance" />
+        </bpmnos:attributes>
+      </bpmn2:extensionElements>
+    </bpmn2:dataObject>
+    <bpmn2:startEvent id="Start_1">
+      <bpmn2:outgoing>Flow_1</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:sequenceFlow id="Flow_1" sourceRef="Start_1" targetRef="Task_1" />
+    <bpmn2:task id="Task_1">
+      <bpmn2:extensionElements>
+        <bpmnos:restrictions>
+          <bpmnos:restriction id="Restriction_1" expression="ready == true" />
+        </bpmnos:restrictions>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>Flow_1</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_2</bpmn2:outgoing>
+    </bpmn2:task>
+    <bpmn2:sequenceFlow id="Flow_2" sourceRef="Task_1" targetRef="End_1" />
+    <bpmn2:endEvent id="End_1">
+      <bpmn2:incoming>Flow_2</bpmn2:incoming>
+    </bpmn2:endEvent>
+  </bpmn2:process>
+</bpmn2:definitions>
+)xml";
+
+    THEN( "The model is refused, conditions belonging to conditional events only" ) {
+      auto root = XML::XMLObject::createFromString(xml);
+      REQUIRE( root );
+      REQUIRE_THROWS_WITH(
+        Model::Model(std::unique_ptr<XML::XMLObject>(root), std::unordered_map<std::string, std::string>{}),
+        Catch::Matchers::ContainsSubstring("which only a conditional event states")
+      );
+    }
+  }
+}

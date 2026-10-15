@@ -131,6 +131,9 @@ Gatekeeper restrictions can be added to a @ref XML::bpmn::tSequenceFlow "sequenc
 </bpmn2:extensionElements>
 ```
 
+### Conditions
+The conditions of a @ref BPMN::ConditionalCatchEvent "conditional event", start, intermediate or boundary, are restrictions placed directly in its extension elements, as for a sequence flow; the event is triggered when all of them are satisfied, and a condition must not read the timestamp. Restrictions placed directly in the extension elements of any other node are refused, the restrictions of a node belonging to its status.
+
 ## Operators
 @ref BPMNOS::Model::Operator "operators" can be used to modify attribute values.
 Within an `<bpmnos:operators>` container any number of `<bpmnos:operator>` elements can be provided to specify operators. 

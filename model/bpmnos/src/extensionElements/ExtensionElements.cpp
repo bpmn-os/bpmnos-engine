@@ -280,8 +280,14 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     }
   }
 
-  // add conditions of a conditional event
-  for ( XML::bpmnos::tRestriction& condition : get<XML::bpmnos::tRestrictions,XML::bpmnos::tRestriction>() ) {
+  // add conditions of a conditional event, restrictions placed directly in the extension elements; those of any other
+  // node belong to its status
+  auto conditionElements = get<XML::bpmnos::tRestrictions,XML::bpmnos::tRestriction>();
+  bool isConditionalEvent = baseElement->is<XML::bpmn::tCatchEvent>() && !baseElement->getChildren<XML::bpmn::tConditionalEventDefinition>().empty();
+  if ( !conditionElements.empty() && !isConditionalEvent ) {
+    throw std::runtime_error("ExtensionElements: restrictions placed directly in the extension elements of '" + (std::string)baseElement->id.value().get().value + "' are conditions, which only a conditional event states; restrictions of the node belong to its status");
+  }
+  for ( XML::bpmnos::tRestriction& condition : conditionElements ) {
     try {
       conditions.push_back(std::make_unique<Restriction>(&condition,attributeRegistry));
     }
