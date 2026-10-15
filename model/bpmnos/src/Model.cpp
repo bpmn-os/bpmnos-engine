@@ -321,14 +321,14 @@ std::unique_ptr<BPMN::FlowNode> Model::createEvent(XML::bpmn::tEvent* event, BPM
     }
     else if ( baseElement->represents<BPMN::SignalCatchEvent>() ) {
       auto name = baseElement->represents<BPMN::SignalStartEvent>() ? "start" : ( baseElement->represents<BPMN::BoundaryEvent>() ? "boundary" : "catch" );
-      if ( !extensionElements->signal ) {
+      if ( !extensionElements->signalDefinition ) {
         throw std::runtime_error("Model: No signal defined for signal " + std::string(name) + " event '" + baseElement->id + "'");
       }
       if ( auto process = parent->represents<BPMN::Process>(); process && baseElement->represents<BPMN::SignalStartEvent>() ) {
         // the process is instantiated whenever a signal with this name is thrown
-        auto [ entry, inserted ] = processesTriggeredBySignal.emplace( extensionElements->signalName, process );
+        auto [ entry, inserted ] = processesTriggeredBySignal.emplace( extensionElements->signalDefinition->name, process );
         if ( !inserted ) {
-          throw std::runtime_error("Model: signal '" + BPMNOS::to_string(extensionElements->signalName,STRING) + "' instantiates process '" + entry->second->id + "' and process '" + process->id + "'");
+          throw std::runtime_error("Model: signal '" + BPMNOS::to_string(extensionElements->signalDefinition->name,STRING) + "' instantiates process '" + entry->second->id + "' and process '" + process->id + "'");
         }
       }
     }
@@ -337,7 +337,7 @@ std::unique_ptr<BPMN::FlowNode> Model::createEvent(XML::bpmn::tEvent* event, BPM
     if ( baseElement->represents<BPMN::MessageThrowEvent>() && !extensionElements->messageDefinition ) {
       throw std::runtime_error("Model: No message defined for message throw event '" + baseElement->id + "'");
     }
-    else if ( baseElement->represents<BPMN::SignalThrowEvent>() && !extensionElements->signal ) {
+    else if ( baseElement->represents<BPMN::SignalThrowEvent>() && !extensionElements->signalDefinition ) {
       throw std::runtime_error("Model: No signal defined for signal throw event '" + baseElement->id + "'");
     }
   }
@@ -400,10 +400,10 @@ void Model::validateSignals() {
   for ( auto& process : processes ) {
     for ( auto node : process->find_all( [](const BPMN::Node* node) { return node->represents<BPMN::SignalCatchEvent>() || node->represents<BPMN::SignalThrowEvent>(); } ) ) {
       auto signalEvent = node->as<BPMN::FlowNode>();
-      auto extensionElements = signalEvent->extensionElements->as<ExtensionElements>();
-      auto [ entry, inserted ] = firstSignalEvents.emplace( extensionElements->signalName, signalEvent );
-      if ( !inserted && !extensionElements->signalSchema.agrees( entry->second->extensionElements->as<ExtensionElements>()->signalSchema ) ) {
-        throw std::runtime_error("Model: signal '" + BPMNOS::to_string(extensionElements->signalName,STRING) + "' of '" + entry->second->id + "' and of '" + signalEvent->id + "' must have the same type");
+      auto signalDefinition = signalEvent->extensionElements->as<ExtensionElements>()->signalDefinition.get();
+      auto [ entry, inserted ] = firstSignalEvents.emplace( signalDefinition->name, signalEvent );
+      if ( !inserted && !signalDefinition->schema.agrees( entry->second->extensionElements->as<ExtensionElements>()->signalDefinition->schema ) ) {
+        throw std::runtime_error("Model: signal '" + BPMNOS::to_string(signalDefinition->name,STRING) + "' of '" + entry->second->id + "' and of '" + signalEvent->id + "' must have the same type");
       }
     }
   }

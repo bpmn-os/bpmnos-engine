@@ -136,16 +136,6 @@ protected:
   /// installed system state, and the lowest number for a task becoming busy.
   virtual BPMNOS::Status getCompletionStatus(Scenario& scenario, const Token* token, BPMNOS::number earliest) const;
 
-  /// @brief Method returning the value the instance data give an attribute of an instance, std::nullopt if they
-  /// give none.
-  std::optional<BPMNOS::number> getValue(const Scenario& scenario, size_t instanceId, const BPMNOS::Model::Attribute* attribute) const;
-
-  /// @brief Method returning the values the instance data give the status attributes a node declares.
-  BPMNOS::Status getStatus(const Scenario& scenario, size_t instanceId, const BPMN::Node* node) const;
-
-  /// @brief Method returning the values the instance data give the data attributes a node declares.
-  BPMNOS::Data getData(const Scenario& scenario, size_t instanceId, const BPMN::Node* node) const;
-
   /**
    * @brief Instance data read.
    */
@@ -157,8 +147,6 @@ protected:
     std::unordered_map<const BPMNOS::Model::Attribute*, std::shared_ptr<const BPMNOS::Object>> objects; ///< The objects the instance data gives
   };
 
-  /// @brief Method returning the object an object attribute of an instance holds.
-  const std::shared_ptr<const BPMNOS::Object>& getObject(const Scenario& scenario, size_t instanceId, const BPMNOS::Model::Attribute* object) const;
   /// @brief Method returning the object attributes of the scopes of a process, or of every process and the global
   /// objects if no process is given.
   std::vector<const BPMNOS::Model::Attribute*> objectsOf(const BPMN::Process* process = nullptr) const;

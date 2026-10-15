@@ -131,15 +131,15 @@ bool StochasticDataProvider::initialisedBefore(size_t instanceId, const BPMNOS::
   });
 }
 
-void StochasticDataProvider::requireInitialised(const InstanceDataReader& reader, size_t instanceId, const BPMNOS::Model::Expression& member, const std::string& text) const {
+void StochasticDataProvider::requireInitialised(const InstanceDataReader& reader, size_t instanceId, const BPMNOS::Model::Expression& expression, const std::string& text) const {
   // a global value is given by the instance data before any instance is read, an object possibly by the model
-  for ( auto attribute : member.variables ) {
+  for ( auto attribute : expression.variables ) {
     bool known = attribute->isGlobal ? reader.globals.contains(attribute) : initialisedBefore(instanceId, attribute);
     if ( !known ) {
       throw std::runtime_error("StochasticDataProvider: expression '" + text + "' refers to attribute '" + attribute->name + "' without a value");
     }
   }
-  for ( auto object : member.paths ) {
+  for ( auto object : expression.paths ) {
     // a path to an input has no attribute, an input holding its object from the start
     if ( !object ) {
       continue;
@@ -188,7 +188,8 @@ void StochasticDataProvider::readValue(InstanceDataReader& reader, const Instanc
   }
 
   auto& attributeRegistry = row.node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributeRegistry;
-  auto disclosureExpression = std::make_unique<BPMNOS::Model::Expression>(handle, BPMNOS::InputEncoder::fragment(disclosure.empty() ? "0" : disclosure), attributeRegistry);
+  auto disclosureText = disclosure.empty() ? std::string("0") : disclosure;
+  auto disclosureExpression = std::make_unique<BPMNOS::Model::Expression>(handle, BPMNOS::InputEncoder::fragment(disclosureText), attributeRegistry);
   if ( reader.assignsObject(row) ) {
     auto [object, initializer] = reader.lookupObject(row);
     std::vector<std::unique_ptr<BPMNOS::Model::Expression>> members;
@@ -204,18 +205,23 @@ void StochasticDataProvider::readValue(InstanceDataReader& reader, const Instanc
       ObjectInitialization{ std::move(initializer), std::move(members), reader.getSchema(object) },
       std::move(disclosureExpression)
     });
-    return;
+  }
+  else {
+    auto [attribute, expression] = reader.lookupAttribute(row.node, row.initialization);
+    auto value = std::make_unique<BPMNOS::Model::Expression>(handle, BPMNOS::InputEncoder::fragment(expression), attributeRegistry);
+    requireInitialised(reader, row.instanceId, *value, expression);
+    initializations.push_back({
+      row.instanceId,
+      row.node,
+      attribute,
+      std::move(value),
+      std::nullopt,
+      std::move(disclosureExpression)
+    });
   }
 
-  auto [attribute, expression] = reader.lookupAttribute(row.node, row.initialization);
-  initializations.push_back({
-    row.instanceId,
-    row.node,
-    attribute,
-    std::make_unique<BPMNOS::Model::Expression>(handle, BPMNOS::InputEncoder::fragment(expression), attributeRegistry),
-    std::nullopt,
-    std::move(disclosureExpression)
-  });
+  // the disclosure may read the attribute or object the row initialises
+  requireInitialised(reader, row.instanceId, *initializations.back().disclosure, disclosureText);
 }
 
 std::unique_ptr<BPMNOS::Execution::Scenario> StochasticDataProvider::createScenario(unsigned int realisation) const {
@@ -290,19 +296,28 @@ void StochasticDataProvider::sample(Scenario& scenario, const Scenario* original
         data.objects[attribute->index] = ( attribute->index < globals.objects.size() ) ? globals.objects[attribute->index] : objectOf(attribute);
       }
 
+      // an expression of the row that yields no value is refused, as when the instance data are read
+      auto valueOf = [&](const BPMNOS::Model::Expression& expression) {
+        auto result = expression.execute(status, data);
+        if ( !result.has_value() ) {
+          throw std::runtime_error("StochasticDataProvider: the initialization of '" + initialization.attribute->name + "' of instance '" + stringRegistry[initialization.instanceId] + "' or its disclosure yields no value");
+        }
+        return result.value();
+      };
+
       randomDistributionFactory.setCurrentRng(&scenario.getRandomNumberGenerator(initialization.instanceId, initialization.node));
       if ( initialization.object.has_value() ) {
         // the members read the values before the row, the object being given only when all its members are evaluated
         std::vector<double> memberValues;
         for ( auto& member : initialization.object->members ) {
-          memberValues.push_back( member->execute(status, data).value_or(0) );
+          memberValues.push_back( valueOf(*member) );
         }
         object = InstanceDataReader::instantiate(initialization.object->schema, initialization.attribute, initialization.object->initializer, memberValues);
         attributeRegistry.setObject(initialization.attribute, status, data, object);
       }
       else {
         auto evaluate = [&]() {
-          return convert(initialization.value->execute(status, data).value_or(0), initialization.attribute->type);
+          return convert(valueOf(*initialization.value), initialization.attribute->type);
         };
         value = evaluate();
         if ( isTimestamp ) {
@@ -320,7 +335,7 @@ void StochasticDataProvider::sample(Scenario& scenario, const Scenario* original
         }
       }
       auto evaluateDisclosure = [&]() {
-        return BPMNOS::number(std::ceil(initialization.disclosure->execute(status, data).value_or(0)));
+        return BPMNOS::number(std::ceil(valueOf(*initialization.disclosure)));
       };
       disclosureTime = evaluateDisclosure();
       // a fork samples a disclosure time before the spawn time again, and sets it to the spawn time at last

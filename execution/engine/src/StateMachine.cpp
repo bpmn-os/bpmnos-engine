@@ -143,7 +143,7 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
       token->node->represents<BPMN::SignalCatchEvent>() && 
       token->state == Token::State::BUSY
     ) {
-      auto signalName = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->signalName;
+      auto signalName = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->signalDefinition->name;
       assert(other->systemState->tokensAwaitingSignal.at(signalName).find(otherToken.get()) != other->systemState->tokensAwaitingSignal.at(signalName).end());
       const_cast<SystemState*>(systemState)->tokensAwaitingSignal[signalName].emplace_back(token);
     }

@@ -32,8 +32,12 @@ namespace BPMNOS::Execution {
  * arrives and determines when the token becomes ready. The other ready expressions are applied when the token
  * becomes ready, over the initial values of the scope instance, and may assign a status attribute or a data
  * attribute the scope owns, an object among them, or an element or field of such an object; a completion expression
- * assigns a status attribute, a status object, or an element or field of a status object. An object initializer of an instance is sampled for each scenario like a value, in the
- * order of the rows, its expression members reading the objects given by earlier rows. Every random expression of an instance and a node is evaluated with a random number
+ * assigns a status attribute, a status object, or an element or field of a status object. An object initializer of
+ * an instance is sampled for each scenario like a value, in the order of the rows. An initialization, a member of an
+ * object initializer and a disclosure may read only the global values, the initial objects of the model, and what
+ * the rows of the instance read so far give, a disclosure also what its own row gives; any other read is refused
+ * when the instance data are read, and an expression yielding no value is refused when it is sampled. Every random
+ * expression of an instance and a node is evaluated with a random number
  * generator of its own, seeded from the seed of the scenario and the identifiers of the instance and the
  * node, so that a realisation depends on nothing but the seed, the model and the instance data.
  *
@@ -139,12 +143,13 @@ private:
   /// @brief Method returning the ready expressions of an instance and a node, nullptr if there are none.
   const std::vector<std::unique_ptr<BPMNOS::Model::Expression>>* getReadyExpressions(size_t instanceId, const BPMN::Node* node) const;
 
-  /// @brief Method returning true if an earlier row gives a value to the attribute or object of an instance.
+  /// @brief Method returning true if a row read so far gives a value to the attribute or object of an instance.
   bool initialisedBefore(size_t instanceId, const BPMNOS::Model::Attribute* attribute) const;
 
-  /// @brief Method refusing an expression member of an object initializer of an instance that reads an attribute or
-  /// object to which neither the global values, the model, nor an earlier row of the instance gives a value.
-  void requireInitialised(const InstanceDataReader& reader, size_t instanceId, const BPMNOS::Model::Expression& member, const std::string& text) const;
+  /// @brief Method refusing an expression of the instance data of an instance, an initialization, a member of an
+  /// object initializer or a disclosure, that reads an attribute or object to which neither the global values, the
+  /// model, nor a row of the instance read so far gives a value.
+  void requireInitialised(const InstanceDataReader& reader, size_t instanceId, const BPMNOS::Model::Expression& expression, const std::string& text) const;
 
   /// @brief Method sampling the initializations of a scenario, keeping those of the original scenario of a
   /// fork disclosed before the spawn time.

@@ -26,8 +26,6 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
   : BPMN::ExtensionElements( baseElement )
   , attributeRegistry(attributeRegistry_)
   , parent(parent)
-  , signal(nullptr)
-  , signalName(0)
   , hasSequentialPerformer(false)
   , isInstantaneous(true)
 {
@@ -119,17 +117,9 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     messageDefinition = std::make_unique<MessageDefinition>(&message->get(),attributeRegistry);
   }
 
-  // add signal
-  if ( auto definition = element->getOptionalChild<XML::bpmnos::tSignal>(); definition.has_value() ) {
-    signal = &definition->get();
-    signalName = BPMNOS::to_number(signal->name.value.value,STRING);
-    // the content is an object, without fields if the signal states no type
-    if ( signal->type.has_value() ) {
-      signalSchema = Schema::parse(signal->type->get().value.value);
-      if ( signalSchema.isScalar() ) {
-        throw std::runtime_error("ExtensionElements: the type of signal '" + signal->name.value.value + "' must be an object");
-      }
-    }
+  // add signal definition
+  if ( auto signal = element->getOptionalChild<XML::bpmnos::tSignal>(); signal.has_value() ) {
+    signalDefinition = std::make_unique<SignalDefinition>(&signal->get());
   }
 
   // the operators see the content object of the message or signal the node states, named after it
@@ -137,9 +127,9 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     augmentedAttributeRegistry = std::make_unique<AttributeRegistry>(attributeRegistry);
     content = std::make_unique<Attribute>(messageDefinition->element->name.value.value, messageDefinition->schema, *augmentedAttributeRegistry);
   }
-  else if ( signal ) {
+  else if ( signalDefinition ) {
     augmentedAttributeRegistry = std::make_unique<AttributeRegistry>(attributeRegistry);
-    content = std::make_unique<Attribute>(signal->name.value.value, signalSchema, *augmentedAttributeRegistry);
+    content = std::make_unique<Attribute>(signalDefinition->element->name.value.value, signalDefinition->schema, *augmentedAttributeRegistry);
   }
 
   if ( auto status = element->getOptionalChild<XML::bpmnos::tStatus>(); status.has_value() ) {
@@ -472,36 +462,27 @@ template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::Data>(co
 template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::SharedData>(const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;
 
 template <typename DataType>
-BPMNOS::number ExtensionElements::applyOperators(BPMNOS::Status& status, DataType& data) const {
-  // operators that may refer to a content object are applied with the content object
-  assert( !content );
+BPMNOS::number ExtensionElements::applyOperators(BPMNOS::Status& status, DataType& data, std::shared_ptr<const BPMNOS::Object>* contentObject) const {
+  // the operators of a node stating a message or signal may refer to its content object, which is held in the slot
+  // following the status objects while they run
+  if ( content ) {
+    assert( contentObject && *contentObject );
+    assert( status.objects.size() == content->index );
+    status.objects.push_back( std::move(*contentObject) );
+  }
   BPMNOS::number change = 0;
   for ( auto& operator_ : operators ) {
     change += operator_->apply(status,data);
   }
-  return change;
-}
-
-template BPMNOS::number ExtensionElements::applyOperators<BPMNOS::Data>(Status& status, BPMNOS::Data& data) const;
-template BPMNOS::number ExtensionElements::applyOperators<BPMNOS::SharedData>(Status& status, BPMNOS::SharedData& data) const;
-
-template <typename DataType>
-BPMNOS::number ExtensionElements::applyOperators(BPMNOS::Status& status, DataType& data, std::shared_ptr<const BPMNOS::Object>& contentObject) const {
-  // the content object is held in the slot following the status objects while the operators run
-  assert( content );
-  assert( status.objects.size() == content->index );
-  status.objects.push_back( std::move(contentObject) );
-  BPMNOS::number change = 0;
-  for ( auto& operator_ : operators ) {
-    change += operator_->apply(status,data);
+  if ( content ) {
+    *contentObject = std::move(status.objects.back());
+    status.objects.pop_back();
   }
-  contentObject = std::move(status.objects.back());
-  status.objects.pop_back();
   return change;
 }
 
-template BPMNOS::number ExtensionElements::applyOperators<BPMNOS::Data>(Status& status, BPMNOS::Data& data, std::shared_ptr<const BPMNOS::Object>& contentObject) const;
-template BPMNOS::number ExtensionElements::applyOperators<BPMNOS::SharedData>(Status& status, BPMNOS::SharedData& data, std::shared_ptr<const BPMNOS::Object>& contentObject) const;
+template BPMNOS::number ExtensionElements::applyOperators<BPMNOS::Data>(Status& status, BPMNOS::Data& data, std::shared_ptr<const BPMNOS::Object>* contentObject) const;
+template BPMNOS::number ExtensionElements::applyOperators<BPMNOS::SharedData>(Status& status, BPMNOS::SharedData& data, std::shared_ptr<const BPMNOS::Object>* contentObject) const;
 
 template <typename DataType>
 BPMNOS::number ExtensionElements::getObjective(const BPMNOS::Status& status, const DataType& data) const {

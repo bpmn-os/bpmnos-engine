@@ -651,8 +651,8 @@ void Token::advanceToBusy() {
   }
   else if ( node->represents<BPMN::SignalCatchEvent>() ) {
     // determine signal name
-    assert( node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->signal );
-    awaitSignal( node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->signalName );
+    assert( node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->signalDefinition );
+    awaitSignal( node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->signalDefinition->name );
   }
   else if ( node->represents<BPMN::ConditionalCatchEvent>() ) {
     // determine conditions
@@ -1350,14 +1350,7 @@ void Token::applyOperators(const BPMNOS::Model::ExtensionElements& extensionElem
     return;
   }
 
-  auto engine = const_cast<Engine*>(owner->systemState->engine);
-  if ( extensionElements.content ) {
-    assert( content );
-    engine->addToObjective( extensionElements.applyOperators(status,*data,content) );
-  }
-  else {
-    engine->addToObjective( extensionElements.applyOperators(status,*data) );
-  }
+  const_cast<Engine*>(owner->systemState->engine)->addToObjective( extensionElements.applyOperators(status, *data, &content) );
 
   // notify about data update
   // the observers decide by the index of each attribute whether it concerns this instance or all of them
@@ -1366,12 +1359,12 @@ void Token::applyOperators(const BPMNOS::Model::ExtensionElements& extensionElem
 
 void Token::emitSignal() {
   auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  assert( extensionElements->signal );
+  assert( extensionElements->signalDefinition );
 
   // the content object the operators wrote is fixed before the signal is received anywhere, a recipient writing
   // it copying it
   assert( content );
-  Signal signal( extensionElements->signalName, std::move(content) );
+  Signal signal( extensionElements->signalDefinition->name, std::move(content) );
   content.reset();
 
   // the broadcast is enqueued so that token advances already scheduled are made before the signal is

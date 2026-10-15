@@ -80,11 +80,17 @@ std::shared_ptr<const Model::Model> objectModel() {
   return std::make_shared<const Model::Model>(std::unique_ptr<XML::XMLObject>(root), std::unordered_map<std::string, std::string>{});
 }
 
-/// A static data provider giving access to the statuses and data it creates.
+/// A static data provider giving access to the objects it creates.
 struct ObjectProvider : Execution::StaticDataProvider {
   using StaticDataProvider::StaticDataProvider;
-  using StaticDataProvider::getStatus;
-  using StaticDataProvider::getData;
+
+  /// Returns the object the instance data give an object a node declares, or the default object of the model.
+  std::shared_ptr<const BPMNOS::Object> objectOf(const Execution::Scenario& scenario, size_t instanceId, const BPMN::Node* node, const std::string& name) const {
+    auto object = node->extensionElements->as<Model::ExtensionElements>()->attributeRegistry[name];
+    auto& objects = getInstanceObjects(static_cast<const Scenario&>(scenario), instanceId);
+    auto it = objects.find(object);
+    return it != objects.end() ? it->second : getDefaultObject(object);
+  }
 };
 
 const BPMN::Node* nodeOf(const Model::Model& model, const std::string& id) {
@@ -119,9 +125,9 @@ TEST_CASE( "Create objects from the model and the instance data", "[data][object
   auto model = objectModel();
   auto provider = std::make_shared<ObjectProvider>(model, declarations);
   auto scenario = provider->createScenario();
-  auto& staticScenario = static_cast<const Execution::StaticDataProvider::Scenario&>(*scenario);
   auto instance1 = (size_t)stringRegistry("Instance_1");
   auto instance2 = (size_t)stringRegistry("Instance_2");
+  auto process = nodeOf(*model, "Process_1");
 
   SECTION( "A global object shorter than declared is padded" ) {
     auto globals = provider->getGlobals(*scenario);
@@ -131,35 +137,30 @@ TEST_CASE( "Create objects from the model and the instance data", "[data][object
   }
 
   SECTION( "A status object takes its size from a size declaration" ) {
-    auto status = provider->getStatus(staticScenario, instance1, nodeOf(*model, "Process_1"));
-    REQUIRE( status.objects.size() == 1 );
-    REQUIRE( to_string(*status.objects[0]) == "[ undefined, undefined ]" );
+    REQUIRE( to_string(*provider->objectOf(*scenario, instance1, process, "route")) == "[ undefined, undefined ]" );
   }
 
   SECTION( "A data object takes the value an instance gives and is padded at fixed dimensions" ) {
-    auto data = provider->getData(staticScenario, instance1, nodeOf(*model, "Process_1"));
-    REQUIRE( data.objects.size() == 1 );
-    REQUIRE( data.objects[0]->layout->stringify() == "{ cost: decimal, flags: boolean[2] }[2]" );
-    REQUIRE( to_string(*data.objects[0]) == "[ { cost := 10, flags := [ true, undefined ] }, { cost := 20, flags := [ false, undefined ] } ]" );
+    auto facilities = provider->objectOf(*scenario, instance1, process, "facilities");
+    REQUIRE( facilities->layout->stringify() == "{ cost: decimal, flags: boolean[2] }[2]" );
+    REQUIRE( to_string(*facilities) == "[ { cost := 10, flags := [ true, undefined ] }, { cost := 20, flags := [ false, undefined ] } ]" );
   }
 
   SECTION( "A data object no instance data gives is undefined in the sizes declared" ) {
-    auto data = provider->getData(staticScenario, instance2, nodeOf(*model, "Process_1"));
-    REQUIRE( to_string(*data.objects[0]) == "[ { cost := undefined, flags := [ undefined, undefined ] }, { cost := undefined, flags := [ undefined, undefined ] } ]" );
+    REQUIRE( to_string(*provider->objectOf(*scenario, instance2, process, "facilities")) == "[ { cost := undefined, flags := [ undefined, undefined ] }, { cost := undefined, flags := [ undefined, undefined ] } ]" );
   }
 
   SECTION( "A data object of a subprocess has the sizes of its type" ) {
-    auto data = provider->getData(staticScenario, instance1, nodeOf(*model, "SubProcess_1"));
-    REQUIRE( data.objects.size() == 1 );
-    REQUIRE( data.objects[0]->layout->stringify() == "boolean[3][4]" );
-    REQUIRE( data.objects[0]->values.size() == 12 );
+    auto grid = provider->objectOf(*scenario, instance1, nodeOf(*model, "SubProcess_1"), "grid");
+    REQUIRE( grid->layout->stringify() == "boolean[3][4]" );
+    REQUIRE( grid->values.size() == 12 );
   }
 
   SECTION( "An object the model initialises is shared by every instance" ) {
-    auto status1 = provider->getStatus(staticScenario, instance1, nodeOf(*model, "Task_1"));
-    auto status2 = provider->getStatus(staticScenario, instance2, nodeOf(*model, "Task_1"));
-    REQUIRE( to_string(*status1.objects[0]) == "{ x := 1 }" );
-    REQUIRE( status1.objects[0].get() == status2.objects[0].get() );
+    auto visit1 = provider->objectOf(*scenario, instance1, nodeOf(*model, "Task_1"), "visit");
+    auto visit2 = provider->objectOf(*scenario, instance2, nodeOf(*model, "Task_1"), "visit");
+    REQUIRE( to_string(*visit1) == "{ x := 1 }" );
+    REQUIRE( visit1.get() == visit2.get() );
   }
 }
 
@@ -187,9 +188,7 @@ TEST_CASE( "An open dimension without a value has no elements", "[data][objects]
   auto model = objectModel();
   auto provider = std::make_shared<ObjectProvider>(model, "INSTANCE_ID; NODE_ID; INITIALIZATION\n; Process_1; route[2]\nInstance_1; Process_1;\n");
   auto scenario = provider->createScenario();
-  auto& staticScenario = static_cast<const Execution::StaticDataProvider::Scenario&>(*scenario);
-  auto data = provider->getData(staticScenario, (size_t)stringRegistry("Instance_1"), nodeOf(*model, "Process_1"));
-  REQUIRE( to_string(*data.objects[0]) == "[ ]" );
+  REQUIRE( to_string(*provider->objectOf(*scenario, (size_t)stringRegistry("Instance_1"), nodeOf(*model, "Process_1"), "facilities")) == "[ ]" );
 }
 
 TEST_CASE( "Refuse illegal sizes and values of objects", "[data][objects]" ) {

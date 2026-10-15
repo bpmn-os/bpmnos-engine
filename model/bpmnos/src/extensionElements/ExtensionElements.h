@@ -11,10 +11,10 @@
 #include "Operator.h"
 #include "Choice.h"
 #include "MessageDefinition.h"
+#include "SignalDefinition.h"
 #include "Parameter.h"
 #include "Guidance.h"
 #include "model/bpmnos/src/xml/bpmnos/tAttribute.h"
-#include "model/bpmnos/src/xml/bpmnos/tSignal.h"
 
 namespace BPMNOS::Model {
 
@@ -72,9 +72,7 @@ public:
 
   std::unique_ptr<Parameter> trigger; ///< Parameter giving the time at which a timer event is triggered, or nullptr if the node declares no timer.
 
-  XML::bpmnos::tSignal* signal; ///< The `<bpmnos:signal>` element the signal is declared by, or nullptr if the node declares none.
-  BPMNOS::number signalName; ///< Name of the signal. Temporary: removed once a signal is declared by a named definition.
-  Schema signalSchema; ///< Type of the content of the signal, an object, without fields if the signal states no type. Temporary: removed once a signal is declared by a named definition.
+  std::unique_ptr<SignalDefinition> signalDefinition; ///< Signal definition provided for the node, or nullptr if the node throws or catches no signal.
 
   std::vector< std::unique_ptr<Restriction> > conditions; ///< Vector containing the conditions of a conditional event.
   std::set<const Attribute*> conditionDependencies; ///< Set containing all input attributes influencing whether the conditions are satisfied.
@@ -107,13 +105,11 @@ public:
   bool isInstantaneous; ///< Boolean indicating whether operators may modify timestamp.
 
   /// @brief Method applying the operators and returning the change of the objective.
+  ///
+  /// If the node states a message or signal, its content object, which the operators write or read, must be given;
+  /// otherwise the content object given, if any, is not used.
   template <typename DataType>
-  BPMNOS::number applyOperators(BPMNOS::Status& status, DataType& data) const;
-
-  /// @brief Method applying the operators to the status, the data and the given content object of the message or
-  /// signal the node states, which they write or read, and returning the change of the objective.
-  template <typename DataType>
-  BPMNOS::number applyOperators(BPMNOS::Status& status, DataType& data, std::shared_ptr<const BPMNOS::Object>& contentObject) const;
+  BPMNOS::number applyOperators(BPMNOS::Status& status, DataType& data, std::shared_ptr<const BPMNOS::Object>* contentObject = nullptr) const;
 
   template <typename DataType>
   BPMNOS::number getObjective(const BPMNOS::Status& status, const DataType& data) const; ///< Returns the total objective of all attributes provided.

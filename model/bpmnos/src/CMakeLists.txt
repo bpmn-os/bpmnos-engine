@@ -18,6 +18,7 @@ set(bpmn_SOURCES
   extensionElements/Choice.cpp
   extensionElements/Guidance.cpp
   extensionElements/MessageDefinition.cpp
+  extensionElements/SignalDefinition.cpp
   extensionElements/ExtensionElements.cpp
   extensionElements/Gatekeeper.cpp
   DecisionTask.cpp
@@ -38,6 +39,7 @@ set(bpmn_HEADERS
   extensionElements/Choice.h
   extensionElements/Guidance.h
   extensionElements/MessageDefinition.h
+  extensionElements/SignalDefinition.h
   extensionElements/ExtensionElements.h
   extensionElements/Gatekeeper.h
   DecisionTask.h

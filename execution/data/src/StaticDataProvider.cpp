@@ -363,46 +363,6 @@ void StaticDataProvider::schedule(Scenario& scenario, EventQueue& queue, BPMNOS:
   }
 }
 
-std::optional<BPMNOS::number> StaticDataProvider::getValue(const Scenario& scenario, size_t instanceId, const BPMNOS::Model::Attribute* attribute) const {
-  auto& values = getInstanceValues(scenario, instanceId);
-  if ( auto it = values.find(attribute); it != values.end() ) {
-    return it->second;
-  }
-  return std::nullopt;
-}
-
-BPMNOS::Status StaticDataProvider::getStatus(const Scenario& scenario, size_t instanceId, const BPMN::Node* node) const {
-  BPMNOS::Status result;
-  auto extensionElements = node->extensionElements->as<const BPMNOS::Model::ExtensionElements>();
-  for ( auto& attribute : extensionElements->attributes ) {
-    result.attributes.push_back(getValue(scenario, instanceId, attribute.get()));
-  }
-  for ( auto& object : extensionElements->statusObjects ) {
-    result.objects.push_back(getObject(scenario, instanceId, object.get()));
-  }
-  return result;
-}
-
-BPMNOS::Data StaticDataProvider::getData(const Scenario& scenario, size_t instanceId, const BPMN::Node* node) const {
-  BPMNOS::Data result;
-  auto extensionElements = node->extensionElements->as<const BPMNOS::Model::ExtensionElements>();
-  for ( auto& attribute : extensionElements->data ) {
-    result.attributes.push_back(getValue(scenario, instanceId, attribute.get()));
-  }
-  for ( auto& object : extensionElements->dataObjects ) {
-    result.objects.push_back(getObject(scenario, instanceId, object.get()));
-  }
-  return result;
-}
-
-const std::shared_ptr<const BPMNOS::Object>& StaticDataProvider::getObject(const Scenario& scenario, size_t instanceId, const BPMNOS::Model::Attribute* object) const {
-  auto& objects = getInstanceObjects(scenario, instanceId);
-  if ( auto it = objects.find(object); it != objects.end() ) {
-    return it->second;
-  }
-  return getDefaultObject(object);
-}
-
 std::vector<const BPMNOS::Model::Attribute*> StaticDataProvider::objectsOf(const BPMN::Process* process) const {
   std::vector<const BPMNOS::Model::Attribute*> objects;
   auto collect = [&objects](const BPMN::Node* node) {

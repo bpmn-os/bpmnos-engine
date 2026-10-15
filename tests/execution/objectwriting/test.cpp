@@ -51,11 +51,11 @@ std::shared_ptr<const Model::Model> writingModel() {
 )");
 }
 
-/// A static data provider giving access to the statuses and data it creates.
+/// A static data provider giving access to the values and objects the instance data give.
 struct WritingProvider : Execution::StaticDataProvider {
   using StaticDataProvider::StaticDataProvider;
-  using StaticDataProvider::getStatus;
-  using StaticDataProvider::getData;
+  using StaticDataProvider::getInstanceValues;
+  using StaticDataProvider::getInstanceObjects;
 };
 
 const Model::AttributeRegistry& registryOf(const Model::Model& model) {
@@ -95,12 +95,13 @@ TEST_CASE( "Write objects, elements and lengths", "[execution][objects][writing]
   auto process = model->processes.front().get();
   auto& registry = registryOf(*model);
 
-  // the data of the process follows the global data
+  // the status and the data of the process instance as the engine builds them, the data of the process following the
+  // global data
   auto data = provider->getGlobals(*scenario);
-  auto own = provider->getData(staticScenario, instance, process);
-  data.attributes.insert(data.attributes.end(), own.attributes.begin(), own.attributes.end());
-  data.objects.insert(data.objects.end(), own.objects.begin(), own.objects.end());
-  auto status = provider->getStatus(staticScenario, instance, process);
+  Execution::InstanceValues values(*provider, process, 0, BPMNOS::Status{}, BPMNOS::SharedData(data), BPMNOS::number(instance), provider->getInstanceValues(staticScenario, instance), provider->getInstanceObjects(staticScenario, instance));
+  data.attributes.insert(data.attributes.end(), values.data.attributes.begin(), values.data.attributes.end());
+  data.objects.insert(data.objects.end(), values.data.objects.begin(), values.data.objects.end());
+  auto status = values.status;
 
   auto write = [&](const std::string& text) {
     Model::Expression expression(InputEncoder(text), registry);

@@ -91,22 +91,23 @@ const BPMN::Node* nodeOf(const Model::Model& model, const std::string& id) {
   return process->find([&id](BPMN::Node* node) { return node->id == id; });
 }
 
-/// Data providers giving access to the statuses and data they create.
-struct StaticProvider : Execution::StaticDataProvider {
-  using StaticDataProvider::StaticDataProvider;
-  using StaticDataProvider::getStatus;
-  using StaticDataProvider::getData;
+/// A data provider giving access to the objects it creates.
+template <typename Provider>
+struct ObjectProvider : Provider {
+  using Provider::Provider;
+
+  /// Returns the object the instance data give an object a node declares, or the default object of the model.
+  std::shared_ptr<const BPMNOS::Object> objectOf(const Execution::Scenario& scenario, size_t instanceId, const BPMN::Node* node, const std::string& name) const {
+    auto object = node->extensionElements->as<Model::ExtensionElements>()->attributeRegistry[name];
+    auto& objects = this->getInstanceObjects(static_cast<const Execution::StaticDataProvider::Scenario&>(scenario), instanceId);
+    auto it = objects.find(object);
+    return it != objects.end() ? it->second : this->getDefaultObject(object);
+  }
 };
 
-struct ExpectedValueProvider : Execution::ExpectedValueDataProvider {
-  using ExpectedValueDataProvider::ExpectedValueDataProvider;
-  using Execution::StaticDataProvider::getStatus;
-};
-
-struct StochasticProvider : Execution::StochasticDataProvider {
-  using StochasticDataProvider::StochasticDataProvider;
-  using Execution::StaticDataProvider::getStatus;
-};
+using StaticProvider = ObjectProvider<Execution::StaticDataProvider>;
+using ExpectedValueProvider = ObjectProvider<Execution::ExpectedValueDataProvider>;
+using StochasticProvider = ObjectProvider<Execution::StochasticDataProvider>;
 
 /// Records, for the states busy and completed of every node, the objects of the given names the token holds, rendered
 /// as text, and keeps the object of the process token, so that it can be inspected after the run. A token holds the
@@ -155,11 +156,9 @@ TEST_CASE( "Object initializers of the instance data", "[data][initializers]" ) 
       "Instance_1; Process_1; site := { x := depot.x + 1 }\n"
     );
     auto scenario = provider->createScenario();
-    auto& staticScenario = static_cast<const Execution::StaticDataProvider::Scenario&>(*scenario);
     REQUIRE( to_string(*provider->getGlobals(*scenario).objects[0]) == "[ 4, 3 ]" );
-    auto status = provider->getStatus(staticScenario, instance1(), process);
-    REQUIRE( to_string(*status.objects[0]) == "{ x := 4.5, y := 2 }" );
-    REQUIRE( to_string(*status.objects[1]) == "{ x := 5.5 }" );
+    REQUIRE( to_string(*provider->objectOf(*scenario, instance1(), process, "depot")) == "{ x := 4.5, y := 2 }" );
+    REQUIRE( to_string(*provider->objectOf(*scenario, instance1(), process, "site")) == "{ x := 5.5 }" );
   }
 
   SECTION( "An initial value of the model reads an object an initializer gives" ) {
@@ -206,8 +205,7 @@ TEST_CASE( "Object initializers of the instance data", "[data][initializers]" ) 
       "Instance_1; Process_1; depot := { x := uniform(0, 10), y := 2 }\n"
     );
     auto scenario = provider->createScenario();
-    auto status = provider->getStatus(static_cast<const Execution::StaticDataProvider::Scenario&>(*scenario), instance1(), process);
-    REQUIRE( to_string(*status.objects[0]) == "{ x := 5, y := 2 }" );
+    REQUIRE( to_string(*provider->objectOf(*scenario, instance1(), process, "depot")) == "{ x := 5, y := 2 }" );
   }
 
   SECTION( "The dynamic data provider discloses an object with its row" ) {
@@ -228,8 +226,7 @@ TEST_CASE( "Object initializers sampled by the stochastic data provider", "[data
     "Instance_1; Process_1; site := { x := depot.x + uniform(0, 100) }; 10\n";
 
   auto depotAndSite = [&](StochasticProvider& provider, const Execution::Scenario& scenario) {
-    auto status = provider.getStatus(static_cast<const Execution::StaticDataProvider::Scenario&>(scenario), instance1(), process);
-    return std::pair{ to_string(*status.objects[0]), to_string(*status.objects[1]) };
+    return std::pair{ to_string(*provider.objectOf(scenario, instance1(), process, "depot")), to_string(*provider.objectOf(scenario, instance1(), process, "site")) };
   };
 
   SECTION( "An initializer is sampled for each scenario and reproducibly for one seed" ) {
