@@ -208,7 +208,7 @@ Message definitions may contain one or more parameters defining a message header
 The value states the name of a declared attribute, in which case the entry holds the value of that attribute and is of the type the attribute is declared with, or a quoted string, in which case the entry holds that string.
 Nothing else may be stated, so that the type of every entry is known when the model is read.
 A parameter that states no value at all is permitted and means that the entry holds no value, which every value held under that name matches.
-By default, every header contains entries with names `sender` and `recipient`, which hold instance identifiers; the name of the message is no entry of the header, and a parameter named `name` is refused.
+By default, every header contains entries with names `sender` and `recipient`, which hold instance identifiers; the name of the message is no entry of the header, so that a parameter named `name` states an entry as any other parameter does.
 Messages can only be delivered to a recipient if the recipient specifies the same message name as the sender, the entry names of the headers are identical, the entries of the same name are of the same type wherever both sender and recipient state one, and all header values match, i.e. either have the same value or one of both is undefined.
  
 The content of a message is one object of its type, the content object, which the operators of the throwing and the catching element refer to by the name of the message and which no other expression sees.

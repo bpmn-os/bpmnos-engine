@@ -118,11 +118,12 @@ TEST_CASE( "Definitions of messages and signals", "[model][definitions]" ) {
     REQUIRE( catcher->extensionElements->as<Model::ExtensionElements>()->messageCandidates.empty() );
   }
 
-  SECTION( "A header parameter named 'name' is refused" ) {
-    REQUIRE_THROWS_WITH(
-      modelFrom(exchangeModel("message", "Exchange", stated("", "<bpmnos:parameter name=\"name\" value=\"&#34;Exchange&#34;\" />"), stated(""))),
-      Catch::Matchers::ContainsSubstring("must not have a header parameter 'name'")
-    );
+  SECTION( "A header parameter named 'name' is an entry of the header as any other" ) {
+    auto model = modelFrom(exchangeModel("message", "Exchange", stated("", "<bpmnos:parameter name=\"name\" value=\"&#34;Exchange&#34;\" />"), stated("")));
+    auto thrower = model->processes.front()->find([](BPMN::Node* node) { return node->id == "Thrower_Event"; });
+    auto& header = thrower->extensionElements->as<Model::ExtensionElements>()->getMessageDefinition()->header;
+    REQUIRE( header.size() == 3 );
+    REQUIRE( header[2].key == "name" );
   }
 
   SECTION( "The header begins with the sender and the recipient" ) {

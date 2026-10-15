@@ -62,10 +62,6 @@ MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, const Attri
     auto& inserted = parameterMap.emplace(key,std::make_unique<Parameter>(&parameter,attributeRegistry)).first->second;
     auto type = getHeaderType(parameter,*inserted);
 
-    if ( key == "name" ) {
-      // the name is the message's own and pairs senders and receivers
-      throw std::runtime_error("MessageDefinition: message '" + message->name.value.value + "' must not have a header parameter 'name'");
-    }
     if ( key == "sender" || key == "recipient" ) {
       if ( type.has_value() && type.value() != STRING ) {
         throw std::runtime_error("MessageDefinition: header parameter '" + key + "' must state a string");
