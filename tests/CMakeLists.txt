@@ -35,6 +35,7 @@ list(APPEND tests_SOURCES
   data/expectedvalueprovider/test.cpp
   data/dynamicprovider/test.cpp
   data/stochasticprovider/test.cpp
+  data/discrete/test.cpp
   data/forking/test.cpp
   data/provider/test.cpp
   data/objects/test.cpp

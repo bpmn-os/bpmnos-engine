@@ -150,12 +150,6 @@ std::shared_ptr<Object> resize(const Object& object, const std::vector< std::opt
  */
 std::shared_ptr<const Object> merge(const std::vector< std::shared_ptr<const Object> >& objects);
 
-/**
- * @brief Returns the values of an array of single values as decimals, an undefined value as a quiet NaN, throwing an
- * error for any other object.
- */
-std::vector<double> to_vector(const Object& object);
-
 } // namespace BPMNOS
 
 #endif // BPMNOS_Model_Object_H

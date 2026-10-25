@@ -45,7 +45,8 @@ public:
    * - lognormal(logscale, shape): Log-normal distribution
    * - geometric(p): Geometric distribution
    * - triangular(min, mode, max): Triangular distribution
-   * - discrete(values, probabilities): Discrete distribution over arbitrary collections
+   * - discrete(values, probabilities): Discrete distribution over the values of an array, each drawn with the
+   *   probability at the same position of the other; an aggregator over two arrays
    */
   void registerFunctions(LIMEX::Handle<double>& handle);
 

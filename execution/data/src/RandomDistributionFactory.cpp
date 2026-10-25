@@ -1,7 +1,7 @@
 #include "RandomDistributionFactory.h"
-#include "model/utility/src/ObjectRegistry.h"
 #include <exception>
 #include <algorithm>
+#include <cmath>
 
 using namespace BPMNOS::Execution;
 
@@ -261,28 +261,31 @@ void RandomDistributionFactory::registerFunctions(LIMEX::Handle<double>& handle)
     });
   }
 
-  // discrete(values, probabilities) - Discrete distribution over arbitrary values
-  // Arguments are collection indices (from the input encoder)
+  // discrete(values, probabilities) - Discrete distribution over the values of an array, each drawn with the
+  // probability at the same position of the other
   if (!nameExists("discrete")) {
-    handle.addFunction("discrete", [](const std::vector<double>& args) -> double {
-      if (args.size() != 2) {
-        throw std::runtime_error("discrete requires 2 arguments: values collection, probabilities collection");
-      }
+    handle.addAggregator("discrete", 2, [](const std::vector<LIMEX::View<double>>& arrays) -> double {
       if (!currentRng) {
         throw std::runtime_error("discrete: no RNG context set");
       }
-      size_t valuesIndex = static_cast<size_t>(args[0]);
-      size_t probsIndex = static_cast<size_t>(args[1]);
-
-      auto values = to_vector( *objectRegistry[valuesIndex] );
-      auto probs = to_vector( *objectRegistry[probsIndex] );
-
-      if (values.size() != probs.size()) {
+      auto& values = arrays[0];
+      auto& probabilities = arrays[1];
+      if (values.size() != probabilities.size()) {
         throw std::runtime_error("discrete: values and probabilities must have the same size");
       }
-
-      std::discrete_distribution<size_t> dist(probs.begin(), probs.end());
-      return values[dist(*currentRng)];
+      if (values.size() == 0) {
+        throw std::runtime_error("discrete: values and probabilities must not be empty");
+      }
+      std::vector<double> weights;
+      weights.reserve(probabilities.size());
+      for (size_t i = 0; i < values.size(); i++) {
+        if (std::isnan(values[i]) || std::isnan(probabilities[i])) {
+          throw std::runtime_error("discrete: values and probabilities must be defined");
+        }
+        weights.push_back(probabilities[i]);
+      }
+      std::discrete_distribution<size_t> distribution(weights.begin(), weights.end());
+      return values[distribution(*currentRng)];
     });
   }
 }
