@@ -1,0 +1,69 @@
+project:
+  type: book
+
+book:
+  title: "BPMN-OS: BPMN for optimization and simulation of business processes"
+  chapters:
+    - index.qmd
+    - part: model/index.qmd
+      chapters:
+        - model/bpmn-elements.qmd
+        - model/data-model.qmd
+        - model/expressions.qmd
+        - model/inputs.qmd
+        - model/extensions.qmd
+    - part: data/index.qmd
+      chapters:
+        - data/instances-and-values.qmd
+        - data/data-providers.qmd
+    - part: engine/index.qmd
+      chapters:
+        - engine/processes.qmd
+        - engine/subprocesses.qmd
+        - engine/tasks.qmd
+        - engine/multi-instance-activities.qmd
+        - engine/compensation.qmd
+        - engine/gateways.qmd
+        - engine/start-events.qmd
+        - engine/boundary-events.qmd
+        - engine/catching-and-throwing-events.qmd
+        - engine/decisions-and-objective.qmd
+    - part: user/index.qmd
+      chapters:
+        - user/expression-language.qmd
+        - user/input-files.qmd
+        - user/instance-data.qmd
+        - user/running-a-model.qmd
+    - part: technical/index.qmd
+      chapters:
+        - technical/architecture.qmd
+        - technical/writing-model-files.qmd
+        - technical/loading-a-model.qmd
+        - technical/creating-scenarios.qmd
+        - technical/running-a-scenario.qmd
+        - technical/making-decisions.qmd
+        - technical/observing-a-run.qmd
+        - technical/internals/registries.qmd
+        - technical/internals/expressions.qmd
+        - technical/internals/objects.qmd
+        - technical/internals/system-state.qmd
+        - technical/internals/caching.qmd
+  appendices:
+    - examples/assignment-problem.qmd
+    - examples/bin-packing-problem.qmd
+    - examples/earliest-arrival-problem.qmd
+    - examples/job-shop-scheduling-problem.qmd
+    - examples/knapsack-problem.qmd
+    - examples/pickup-delivery-problem.qmd
+    - examples/quadratic-assignment-problem.qmd
+    - examples/travelling-salesperson-problem.qmd
+    - examples/truck-driver-scheduling-problem.qmd
+    - examples/vehicle-routing-problem.qmd
+    - reference.qmd
+
+number-sections: true
+
+format:
+  html:
+    theme: cosmo
+    toc: true

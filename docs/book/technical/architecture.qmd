@@ -1,0 +1,13 @@
+# Architecture {#sec-engine-architecture}
+
+## The pipeline {#sec-engine-architecture-the-pipeline}
+
+This section is not yet written.
+
+## Libraries {#sec-engine-architecture-libraries}
+
+This section is not yet written.
+
+## Amalgamated headers {#sec-engine-architecture-amalgamated-headers}
+
+This section is not yet written.

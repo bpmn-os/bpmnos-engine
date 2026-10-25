@@ -1,0 +1,37 @@
+# Extensions {#sec-engine-extensions}
+
+## Restrictions {#sec-engine-extensions-restrictions}
+
+This section is not yet written.
+
+## Operators {#sec-engine-extensions-operators}
+
+This section is not yet written.
+
+## Choices {#sec-engine-extensions-choices}
+
+This section is not yet written.
+
+## Messages {#sec-engine-extensions-messages}
+
+This section is not yet written.
+
+## Signals {#sec-engine-extensions-signals}
+
+This section is not yet written.
+
+## Errors and escalations {#sec-engine-extensions-errors-and-escalations}
+
+This section is not yet written.
+
+## Timers {#sec-engine-extensions-timers}
+
+This section is not yet written.
+
+## Loop parameters {#sec-engine-extensions-loop-parameters}
+
+This section is not yet written.
+
+## The objective {#sec-engine-extensions-the-objective}
+
+This section is not yet written.

@@ -1,0 +1,29 @@
+# Data model {#sec-engine-data-model}
+
+## Scopes {#sec-engine-data-model-scopes}
+
+This section is not yet written.
+
+## Status, data and globals {#sec-engine-data-model-status-data-and-globals}
+
+This section is not yet written.
+
+## Types {#sec-engine-data-model-types}
+
+This section is not yet written.
+
+## Attributes {#sec-engine-data-model-attributes}
+
+This section is not yet written.
+
+## Objects {#sec-engine-data-model-objects}
+
+This section is not yet written.
+
+## Values and undefined values {#sec-engine-data-model-values-and-undefined-values}
+
+This section is not yet written.
+
+## Inheritance {#sec-engine-data-model-inheritance}
+
+This section is not yet written.

@@ -1,0 +1,13 @@
+# Registries {#sec-engine-registries}
+
+## The attribute registry {#sec-engine-registries-the-attribute-registry}
+
+This section is not yet written.
+
+## Numbering {#sec-engine-registries-numbering}
+
+This section is not yet written.
+
+## The string registry {#sec-engine-registries-the-string-registry}
+
+This section is not yet written.

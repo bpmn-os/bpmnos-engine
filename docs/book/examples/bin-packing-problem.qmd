@@ -1,0 +1,9 @@
+# Bin packing problem {#sec-engine-bin-packing-problem}
+
+## How the model states the problem {#sec-engine-bin-packing-problem-how-the-model-states-the-problem}
+
+This section is not yet written.
+
+## The generated pages {#sec-engine-bin-packing-problem-the-generated-pages}
+
+This section is not yet written.

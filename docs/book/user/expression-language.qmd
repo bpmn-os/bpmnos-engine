@@ -1,0 +1,33 @@
+# Expression language {#sec-engine-expression-language}
+
+## Literals {#sec-engine-expression-language-literals}
+
+This section is not yet written.
+
+## Operators {#sec-engine-expression-language-operators}
+
+This section is not yet written.
+
+## Functions {#sec-engine-expression-language-functions}
+
+This section is not yet written.
+
+## Aggregators {#sec-engine-expression-language-aggregators}
+
+This section is not yet written.
+
+## Sets {#sec-engine-expression-language-sets}
+
+This section is not yet written.
+
+## Paths {#sec-engine-expression-language-paths}
+
+This section is not yet written.
+
+## Resizing {#sec-engine-expression-language-resizing}
+
+This section is not yet written.
+
+## Lookups and inputs {#sec-engine-expression-language-lookups-and-inputs}
+
+This section is not yet written.

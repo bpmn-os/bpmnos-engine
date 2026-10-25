@@ -1,0 +1,9 @@
+# Knapsack problem {#sec-engine-knapsack-problem}
+
+## How the model states the problem {#sec-engine-knapsack-problem-how-the-model-states-the-problem}
+
+This section is not yet written.
+
+## The generated pages {#sec-engine-knapsack-problem-the-generated-pages}
+
+This section is not yet written.

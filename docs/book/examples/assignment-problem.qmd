@@ -1,0 +1,9 @@
+# Assignment problem {#sec-engine-assignment-problem}
+
+## How the model states the problem {#sec-engine-assignment-problem-how-the-model-states-the-problem}
+
+This section is not yet written.
+
+## The generated pages {#sec-engine-assignment-problem-the-generated-pages}
+
+This section is not yet written.

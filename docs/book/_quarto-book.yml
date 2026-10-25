@@ -1,0 +1,17 @@
+# The book profile renders the documentation of the engine alone as a PDF, locally, with `--profile book`.
+filters:
+  - filters/inline-code-breaks.lua
+format:
+  pdf:
+    documentclass: scrbook
+    pdf-engine: lualatex
+    toc: true
+    toc-depth: 2
+    papersize: a4
+    include-in-header:
+      text: |
+        % code lines longer than the text width are broken rather than run into the margin
+        \usepackage{fvextra}
+        \fvset{breaklines=true, breakanywhere=true, fontsize=\small}
+        \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines, breakanywhere, fontsize=\small, commandchars=\\\{\}}
+        \RecustomVerbatimEnvironment{verbatim}{Verbatim}{breaklines, breakanywhere, fontsize=\small}

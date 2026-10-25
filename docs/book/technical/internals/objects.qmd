@@ -1,0 +1,626 @@
+# Objects {#sec-engine-objects}
+
+This chapter describes how the engine implements objects, the values of attributes whose type is an array type or
+an object type. The chapters on the data model and the extensions define what such attributes mean; this chapter
+assumes them.
+
+The implementation separates two things. A *schema* states the value type of each value and the size of each fixed
+array. An *object* holds the values themselves together with its geometry, that is, the size of each array and the
+position of each value, and refers to the schema it belongs to. Schemas and geometries are trees of the same
+recursive structure, and every algorithm in this chapter is a recursion over it.
+
+The model library implements schemas, of class `BPMNOS::Schema`, in `model/utility/src/Schema.h`, objects in
+`model/utility/src/Object.h`, and constants in `model/utility/src/ObjectRegistry.h` and
+`model/utility/src/InputEncoder.h`. It declares the interface through which the execution library supplies schemas
+in `model/bpmnos/src/SchemaProvider.h`.
+
+## Schemas {#sec-engine-objects-schemas}
+
+### Definition {#sec-engine-objects-types}
+
+A *value type* is one of `boolean`, `integer`, `decimal` and `string`.
+
+A *schema* is a value type, an array type or an object type. An *array type* consists of a schema, its *element
+type*, and a *size*, which is either a number $n \geq 1$, in which case the array is *fixed*, or *open*. An *object
+type* consists of one or more *fields*. A field consists of a name and a schema, its *type*.
+
+Every attribute has a schema, its *attribute type*. An attribute whose type is an array type or an object type is
+an *object attribute*, and its values are *objects*. Any other attribute holds a single value.
+
+A fixed array of size $n$ has $n$ elements; the value of an open array determines its size. All elements of an
+array have the same sizes. For example, in a value of `boolean[][]` all inner arrays have the same size.
+
+### Representation {#sec-engine-objects-schema-members}
+
+```cpp
+enum ValueType { BOOLEAN, INTEGER, DECIMAL, STRING };
+struct Schema;
+struct ArrayType  { std::shared_ptr<const Schema> type; std::optional<size_t> size; };
+struct Field      { std::string name; std::shared_ptr<const Schema> type; };
+struct ObjectType { std::vector<Field> fields; };
+struct Schema : std::variant<ValueType, ArrayType, ObjectType> { using variant::variant; };
+```
+
+A `Schema` is a `std::variant` of a `ValueType`, an `ArrayType` and an `ObjectType`, so that it is one of the
+three, as the definition states; `std::holds_alternative` tells which, and `std::get` gives access to it. An
+`ArrayType` holds its element type and its size, which is `std::nullopt` if the array is open. An `ObjectType`
+holds its fields, and a `Field` holds its name and its type. An attribute holds its type as the member `Schema
+type`.
+
+A schema refers to the schemas it contains, the element type of an array and the types of the fields of an object,
+through `std::shared_ptr<const Schema>`. A schema never changes once built, so a schema derived from another shares
+every part it does not change.
+
+Two schemas are equal, by `operator==`, if they describe the same type: the same value types, the same arrays with
+the same sizes, and the same fields, in the same order and with equal types. The order of fields belongs to the
+type, because it determines where each field is stored in an object. When the model is loaded, equality checks that
+the sender and the recipient of a message state the same type, and that all definitions of an error, escalation or
+signal of the same name do; their fields must therefore be declared in the same order.
+
+### Notation {#sec-engine-objects-notation}
+
+In the model, a schema is defined by a text in the notation
+
+```
+schema    := ( valuetype | object ) dimension*
+object    := "{" field ( "," field )* "}"
+field     := name ":" schema
+dimension := "[" n "]" | "[]"
+```
+
+which is the text of the `type` field of an attribute. `Schema::parse` reads the text and creates the `Schema` it
+defines. A value type or an object without dimensions defines that value type or object type. Each dimension adds
+an array: `[n]` a fixed array of size $n$, `[]` an open array. The dimensions are written outermost first, so that
+the text before them is the type of the innermost elements: `boolean[3][4]` is the array type of size 3 whose
+element type is the array type of size 4 whose element type is `boolean`, and `grid[i][j]` has $i \leq 3$ and $j
+\leq 4$. The schema `{ cost: decimal, flags: boolean[] }[]` is an open array whose element type is an object type
+with the fields `cost`, of type `decimal`, and `flags`, an open array of `boolean`.
+
+### Size declarations {#sec-engine-objects-size-declarations}
+
+A *size declaration* states sizes for arrays in the type of an object attribute, for every instance of a scenario.
+Applying it yields a new schema, a copy of the type in which these arrays are fixed at the stated sizes. A size
+declaration is a row of the instance data whose initialisation contains no `:=`, which names no instance and has no
+value in any other column. Its text is the name of the attribute followed by a path of steps. A step `[n]` states
+the size $n$ for the next array, a step `[]` states no size for it, and a step `.name` descends into the field
+`name`. For example, `facilities[6]` states the size 6 for the outer array of `facilities`, and
+`facilities[].flags[3]` states the size 3 for the array `flags` in every element. Declarations for the same
+attribute accumulate, so that these two together have the effect of `facilities[6].flags[3]`.
+
+The node of a declaration determines the attribute it names. A declaration without a node names a global object
+attribute or, if there is none of that name, the content of the signal of that name. A declaration with a node
+names an object attribute the node declares or, if there is none of that name, the content of the message, error or
+escalation the node throws. The content of a signal is declared only by the name of the signal, because a signal is
+the same wherever it is thrown or raised; a declaration at a signal event is rejected, and so is a declaration of
+content at a node that does not throw it.
+
+`Schema::declareSizes` takes a schema and a declaration and returns a new schema. Along the path of the
+declaration, the new schema has new parts, in which every array a step `[n]` names has the size $n$; every other
+part it shares with the given schema. The function rejects a size of 0, a size contradicting one that the type or
+an earlier declaration has fixed, an index step where the schema has no array, and an unknown field.
+
+The instance data reader keeps, for every attribute a declaration names, the schema obtained so far, which is
+initially its attribute type. Each declaration for the attribute replaces it by the schema `Schema::declareSizes`
+returns for it. After the last declaration, this schema is the *effective schema* of the attribute. For a signal,
+there is one such schema per signal name, which is the effective schema of the content at every node of the signal.
+Without size declarations, the effective schema of an attribute is its attribute type.
+
+`StaticDataProvider`, the base class of the other data providers, reads the instance data in two passes: the first
+reads the size declarations, the second the values. Every effective schema is therefore complete before any value
+is read.
+
+The data provider holds the effective schemas for as long as it exists, and makes them available through the
+interface `Model::SchemaProvider`. Its one function, `getSchema`, takes an object attribute and returns its
+effective schema. The interface is declared in the model library, because the functions writing objects belong to
+that library, which does not know the data provider; `Execution::DataProvider` implements it.
+
+### Declared and effective schemas {#sec-engine-objects-schema-roles}
+
+An object attribute has two schemas, which differ only in which arrays are fixed.
+
+The *declared schema* is the attribute type stated in the model. The attribute holds it as `Attribute::type`, and
+it is the same in every scenario.
+
+The *effective schema* results from the declared schema by the size declarations of the instance data
+(@sec-engine-objects-size-declarations). It may therefore differ between scenarios, and the data provider holds it.
+
+The effective schema matters wherever it matters which arrays are fixed, that is, wherever an object of the
+attribute is built or assigned. Wherever only value types and structure matter, the declared schema suffices, since
+there it agrees with the effective schema.
+
+## Values and objects {#sec-engine-objects-layout}
+
+### Values {#sec-engine-objects-single-values}
+
+A single value is represented by `Value`, that is `std::optional<number>`; `std::nullopt` is an undefined value. A
+boolean is stored as 0 or 1, a string as its index in the string registry. Hence every value is a number, and a
+`Value` does not know its value type. An attribute of a value type holds one `Value`.
+
+A single value given to an attribute or to an element of an object whose value type differs is cast as in C++: to
+`integer` by truncation towards zero, to `boolean` as 1 if the number is not 0 and as 0 otherwise, and to `decimal`
+unchanged. A `string` is never cast, and nothing is cast to `string`. Arrays and objects are never cast.
+
+### Objects {#sec-engine-objects-values}
+
+The value of an object attribute is an *object*, of class `BPMNOS::Object`:
+
+```cpp
+struct Object {
+  std::shared_ptr<const Layout> layout;
+  std::vector<Value> values;
+};
+```
+
+An object consists of a layout, which states its geometry and its schema, and the vector `values`, which holds
+every value of the object, however deeply nested in arrays and fields, as a `Value`.
+
+#### Layouts {#sec-engine-objects-layouts}
+
+A *layout* represents the geometry of an object. It has the structure of a schema, with the actual size of every
+array, and refers to the schema it lays out:
+
+```cpp
+struct Layout;
+struct ArrayLayout  { std::shared_ptr<const Layout> layout; size_t size; };
+struct FieldLayout  { size_t offset; std::shared_ptr<const Layout> layout; };
+struct ObjectLayout { std::vector<FieldLayout> fields; };
+struct Layout : std::variant<std::monostate, ArrayLayout, ObjectLayout> {
+  std::shared_ptr<const Schema> schema;
+  size_t size;
+};
+```
+
+A `Layout` is a `std::variant` of a single value, `std::monostate`, an `ArrayLayout` and an `ObjectLayout`, and
+adds the members `schema` and `size`. `Layout::size` is the number of positions a layout occupies in `values`, and
+is not to be confused with `ArrayLayout::size`, the number of elements of an array. A single value, the alternative
+`std::monostate`, has size 1. An array has `size` elements, all with the element layout `layout`, so its layout has
+size $\mathit{size} \cdot \mathit{layout.size}$. An object has its fields in the order of the fields of its schema;
+the `offset` of a field is the position of its first value relative to the first value of the object, that is, the
+sum of the sizes of the layouts of the fields before it, and the size of the object's layout is the sum of the
+sizes of the layouts of its fields.
+
+`Layout::schema` is the *schema of the object*. A layout and its schema agree: the layout has the structure of the
+schema, the schema states the value type of every single value and the name of every field, and every array that
+the schema fixes has the size the schema states. The layout of an element or field refers to the corresponding part
+of the schema, the element type or the type of the field. Hence the layout of any part of an object, together with
+the values it covers, is itself an object of the corresponding part of the schema. An object knows its value types
+through its schema, and no function that reads, renders or converts an object needs to be given the schema of the
+object. Two layouts are equal if they have the same structure, sizes and offsets and their schemas are equal.
+
+The values of an object are stored depth first: the elements of an array one after the other, and within an element
+its fields in the order of the schema. The position of a value is therefore the sum of the displacements along the
+path to it. An index $i$, counted from 1 as in expressions, displaces by $(i - 1) \cdot \mathit{layout.size}$,
+where `layout` is the element layout of the array; a field name displaces by the offset of the field, which is
+found at the position of the name among the fields of the schema.
+
+For example, let `facilities` be of type `{ cost: decimal, flags: boolean[3] }[]`, in which `flags` is fixed at
+size 3, and be assigned the value
+
+```
+[ { cost := 10.0, flags := [ true, false ] },
+  { cost := 20.0, flags := [ false, false ] },
+  { cost := 30.0, flags := [ true, true ] } ]
+```
+
+which gives only two flags per element. The outer array is open and has the size 3 of the value. The array `flags`
+is fixed at size 3 in every element, so its third flag is undefined. The layout of the object is
+
+```
+array of 3 elements, size 12, schema { cost: decimal, flags: boolean[3] }[]
+  element: object, size 4, schema { cost: decimal, flags: boolean[3] }
+    cost:  offset 0, single value, size 1, schema decimal
+    flags: offset 1, array of 3 elements, size 3, schema boolean[3]
+      element: single value, size 1, schema boolean
+```
+
+and its values are
+
+| Position | Path | Value |
+|:-:|:--|:-:|
+| 0 | `facilities[1].cost` | 10.0 |
+| 1 | `facilities[1].flags[1]` | 1 |
+| 2 | `facilities[1].flags[2]` | 0 |
+| 3 | `facilities[1].flags[3]` | undefined |
+| 4 | `facilities[2].cost` | 20.0 |
+| 5 | `facilities[2].flags[1]` | 0 |
+| 6 | `facilities[2].flags[2]` | 0 |
+| 7 | `facilities[2].flags[3]` | undefined |
+| 8 | `facilities[3].cost` | 30.0 |
+| 9 | `facilities[3].flags[1]` | 1 |
+| 10 | `facilities[3].flags[2]` | 1 |
+| 11 | `facilities[3].flags[3]` | undefined |
+
+The undefined flags occupy positions like any other value, so each element occupies 4 positions rather than 3, and
+every position after the first element shifts accordingly. The position of `facilities[2].flags[2]` is
+
+$$
+\underbrace{(2 - 1) \cdot 4}_{\texttt{facilities[2]}} + \underbrace{1}_{\texttt{.flags}} +
+\underbrace{(2 - 1) \cdot 1}_{\texttt{[2]}} = 6 .
+$$
+
+Since an array has one element layout, a size within its elements is the same in all elements and can only change
+in all elements at once.
+
+Like a schema, a layout refers to the layouts it contains through `std::shared_ptr<const Layout>`. A layout never
+changes once built, so changing a size builds a new layout, which shares every part it does not change.
+
+## Creating and assigning objects {#sec-engine-objects-creating}
+
+### Building {#sec-engine-objects-schema-building}
+
+An object can be built from a schema once the size of every array is known. A fixed array has its size. An open
+array needs a size from elsewhere, and the two constructors below differ in where they take it from. The object
+built belongs to the given schema.
+
+```cpp
+explicit Object(const Schema& schema);
+Object(const Schema& schema, const nlohmann::json& json);
+```
+
+The first constructor builds an object from a schema alone. It gives every open array the size 0 and leaves every
+value undefined. The result is the value of an object attribute that nothing has initialised. For the schema
+`boolean[3]` it is an array of three undefined values; for `{ cost: decimal, flags: boolean[] }[]` it is an empty
+array. It is explicit, so that a schema never converts to an object implicitly.
+
+The second constructor builds an object from a schema and a parsed JSON value. It takes the sizes of the open
+arrays from the JSON value and fills the object with its values. The size of an open array is the number of
+elements of the JSON array at its position. Since all elements of an array have the same sizes, all JSON arrays at
+the same position must have the same number of elements. A JSON number, truth value or text is a single value of
+the value type the schema states at its position, and a JSON `null` stands for an undefined value.
+
+### Converting {#sec-engine-objects-schema-conform}
+
+An object given to an attribute, such as a literal or the object of another attribute, need not have the sizes the
+attribute requires. A third constructor converts it:
+
+```cpp
+Object(const Schema& schema, const Object& source);
+```
+
+It builds an object of the schema `schema`, the *target*, from the object `source`, the *source*, whose schema is
+the schema of its layout. It determines the layout of the new object by recursion over the target and the layout of
+the source, with one rule for each of the three cases of a schema.
+
+At a value type, the source must hold a single value of the same value type. Arrays and objects are not cast: their
+values keep their value types, and a source whose value types differ from the target's is rejected.
+
+At an array type, the source must be an array. If the target array is fixed at size $n$, the new array has size
+$n$: a source with fewer elements is padded with undefined elements, and a source with more elements is cut off if
+every value beyond the $n$-th element is undefined, and rejected otherwise. If the target array is open, the new
+array has the size of the source. The element layout of the new array is determined by the same recursion from the
+target's element type and the source's element layout.
+
+At an object type, the source must be an object, and every field of the source must be a field of the target. Each
+field of the new object is determined by the recursion from the field's type and the field of the source. A field
+the source lacks is determined from its type alone, and every open array in it has size 0.
+
+The constructor then copies the values of the source into the new object and leaves every other position undefined.
+If the source cannot be converted, the constructor throws. For example, converting the literal `[ { cost := 10.0,
+flags := [ true ] } ]` to `{ cost: decimal, flags: boolean[3] }[6]` builds an object of 24 values, of which only
+the first cost and the first flag are defined.
+
+No conversion is needed if every object of the source schema is, unchanged, an object of the target schema.
+`Schema::supports`, called on the target with the source schema, tells whether this is the case. It holds if the
+two schemas have the same structure, the same value types and the same fields in the same order, and if at every
+array the target array is open or both arrays are fixed at the same size. A schema supports another only if the two
+differ at most in which arrays are fixed.
+
+Wherever an object is given to an attribute, the source is therefore kept if the target supports its schema, and
+converted otherwise:
+
+```cpp
+slot = target.supports(*source->layout->schema) ? source : std::make_shared<Object>(target, *source);
+```
+
+A kept object keeps its layout and with it its schema, which may fix arrays that the target leaves open. For
+example, the literal `[ 1, 2, 3 ]`, whose numbers are integers and which fixes no size, has the schema `integer[]`.
+The schemas `integer[]` and `integer[3]` support it, so the literal is kept. The schema `integer[4]` does not, so
+the literal is converted and padded. The schema `decimal[]` does not support it either, and the literal is
+rejected; it must be written `[ 1.0, 2.0, 3.0 ]`.
+
+### Schemas for assignment {#sec-engine-objects-schema-assignment}
+
+An assignment to an existing object, to the whole object or to one of its elements, must not change the size of a
+fixed array, but may change the size of an open array. The object assigned is therefore kept or converted
+(@sec-engine-objects-schema-conform) for a *target schema*, which a constructor of `Schema` builds:
+
+```cpp
+Schema(const Schema& effectiveSchema, const Layout& currentLayout);
+```
+
+It is given the effective schema of the target of the assignment and the layout of the object currently there. For
+an assignment to the whole object, these are the effective schema of the attribute and the layout of its object.
+For an assignment to an element, they are the effective schema of the element, found by descending along the target
+path, where an index descends into the element type and a field name into the type of the field, and the layout of
+the element. The constructor builds a schema of the same structure, in which every array that is fixed in the
+effective schema is fixed at the size it has in the current layout, and every open array stays open. The current
+size is kept rather than the size the effective schema states, because a fixed array may have been resized during
+the run; the array then remains fixed at its new size. The effective schema is needed rather than the schema of the
+current object, because the current object may have been kept from a source whose schema fixes arrays that are open
+in the effective schema.
+
+Hence a fixed array keeps its size: a shorter source is padded with undefined elements, and a longer source is cut
+off if only undefined values are cut, and rejected otherwise. For an attribute of type `integer[3]`, the literal `[
+1, 2 ]` is padded with one undefined value, and the literal `[ 1, 2, 3, 4 ]` is rejected. An open array takes the
+size of the source: for an attribute of type `integer[]`, both literals are taken as they are.
+
+In an assignment to an element, an open array within the element takes the size of the source as well. Since all
+elements of the enclosing array share one element layout (@sec-engine-objects-layouts), the new size applies to
+every element: the other elements are padded with undefined values or lose their values beyond the new size. For
+example, if `flags` is open and has size 3 in every element of `facilities`, the assignment `facilities[2] := {
+cost := 5.0, flags := [ true, false ] }` gives `flags` the size 2 in every element.
+
+## Constants {#sec-engine-objects-constants}
+
+A *literal* is written `[ ... ]` or `{ name := ... }`. `InputEncoder` replaces every literal by a number before the
+text is parsed. It scans the text of every expression, of every initial value, and of every cell of the instance
+data and of the inputs, once and from left to right. A quoted string becomes its index in the string registry. A
+bracket opens a literal, except after a name, `]` or `)`, where it indexes, and after a membership operator, where
+it encloses a set that the expression parser reads itself. A brace opens a literal if a name followed by `:=` comes
+next.
+
+`InputEncoder` reads a literal into a syntax tree. Each member is a string, a boolean, a number or a literal, and
+its value type is stated by how it is written: `true` and `false` are `boolean`, a quoted text is `string`, a
+number written with a decimal point, such as `1.0` or `2.5`, is `decimal`, and any other number, such as `1`, is
+`integer`. The elements of an array must agree in value types, fields and sizes, so that `[ 1, 2.5 ]` is rejected
+and must be written `[ 1.0, 2.5 ]`. From the tree, `InputEncoder` builds an object whose schema, the *constant
+schema*, states the value types of the literal and leaves every array open, since a literal states no sizes. It
+registers the object in the object registry, and replaces the literal by its registry index.
+`InputEncoder::getObjectIndices` returns these indices in the order of the literals, so that an expression can tell
+a constant from a number. `InputEncoder::getObjectIndex` returns the index if the whole text is a single literal,
+and `std::nullopt` otherwise, so that an initial value can be recognised as a literal.
+
+`InputEncoder::getEncodedInput` returns the input with every literal replaced by its number, which is the text that
+is parsed afterwards. `InputEncoder::getEncodedLiterals` returns an `EncodedLiteral` for every literal of the
+input, in their order. It states where the replacement of the literal begins and ends in the encoded input, and
+whether the literal is a string, an object, or an object initialiser of the instance data, which is copied
+unchanged. `CSVReader` uses them to split a line of a CSV file into cells: a cell that an encoded literal covers
+exactly states that literal, and a delimiter within an object initialiser does not end a cell.
+
+The *object registry*, the global `objectRegistry`, holds every constant, and `objectRegistry[i]` returns it. Equal
+constants are registered once. Two constants are equal if their layouts, schemas included, and their values are
+equal. The schemas take part because a string and a number may be held as the same number: `[ "a" ]` and `[ 0 ]`
+differ, even if the string `a` has index 0.
+
+The registry finds a constant by a hash of its schema, layout and values, and compares in full on equal hashes. Its
+entries are stored in blocks of 4096, each allocated once and never moved. An atomic counter, raised only after an
+entry is written, publishes the entries. Reading therefore takes no lock, and a reference to a constant remains
+valid while further constants are registered. Only registration takes the mutex, so that concurrent registrations
+of the same constant obtain one index.
+
+Constants also arise from two sources when the model is loaded. Every lookup input of a data store becomes a
+`LookupTable`, which `AttributeRegistry::lookupTables` holds under its name. Since LIMEX evaluates to numbers, a
+lookup whose result column, its last column, has an array or object type returns the registry index of the constant
+in the matching cell; every such cell must have value types equal to those of the column. When an expression is
+compiled, it reads the schema of the result column from the table, and admits a lookup returning an object only as
+the entire right side of an assignment to an object attribute. A matrix or object input of a data store is read
+into one constant, which its `Input` holds together with the schema of the input, and its name is recorded in
+`AttributeRegistry::inputs`. A matrix is read row by row into an array of arrays, an object input by the
+constructor `Object(const Schema&, const nlohmann::json&)`.
+
+An *object initialiser* in the instance data is a literal with expression members. `InputEncoder` does not register
+it, because its values are known only after its members are evaluated. `ObjectInitializer` keeps its syntax tree
+and the positions of its expression members, and `ObjectInitializer::instantiate` builds the object from the values
+of the members. The value of an expression member is a single value, cast to the value type that the schema of the
+attribute states at the position of the member; the other members follow the rules of literals.
+
+## Attributes and storage {#sec-engine-objects-storage}
+
+How the model initialises an attribute is held by one member:
+
+```cpp
+std::variant<std::monostate, size_t, std::unique_ptr<const Expression>> initialization;
+```
+
+It is `std::monostate` if the model gives no initial value. It is the registry index of a literal if the model
+initialises an object attribute with a literal; the literal is checked by converting it to the declared schema. It
+is the compiled assignment in every other case, which includes every initial value of an attribute of a value type
+and an object attribute initialised, for instance, by a lookup. The assignment names its target, so it is compiled
+only after the attribute is registered; until then, the constructor of `Attribute` keeps its text in a local
+variable. An attribute whose initialization is not `std::monostate` is assigned by the model, and the instance data
+must not give it a value. The instance and the timestamp are not object attributes, and object attributes do not
+contribute to the objective.
+
+The attribute registry numbers object attributes separately from the other attributes. `AttributeRegistry::add`
+appends an object status attribute to `statusObjects` and an object data attribute to `dataObjects`, and the index
+of an object attribute is its position there. The index of any other attribute therefore does not depend on object
+attributes. As for the other data attributes, the global object attributes come first, followed by those of each
+scope after those of its enclosing scopes. `Attribute::declaration` counts all attributes together in the order of
+their declaration.
+
+`Status` and `Data` each hold the vector `attributes`, with the values of the other attributes, and the vector
+`objects`, with a `std::shared_ptr<const Object>` for each object attribute. The data chain `SharedData` refers to
+both vectors of the data of a scope and of its enclosing scopes, outermost first. The constructor of `Data` from a
+data chain copies the pointers.
+
+`AttributeRegistry::getObject` returns a reference to the `std::shared_ptr<const Object>` that holds the object of
+an attribute in the status or the data. It has two overloads: given a const status and const data, it returns a
+const reference, for reading; given a non-const status and data, it returns a non-const reference, through which
+the pointer can be replaced. `AttributeRegistry::setObject` replaces the object as a whole. It receives the
+assigned object and the schema provider (@sec-engine-objects-size-declarations). It obtains the effective schema of
+the attribute from the schema provider, and keeps or converts the assigned object for the target schema the
+constructor of `Schema` builds from the effective schema and the current layout
+(@sec-engine-objects-schema-assignment).
+
+## Initialisation and lifetime {#sec-engine-objects-initialisation}
+
+The data provider computes a *default* for every object attribute once. If the model initialises the attribute with
+a literal, the default is the literal, kept or converted for the effective schema; otherwise it is the object the
+constructor `Object(const Schema&)` builds from the effective schema. The default content object of a node stating
+a message, signal, error or escalation is an undefined object of the effective schema of its content; all nodes of
+a signal share the same one.
+
+The instance data give an object attribute a value in a row that states a literal or an object initialiser. A
+literal stands as its registry index. An object initialiser is evaluated over the values that earlier rows have
+given. In both cases the object is kept or converted for the effective schema. A global object attribute takes its
+value from the instance data if they give one, and otherwise its default. The stochastic data provider records the
+objects of each instance in its scenario, so that a fork keeps what the run has revealed.
+
+`InstanceValues` builds the values of a scope instance when the instance comes into being. For every object status
+attribute and every object data attribute the scope declares, it appends the object the instance data give, or
+otherwise the default. It then initialises the other attributes. Finally, it evaluates the initial expressions of
+the object attributes in the order of their declaration, with the data provider as schema provider. When the ready
+event of a process instance is processed, the engine moves the objects into the slots of the state machine of the
+instance that follow the global objects. It moves them element by element, so that the references held by data
+chains remain valid.
+
+An object status attribute exists while the token is inside the scope declaring it. When the token leaves the
+scope, its status is truncated by the status attributes the scope declares, the object status attributes included.
+A token arriving at a compensation activity is truncated in the same way to the status of the enclosing scopes.
+
+## Sharing {#sec-engine-objects-sharing}
+
+Objects are copied often. A token is copied at a diverging gateway. The evaluators of a controller copy the data of
+a token for every candidate decision. A controller may copy the system state to look ahead, and a fork copies its
+scenario. Moreover, a default is given to every instance of its scope, and an operator assigns its literal every
+time it is applied. Copying the values on each of these occasions would take time proportional to the number of
+values, although most copies are never written.
+
+Objects are therefore shared until they are written. Every holder holds a `std::shared_ptr<const Object>`, and
+copying a status or data copies these pointers. An object is modified only through `BPMNOS::modifiable`. If the
+pointer in the slot has a use count other than 1, this function first replaces the object in the slot by a copy; it
+then returns the object for modification. An object held by one slot is thus written in place, and an object held
+by several slots is copied at its first write. A constant is always copied, since the registry holds it as well.
+
+Every object that may be modified is created non-const, as the constructors of `Object` do, and is held only
+through pointers to const. This makes the cast in `BPMNOS::modifiable` well defined. A write takes its slot from
+the status or data chain of its own token, so an evaluation that writes into copied data never alters the live
+state.
+
+An object is kept wherever the target schema supports its schema (@sec-engine-objects-schema-conform), that is,
+wherever the two schemas differ at most in which arrays are fixed. A literal, whose constant schema leaves every
+array open, is thus kept by every attribute whose type has its value types and fields and whose arrays are open or
+already have the sizes of the literal: the registry, the defaults derived from the literal, and every slot it is
+assigned to then hold one and the same object. The object of an attribute is kept by every attribute whose type
+supports its schema.
+
+## Reading {#sec-engine-objects-reading}
+
+An expression reads an object through a *path*, such as `facilities[i].cost`, `grid[i][j]`, or a name used as an
+array. LIMEX parses a path into steps, each an index or a field name, and evaluates the indices. Resolving the path
+is left to the caller, through the interface `LIMEX::Resolver`.
+
+When an expression is compiled, `Expression::bindPaths` binds each path to the attribute or input it names and
+checks it against the declared schema. An index must meet an array type and descends into its element type. A field
+name must meet an object type and descends into the type of the field.
+
+What a path must end at depends on how it is read. A path read as a value must end at a value type. A path read as
+an array, that is, as the argument of an aggregator, on the right side of a membership operator, or in the binding
+of an aggregation, must end at an array type whose element type is a value type. The argument of `size` may end at
+any array type. A path inside an aggregation over an expression is marked to skip undefined values. Since strings
+are held as indices, reading needs no value types at run time.
+
+When an expression is evaluated, `Expression::execute` gathers the variables and the objects of the paths into
+`thread_local` buffers, which every evaluation on the thread reuses, so that an evaluation does not allocate. A
+`PathResolver` on the stack resolves each path with the function `locate`. It descends the layout along the path
+and adds the displacement of each step: for an index $i$, counted from 1, $i - 1$ times the size of the element
+layout; for a field name, the offset of the field. An index out of range or not integral is an error.
+
+A path read as a value returns the value at the position reached. If that value or an index is undefined, the
+expression is undefined; the resolver signals this by an exception local to `Expression.cpp`. A path marked to skip
+undefined values returns NaN instead, which the aggregator ignores. A path read as an array returns a `LIMEX::View`
+of the array. The values of the array are contiguous, since its elements are single values, and the view reads them
+on demand without copying. For the argument of `size`, the view supplies only the size.
+
+## Writing {#sec-engine-objects-writing}
+
+Operators, initial expressions and ready expressions write objects through `Expression::writeToObject`, which
+receives the status, the data and the schema provider. Writing an object does not change the objective.
+
+When the expression is compiled, `Expression::analyseTarget` determines which of the four forms below the
+assignment has. For a whole or element assignment, it also determines the source: a literal, an object attribute,
+an input, a lookup returning an object, or a path to part of an object. Any other source is rejected. A compound
+assignment such as `+=` is admitted only for a single value, and an object cannot be made undefined. Every source
+is an object and carries its schema: a constant its constant schema, the object of an attribute or input the schema
+of its layout, and the part of an object a path addresses the corresponding part of that schema.
+
+A *resizing*, `resize(path) := n`, is rewritten into `path := n` before LIMEX parses it, and the path must end at
+an array. `BPMNOS::resized` rebuilds the layout along the path with that array at size $n$. If the array is fixed
+in the schema of the object, the rebuilt layout refers to a schema in which the array is fixed at size $n$, so that
+layout and schema agree. If the array lies within the elements of an enclosing array, the element layout of the
+enclosing array changes, so that the array changes in every element. The function `correspond` transfers the values
+present in both layouts by recursion over both; dropped elements are lost and added elements are undefined. Whether
+the array is fixed is stated by the effective schema, and resizing does not change it.
+
+A *value assignment*, as in `facilities[i].cost := 5.0`, casts the evaluated value to the value type of the target
+(@sec-engine-objects-single-values) and writes it into `modifiable(slot).values` at the position of the target
+path. No size changes.
+
+A *whole assignment*, as in `route := [ 1, 2, 3 ]`, is carried out by `AttributeRegistry::setObject`
+(@sec-engine-objects-storage). If the target schema supports the schema of the source, the slot afterwards holds
+the source itself. For a path source, a resolver records the indices of the source path instead of resolving it,
+and the part of the object the path addresses, whose values are contiguous, is taken with its layout.
+
+An *element assignment*, as in `grid[i] := [ 1, 2, 3 ]`, keeps or converts the source for the target schema built
+from the effective schema of the element and the layout of the element (@sec-engine-objects-schema-assignment). If
+an open array within the element thereby changes its size, `BPMNOS::resized` rebuilds the element layout of the
+enclosing array, so that the size applies to every element. The values are then copied into the slot at the
+position of the element.
+
+## Merging and data updates {#sec-engine-objects-merging}
+
+Tokens merge at a converging gateway and at the completion of a multi-instance activity. `Token::mergeStatus` then
+merges each object status attribute by `BPMNOS::merge`. If all tokens hold the same object, that object is kept.
+Otherwise the result has the layout of the objects if they all have the same layout, and else a layout built by
+recursion, in which every array has the largest size it has in any of the objects. The merged objects belong to the
+same attribute and therefore have the same value types and fields; in the schema of a built layout, an array is
+fixed only where all objects fix it at the same size. Each value is merged by the rule for status values: the first
+defined value is kept, an undefined value is no conflict, and a value differing from the one kept makes the result
+undefined for good.
+
+A data update reports an object as a whole. When the model is loaded, `ExtensionElements::dataUpdate` records the
+data attributes that the operators and choices of a node may modify, object attributes included. The `DataUpdate` a
+token notifies names the attribute, not its elements, so that conditional events and the cached candidates of a
+controller treat a change of any element as a change of the object.
+
+## Layouts during a run {#sec-engine-objects-relayout}
+
+During a run, a new layout is built only where an object needs one that no object involved has. This happens in
+five cases. First, a resizing sets the size of an array explicitly (@sec-engine-objects-writing). Second, an
+element assignment changes the size of an open array within the elements (@sec-engine-objects-writing). Third, a
+whole assignment combines sizes of different origins: the open arrays take the sizes of the source, while the fixed
+arrays keep the sizes of the current object (@sec-engine-objects-schema-assignment), so that the result may have
+the sizes of neither. Fourth, a merge combines objects of different sizes, and the result has the largest size of
+each array (@sec-engine-objects-merging). Fifth, an object converted to a schema other than its own refers to that
+schema, even where the sizes stay as they are, as the literal `[ 1, 2, 3 ]` converted to `integer[3]` does. The
+second, third and fourth case are implicit resizings.
+
+In every other case an existing layout is used. When the source is kept, it keeps its layout. The converting
+constructor shares every part of the layout of the source that it would build unchanged, and a resizing and a merge
+share every part they do not change. When the result of a whole assignment has the layout of the current object, as
+after padding fixed arrays, `AttributeRegistry::setObject` gives it the layout of the current object. The part of
+an object that a path addresses is taken with its sub-layout, and a merge of objects of equal layouts keeps their
+layout. Writing a single value or copying an object never changes a layout.
+
+## Content {#sec-engine-objects-content}
+
+The content of a message, signal, error or escalation is an object of the object type its definition states. A node
+stating such a definition has a *content attribute*. It is an object status attribute named after the message or
+signal, created by a dedicated constructor of `Attribute` and registered in
+`ExtensionElements::augmentedAttributeRegistry`, a copy of the attribute registry of the node against which the
+operators of the node are compiled. Since it is registered after all object status attributes of that registry, its
+index is their number. No other expression sees it. Its effective schema results from the size declarations for the
+content (@sec-engine-objects-size-declarations), and the schema provider returns it like that of any other object
+attribute.
+
+`ExtensionElements::applyOperators` receives the schema provider, which it passes to every operator, and the
+content object through a pointer. It appends the content object to the objects of the status, applies the
+operators, and moves the content object back. The operators of a throwing node start from the default content
+object of the node and leave the content they write in `Token::content`, from which the message or signal takes it.
+The operators of a catching node may only read the content; a model in which such an operator writes it is rejected
+when it is loaded. `Message` and `Signal` hold their content as a `Content`, the name together with a pointer to
+the object, so that the content is shared with the throwing token until it is written.
+
+## Rendering {#sec-engine-objects-rendering}
+
+Rendering needs the value types, which the schema of the object states. `BPMNOS::to_json` renders an object by
+recursion over its layout: an array as a JSON array, an object type as a JSON object with its fields in the order
+of the schema, a boolean as a truth value, an integer as a JSON integer, a decimal as a JSON floating-point number,
+a string as text, and an undefined value as `null`. `BPMNOS::to_string` renders an object in the notation of
+literals, for error messages, so that the text it returns is a literal of the schema of the object: a decimal is
+written with a decimal point, as `1.0` rather than `1`, and an integer without one. A single value of type
+`decimal` is likewise written with a decimal point wherever it is rendered.
+
+`Token::jsonify` builds the entries of the log. It collects the attributes of the status, the data and the globals,
+orders them by `Attribute::declaration`, and renders each of them. `Message` and `Signal` render their content
+object.

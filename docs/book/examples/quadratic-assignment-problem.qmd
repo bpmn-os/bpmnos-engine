@@ -1,0 +1,9 @@
+# Quadratic assignment problem {#sec-engine-quadratic-assignment-problem}
+
+## How the model states the problem {#sec-engine-quadratic-assignment-problem-how-the-model-states-the-problem}
+
+This section is not yet written.
+
+## The generated pages {#sec-engine-quadratic-assignment-problem-the-generated-pages}
+
+This section is not yet written.

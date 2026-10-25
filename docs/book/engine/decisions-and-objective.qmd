@@ -1,0 +1,21 @@
+# Decisions and objective {#sec-engine-decisions-and-objective}
+
+## The processual program {#sec-engine-decisions-and-objective-the-processual-program}
+
+This section is not yet written.
+
+## Entering and exiting activities {#sec-engine-decisions-and-objective-entering-and-exiting-activities}
+
+This section is not yet written.
+
+## Delivering messages {#sec-engine-decisions-and-objective-delivering-messages}
+
+This section is not yet written.
+
+## Choosing values {#sec-engine-decisions-and-objective-choosing-values}
+
+This section is not yet written.
+
+## The objective {#sec-engine-decisions-and-objective-the-objective}
+
+This section is not yet written.

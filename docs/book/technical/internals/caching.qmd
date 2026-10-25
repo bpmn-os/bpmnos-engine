@@ -1,0 +1,9 @@
+# Caching {#sec-engine-caching}
+
+## Candidate caching {#sec-engine-caching-candidate-caching}
+
+This section is not yet written.
+
+## Invalidation {#sec-engine-caching-invalidation}
+
+This section is not yet written.

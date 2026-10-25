@@ -1,0 +1,13 @@
+# Observing a run {#sec-engine-observing-a-run}
+
+## Observables {#sec-engine-observing-a-run-observables}
+
+This section is not yet written.
+
+## The recorder {#sec-engine-observing-a-run-the-recorder}
+
+This section is not yet written.
+
+## Writing an observer {#sec-engine-observing-a-run-writing-an-observer}
+
+This section is not yet written.

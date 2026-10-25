@@ -1,0 +1,29 @@
+# Running a scenario {#sec-engine-running-a-scenario}
+
+## Running to the end {#sec-engine-running-a-scenario-running-to-the-end}
+
+This section is not yet written.
+
+## Running step by step {#sec-engine-running-a-scenario-running-step-by-step}
+
+This section is not yet written.
+
+## Events {#sec-engine-running-a-scenario-events}
+
+This section is not yet written.
+
+## The current time {#sec-engine-running-a-scenario-the-current-time}
+
+This section is not yet written.
+
+## Waiting {#sec-engine-running-a-scenario-waiting}
+
+This section is not yet written.
+
+## Termination {#sec-engine-running-a-scenario-termination}
+
+This section is not yet written.
+
+## Reading the system state {#sec-engine-running-a-scenario-reading-the-system-state}
+
+This section is not yet written.
