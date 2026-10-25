@@ -39,7 +39,7 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
         REQUIRE( !messageLog[0]["header"].contains("name") );
         REQUIRE( messageLog[0]["header"]["sender"] == "Instance_1" );
         REQUIRE( messageLog[0]["header"]["recipient"] == "Instance_2" );
-        REQUIRE( messageLog[0]["header"]["time"] == "0" );
+        REQUIRE( messageLog[0]["header"]["time"] == "0.0" );
       }
     }
   }

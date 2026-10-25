@@ -29,7 +29,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
         auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
         REQUIRE( objectRegistry[index]->layout->stringify() == "decimal[2]" );
         REQUIRE( objectRegistry.schema(index).stringify() == "decimal[]" );
-        REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == "[ 1, 2.5 ]" );
+        REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == "[ 1.0, 2.5 ]" );
       }
     }
 
@@ -74,7 +74,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
         REQUIRE( objectRegistry[index]->layout->stringify() == "{ name: string, position: decimal[2] }" );
         REQUIRE( objectRegistry.schema(index).stringify() == "{ name: string, position: decimal[] }" );
         REQUIRE( objectRegistry[index]->values.size() == 3 );
-        REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == R"({ name := "Depot", position := [ 0, 1.5 ] })" );
+        REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == R"({ name := "Depot", position := [ 0.0, 1.5 ] })" );
       }
     }
 
@@ -86,7 +86,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
         REQUIRE( object.layout->stringify() == "{ cost: decimal, flags: boolean[2] }[2]" );
         REQUIRE( object.layout->stride == 3 );
         REQUIRE( object.values[3] == BPMNOS::number(20) );
-        REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == "[ { cost := 10, flags := [ true, false ] }, { cost := 20, flags := [ false, false ] } ]" );
+        REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == "[ { cost := 10.0, flags := [ true, false ] }, { cost := 20.0, flags := [ false, false ] } ]" );
       }
     }
 
@@ -232,4 +232,14 @@ SCENARIO( "Object initializers", "[model][encoder]" ) {
       REQUIRE_THROWS( InputEncoder("[ uniform(1, 3) ]") );
     }
   }
+}
+
+TEST_CASE( "Write values as they are read", "[model][encoder]" ) {
+  REQUIRE( BPMNOS::to_string(BPMNOS::number(1), DECIMAL) == "1.0" );
+  REQUIRE( BPMNOS::to_string(BPMNOS::number(2.5), DECIMAL) == "2.5" );
+  REQUIRE( BPMNOS::to_string(BPMNOS::number(-3), DECIMAL) == "-3.0" );
+  REQUIRE( BPMNOS::to_string(BPMNOS::number(2), INTEGER) == "2" );
+  // a decimal written is read back as a decimal
+  auto index = InputEncoder("[ " + BPMNOS::to_string(BPMNOS::number(4), DECIMAL) + " ]").getObjectIndex().value();
+  REQUIRE( objectRegistry.schema(index).stringify() == "decimal[]" );
 }

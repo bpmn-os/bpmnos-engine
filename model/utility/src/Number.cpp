@@ -93,7 +93,11 @@ std::string to_string(number numericValue, const ValueType& type) {
     case ValueType::INTEGER:
       return std::to_string((int)numericValue);
     case ValueType::DECIMAL:
-      return BPMNOS::to_string((double)numericValue);
+    {
+      // a decimal is written with a decimal point, so that it is read back as a decimal
+      auto text = BPMNOS::to_string((double)numericValue);
+      return text.find_first_not_of("-0123456789") == std::string::npos ? text + ".0" : text;
+    }
     case ValueType::STRING:
       return stringRegistry[(std::size_t)numericValue];
   }

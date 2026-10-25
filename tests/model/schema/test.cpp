@@ -223,7 +223,7 @@ TEST_CASE( "Keep or convert objects for a schema", "[model][schema]" ) {
     }
     REQUIRE( defined == 2 );
     auto [partial, partialSchema] = literal("{ cost := 1.0 }");
-    REQUIRE( to_string(BPMNOS::Object(Schema::parse("{ cost: decimal, flags: boolean[] }"), *partial, partialSchema)) == "{ cost := 1, flags := [ ] }" );
+    REQUIRE( to_string(BPMNOS::Object(Schema::parse("{ cost: decimal, flags: boolean[] }"), *partial, partialSchema)) == "{ cost := 1.0, flags := [ ] }" );
     REQUIRE_THROWS_WITH( BPMNOS::Object(Schema::parse("{ x: decimal }"), *partial, partialSchema), Catch::Matchers::ContainsSubstring("unknown field 'cost'") );
   }
 

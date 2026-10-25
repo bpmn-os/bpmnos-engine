@@ -120,7 +120,7 @@ TEST_CASE( "Write objects, elements and lengths", "[execution][objects][writing]
   };
 
   SECTION( "Lengths not yet determined are empty" ) {
-    REQUIRE( render("facilities") == "[ { cost := 1, flags := [ ] }, { cost := 2, flags := [ ] } ]" );
+    REQUIRE( render("facilities") == "[ { cost := 1.0, flags := [ ] }, { cost := 2.0, flags := [ ] } ]" );
   }
 
   SECTION( "A whole assignment pads a fixed dimension and takes the length of an open one" ) {
@@ -164,16 +164,16 @@ TEST_CASE( "Write objects, elements and lengths", "[execution][objects][writing]
     REQUIRE( render("grid") == "[ [ 1, 2, 3 ], [ 7, undefined, undefined ] ]" );
     REQUIRE_THROWS_WITH( write("grid[2] := [1, 2, 3, 4]"), Catch::Matchers::ContainsSubstring("4 elements where 3 are declared") );
     write("facilities[1] := { cost := 5.0 }");
-    REQUIRE( render("facilities") == "[ { cost := 5, flags := [ ] }, { cost := 2, flags := [ ] } ]" );
+    REQUIRE( render("facilities") == "[ { cost := 5.0, flags := [ ] }, { cost := 2.0, flags := [ ] } ]" );
   }
 
   SECTION( "An assignment to an element gives an open array the size of the value in every element" ) {
     write("facilities[1].flags := [true, false]");
-    REQUIRE( render("facilities") == "[ { cost := 1, flags := [ true, false ] }, { cost := 2, flags := [ undefined, undefined ] } ]" );
+    REQUIRE( render("facilities") == "[ { cost := 1.0, flags := [ true, false ] }, { cost := 2.0, flags := [ undefined, undefined ] } ]" );
     REQUIRE( read("size(facilities[2].flags)") == 2 );
     REQUIRE( read("count(facilities[2].flags)") == 0 );
     write("facilities[2].flags := [true]");
-    REQUIRE( render("facilities") == "[ { cost := 1, flags := [ true ] }, { cost := 2, flags := [ true ] } ]" );
+    REQUIRE( render("facilities") == "[ { cost := 1.0, flags := [ true ] }, { cost := 2.0, flags := [ true ] } ]" );
   }
 
   SECTION( "Resize grows and shrinks a dimension, nested ones in every element" ) {
@@ -184,7 +184,7 @@ TEST_CASE( "Write objects, elements and lengths", "[execution][objects][writing]
     write("resize(route) := 1");
     REQUIRE( render("route") == "[ 1 ]" );
     write("resize(facilities[2].flags) := 2");
-    REQUIRE( render("facilities") == "[ { cost := 1, flags := [ undefined, undefined ] }, { cost := 2, flags := [ undefined, undefined ] } ]" );
+    REQUIRE( render("facilities") == "[ { cost := 1.0, flags := [ undefined, undefined ] }, { cost := 2.0, flags := [ undefined, undefined ] } ]" );
     write("resize(grid[1]) := 2");
     REQUIRE( render("grid") == "[ [ 1, 2 ], [ 4, 5 ] ]" );
     write("resize(location) := 4");

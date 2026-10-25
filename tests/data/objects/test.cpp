@@ -152,7 +152,7 @@ TEST_CASE( "Create objects from the model and the instance data", "[data][object
   SECTION( "A data object takes the value an instance gives and is padded at fixed dimensions" ) {
     auto facilities = provider->objectOf(*scenario, instance1, process, "facilities");
     REQUIRE( facilities->layout->stringify() == "{ cost: decimal, flags: boolean[2] }[2]" );
-    REQUIRE( to_string(*facilities) == "[ { cost := 10, flags := [ true, undefined ] }, { cost := 20, flags := [ false, undefined ] } ]" );
+    REQUIRE( to_string(*facilities) == "[ { cost := 10.0, flags := [ true, undefined ] }, { cost := 20.0, flags := [ false, undefined ] } ]" );
   }
 
   SECTION( "A data object no instance data gives is undefined in the sizes declared" ) {
@@ -168,7 +168,7 @@ TEST_CASE( "Create objects from the model and the instance data", "[data][object
   SECTION( "An object the model initialises is shared by every instance" ) {
     auto visit1 = provider->objectOf(*scenario, instance1, nodeOf(*model, "Task_1"), "visit");
     auto visit2 = provider->objectOf(*scenario, instance2, nodeOf(*model, "Task_1"), "visit");
-    REQUIRE( to_string(*visit1) == "{ x := 1 }" );
+    REQUIRE( to_string(*visit1) == "{ x := 1.0 }" );
     REQUIRE( visit1.get() == visit2.get() );
   }
 }

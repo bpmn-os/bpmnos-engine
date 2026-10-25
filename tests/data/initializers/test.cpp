@@ -215,7 +215,7 @@ TEST_CASE( "Object initializers of the instance data", "[data][initializers]" ) 
       "Instance_1; Process_1; depot := { x := uniform(0, 10), y := 2 }\n"
     );
     auto scenario = provider->createScenario();
-    REQUIRE( to_string(*provider->objectOf(*scenario, instance1(), process, "depot")) == "{ x := 5, y := 2 }" );
+    REQUIRE( to_string(*provider->objectOf(*scenario, instance1(), process, "depot")) == "{ x := 5.0, y := 2 }" );
   }
 
   SECTION( "The dynamic data provider discloses an object with its row" ) {
@@ -295,12 +295,12 @@ TEST_CASE( "Ready and completion expressions assign objects", "[data][initialize
       "Instance_1; Task_1;;; depot.x := 7; route[1] := 9\n"
     );
     auto& busy = recorder->objects.at({ "Task_1", "BUSY" });
-    REQUIRE( busy.at("depot") == "{ x := 7, y := 2 }" );
-    REQUIRE( busy.at("budget") == "[ 4, undefined ]" );
+    REQUIRE( busy.at("depot") == "{ x := 7.0, y := 2 }" );
+    REQUIRE( busy.at("budget") == "[ 4.0, undefined ]" );
     REQUIRE( busy.at("route") == "[ undefined, undefined ]" );
     REQUIRE( recorder->objects.at({ "Task_1", "COMPLETED" }).at("route") == "[ 9, undefined ]" );
     // the object the process token holds is copied before the token at the task writes it
-    REQUIRE( to_string(*recorder->processDepot) == "{ x := 1, y := 2 }" );
+    REQUIRE( to_string(*recorder->processDepot) == "{ x := 1.0, y := 2 }" );
   }
 
   SECTION( "A completion expression assigning an element of a status object is evaluated anew in an installed system state" ) {

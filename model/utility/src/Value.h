@@ -86,7 +86,8 @@ number to_number(const std::string& valueString, const ValueType& type);
 Value to_value(std::optional<double> result);
 
 /**
- * @brief Converts a number to a string.
+ * @brief Converts a number to the text of a value of the given type, a decimal always being written with a decimal
+ * point, `1.0` rather than `1`, so that the text is read back as a value of the same type.
  */
 std::string to_string(number numberValue, const ValueType& type);
 
