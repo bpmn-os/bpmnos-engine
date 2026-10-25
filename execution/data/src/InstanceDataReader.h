@@ -91,7 +91,7 @@ public:
   void setObject(const Row& row, const LIMEX::Handle<double>& handle);
   /**
    * @brief Method returning the object an initializer states with the given values of its expression members,
-   * conformed to the given schema of the object.
+   * kept or converted for the given schema of the object.
    *
    * Each value is converted to the type the schema gives at the position of its member.
    */

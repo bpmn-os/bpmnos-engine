@@ -477,7 +477,7 @@ template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::Data>(co
 template bool ExtensionElements::fullScopeRestrictionsSatisfied<BPMNOS::SharedData>(const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;
 
 template <typename DataType>
-BPMNOS::number ExtensionElements::applyOperators(BPMNOS::Status& status, DataType& data, std::shared_ptr<const BPMNOS::Object>* contentObject) const {
+BPMNOS::number ExtensionElements::applyOperators(BPMNOS::Status& status, DataType& data, const SchemaProvider& schemaProvider, std::shared_ptr<const BPMNOS::Object>* contentObject) const {
   // the operators of a node stating a message or signal may refer to its content object, which is held in the slot
   // following the status objects while they run
   if ( content ) {
@@ -487,7 +487,7 @@ BPMNOS::number ExtensionElements::applyOperators(BPMNOS::Status& status, DataTyp
   }
   BPMNOS::number change = 0;
   for ( auto& operator_ : operators ) {
-    change += operator_->apply(status,data);
+    change += operator_->apply(status,data,schemaProvider);
   }
   if ( content ) {
     *contentObject = std::move(status.objects.back());
@@ -496,8 +496,8 @@ BPMNOS::number ExtensionElements::applyOperators(BPMNOS::Status& status, DataTyp
   return change;
 }
 
-template BPMNOS::number ExtensionElements::applyOperators<BPMNOS::Data>(Status& status, BPMNOS::Data& data, std::shared_ptr<const BPMNOS::Object>* contentObject) const;
-template BPMNOS::number ExtensionElements::applyOperators<BPMNOS::SharedData>(Status& status, BPMNOS::SharedData& data, std::shared_ptr<const BPMNOS::Object>* contentObject) const;
+template BPMNOS::number ExtensionElements::applyOperators<BPMNOS::Data>(Status& status, BPMNOS::Data& data, const SchemaProvider& schemaProvider, std::shared_ptr<const BPMNOS::Object>* contentObject) const;
+template BPMNOS::number ExtensionElements::applyOperators<BPMNOS::SharedData>(Status& status, BPMNOS::SharedData& data, const SchemaProvider& schemaProvider, std::shared_ptr<const BPMNOS::Object>* contentObject) const;
 
 template <typename DataType>
 BPMNOS::number ExtensionElements::getObjective(const BPMNOS::Status& status, const DataType& data) const {

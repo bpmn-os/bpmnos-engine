@@ -33,10 +33,11 @@ public:
    * @brief Method appending the attributes of the guidance to the status and applying the operators.
    *
    * The attributes take only the values the model assigns to them, so each is appended undefined, or with
-   * the value of its expression if it has one.
+   * the value of its expression if it has one. The schema provider gives the effective schemas of the objects the
+   * operators write.
    */
   template <typename DataType>
-  void apply(BPMNOS::Status& status, DataType& data) const;
+  void apply(BPMNOS::Status& status, DataType& data, const SchemaProvider& schemaProvider) const;
 
   template <typename DataType>
   BPMNOS::number getObjective(const BPMNOS::Status& status, const DataType& data) const;

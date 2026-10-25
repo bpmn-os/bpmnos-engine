@@ -169,6 +169,68 @@ TEST_CASE( "Parse the schema of an attribute", "[model][schema]" ) {
   }
 }
 
+TEST_CASE( "Keep or convert objects for a schema", "[model][schema]" ) {
+  using BPMNOS::Schema;
+  // a literal as a constant object together with its constant schema
+  auto literal = [](const std::string& text) {
+    auto index = InputEncoder(text).getObjectIndex().value();
+    return std::pair{ objectRegistry[index], objectRegistry.schema(index) };
+  };
+
+  SECTION( "A schema supports the schemas whose objects it holds unchanged" ) {
+    REQUIRE( Schema::parse("decimal[]").supports(Schema::parse("decimal[]")) );
+    REQUIRE( Schema::parse("decimal[]").supports(Schema::parse("integer[3]")) );
+    REQUIRE( Schema::parse("integer[]").supports(Schema::parse("boolean[]")) );
+    REQUIRE( Schema::parse("integer[3]").supports(Schema::parse("integer[3]")) );
+    REQUIRE( !Schema::parse("integer[]").supports(Schema::parse("decimal[]")) );
+    REQUIRE( !Schema::parse("decimal[]").supports(Schema::parse("string[]")) );
+    REQUIRE( !Schema::parse("integer[3]").supports(Schema::parse("integer[]")) );
+    REQUIRE( !Schema::parse("integer[3]").supports(Schema::parse("integer[2]")) );
+    REQUIRE( !Schema::parse("{ a: integer, b: integer }").supports(Schema::parse("{ b: integer, a: integer }")) );
+  }
+
+  SECTION( "A fixed array is padded, and cut off where only undefined values are cut" ) {
+    auto [source, sourceSchema] = literal("[ 1, 2 ]");
+    BPMNOS::Object padded(Schema::parse("integer[3]"), *source, sourceSchema);
+    REQUIRE( to_string(padded) == "[ 1, 2, undefined ]" );
+    BPMNOS::Object cut(Schema::parse("integer[2]"), padded, Schema::parse("integer[3]"));
+    REQUIRE( to_string(cut) == "[ 1, 2 ]" );
+    REQUIRE_THROWS_WITH( BPMNOS::Object(Schema::parse("integer[1]"), *source, sourceSchema), Catch::Matchers::ContainsSubstring("2 elements where 1 are declared") );
+    // an open array takes the size of the source
+    REQUIRE( to_string(BPMNOS::Object(Schema::parse("integer[]"), *source, sourceSchema)) == "[ 1, 2 ]" );
+  }
+
+  SECTION( "Numeric values convert as in a C++ cast, strings only to strings" ) {
+    auto [source, sourceSchema] = literal("[ 2.7, 0.2, 0 ]");
+    REQUIRE( to_string(BPMNOS::Object(Schema::parse("integer[]"), *source, sourceSchema)) == "[ 2, 0, 0 ]" );
+    REQUIRE( to_string(BPMNOS::Object(Schema::parse("boolean[]"), *source, sourceSchema)) == "[ true, true, false ]" );
+    REQUIRE_THROWS( BPMNOS::Object(Schema::parse("string[]"), *source, sourceSchema) );
+    auto [strings, stringSchema] = literal(R"([ "A" ])");
+    REQUIRE_THROWS( BPMNOS::Object(Schema::parse("decimal[]"), *strings, stringSchema) );
+  }
+
+  SECTION( "A field the source lacks is undefined, its open arrays having size 0" ) {
+    auto [source, sourceSchema] = literal("[ { cost := 10, flags := [ true ] } ]");
+    BPMNOS::Object object(Schema::parse("{ cost: decimal, flags: boolean[3] }[6]"), *source, sourceSchema);
+    REQUIRE( object.values.size() == 24 );
+    size_t defined = 0;
+    for ( auto& value : object.values ) {
+      if ( value.has_value() ) {
+        defined++;
+      }
+    }
+    REQUIRE( defined == 2 );
+    auto [partial, partialSchema] = literal("{ cost := 1 }");
+    REQUIRE( to_string(BPMNOS::Object(Schema::parse("{ cost: decimal, flags: boolean[] }"), *partial, partialSchema)) == "{ cost := 1, flags := [ ] }" );
+    REQUIRE_THROWS_WITH( BPMNOS::Object(Schema::parse("{ x: decimal }"), *partial, partialSchema), Catch::Matchers::ContainsSubstring("unknown field 'cost'") );
+  }
+
+  SECTION( "The target schema fixes the arrays fixed in the effective schema at their current sizes" ) {
+    auto [source, sourceSchema] = literal("[ [ 1, 2 ], [ 3, 4 ] ]");
+    REQUIRE( Schema(Schema::parse("integer[3][]"), *source->layout).stringify() == "integer[2][]" );
+  }
+}
+
 TEST_CASE( "Number objects separately from scalar attributes", "[model][schema]" ) {
   Declarations declarations;
   declarations.globals = attribute("Location", "location", "integer[3]") + attribute("Limit", "limit", "integer");

@@ -32,7 +32,7 @@ class DataProvider;
 class InstanceValues {
 public:
   /**
-   * @param dataProvider The data provider giving the default objects.
+   * @param dataProvider The data provider giving the default objects and the effective schemas.
    * @param node The node whose scope instance comes into being.
    * @param time The time at which it comes into being.
    * @param inheritedStatus The status of the enclosing scopes the token holds, empty for a process.
@@ -67,6 +67,7 @@ public:
   BPMNOS::Data data; ///< The own data attributes and objects of the scope
 
 private:
+  const DataProvider& dataProvider; ///< The data provider giving the default objects and the effective schemas
   const BPMNOS::Model::AttributeRegistry& attributeRegistry; ///< The attribute registry of the scope
   BPMNOS::Value identity; ///< The identity of a non-interrupting event subprocess instance the data chain refers to
   BPMNOS::SharedData chain; ///< The inherited data followed by the owned data

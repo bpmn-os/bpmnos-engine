@@ -79,9 +79,11 @@ void StaticDataProvider::readInstances(const std::string& instanceFileOrString, 
 
   // the objects: the default of each, from the model's initial value or with undefined values in the sizes
   // declared, an open dimension having no elements, and the global objects
-  auto conform = [&reader](const BPMNOS::Model::Attribute* object, size_t index, const std::string& owner) {
+  auto convert = [&reader](const BPMNOS::Model::Attribute* object, size_t index, const std::string& owner) -> std::shared_ptr<const BPMNOS::Object> {
     try {
-      return reader.getSchema(object).conform( objectRegistry[index] );
+      auto schema = reader.getSchema(object);
+      auto& literalSchema = objectRegistry.schema(index);
+      return schema.supports(literalSchema) ? objectRegistry[index] : std::make_shared<const BPMNOS::Object>(schema, *objectRegistry[index], literalSchema);
     }
     catch ( const std::exception& error ) {
       throw std::runtime_error("StaticDataProvider: illegal value of object '" + object->id + "' " + owner + ".\n" + error.what());
@@ -90,7 +92,7 @@ void StaticDataProvider::readInstances(const std::string& instanceFileOrString, 
   for ( auto object : objectsOf() ) {
     auto schema = reader.getSchema(object);
     if ( auto literal = std::get_if<size_t>(&object->initialization) ) {
-      defaultObjects[object] = conform(object, *literal, "in the model");
+      defaultObjects[object] = convert(object, *literal, "in the model");
     }
     else {
       // an open dimension has no elements until an assignment gives it its length

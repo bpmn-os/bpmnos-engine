@@ -49,6 +49,17 @@ struct ObjectType {
  */
 struct Schema : std::variant<ValueType, ArrayType, ObjectType> {
   using variant::variant;
+  Schema() = default;
+
+  /**
+   * @brief Constructs the target schema of an assignment to an object of the given current layout, whose effective
+   * schema is given.
+   *
+   * The schema has the structure of the effective schema. Every array that is fixed in the effective schema is fixed
+   * at the size it has in the current layout, and every open array stays open, so that an assignment keeps the size
+   * of a fixed array, which may have been resized during the run, and gives an open array the size of the source.
+   */
+  Schema(const Schema& effectiveSchema, const BPMNOS::Object::Layout& currentLayout);
 
   /// @brief Parses the notation of a type, throwing an error describing the first violation of the grammar.
   static Schema parse(const std::string& text);
@@ -57,6 +68,15 @@ struct Schema : std::variant<ValueType, ArrayType, ObjectType> {
   /// @brief Returns true if the schemas describe the same type: the same value types, the same arrays with the same
   /// sizes, and the same fields, in the same order and with equal types.
   bool operator==(const Schema& other) const;
+  /**
+   * @brief Returns true if every object of the given source schema is, unchanged, an object of this schema.
+   *
+   * The two schemas must have the same structure. At a value type, this value type is the source's or holds every
+   * value of it unchanged, as `integer` and `decimal` hold every `boolean` and `decimal` holds every `integer`. At an
+   * array type, this array is open, or both arrays are fixed at the same size. At an object type, both have the same
+   * fields in the same order.
+   */
+  bool supports(const Schema& source) const;
 
   /**
    * @brief Returns the schema with the sizes a size declaration states, given as the text following the name of the
@@ -73,25 +93,6 @@ struct Schema : std::variant<ValueType, ArrayType, ObjectType> {
    * @brief Returns an object of this schema with every value undefined, an open array having no elements.
    */
   std::shared_ptr<const BPMNOS::Object> undefinedObject() const;
-
-  /**
-   * @brief Returns an object of this schema holding the values of the given constant object.
-   *
-   * The constant object must have as many arrays as the schema at every level, its values must be convertible to
-   * the value types of the schema, and its fields must be fields of the schema. A fixed array is padded with
-   * undefined values and must not be exceeded, an open array takes the size of the constant object, and a field it
-   * lacks is undefined. If the constant object has exactly the layout of the schema, it is returned itself, so that
-   * it is shared.
-   */
-  std::shared_ptr<const BPMNOS::Object> conform(const std::shared_ptr<const BPMNOS::Object>& constant) const;
-
-  /**
-   * @brief Returns the schema an object of the given layout imposes on a value assigned to it.
-   *
-   * A value assigned to the whole object keeps the sizes of the fixed arrays and takes those of the open ones. A
-   * value assigned to an element keeps every size, except a size zero of an open array, which the value determines.
-   */
-  static Schema of(const BPMNOS::Object::Layout& layout, bool element);
 
   /**
    * @brief Returns an object of this schema holding the values of the given JSON text.

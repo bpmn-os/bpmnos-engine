@@ -322,7 +322,7 @@ void StochasticDataProvider::sample(Scenario& scenario, const Scenario* original
           memberValues.push_back( valueOf(*member) );
         }
         object = InstanceDataReader::instantiate(initialization.object->schema, initialization.attribute, initialization.object->initializer, memberValues);
-        attributeRegistry.setObject(initialization.attribute, status, data, object);
+        attributeRegistry.setObject(initialization.attribute, status, data, object, initialization.object->schema, *this);
       }
       else {
         auto evaluate = [&]() {
@@ -470,7 +470,7 @@ void StochasticDataProvider::computeStatus(Scenario& scenario, size_t instanceId
       if ( expression->writesToObject() ) {
         // the status object is copied on write, so that the status restored before a new sample keeps the object
         // it was computed from
-        expression->writeToObject(status, data);
+        expression->writeToObject(status, data, *this);
       }
       else if ( auto value = expression->execute(status, data) ) {
         auto target = expression->target.value();

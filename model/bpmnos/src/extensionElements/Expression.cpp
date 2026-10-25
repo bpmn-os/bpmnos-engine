@@ -236,16 +236,12 @@ const BPMNOS::Schema* Expression::schemaOf(const std::string& name) const {
   return attribute->isObject() ? &attribute->type : nullptr;
 }
 
-Expression::Step Expression::walk(size_t path) const {
+Expression::Step Expression::walk(size_t path, const Schema& schema) const {
   auto& description = compiled.getPaths()[path];
   auto text = pathText(description);
-  auto schema = schemaOf(description.name);
-  if ( !schema ) {
-    throw std::runtime_error("Expression: '" + text + "' does not address an object in '" + expression +"'");
-  }
   // the steps are followed through the schema: an index descends into the element type of an array, and a field
   // into the type of a field of an object
-  Step result{ schema, 0, {} };
+  Step result{ &schema, 0, {} };
   for ( auto& step : description.steps ) {
     if ( !step.has_value() ) {
       auto array = std::get_if<ArrayType>(result.schema);
@@ -278,10 +274,14 @@ Expression::Step Expression::walk(size_t path) const {
 void Expression::bind(size_t path, bool asArray, bool lengthOnly) const {
   auto& description = compiled.getPaths()[path];
   auto text = pathText(description);
-  if ( description.steps.empty() && !schemaOf(description.name) ) {
-    throw std::runtime_error("Expression: '" + description.name + "' is not an array in '" + expression +"'");
+  auto declared = schemaOf(description.name);
+  if ( !declared ) {
+    if ( description.steps.empty() ) {
+      throw std::runtime_error("Expression: '" + description.name + "' is not an array in '" + expression +"'");
+    }
+    throw std::runtime_error("Expression: '" + text + "' does not address an object in '" + expression +"'");
   }
-  auto schema = walk(path).schema;
+  auto schema = walk(path, *declared).schema;
   if ( lengthOnly ) {
     if ( !std::holds_alternative<ArrayType>(*schema) ) {
       throw std::runtime_error("Expression: '" + text + "' is not an array in '" + expression +"'");
@@ -304,7 +304,7 @@ void Expression::analyseTarget(const std::vector<size_t>& literals) {
   if ( resize ) {
     // the length of the dimension the target addresses is assigned a scalar value
     if ( targetPath.has_value() ) {
-      auto step = walk(targetPath.value());
+      auto step = walk(targetPath.value(), attribute->type);
       if ( !std::holds_alternative<ArrayType>(*step.schema) ) {
         throw std::runtime_error("Expression: '" + pathText(compiled.getPaths()[targetPath.value()]) + "' is not an array in '" + expression + "'");
       }
@@ -321,7 +321,7 @@ void Expression::analyseTarget(const std::vector<size_t>& literals) {
     return;
   }
   if ( targetPath.has_value() ) {
-    auto step = walk(targetPath.value());
+    auto step = walk(targetPath.value(), attribute->type);
     objectValue = !std::holds_alternative<ValueType>(*step.schema);
     targetFields = step.fields;
     targetDimension = step.dimension;
@@ -369,8 +369,11 @@ void Expression::analyseTarget(const std::vector<size_t>& literals) {
   }
   else if ( value.type == LIMEX::Type::path ) {
     size_t path = std::get<size_t>(value.operands[0]);
-    auto step = walk(path);
-    if ( std::holds_alternative<ValueType>(*step.schema) ) {
+    auto declared = schemaOf(compiled.getPaths()[path].name);
+    if ( !declared ) {
+      throw std::runtime_error("Expression: '" + pathText(compiled.getPaths()[path]) + "' does not address an object in '" + expression +"'");
+    }
+    if ( std::holds_alternative<ValueType>(*walk(path, *declared).schema) ) {
       throw illegal();
     }
     sourcePath = path;
@@ -592,7 +595,7 @@ bool Expression::setValues(const BPMNOS::Status& status, const DataType& data, s
 }
 
 template <typename DataType>
-void Expression::writeToObject(BPMNOS::Status& status, DataType& data) const {
+void Expression::writeToObject(BPMNOS::Status& status, DataType& data, const SchemaProvider& schemaProvider) const {
   assert( objectTarget );
   // the buffers are reused by every write on the thread, so that a write allocates nothing for them; no write starts
   // another while they are in use
@@ -603,7 +606,7 @@ void Expression::writeToObject(BPMNOS::Status& status, DataType& data) const {
   if ( !setValues(status, data, variableValues, pathObjects, true) ) {
     throw std::runtime_error("Expression: '" + expression + "' reads an array without a value");
   }
-  auto& slot = attributeRegistry.getObjectSlot(target.value(), status, data);
+  auto& slot = attributeRegistry.getObject(target.value(), status, data);
   auto targetPath = compiled.getTargetPath();
   try {
     PathResolver resolver(*this, pathObjects);
@@ -645,10 +648,12 @@ void Expression::writeToObject(BPMNOS::Status& status, DataType& data) const {
       return;
     }
 
-    // the array or object assigned
+    // the array or object assigned, with its schema
     std::shared_ptr<const BPMNOS::Object> source;
+    const Schema* sourceSchema = nullptr;
     if ( sourceLiteral.has_value() ) {
       source = objectRegistry[sourceLiteral.value()];
+      sourceSchema = &objectRegistry.schema(sourceLiteral.value());
     }
     else if ( sourceCall ) {
       // the value of the assignment is the index of the constant object the lookup returns
@@ -660,12 +665,15 @@ void Expression::writeToObject(BPMNOS::Status& status, DataType& data) const {
         throw std::runtime_error("Expression: undefined argument");
       }
       source = objectRegistry[(size_t)index];
+      sourceSchema = &objectRegistry.schema((size_t)index);
     }
     else if ( sourceObject ) {
       source = attributeRegistry.getObject(sourceObject, status, data);
+      sourceSchema = &sourceObject->type;
     }
     else if ( sourceInput ) {
       source = sourceInput->object;
+      sourceSchema = &sourceInput->schema;
     }
     else {
       // the indices of the source path are those LIMEX evaluates for the value of the assignment, which a
@@ -692,23 +700,27 @@ void Expression::writeToObject(BPMNOS::Status& status, DataType& data) const {
       catch ( const Undefined& ) {
         throw std::runtime_error("Expression: undefined index");
       }
+      // the part of the declared schema the source path reaches
+      auto& description = compiled.getPaths()[sourcePath.value()];
+      sourceSchema = walk(sourcePath.value(), *schemaOf(description.name)).schema;
     }
 
     if ( !targetPath.has_value() ) {
-      // the whole object keeps the lengths of its fixed dimensions and takes those of its open ones
-      attributeRegistry.setObject(target.value(), status, data, source);
+      // the whole object keeps the sizes of its fixed arrays and takes those of its open ones
+      attributeRegistry.setObject(target.value(), status, data, source, *sourceSchema, schemaProvider);
       return;
     }
 
-    // an element keeps its lengths, except those not yet determined, which the value determines for every
-    // element of the array
+    // an element keeps the sizes of its fixed arrays, and its open arrays take the sizes of the value, which apply
+    // to every element of the enclosing array
     auto location = locateTarget();
     auto element = elementLayout(location);
-    auto value = Schema::of(element, true).conform(source);
+    Schema targetSchema( *walk(targetPath.value(), schemaProvider.getSchema(target.value())).schema, element );
+    auto value = targetSchema.supports(*sourceSchema) ? source : std::make_shared<const BPMNOS::Object>(targetSchema, *source, *sourceSchema);
     std::function<void(const BPMNOS::Object::Layout&, const BPMNOS::Object::Layout&, std::vector<std::string>, size_t)> determine =
       [&](const BPMNOS::Object::Layout& current, const BPMNOS::Object::Layout& given, std::vector<std::string> fields, size_t first) {
         for ( size_t d = 0; d < current.dimensions.size(); d++ ) {
-          if ( current.dimensions[d] == 0 && given.dimensions[d] > 0 ) {
+          if ( current.dimensions[d] != given.dimensions[d] ) {
             slot = BPMNOS::resized(*slot, fields, first + d, given.dimensions[d]);
           }
         }
@@ -731,6 +743,6 @@ void Expression::writeToObject(BPMNOS::Status& status, DataType& data) const {
 
 template std::optional<double> Expression::execute<BPMNOS::Data>(const BPMNOS::Status& status, const BPMNOS::Data& data) const;
 template std::optional<double> Expression::execute<BPMNOS::SharedData>(const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;
-template void Expression::writeToObject<BPMNOS::Data>(BPMNOS::Status& status, BPMNOS::Data& data) const;
-template void Expression::writeToObject<BPMNOS::SharedData>(BPMNOS::Status& status, BPMNOS::SharedData& data) const;
+template void Expression::writeToObject<BPMNOS::Data>(BPMNOS::Status& status, BPMNOS::Data& data, const SchemaProvider& schemaProvider) const;
+template void Expression::writeToObject<BPMNOS::SharedData>(BPMNOS::Status& status, BPMNOS::SharedData& data, const SchemaProvider& schemaProvider) const;
 

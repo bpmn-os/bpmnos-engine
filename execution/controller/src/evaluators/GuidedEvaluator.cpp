@@ -3,6 +3,8 @@
 #include "execution/engine/src/SystemState.h"
 #include "execution/engine/src/StateMachine.h"
 #include "execution/engine/src/Token.h"
+#include "execution/data/src/DataProvider.h"
+#include "execution/data/src/Scenario.h"
 
 using namespace BPMNOS::Execution;
 
@@ -24,7 +26,7 @@ bool GuidedEvaluator::updateValues(EntryDecision* decision, Status& status, Data
 
   // apply guidance
   auto guidance = extensionElements->entryGuidance.value().get();
-  guidance->apply(status, data);
+  guidance->apply(status, data, *token->owner->systemState->scenario->dataProvider);
 //std::cerr << "GuidedEvaluator: guidance " << guidance->restrictionsSatisfied(token->node,status,data) << ": " << token->node->id << std::endl;
 
   return guidance->restrictionsSatisfied(status,data);
@@ -47,7 +49,7 @@ bool GuidedEvaluator::updateValues(ExitDecision* decision, Status& status, Data&
 
   // apply guidance
   auto guidance = extensionElements->exitGuidance.value().get();
-  guidance->apply(status, data);
+  guidance->apply(status, data, *token->owner->systemState->scenario->dataProvider);
 
   return guidance->restrictionsSatisfied(status,data);
 }
@@ -68,7 +70,7 @@ bool GuidedEvaluator::updateValues(ChoiceDecision* decision, Status& status, Dat
 
   // apply guidance
   auto guidance = extensionElements->choiceGuidance.value().get();
-  guidance->apply(status, data);
+  guidance->apply(status, data, *token->owner->systemState->scenario->dataProvider);
 
   return guidance->restrictionsSatisfied(status,data);
 }
@@ -89,7 +91,7 @@ bool GuidedEvaluator::updateValues(MessageDeliveryDecision* decision, Status& st
 
   // apply guidance
   auto guidance = extensionElements->messageDeliveryGuidance.value().get();
-  guidance->apply(status, data);
+  guidance->apply(status, data, *token->owner->systemState->scenario->dataProvider);
 
   return guidance->restrictionsSatisfied(status,data);
 }

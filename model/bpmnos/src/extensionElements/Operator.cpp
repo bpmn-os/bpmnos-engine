@@ -14,17 +14,17 @@ Operator::Operator(XML::bpmnos::tOperator* operator_, const AttributeRegistry& a
 }
 
 template <typename DataType>
-BPMNOS::number Operator::apply(BPMNOS::Status& status, DataType& data) const {
+BPMNOS::number Operator::apply(BPMNOS::Status& status, DataType& data, const SchemaProvider& schemaProvider) const {
   if ( expression.writesToObject() ) {
     // an object carries no objective
-    expression.writeToObject(status, data);
+    expression.writeToObject(status, data, schemaProvider);
     return 0;
   }
   return attributeRegistry.setValue( attribute, status, data, BPMNOS::to_value( expression.execute(status,data) ) );
 }
 
-template BPMNOS::number Operator::apply<BPMNOS::Data>(BPMNOS::Status& status, BPMNOS::Data& data) const;
-template BPMNOS::number Operator::apply<BPMNOS::SharedData>(BPMNOS::Status& status, BPMNOS::SharedData& data) const;
+template BPMNOS::number Operator::apply<BPMNOS::Data>(BPMNOS::Status& status, BPMNOS::Data& data, const SchemaProvider& schemaProvider) const;
+template BPMNOS::number Operator::apply<BPMNOS::SharedData>(BPMNOS::Status& status, BPMNOS::SharedData& data, const SchemaProvider& schemaProvider) const;
 
 Attribute* Operator::getAttribute() const {
   if ( auto& name = expression.compiled.getTarget(); name.has_value() ) {

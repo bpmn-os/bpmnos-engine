@@ -1,5 +1,6 @@
 #include "Object.h"
 #include "Value.h"
+#include "Schema.h"
 #include <algorithm>
 #include <cassert>
 #include <functional>
@@ -266,6 +267,131 @@ std::vector<double> to_vector(const Object& object) {
     result.push_back( value.has_value() ? (double)value.value() : std::numeric_limits<double>::quiet_NaN() );
   }
   return result;
+}
+
+namespace {
+
+/// Returns the number of arrays a schema has before its innermost elements.
+size_t countArrays(const Schema& schema) {
+  size_t count = 0;
+  for ( auto current = &schema; auto array = std::get_if<ArrayType>(current); current = array->type.get() ) {
+    count++;
+  }
+  return count;
+}
+
+/// Returns the layout of the object converted to the schema from a source of the given schema and layout, or, if no
+/// source is given, of a field the source lacks.
+Object::Layout determineLayout(const Schema& schema, const Schema* sourceSchema, const Object::Layout* source, const std::string& path) {
+  if ( sourceSchema && countArrays(*sourceSchema) != countArrays(schema) ) {
+    throw std::runtime_error("Object: '" + path + "' has " + std::to_string(countArrays(*sourceSchema)) + " dimensions instead of " + std::to_string(countArrays(schema)));
+  }
+  Object::Layout layout;
+  const Schema* current = &schema;
+  const Schema* sourceCurrent = sourceSchema;
+  while ( auto array = std::get_if<ArrayType>(current) ) {
+    // a fixed array has its size, an open array the size of the source
+    size_t dimension = layout.dimensions.size();
+    layout.dimensions.push_back( array->size.value_or( sourceCurrent ? source->dimensions[dimension] : 0 ) );
+    layout.fixed.push_back( array->size.has_value() );
+    current = array->type.get();
+    if ( sourceCurrent ) {
+      sourceCurrent = std::get<ArrayType>(*sourceCurrent).type.get();
+    }
+  }
+  if ( auto valueType = std::get_if<ValueType>(current) ) {
+    if ( sourceCurrent ) {
+      auto sourceType = std::get_if<ValueType>(sourceCurrent);
+      if ( !sourceType ) {
+        throw std::runtime_error("Object: '" + path + "' has fields where a value is expected");
+      }
+      bool numeric = ( *valueType != ValueType::STRING && *sourceType != ValueType::STRING );
+      if ( *valueType != *sourceType && !numeric ) {
+        throw std::runtime_error("Object: '" + path + "' cannot be converted to the type of the attribute");
+      }
+    }
+    layout.scalar = *valueType;
+    return layout;
+  }
+  if ( sourceCurrent ) {
+    if ( std::holds_alternative<ValueType>(*sourceCurrent) ) {
+      throw std::runtime_error("Object: '" + path + "' is a value where fields are expected");
+    }
+    for ( auto& sourceField : std::get<ObjectType>(*sourceCurrent).fields ) {
+      if ( std::ranges::none_of(std::get<ObjectType>(*current).fields, [&sourceField](auto& field) { return field.name == sourceField.name; }) ) {
+        throw std::runtime_error("Object: '" + path + "' has the unknown field '" + sourceField.name + "'");
+      }
+    }
+  }
+  for ( auto& field : std::get<ObjectType>(*current).fields ) {
+    const Schema* sourceFieldSchema = nullptr;
+    const Object::Layout* sourceFieldLayout = nullptr;
+    if ( sourceCurrent ) {
+      auto& sourceFields = std::get<ObjectType>(*sourceCurrent).fields;
+      if ( auto it = std::ranges::find_if(sourceFields, [&field](auto& candidate) { return candidate.name == field.name; }); it != sourceFields.end() ) {
+        sourceFieldSchema = it->type.get();
+        sourceFieldLayout = &std::ranges::find_if(source->fields, [&field](auto& candidate) { return candidate.name == field.name; })->layout;
+      }
+    }
+    layout.fields.push_back( Object::Layout::Field{ field.name, 0, determineLayout(*field.type, sourceFieldSchema, sourceFieldLayout, path + "." + field.name) } );
+  }
+  layout.arrange();
+  return layout;
+}
+
+/// Converts a value to the given value type as in a C++ cast.
+Value convert(const Value& value, ValueType type) {
+  if ( !value.has_value() ) {
+    return std::nullopt;
+  }
+  switch ( type ) {
+    case ValueType::INTEGER:
+      return number( (long)(double)value.value() );
+    case ValueType::BOOLEAN:
+      return number( value.value() != number(0) ? 1 : 0 );
+    default:
+      return value;
+  }
+}
+
+/// Copies the values of a source of the layout `from` into an object of the layout `to`, converting each, and
+/// rejects a source whose elements beyond the size of a fixed array hold a defined value.
+void copy(const Object::Layout& from, const std::vector<Value>& source, size_t sourceOffset, const Object::Layout& to, std::vector<Value>& target, size_t targetOffset, const std::string& path) {
+  std::function<void(size_t, size_t, size_t)> walk = [&](size_t dimension, size_t sourcePosition, size_t targetPosition) {
+    if ( dimension == from.dimensions.size() ) {
+      if ( to.scalar.has_value() ) {
+        target[targetPosition] = convert(source[sourcePosition], to.scalar.value());
+        return;
+      }
+      for ( auto& field : from.fields ) {
+        auto it = std::ranges::find_if(to.fields, [&field](auto& candidate) { return candidate.name == field.name; });
+        copy(field.layout, source, sourcePosition + field.offset, it->layout, target, targetPosition + it->offset, path + "." + field.name);
+      }
+      return;
+    }
+    size_t fromSpan = span(from, dimension);
+    size_t toSpan = span(to, dimension);
+    for ( size_t i = 0; i < from.dimensions[dimension]; i++ ) {
+      if ( i < to.dimensions[dimension] ) {
+        walk(dimension + 1, sourcePosition + i * fromSpan, targetPosition + i * toSpan);
+      }
+      else if ( std::any_of(source.begin() + (long)(sourcePosition + i * fromSpan), source.begin() + (long)(sourcePosition + (i + 1) * fromSpan), [](auto& value) { return value.has_value(); }) ) {
+        // only undefined values are cut off
+        throw std::runtime_error("Object: '" + path + "' has " + std::to_string(from.dimensions[dimension]) + " elements where " + std::to_string(to.dimensions[dimension]) + " are declared");
+      }
+    }
+  };
+  walk(0, sourceOffset, targetOffset);
+}
+
+} // namespace
+
+Object::Object(const Schema& schema, const Object& source, const Schema& sourceSchema) {
+  auto path = to_string(source);
+  auto determined = determineLayout(schema, &sourceSchema, source.layout.get(), path);
+  layout = ( determined == *source.layout ) ? source.layout : std::make_shared<const Layout>( std::move(determined) );
+  values.resize( layout->size() );
+  copy(*source.layout, source.values, 0, *layout, values, 0, path);
 }
 
 } // namespace BPMNOS

@@ -19,7 +19,7 @@ bool LocalEvaluator::updateValues(EntryDecision* decision, Status& status, Data&
   if ( auto subProcess = token->node->represents<BPMN::SubProcess>(); subProcess && subProcess->startEvent ) {
     // the operators of the start event are applied to the token at it, i.e. after the subprocess is entered,
     // so that the entry restrictions of the subprocess constrain the status they produce
-    subProcess->startEvent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->applyOperators(status,data);
+    subProcess->startEvent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->applyOperators(status,data,*token->owner->systemState->scenario->dataProvider);
   }
 
   if ( !extensionElements->feasibleEntry(status,data) ) {
@@ -41,7 +41,7 @@ bool LocalEvaluator::updateValues(EntryDecision* decision, Status& status, Data&
     if ( extensionElements->content ) {
       content = token->owner->systemState->scenario->dataProvider->getDefaultObject(extensionElements->content.get());
     }
-    extensionElements->applyOperators(status, data, &content);
+    extensionElements->applyOperators(status, data, *token->owner->systemState->scenario->dataProvider, &content);
   }
   return extensionElements->fullScopeRestrictionsSatisfied(status,data);
 }
@@ -73,7 +73,7 @@ bool LocalEvaluator::updateValues(ChoiceDecision* decision, Status& status, Data
   } 
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
-  extensionElements->applyOperators(status,data);
+  extensionElements->applyOperators(status,data,*token->owner->systemState->scenario->dataProvider);
   return extensionElements->feasibleCompletion(status,data);
 }
 
@@ -93,7 +93,7 @@ bool LocalEvaluator::updateValues(MessageDeliveryDecision* decision, Status& sta
   auto message = static_cast<const MessageDeliveryEvent*>(decision)->message.lock();
   // the operators of the catching node read the content object of the message, as they do when it is delivered
   auto content = message->content.object;
-  extensionElements->applyOperators(status,data,&content);
+  extensionElements->applyOperators(status,data,*token->owner->systemState->scenario->dataProvider,&content);
 
   // check feasibility
   if ( token->node->represents<BPMN::ReceiveTask>() ) {

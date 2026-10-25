@@ -1361,7 +1361,7 @@ void Token::applyOperators(const BPMNOS::Model::ExtensionElements& extensionElem
     return;
   }
 
-  const_cast<Engine*>(owner->systemState->engine)->addToObjective( extensionElements.applyOperators(status, *data, content ? &content->object : nullptr) );
+  const_cast<Engine*>(owner->systemState->engine)->addToObjective( extensionElements.applyOperators(status, *data, *owner->systemState->scenario->dataProvider, content ? &content->object : nullptr) );
 
   // notify about data update
   // the observers decide by the index of each attribute whether it concerns this instance or all of them

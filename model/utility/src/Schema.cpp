@@ -226,6 +226,56 @@ bool Schema::operator==(const Schema& other) const {
   });
 }
 
+bool Schema::supports(const Schema& source) const {
+  if ( index() != source.index() ) {
+    return false;
+  }
+  if ( auto valueType = std::get_if<ValueType>(this) ) {
+    auto sourceType = std::get<ValueType>(source);
+    return *valueType == sourceType ||
+      ( *valueType == ValueType::INTEGER && sourceType == ValueType::BOOLEAN ) ||
+      ( *valueType == ValueType::DECIMAL && ( sourceType == ValueType::BOOLEAN || sourceType == ValueType::INTEGER ) );
+  }
+  if ( auto array = std::get_if<ArrayType>(this) ) {
+    auto& sourceArray = std::get<ArrayType>(source);
+    return ( !array->size.has_value() || array->size == sourceArray.size ) && array->type->supports(*sourceArray.type);
+  }
+  auto& fields = std::get<ObjectType>(*this).fields;
+  auto& sourceFields = std::get<ObjectType>(source).fields;
+  return std::ranges::equal(fields, sourceFields, [](auto& field, auto& sourceField) {
+    return field.name == sourceField.name && field.type->supports(*sourceField.type);
+  });
+}
+
+namespace {
+
+/// Returns the target schema for the effective schema and the current layout, the arrays of the schema corresponding
+/// to the dimensions of the layout from the given one on.
+Schema targetSchema(const Schema& effectiveSchema, const BPMNOS::Object::Layout& currentLayout, size_t dimension) {
+  if ( auto array = std::get_if<ArrayType>(&effectiveSchema) ) {
+    assert( dimension < currentLayout.dimensions.size() );
+    auto size = array->size.has_value() ? std::optional<size_t>(currentLayout.dimensions[dimension]) : std::nullopt;
+    return Schema( ArrayType{ std::make_shared<const Schema>( targetSchema(*array->type, currentLayout, dimension + 1) ), size } );
+  }
+  if ( std::holds_alternative<ValueType>(effectiveSchema) ) {
+    return effectiveSchema;
+  }
+  ObjectType object;
+  for ( auto& field : std::get<ObjectType>(effectiveSchema).fields ) {
+    auto current = std::ranges::find_if(currentLayout.fields, [&field](auto& candidate) { return candidate.name == field.name; });
+    assert( current != currentLayout.fields.end() );
+    object.fields.push_back( Field{ field.name, std::make_shared<const Schema>( targetSchema(*field.type, current->layout, 0) ) } );
+  }
+  return Schema( std::move(object) );
+}
+
+} // namespace
+
+Schema::Schema(const Schema& effectiveSchema, const BPMNOS::Object::Layout& currentLayout)
+  : Schema( targetSchema(effectiveSchema, currentLayout, 0) )
+{
+}
+
 Schema Schema::declareSizes(const std::string& declaration) const {
   auto error = [&declaration](const std::string& reason) {
     return std::runtime_error("Schema: illegal size declaration '" + declaration + "': " + reason);
@@ -338,44 +388,6 @@ BPMNOS::Object::Layout layoutOf(const FlatSchema& schema, const FlatSchema& decl
   return layout;
 }
 
-/// Fixes the open dimensions of a schema by the layout of a constant object, checking that it fits.
-void resolve(FlatSchema& schema, const BPMNOS::Object::Layout& constant, const std::string& path) {
-  if ( constant.dimensions.size() != schema.dimensions.size() ) {
-    throw std::runtime_error("Schema: '" + path + "' has " + std::to_string(constant.dimensions.size()) + " dimensions instead of " + std::to_string(schema.dimensions.size()));
-  }
-  for ( size_t i = 0; i < schema.dimensions.size(); i++ ) {
-    if ( !schema.dimensions[i].has_value() ) {
-      schema.dimensions[i] = constant.dimensions[i];
-    }
-    else if ( constant.dimensions[i] > schema.dimensions[i].value() ) {
-      throw std::runtime_error("Schema: '" + path + "' has " + std::to_string(constant.dimensions[i]) + " elements where " + std::to_string(schema.dimensions[i].value()) + " are declared");
-    }
-  }
-  if ( schema.scalar.has_value() ) {
-    if ( !constant.scalar.has_value() ) {
-      throw std::runtime_error("Schema: '" + path + "' has fields where a value is expected");
-    }
-    auto from = constant.scalar.value();
-    auto to = schema.scalar.value();
-    bool numeric = ( from == BPMNOS::ValueType::DECIMAL || from == BPMNOS::ValueType::BOOLEAN );
-    bool fits = ( from == to ) || ( numeric && ( to == BPMNOS::ValueType::DECIMAL || to == BPMNOS::ValueType::INTEGER || to == BPMNOS::ValueType::BOOLEAN ) );
-    if ( !fits ) {
-      throw std::runtime_error("Schema: '" + path + "' cannot be converted to the type of the attribute");
-    }
-    return;
-  }
-  if ( constant.scalar.has_value() ) {
-    throw std::runtime_error("Schema: '" + path + "' is a value where fields are expected");
-  }
-  for ( auto& field : constant.fields ) {
-    auto it = std::find_if(schema.fields.begin(), schema.fields.end(), [&field](auto& candidate) { return candidate.first == field.name; });
-    if ( it == schema.fields.end() ) {
-      throw std::runtime_error("Schema: '" + path + "' has the unknown field '" + field.name + "'");
-    }
-    resolve(it->second, field.layout, path + "." + field.name);
-  }
-}
-
 /// Gives the dimensions still open, of a field the value lacks or below an empty array, the length zero, which
 /// leaves them undetermined until the first assignment of a value to one of their elements.
 void close(FlatSchema& schema) {
@@ -387,48 +399,6 @@ void close(FlatSchema& schema) {
   for ( auto& [name, field] : schema.fields ) {
     close(field);
   }
-}
-
-/// Converts a scalar value of a constant object to the type of the schema.
-BPMNOS::Value convert(const BPMNOS::Value& value, BPMNOS::ValueType type) {
-  if ( !value.has_value() ) {
-    return std::nullopt;
-  }
-  switch ( type ) {
-    case BPMNOS::ValueType::INTEGER:
-      return BPMNOS::number((long)(double)value.value());
-    case BPMNOS::ValueType::BOOLEAN:
-      return BPMNOS::number( value.value() != BPMNOS::number(0) ? 1 : 0 );
-    default:
-      return value;
-  }
-}
-
-/// Copies the values of a constant object of the given layout into an object of the target layout.
-void copyValues(const BPMNOS::Object::Layout& target, const BPMNOS::Object::Layout& source, const std::vector<BPMNOS::Value>& from, size_t fromOffset, std::vector<BPMNOS::Value>& to, size_t toOffset) {
-  std::function<void(size_t, size_t, size_t)> copyDimension = [&](size_t dimension, size_t sourceOffset, size_t targetOffset) {
-    if ( dimension == source.dimensions.size() ) {
-      if ( target.scalar.has_value() ) {
-        to[targetOffset] = convert(from[sourceOffset], target.scalar.value());
-        return;
-      }
-      for ( auto& field : source.fields ) {
-        auto it = std::find_if(target.fields.begin(), target.fields.end(), [&field](auto& candidate) { return candidate.name == field.name; });
-        copyValues(it->layout, field.layout, from, sourceOffset + field.offset, to, targetOffset + it->offset);
-      }
-      return;
-    }
-    size_t sourceSpan = source.stride;
-    size_t targetSpan = target.stride;
-    for ( size_t d = dimension + 1; d < source.dimensions.size(); d++ ) {
-      sourceSpan *= source.dimensions[d];
-      targetSpan *= target.dimensions[d];
-    }
-    for ( size_t i = 0; i < source.dimensions[dimension]; i++ ) {
-      copyDimension(dimension + 1, sourceOffset + i * sourceSpan, targetOffset + i * targetSpan);
-    }
-  };
-  copyDimension(0, fromOffset, toOffset);
 }
 
 } // namespace
@@ -445,47 +415,6 @@ std::shared_ptr<const BPMNOS::Object> Schema::undefinedObject() const {
   return object;
 }
 
-std::shared_ptr<const BPMNOS::Object> Schema::conform(const std::shared_ptr<const BPMNOS::Object>& constant) const {
-  FlatSchema declared = flatten(*this);
-  FlatSchema resolved = declared;
-  resolve(resolved, *constant->layout, BPMNOS::to_string(*constant));
-  close(resolved);
-  auto layout = layoutOf(resolved, declared);
-  if ( layout == *constant->layout ) {
-    // the object holds exactly what the attribute declares, with the same dimensions fixed, and is shared
-    return constant;
-  }
-  // an object is created modifiable, so that a write may change it in place once it is no longer shared
-  auto object = std::make_shared<BPMNOS::Object>();
-  object->layout = std::make_shared<const BPMNOS::Object::Layout>( std::move(layout) );
-  object->values.resize( object->layout->size() );
-  copyValues(*object->layout, *constant->layout, constant->values, 0, object->values, 0);
-  return object;
-}
-
-Schema Schema::of(const BPMNOS::Object::Layout& layout, bool element) {
-  Schema schema;
-  if ( layout.scalar.has_value() ) {
-    schema = Schema(layout.scalar.value());
-  }
-  else {
-    ObjectType object;
-    object.fields.reserve(layout.fields.size());
-    for ( auto& field : layout.fields ) {
-      object.fields.push_back( Field{ field.name, std::make_shared<const Schema>(of(field.layout, element)) } );
-    }
-    schema = Schema(std::move(object));
-  }
-  // the dimensions are outermost first, so that the innermost array is built first
-  for ( size_t d = layout.dimensions.size(); d-- > 0; ) {
-    bool fixed = d < layout.fixed.size() && layout.fixed[d];
-    // an element keeps every length but one still undetermined, whereas an object replaced keeps only the
-    // lengths that are fixed
-    bool keep = element ? ( fixed || layout.dimensions[d] > 0 ) : fixed;
-    schema = Schema( ArrayType{ std::make_shared<const Schema>(std::move(schema)), keep ? std::optional<size_t>(layout.dimensions[d]) : std::nullopt } );
-  }
-  return schema;
-}
 
 namespace {
 

@@ -56,7 +56,9 @@ std::shared_ptr<const BPMNOS::Object> Input::readMatrix(const std::string& conte
       if ( type != BPMNOS::CSVReader::Type::OBJECT ) {
         throw std::runtime_error("Input: " + where + " is no " + base.stringify());
       }
-      auto cell = base.conform( objectRegistry[(size_t)std::get<BPMNOS::number>(table[i][j])] );
+      auto index = (size_t)std::get<BPMNOS::number>(table[i][j]);
+      auto& cellSchema = objectRegistry.schema(index);
+      std::shared_ptr<const BPMNOS::Object> cell = base.supports(cellSchema) ? objectRegistry[index] : std::make_shared<const BPMNOS::Object>(base, *objectRegistry[index], cellSchema);
       if ( cells.empty() ) {
         cellLayout = *cell->layout;
       }
@@ -91,6 +93,8 @@ std::shared_ptr<const BPMNOS::Object> Input::readMatrix(const std::string& conte
       }
     }
   }
+  // the cells are of the element type of the matrix, whose rows and columns are open until fitted to the schema:
   // fixed dimensions are padded, open ones take the size of the matrix
-  return schema.conform(matrix);
+  Schema matrixSchema( ArrayType{ std::make_shared<const Schema>( ArrayType{ row->type, std::nullopt } ), std::nullopt } );
+  return schema.supports(matrixSchema) ? matrix : std::make_shared<const BPMNOS::Object>(schema, *matrix, matrixSchema);
 }

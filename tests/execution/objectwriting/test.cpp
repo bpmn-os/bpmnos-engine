@@ -106,7 +106,7 @@ TEST_CASE( "Write objects, elements and lengths", "[execution][objects][writing]
   auto write = [&](const std::string& text) {
     Model::Expression expression(InputEncoder(text), registry);
     REQUIRE( expression.writesToObject() );
-    expression.writeToObject(status, data);
+    expression.writeToObject(status, data, *provider);
   };
   auto read = [&](const std::string& text) {
     Model::Expression expression(InputEncoder(text), registry);
@@ -129,6 +129,16 @@ TEST_CASE( "Write objects, elements and lengths", "[execution][objects][writing]
     REQUIRE_THROWS_WITH( write("location := [1, 2, 3, 4]"), Catch::Matchers::ContainsSubstring("4 elements where 3 are declared") );
     write("route := [4, 5, 6]");
     REQUIRE( render("route") == "[ 4, 5, 6 ]" );
+  }
+
+  SECTION( "A longer value is cut off where only undefined values are cut" ) {
+    write("resize(route) := 4");
+    write("location := route");
+    REQUIRE( render("location") == "[ 1, 2, undefined ]" );
+    write("grid[2] := route");
+    REQUIRE( render("grid") == "[ [ 1, 2, 3 ], [ 1, 2, undefined ] ]" );
+    write("route[4] := 7");
+    REQUIRE_THROWS_WITH( write("location := route"), Catch::Matchers::ContainsSubstring("4 elements where 3 are declared") );
   }
 
   SECTION( "An object of the same layout is shared, a part of an object copied" ) {
@@ -157,12 +167,13 @@ TEST_CASE( "Write objects, elements and lengths", "[execution][objects][writing]
     REQUIRE( render("facilities") == "[ { cost := 5, flags := [ ] }, { cost := 2, flags := [ ] } ]" );
   }
 
-  SECTION( "The first assignment to a nested element determines its length for every element" ) {
+  SECTION( "An assignment to an element gives an open array the size of the value in every element" ) {
     write("facilities[1].flags := [true, false]");
     REQUIRE( render("facilities") == "[ { cost := 1, flags := [ true, false ] }, { cost := 2, flags := [ undefined, undefined ] } ]" );
     REQUIRE( read("size(facilities[2].flags)") == 2 );
     REQUIRE( read("count(facilities[2].flags)") == 0 );
-    REQUIRE_THROWS_WITH( write("facilities[2].flags := [true, false, true]"), Catch::Matchers::ContainsSubstring("3 elements where 2 are declared") );
+    write("facilities[2].flags := [true]");
+    REQUIRE( render("facilities") == "[ { cost := 1, flags := [ true ] }, { cost := 2, flags := [ true ] } ]" );
   }
 
   SECTION( "Resize grows and shrinks a dimension, nested ones in every element" ) {
@@ -188,19 +199,19 @@ TEST_CASE( "Write objects, elements and lengths", "[execution][objects][writing]
     auto copy = status;
     REQUIRE( copy.objects[0].get() == status.objects[0].get() );
     Model::Expression expression(InputEncoder("route[1] := 8"), registry);
-    expression.writeToObject(copy, data);
+    expression.writeToObject(copy, data, *provider);
     REQUIRE( to_string(*copy.objects[0]) == "[ 8, 2 ]" );
     REQUIRE( render("route") == "[ 1, 2 ]" );
     // an object held by no one else is written in place
     auto written = copy.objects[0].get();
-    expression.writeToObject(copy, data);
+    expression.writeToObject(copy, data, *provider);
     REQUIRE( copy.objects[0].get() == written );
   }
 
   SECTION( "A write through a data chain changes the data of the scope" ) {
     SharedData chain(data);
     Model::Expression expression(InputEncoder("visits[1] := 3"), registry);
-    expression.writeToObject(status, chain);
+    expression.writeToObject(status, chain, *provider);
     REQUIRE( render("visits") == "[ 3 ]" );
   }
 }

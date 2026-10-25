@@ -111,7 +111,10 @@ std::variant<std::monostate, size_t, std::unique_ptr<const Expression>> Attribut
     }
     size_t literal = encoder.getObjectIndex().value();
     try {
-      type.conform( objectRegistry[literal] );
+      // the conversion rejects a literal that does not fit the type
+      if ( !type.supports(objectRegistry.schema(literal)) ) {
+        BPMNOS::Object(type, *objectRegistry[literal], objectRegistry.schema(literal));
+      }
     }
     catch ( const std::exception& error ) {
       throw std::runtime_error("Attribute: illegal initial value of object '" + id + "'.\n" + error.what());

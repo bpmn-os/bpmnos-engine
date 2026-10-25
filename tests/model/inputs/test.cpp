@@ -119,8 +119,9 @@ TEST_CASE( "Read matrix and object inputs in expressions", "[model][inputs]" ) {
   SECTION( "An input is assigned to an object" ) {
     auto row = registry["row"];
     status.objects[row->index] = row->type.undefinedObject();
+    auto provider = std::make_shared<Execution::StaticDataProvider>(model, "INSTANCE_ID; NODE_ID; INITIALIZATION\nInstance_1; Process_1;\n");
     Model::Expression expression(InputEncoder("row := distance[2]"), registry);
-    expression.writeToObject(status, data);
+    expression.writeToObject(status, data, *provider);
     REQUIRE( to_string(*status.objects[row->index]) == "[ 5, 0, 7 ]" );
   }
 }

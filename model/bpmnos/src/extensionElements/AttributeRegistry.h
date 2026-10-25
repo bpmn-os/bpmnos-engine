@@ -9,6 +9,7 @@
 #include "model/utility/src/Value.h"
 
 #include "Attribute.h"
+#include "model/bpmnos/src/SchemaProvider.h"
 
 namespace BPMNOS::Model {
 
@@ -42,20 +43,23 @@ public:
   const std::shared_ptr<const Object>& getObject(const Attribute* object, const Status& status, const Data& data) const;
   /// @copydoc getObject(const Attribute*, const Status&, const Data&) const
   const std::shared_ptr<const Object>& getObject(const Attribute* object, const Status& status, const SharedData& data) const;
-  /// @brief Method returning the slot holding the object of an object attribute in the status or data, for
-  /// writing it.
-  std::shared_ptr<const Object>& getObjectSlot(const Attribute* object, Status& status, Data& data) const;
-  /// @copydoc getObjectSlot(const Attribute*, Status&, Data&) const
-  std::shared_ptr<const Object>& getObjectSlot(const Attribute* object, Status& status, SharedData& data) const;
+  /// @brief Method returning the pointer holding the object of an object attribute in the status or data, through
+  /// which the object can be replaced.
+  std::shared_ptr<const Object>& getObject(const Attribute* object, Status& status, Data& data) const;
+  /// @copydoc getObject(const Attribute*, Status&, Data&) const
+  std::shared_ptr<const Object>& getObject(const Attribute* object, Status& status, SharedData& data) const;
   /**
-   * @brief Method assigning an array or object to an object attribute as a whole.
+   * @brief Method assigning an array or object of the given schema to an object attribute as a whole.
    *
-   * The object keeps the lengths of its fixed dimensions, a shorter value being padded with undefined values and a
-   * longer one being an error, and takes the lengths of its open ones. A value of the very layout is shared.
+   * The value is kept or converted for the target schema built from the effective schema of the attribute, which
+   * the schema provider gives, and the layout of its current object: a fixed array keeps its size, a shorter value
+   * being padded with undefined values and a longer one being cut off if only undefined values are cut and rejected
+   * otherwise, and an open array takes the size of the value. A value whose schema the target schema supports is
+   * kept, so that it is shared.
    */
-  void setObject(const Attribute* object, Status& status, Data& data, const std::shared_ptr<const Object>& value) const;
-  /// @copydoc setObject(const Attribute*, Status&, Data&, const std::shared_ptr<const Object>&) const
-  void setObject(const Attribute* object, Status& status, SharedData& data, const std::shared_ptr<const Object>& value) const;
+  void setObject(const Attribute* object, Status& status, Data& data, const std::shared_ptr<const Object>& value, const Schema& valueSchema, const SchemaProvider& schemaProvider) const;
+  /// @copydoc setObject(const Attribute*, Status&, Data&, const std::shared_ptr<const Object>&, const Schema&, const SchemaProvider&) const
+  void setObject(const Attribute* object, Status& status, SharedData& data, const std::shared_ptr<const Object>& value, const Schema& valueSchema, const SchemaProvider& schemaProvider) const;
   /// @brief Method setting the value of an attribute and returning the change of the objective, which is the
   /// change of the value times the weight of the attribute for a data attribute and zero for a status attribute,
   /// the previous value being available here and nowhere later.

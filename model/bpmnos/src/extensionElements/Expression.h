@@ -70,13 +70,14 @@ public:
    * @brief Writes what an assignment to an object states: a value or an array or object to an element, an array
    * or object to the whole object, or the length of a dimension.
    *
-   * The object is copied first if anyone else holds it. An element keeps its lengths, except those not yet
-   * determined, which the value determines for every element; the whole object keeps the lengths of its fixed
-   * dimensions, a shorter value being padded with undefined values and a longer one being an error, and takes
-   * the lengths of its open ones.
+   * The object is copied first if anyone else holds it. An array or object assigned is kept or converted for the
+   * target schema built from the effective schema of the target, which the schema provider gives, and the current
+   * layout of the target: a fixed array keeps its size, a shorter value being padded with undefined values and a
+   * longer one being cut off if only undefined values are cut and rejected otherwise, and an open array takes the
+   * size of the value. An open array within an element takes the new size in every element of the enclosing array.
    */
   template <typename DataType>
-  void writeToObject(BPMNOS::Status& status, DataType& data) const;
+  void writeToObject(BPMNOS::Status& status, DataType& data, const SchemaProvider& schemaProvider) const;
 private:
   LIMEX::Expression<double> getExpression(const std::string& input) const;
   Type getType() const;
@@ -108,7 +109,8 @@ private:
   void bindPaths();
   /// Returns the schema of the object an attribute or input of the given name holds, nullptr for a scalar attribute.
   const Schema* schemaOf(const std::string& name) const;
-  Step walk(size_t path) const;
+  /// Follows a path through the given schema, which is the schema of the object the path addresses.
+  Step walk(size_t path, const Schema& schema) const;
   /// Checks that a path addresses a value, an array of values with a single dimension if it is read as an array, or an
   /// array if only its length is read.
   void bind(size_t path, bool asArray, bool lengthOnly) const;

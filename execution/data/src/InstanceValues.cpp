@@ -19,6 +19,7 @@ InstanceValues::InstanceValues(
 )
   : status(std::move(inheritedStatus))
   , data(node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->data.size())
+  , dataProvider(dataProvider)
   , attributeRegistry(node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->attributeRegistry)
   , identity(instance)
 {
@@ -78,7 +79,7 @@ InstanceValues::InstanceValues(
   for ( auto objects : { &extensionElements->statusObjects, &extensionElements->dataObjects } ) {
     for ( auto& object : *objects ) {
       if ( auto expression = std::get_if< std::unique_ptr<const BPMNOS::Model::Expression> >(&object->initialization) ) {
-        (*expression)->writeToObject(status, chain);
+        (*expression)->writeToObject(status, chain, dataProvider);
       }
     }
   }
@@ -86,7 +87,7 @@ InstanceValues::InstanceValues(
 
 void InstanceValues::assign(const BPMNOS::Model::Expression& expression) {
   if ( expression.writesToObject() ) {
-    expression.writeToObject(status, chain);
+    expression.writeToObject(status, chain, dataProvider);
     return;
   }
   auto target = expression.target.value();

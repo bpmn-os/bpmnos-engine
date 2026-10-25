@@ -116,7 +116,7 @@ const std::shared_ptr<const BPMNOS::Object>& AttributeRegistry::getObject(const 
   return data.objects[object->index].get();
 }
 
-std::shared_ptr<const BPMNOS::Object>& AttributeRegistry::getObjectSlot(const Attribute* object, Status& status, Data& data) const {
+std::shared_ptr<const BPMNOS::Object>& AttributeRegistry::getObject(const Attribute* object, Status& status, Data& data) const {
   assert( object->isObject() );
   if ( object->category == Attribute::Category::STATUS ) {
     assert(object->index < status.objects.size());
@@ -126,7 +126,7 @@ std::shared_ptr<const BPMNOS::Object>& AttributeRegistry::getObjectSlot(const At
   return data.objects[object->index];
 }
 
-std::shared_ptr<const BPMNOS::Object>& AttributeRegistry::getObjectSlot(const Attribute* object, Status& status, SharedData& data) const {
+std::shared_ptr<const BPMNOS::Object>& AttributeRegistry::getObject(const Attribute* object, Status& status, SharedData& data) const {
   assert( object->isObject() );
   if ( object->category == Attribute::Category::STATUS ) {
     assert(object->index < status.objects.size());
@@ -138,10 +138,15 @@ std::shared_ptr<const BPMNOS::Object>& AttributeRegistry::getObjectSlot(const At
 
 namespace {
 
-/// Returns the object a whole assignment of the value gives an object holding the current one.
-std::shared_ptr<const BPMNOS::Object> assigned(const BPMNOS::Model::Attribute* object, const std::shared_ptr<const BPMNOS::Object>& current, const std::shared_ptr<const BPMNOS::Object>& value) {
+/// Returns the object a whole assignment of the value of the given schema gives an object attribute holding the
+/// current object.
+std::shared_ptr<const BPMNOS::Object> assigned(const BPMNOS::Model::Attribute* object, const std::shared_ptr<const BPMNOS::Object>& current, const std::shared_ptr<const BPMNOS::Object>& value, const BPMNOS::Schema& valueSchema, const BPMNOS::Model::SchemaProvider& schemaProvider) {
+  BPMNOS::Schema target(schemaProvider.getSchema(object), *current->layout);
+  if ( target.supports(valueSchema) ) {
+    return value;
+  }
   try {
-    return BPMNOS::Schema::of(*current->layout, false).conform(value);
+    return std::make_shared<BPMNOS::Object>(target, *value, valueSchema);
   }
   catch ( const std::exception& error ) {
     throw std::runtime_error("AttributeRegistry: illegal value of object '" + object->name + "'.\n" + error.what());
@@ -150,14 +155,14 @@ std::shared_ptr<const BPMNOS::Object> assigned(const BPMNOS::Model::Attribute* o
 
 } // namespace
 
-void AttributeRegistry::setObject(const Attribute* object, Status& status, Data& data, const std::shared_ptr<const Object>& value) const {
-  auto& slot = getObjectSlot(object, status, data);
-  slot = assigned(object, slot, value);
+void AttributeRegistry::setObject(const Attribute* object, Status& status, Data& data, const std::shared_ptr<const Object>& value, const Schema& valueSchema, const SchemaProvider& schemaProvider) const {
+  auto& current = getObject(object, status, data);
+  current = assigned(object, current, value, valueSchema, schemaProvider);
 }
 
-void AttributeRegistry::setObject(const Attribute* object, Status& status, SharedData& data, const std::shared_ptr<const Object>& value) const {
-  auto& slot = getObjectSlot(object, status, data);
-  slot = assigned(object, slot, value);
+void AttributeRegistry::setObject(const Attribute* object, Status& status, SharedData& data, const std::shared_ptr<const Object>& value, const Schema& valueSchema, const SchemaProvider& schemaProvider) const {
+  auto& current = getObject(object, status, data);
+  current = assigned(object, current, value, valueSchema, schemaProvider);
 }
 
 BPMNOS::number AttributeRegistry::setValue(const Attribute* attribute, Status& status, Data& data, std::optional<BPMNOS::number> value) const {

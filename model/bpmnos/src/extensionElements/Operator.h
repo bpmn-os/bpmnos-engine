@@ -28,9 +28,10 @@ public:
   const AttributeRegistry& attributeRegistry;
   Attribute* attribute; ///< The status or data attribute to be modified by the operator
 
-  /// @brief Method applying the operator and returning the change of the objective.
+  /// @brief Method applying the operator and returning the change of the objective, the schema provider giving the
+  /// effective schemas of the objects written.
   template <typename DataType>
-  BPMNOS::number apply(BPMNOS::Status& status, DataType& data) const;
+  BPMNOS::number apply(BPMNOS::Status& status, DataType& data, const SchemaProvider& schemaProvider) const;
 
   /// Returns a pointer of type T of the node.
   template<typename T> T* is() {

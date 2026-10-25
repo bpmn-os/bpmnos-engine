@@ -112,7 +112,7 @@ template bool Guidance::restrictionsSatisfied<BPMNOS::Data>(const BPMNOS::Status
 
 
 template <typename DataType>
-void Guidance::apply(BPMNOS::Status& status, DataType& data) const {
+void Guidance::apply(BPMNOS::Status& status, DataType& data, const SchemaProvider& schemaProvider) const {
   // the status grows by the attributes of the guidance, so that it is reallocated once
   status.attributes.reserve(status.attributes.size() + attributes.size());
 
@@ -126,10 +126,10 @@ void Guidance::apply(BPMNOS::Status& status, DataType& data) const {
   
   // apply operators
   for ( auto& operator_ : operators ) {
-    operator_->apply(status,data);
+    operator_->apply(status,data,schemaProvider);
   }
 }
 
-template void Guidance::apply<BPMNOS::Data>(BPMNOS::Status& status, BPMNOS::Data& data) const;
-//template void Guidance::apply<BPMNOS::SharedData>(BPMNOS::Status& status, BPMNOS::SharedData& data) const;
+template void Guidance::apply<BPMNOS::Data>(BPMNOS::Status& status, BPMNOS::Data& data, const SchemaProvider& schemaProvider) const;
+//template void Guidance::apply<BPMNOS::SharedData>(BPMNOS::Status& status, BPMNOS::SharedData& data, const SchemaProvider& schemaProvider) const;
 

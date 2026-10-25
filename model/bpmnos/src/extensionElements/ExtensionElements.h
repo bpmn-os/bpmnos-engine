@@ -115,13 +115,14 @@ public:
   
   bool isInstantaneous; ///< Boolean indicating whether operators may modify timestamp.
 
-  /// @brief Method applying the operators and returning the change of the objective.
+  /// @brief Method applying the operators and returning the change of the objective, the schema provider giving the
+  /// effective schemas of the objects written.
   ///
   /// If the node states a message, signal, error or escalation, its content object, which the operators write or
   /// read, must be given;
   /// otherwise the content object given, if any, is not used.
   template <typename DataType>
-  BPMNOS::number applyOperators(BPMNOS::Status& status, DataType& data, std::shared_ptr<const BPMNOS::Object>* contentObject = nullptr) const;
+  BPMNOS::number applyOperators(BPMNOS::Status& status, DataType& data, const SchemaProvider& schemaProvider, std::shared_ptr<const BPMNOS::Object>* contentObject = nullptr) const;
 
   template <typename DataType>
   BPMNOS::number getObjective(const BPMNOS::Status& status, const DataType& data) const; ///< Returns the total objective of all attributes provided.
