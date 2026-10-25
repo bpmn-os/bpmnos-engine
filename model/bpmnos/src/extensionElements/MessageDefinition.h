@@ -8,7 +8,7 @@
 #include <string>
 #include <bpmn++.h>
 #include "Parameter.h"
-#include "Schema.h"
+#include "model/utility/src/Schema.h"
 #include "model/utility/src/Value.h"
 #include "model/bpmnos/src/xml/bpmnos/tMessage.h"
 

@@ -98,7 +98,7 @@ std::string attribute(const std::string& id, const std::string& name, const std:
 } // namespace
 
 TEST_CASE( "Parse the schema of an attribute", "[model][schema]" ) {
-  using Model::Schema;
+  using BPMNOS::Schema;
 
   SECTION( "Scalars" ) {
     for ( auto [text, type] : std::vector< std::pair<std::string, ValueType> >{

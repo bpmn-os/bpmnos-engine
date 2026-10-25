@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 #include "model/utility/src/Object.h"
-#include "model/bpmnos/src/extensionElements/Schema.h"
+#include "model/utility/src/Schema.h"
 
 namespace BPMNOS::Model {
 

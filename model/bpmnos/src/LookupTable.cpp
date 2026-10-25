@@ -24,7 +24,7 @@ LookupTable::LookupTable(const std::string& name, const std::string& csvContent,
   populate(name, CSVReader(csvContent));
 }
 
-std::vector< std::pair<std::string, Schema> > LookupTable::parseColumns() const {
+std::vector< std::pair<std::string, BPMNOS::Schema> > LookupTable::parseColumns() const {
   std::vector< std::pair<std::string, Schema> > result;
   for ( auto& column : BPMNOS::split(header, ';') ) {
     auto colon = column.find(':');

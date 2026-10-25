@@ -2,6 +2,7 @@ list(APPEND model_utility_SOURCES
   Number.cpp
   StringRegistry.cpp
   Object.cpp
+  Schema.cpp
   ObjectRegistry.cpp
   CSVReader.cpp
   InputEncoder.cpp
@@ -15,6 +16,7 @@ list(APPEND model_utility_HEADERS
   tuple_map.h
   vector_map.h
   Object.h
+  Schema.h
   ObjectRegistry.h
   CSVReader.h
   InputEncoder.h

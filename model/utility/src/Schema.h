@@ -1,15 +1,15 @@
-#ifndef BPMNOS_Model_Schema_H
-#define BPMNOS_Model_Schema_H
+#ifndef BPMNOS_Schema_H
+#define BPMNOS_Schema_H
 
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
-#include "model/utility/src/Value.h"
-#include "model/utility/src/Object.h"
+#include "Value.h"
+#include "Object.h"
 
-namespace BPMNOS::Model {
+namespace BPMNOS {
 
 /**
  * @brief The shape of an attribute, as stated by its `type`.
@@ -85,6 +85,6 @@ struct Schema {
   std::shared_ptr<const BPMNOS::Object> fromJSON(const std::string& text) const;
 };
 
-} // namespace BPMNOS::Model
+} // namespace BPMNOS
 
-#endif // BPMNOS_Model_Schema_H
+#endif // BPMNOS_Schema_H

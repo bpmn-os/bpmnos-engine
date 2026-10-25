@@ -114,7 +114,7 @@ private:
   struct ObjectInitialization {
     BPMNOS::ObjectInitializer initializer;
     std::vector<std::unique_ptr<BPMNOS::Model::Expression>> members; ///< The expression members, in the order of the initializer
-    BPMNOS::Model::Schema schema; ///< The schema of the object with the sizes the size declarations fix
+    BPMNOS::Schema schema; ///< The schema of the object with the sizes the size declarations fix
   };
 
   /**

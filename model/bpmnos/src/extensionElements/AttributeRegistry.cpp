@@ -141,7 +141,7 @@ namespace {
 /// Returns the object a whole assignment of the value gives an object holding the current one.
 std::shared_ptr<const BPMNOS::Object> assigned(const BPMNOS::Model::Attribute* object, const std::shared_ptr<const BPMNOS::Object>& current, const std::shared_ptr<const BPMNOS::Object>& value) {
   try {
-    return Schema::of(*current->layout, false).conform(value);
+    return BPMNOS::Schema::of(*current->layout, false).conform(value);
   }
   catch ( const std::exception& error ) {
     throw std::runtime_error("AttributeRegistry: illegal value of object '" + object->name + "'.\n" + error.what());

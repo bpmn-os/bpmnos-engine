@@ -228,7 +228,7 @@ void Expression::bindPaths() {
   visit(compiled.getRoot(), false, false);
 }
 
-const Schema* Expression::schemaOf(const std::string& name) const {
+const BPMNOS::Schema* Expression::schemaOf(const std::string& name) const {
   if ( auto input = attributeRegistry.inputs.find(name); input != attributeRegistry.inputs.end() ) {
     return &input->second->schema;
   }

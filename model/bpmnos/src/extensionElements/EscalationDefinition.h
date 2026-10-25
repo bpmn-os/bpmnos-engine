@@ -1,7 +1,7 @@
 #ifndef BPMNOS_Model_EscalationDefinition_H
 #define BPMNOS_Model_EscalationDefinition_H
 
-#include "Schema.h"
+#include "model/utility/src/Schema.h"
 #include "model/utility/src/Number.h"
 #include "model/bpmnos/src/xml/bpmnos/tEscalation.h"
 

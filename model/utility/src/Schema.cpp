@@ -7,7 +7,7 @@
 #include <functional>
 #include <stdexcept>
 
-using namespace BPMNOS::Model;
+using namespace BPMNOS;
 
 namespace {
 

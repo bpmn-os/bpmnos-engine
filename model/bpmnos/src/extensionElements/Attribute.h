@@ -7,7 +7,7 @@
 #include <variant>
 #include <bpmn++.h>
 #include "model/bpmnos/src/xml/bpmnos/tAttribute.h"
-#include "Schema.h"
+#include "model/utility/src/Schema.h"
 #include "model/utility/src/Value.h"
 #include "model/utility/src/Number.h"
 

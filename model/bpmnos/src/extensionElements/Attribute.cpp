@@ -131,7 +131,7 @@ std::unique_ptr<const Expression> Attribute::getExpression(std::string& input, A
   return expression;
 }
 
-std::unique_ptr<const Schema> Attribute::getSchema(const std::string& input) {
+std::unique_ptr<const BPMNOS::Schema> Attribute::getSchema(const std::string& input) {
   Schema parsed;
   try {
     parsed = Schema::parse(input);

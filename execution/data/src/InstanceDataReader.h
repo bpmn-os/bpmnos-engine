@@ -8,7 +8,7 @@
 #include <limex.h>
 #include "model/bpmnos/src/Model.h"
 #include "model/bpmnos/src/extensionElements/Attribute.h"
-#include "model/bpmnos/src/extensionElements/Schema.h"
+#include "model/utility/src/Schema.h"
 #include "model/utility/src/InputEncoder.h"
 #include "model/utility/src/Number.h"
 #include "model/utility/src/Value.h"
@@ -95,7 +95,7 @@ public:
    *
    * Each value is converted to the type the schema gives at the position of its member.
    */
-  static std::shared_ptr<const BPMNOS::Object> instantiate(const BPMNOS::Model::Schema& schema, const BPMNOS::Model::Attribute* object, const BPMNOS::ObjectInitializer& initializer, const std::vector<double>& values);
+  static std::shared_ptr<const BPMNOS::Object> instantiate(const BPMNOS::Schema& schema, const BPMNOS::Model::Attribute* object, const BPMNOS::ObjectInitializer& initializer, const std::vector<double>& values);
   /**
    * @brief Method recording a size declaration.
    *
@@ -107,12 +107,12 @@ public:
   /**
    * @brief Method returning the schema of an object with the sizes the size declarations fix.
    */
-  BPMNOS::Model::Schema getSchema(const BPMNOS::Model::Attribute* object) const;
+  BPMNOS::Schema getSchema(const BPMNOS::Model::Attribute* object) const;
   /**
    * @brief Method returning the schema of the content of the signal with the given name, of the given type, with
    * the sizes the size declarations fix.
    */
-  BPMNOS::Model::Schema getSignalSchema(BPMNOS::number name, const BPMNOS::Model::Schema& type) const;
+  BPMNOS::Schema getSignalSchema(BPMNOS::number name, const BPMNOS::Schema& type) const;
   /**
    * @brief Method returning the object an object attribute holds for an expression of the instance data, given
    * by an earlier row or by the model, nullptr if it has no value yet.
@@ -152,8 +152,8 @@ public:
   std::unordered_map<size_t, std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::number>> values; ///< The values of the attributes of each instance recorded
   std::unordered_map<size_t, std::unordered_map<const BPMNOS::Model::Attribute*, std::shared_ptr<const BPMNOS::Object>>> objects; ///< The object recorded for each object of each instance
   std::unordered_map<const BPMNOS::Model::Attribute*, std::shared_ptr<const BPMNOS::Object>> globalObjects; ///< The object recorded for each global object
-  std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::Model::Schema> schemas; ///< The schema of each object whose sizes are declared
-  std::unordered_map<BPMNOS::number, BPMNOS::Model::Schema> signalSchemas; ///< The schema of the content of each signal whose sizes are declared, by the name of the signal
+  std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::Schema> schemas; ///< The schema of each object whose sizes are declared
+  std::unordered_map<BPMNOS::number, BPMNOS::Schema> signalSchemas; ///< The schema of the content of each signal whose sizes are declared, by the name of the signal
 
   /// @brief Converts the value of an expression of the instance data to a value of the given type, an integer
   /// being truncated and a boolean being true for every value but zero.

@@ -247,8 +247,8 @@ namespace {
 
 /// Returns the scalar type a schema gives at the path of a member of a literal, nullopt if the path does not fit the
 /// schema.
-std::optional<BPMNOS::ValueType> scalarAt(const BPMNOS::Model::Schema& schema, const BPMNOS::ObjectInitializer::Path& path) {
-  const BPMNOS::Model::Schema* current = &schema;
+std::optional<BPMNOS::ValueType> scalarAt(const BPMNOS::Schema& schema, const BPMNOS::ObjectInitializer::Path& path) {
+  const BPMNOS::Schema* current = &schema;
   size_t dimension = 0;
   for ( auto& step : path ) {
     if ( step.empty() ) {
@@ -278,7 +278,7 @@ std::optional<BPMNOS::ValueType> scalarAt(const BPMNOS::Model::Schema& schema, c
 
 } // namespace
 
-std::shared_ptr<const BPMNOS::Object> InstanceDataReader::instantiate(const BPMNOS::Model::Schema& schema, const BPMNOS::Model::Attribute* object, const BPMNOS::ObjectInitializer& initializer, const std::vector<double>& values) {
+std::shared_ptr<const BPMNOS::Object> InstanceDataReader::instantiate(const BPMNOS::Schema& schema, const BPMNOS::Model::Attribute* object, const BPMNOS::ObjectInitializer& initializer, const std::vector<double>& values) {
   // a member takes the type of its position, read as a literal is read: a string and a truth value keep their
   // types and every number is a decimal, so that it agrees with the constant members; a member whose position the
   // schema lacks is refused when the object is conformed
@@ -304,7 +304,7 @@ void InstanceDataReader::declareSizes(const Row& row) {
     ++end;
   }
   auto name = text.substr(0, end);
-  auto declare = [&text,end](BPMNOS::Model::Schema& schema) {
+  auto declare = [&text,end](BPMNOS::Schema& schema) {
     try {
       schema.declareSizes( text.substr(end) );
     }
@@ -346,7 +346,7 @@ void InstanceDataReader::declareSizes(const Row& row) {
   declare( schemas.try_emplace(extensionElements->content.get(), *extensionElements->content->schema).first->second );
 }
 
-BPMNOS::Model::Schema InstanceDataReader::getSignalSchema(BPMNOS::number name, const BPMNOS::Model::Schema& type) const {
+BPMNOS::Schema InstanceDataReader::getSignalSchema(BPMNOS::number name, const BPMNOS::Schema& type) const {
   if ( auto it = signalSchemas.find(name); it != signalSchemas.end() ) {
     return it->second;
   }
@@ -375,7 +375,7 @@ std::shared_ptr<const BPMNOS::Object> InstanceDataReader::knownObject(std::optio
   }
 }
 
-BPMNOS::Model::Schema InstanceDataReader::getSchema(const BPMNOS::Model::Attribute* object) const {
+BPMNOS::Schema InstanceDataReader::getSchema(const BPMNOS::Model::Attribute* object) const {
   if ( auto it = schemas.find(object); it != schemas.end() ) {
     return it->second;
   }
