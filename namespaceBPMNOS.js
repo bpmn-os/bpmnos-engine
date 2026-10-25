@@ -55,7 +55,6 @@ var namespaceBPMNOS =
     [ "to_string", "namespaceBPMNOS.html#afda4d100d37d8c7e2f324670fad0c139", null ],
     [ "to_string", "namespaceBPMNOS.html#a269154d20cdd420046fe720f2a988566", null ],
     [ "to_value", "namespaceBPMNOS.html#ac3147cf798e5f6781980bd6187e84419", null ],
-    [ "to_vector", "namespaceBPMNOS.html#a8c9337d0b6b5dda40248ff9cc1917f40", null ],
     [ "trim", "namespaceBPMNOS.html#ad8a3cd7b190045d11000b4c6600fb866", null ],
     [ "trim_copy", "namespaceBPMNOS.html#a2d2a72aa3b66f65f0b89b815585ffc0d", null ],
     [ "trim_left", "namespaceBPMNOS.html#ac3bab4728f884fbd6ac175caa084d5df", null ],

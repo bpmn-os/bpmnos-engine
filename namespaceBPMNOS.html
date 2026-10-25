@@ -214,8 +214,6 @@ Functions</h2></td></tr>
 <tr class="memdesc:aa55ff6123d9ef3701b7da8e6c9143cb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders an object as a literal, <span class="tt">[ ... ]</span> for an array and <span class="tt">{ name := value, ... }</span> for a value with fields, strings quoted, decimals written with a decimal point, and undefined values written <span class="tt">undefined</span>.  <br /></td></tr>
 <tr class="memitem:a3b31673cd24317fd318c8c651fd4c445" id="r_a3b31673cd24317fd318c8c651fd4c445"><td class="memItemLeft" align="right" valign="top">nlohmann::ordered_json&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3b31673cd24317fd318c8c651fd4c445">to_json</a> (const <a class="el" href="structBPMNOS_1_1Object.html">Object</a> &amp;object)</td></tr>
 <tr class="memdesc:a3b31673cd24317fd318c8c651fd4c445"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders an object as JSON: an array as an array, fields as an object keyed by their names in their order, a truth value as a truth value, an integer or decimal as a number of its type, a string as text, and an undefined value as <span class="tt">null</span>.  <br /></td></tr>
-<tr class="memitem:a8c9337d0b6b5dda40248ff9cc1917f40" id="r_a8c9337d0b6b5dda40248ff9cc1917f40"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8c9337d0b6b5dda40248ff9cc1917f40">to_vector</a> (const <a class="el" href="structBPMNOS_1_1Object.html">Object</a> &amp;object)</td></tr>
-<tr class="memdesc:a8c9337d0b6b5dda40248ff9cc1917f40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the values of an array of single values as decimals, an undefined value as a quiet NaN, throwing an error for any other object.  <br /></td></tr>
 <tr class="memitem:ac3bab4728f884fbd6ac175caa084d5df" id="r_ac3bab4728f884fbd6ac175caa084d5df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac3bab4728f884fbd6ac175caa084d5df">trim_left</a> (std::string &amp;str)</td></tr>
 <tr class="memdesc:ac3bab4728f884fbd6ac175caa084d5df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes leading whitespace (in-place).  <br /></td></tr>
 <tr class="memitem:a54623717227b016f9c7fb5c16fc0ccdf" id="r_a54623717227b016f9c7fb5c16fc0ccdf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a54623717227b016f9c7fb5c16fc0ccdf">trim_right</a> (std::string &amp;str)</td></tr>
@@ -342,7 +340,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Every array takes the largest size the objects have, and is fixed only where all objects fix it at the same size. Each value is merged from the objects holding it, an object whose size an array exceeds holding no value there: values that agree are kept, an undefined value is no conflict, and a conflict makes the value undefined. Objects that are all the same are returned as they are. </p>
 
-<p class="definition">Definition at line <a class="el" href="Object_8cpp_source.html#l00267">267</a> of file <a class="el" href="Object_8cpp_source.html">Object.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Object_8cpp_source.html#l00266">266</a> of file <a class="el" href="Object_8cpp_source.html">Object.cpp</a>.</p>
 
 </div>
 </div>
@@ -362,7 +360,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Every object held by more than one status or data, and every constant object, is copied once when it is first written, whereas an object held by the slot alone is modified in place. </p>
 
-<p class="definition">Definition at line <a class="el" href="Object_8cpp_source.html#l00249">249</a> of file <a class="el" href="Object_8cpp_source.html">Object.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Object_8cpp_source.html#l00248">248</a> of file <a class="el" href="Object_8cpp_source.html">Object.cpp</a>.</p>
 
 </div>
 </div>
@@ -428,7 +426,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>The array is reached from the object by the given steps, each the name of a field or <span class="tt">std::nullopt</span> for the element of an array, as the steps of a path are without their indices. All elements of an array having the same layout, an array within the elements of another changes in every element. Elements beyond the new size are dropped, and elements added are undefined. An array fixed in the schema of the object stays fixed at the new size. </p>
 
-<p class="definition">Definition at line <a class="el" href="Object_8cpp_source.html#l00257">257</a> of file <a class="el" href="Object_8cpp_source.html">Object.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Object_8cpp_source.html#l00256">256</a> of file <a class="el" href="Object_8cpp_source.html">Object.cpp</a>.</p>
 
 </div>
 </div>
@@ -580,7 +578,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Object_8cpp_source.html#l00305">305</a> of file <a class="el" href="Object_8cpp_source.html">Object.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Object_8cpp_source.html#l00304">304</a> of file <a class="el" href="Object_8cpp_source.html">Object.cpp</a>.</p>
 
 </div>
 </div>
@@ -622,7 +620,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Object_8cpp_source.html#l00301">301</a> of file <a class="el" href="Object_8cpp_source.html">Object.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Object_8cpp_source.html#l00300">300</a> of file <a class="el" href="Object_8cpp_source.html">Object.cpp</a>.</p>
 
 </div>
 </div>
@@ -685,25 +683,6 @@ Functions</h2></td></tr>
 <p>An expression is evaluated at the precision of a double, whereas a value is a number, so a result that becomes a value is converted here. The conversion loses precision and is therefore asked for rather than done on the way out of the evaluation, so that a caller deriving further values from a result — the discretizer of a choice being the one that does — keeps the precision it was evaluated at. </p>
 
 <p class="definition">Definition at line <a class="el" href="Number_8cpp_source.html#l00082">82</a> of file <a class="el" href="Number_8cpp_source.html">Number.cpp</a>.</p>
-
-</div>
-</div>
-<a id="a8c9337d0b6b5dda40248ff9cc1917f40" name="a8c9337d0b6b5dda40248ff9cc1917f40"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8c9337d0b6b5dda40248ff9cc1917f40">&#9670;&#160;</a></span>to_vector()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; double &gt; BPMNOS::to_vector </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Object.html">Object</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>object</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="Object_8cpp_source.html#l00309">309</a> of file <a class="el" href="Object_8cpp_source.html">Object.cpp</a>.</p>
 
 </div>
 </div>

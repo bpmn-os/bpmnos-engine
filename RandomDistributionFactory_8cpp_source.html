@@ -127,9 +127,9 @@ $(function(){initNavTree('RandomDistributionFactory_8cpp_source.html','',''); })
 </div><!--header-->
 <div class="contents">
 <a href="RandomDistributionFactory_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="RandomDistributionFactory_8h.html">RandomDistributionFactory.h</a>&quot;</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="ObjectRegistry_8h.html">model/utility/src/ObjectRegistry.h</a>&quot;</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;exception&gt;</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;exception&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">using namespace </span><a class="code hl_namespace" href="namespaceBPMNOS_1_1Execution.html">BPMNOS::Execution</a>;</div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
@@ -394,41 +394,41 @@ $(function(){initNavTree('RandomDistributionFactory_8cpp_source.html','',''); })
 <div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    });</div>
 <div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>  }</div>
 <div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span> </div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>  <span class="comment">// discrete(values, probabilities) - Discrete distribution over arbitrary values</span></div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>  <span class="comment">// Arguments are collection indices (from the input encoder)</span></div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>  <span class="comment">// discrete(values, probabilities) - Discrete distribution over the values of an array, each drawn with the</span></div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>  <span class="comment">// probability at the same position of the other</span></div>
 <div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>  <span class="keywordflow">if</span> (!nameExists(<span class="stringliteral">&quot;discrete&quot;</span>)) {</div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    handle.addFunction(<span class="stringliteral">&quot;discrete&quot;</span>, [](<span class="keyword">const</span> std::vector&lt;double&gt;&amp; args) -&gt; <span class="keywordtype">double</span> {</div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>      <span class="keywordflow">if</span> (args.size() != 2) {</div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;discrete requires 2 arguments: values collection, probabilities collection&quot;</span>);</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    handle.addAggregator(<span class="stringliteral">&quot;discrete&quot;</span>, 2, [](<span class="keyword">const</span> std::vector&lt;LIMEX::View&lt;double&gt;&gt;&amp; arrays) -&gt; <span class="keywordtype">double</span> {</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>      <span class="keywordflow">if</span> (!currentRng) {</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;discrete: no RNG context set&quot;</span>);</div>
 <div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>      }</div>
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>      <span class="keywordflow">if</span> (!currentRng) {</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;discrete: no RNG context set&quot;</span>);</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>      }</div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>      <span class="keywordtype">size_t</span> valuesIndex = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(args[0]);</div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>      <span class="keywordtype">size_t</span> probsIndex = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(args[1]);</div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span> </div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>      <span class="keyword">auto</span> values = <a class="code hl_function" href="namespaceBPMNOS.html#a8c9337d0b6b5dda40248ff9cc1917f40">to_vector</a>( *<a class="code hl_variable" href="ObjectRegistry_8cpp.html#a69118303275981fc7a36707935fcd538">objectRegistry</a>[valuesIndex] );</div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>      <span class="keyword">auto</span> probs = <a class="code hl_function" href="namespaceBPMNOS.html#a8c9337d0b6b5dda40248ff9cc1917f40">to_vector</a>( *<a class="code hl_variable" href="ObjectRegistry_8cpp.html#a69118303275981fc7a36707935fcd538">objectRegistry</a>[probsIndex] );</div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span> </div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>      <span class="keywordflow">if</span> (values.size() != probs.size()) {</div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;discrete: values and probabilities must have the same size&quot;</span>);</div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>      }</div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span> </div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>      std::discrete_distribution&lt;size_t&gt; dist(probs.begin(), probs.end());</div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>      <span class="keywordflow">return</span> values[dist(*currentRng)];</div>
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    });</div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>  }</div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>}</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>      <span class="keyword">auto</span>&amp; values = arrays[0];</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>      <span class="keyword">auto</span>&amp; probabilities = arrays[1];</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>      <span class="keywordflow">if</span> (values.size() != probabilities.size()) {</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;discrete: values and probabilities must have the same size&quot;</span>);</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>      }</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>      <span class="keywordflow">if</span> (values.size() == 0) {</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;discrete: values and probabilities must not be empty&quot;</span>);</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>      }</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>      std::vector&lt;double&gt; weights;</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>      weights.reserve(probabilities.size());</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>      <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; values.size(); i++) {</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>        <span class="keywordflow">if</span> (std::isnan(values[i]) || std::isnan(probabilities[i])) {</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>          <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;discrete: values and probabilities must be defined&quot;</span>);</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>        }</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>        weights.push_back(probabilities[i]);</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>      }</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>      std::discrete_distribution&lt;size_t&gt; distribution(weights.begin(), weights.end());</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>      <span class="keywordflow">return</span> values[distribution(*currentRng)];</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>    });</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>  }</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>}</div>
 </div>
-<div class="ttc" id="aObjectRegistry_8cpp_html_a69118303275981fc7a36707935fcd538"><div class="ttname"><a href="ObjectRegistry_8cpp.html#a69118303275981fc7a36707935fcd538">objectRegistry</a></div><div class="ttdeci">ObjectRegistry objectRegistry</div><div class="ttdef"><b>Definition</b> <a href="ObjectRegistry_8cpp_source.html#l00086">ObjectRegistry.cpp:86</a></div></div>
-<div class="ttc" id="aObjectRegistry_8h_html"><div class="ttname"><a href="ObjectRegistry_8h.html">ObjectRegistry.h</a></div></div>
 <div class="ttc" id="aRandomDistributionFactory_8h_html"><div class="ttname"><a href="RandomDistributionFactory_8h.html">RandomDistributionFactory.h</a></div></div>
 <div class="ttc" id="aclassBPMNOS_1_1Execution_1_1RandomDistributionFactory_html_a8aa5f0236257f4de2421a35f1f8ff62c"><div class="ttname"><a href="classBPMNOS_1_1Execution_1_1RandomDistributionFactory.html#a8aa5f0236257f4de2421a35f1f8ff62c">BPMNOS::Execution::RandomDistributionFactory::registerFunctions</a></div><div class="ttdeci">void registerFunctions(LIMEX::Handle&lt; double &gt; &amp;handle)</div><div class="ttdoc">Register all random distribution functions with the given LIMEX handle.</div><div class="ttdef"><b>Definition</b> <a href="#l00093">RandomDistributionFactory.cpp:93</a></div></div>
 <div class="ttc" id="anamespaceBPMNOS_1_1Execution_html"><div class="ttname"><a href="namespaceBPMNOS_1_1Execution.html">BPMNOS::Execution</a></div><div class="ttdef"><b>Definition</b> <a href="CachedCandidates_8h_source.html#l00017">CachedCandidates.h:17</a></div></div>
 <div class="ttc" id="anamespaceBPMNOS_1_1Execution_html_a36e006e87e514bc255b450b730571200"><div class="ttname"><a href="namespaceBPMNOS_1_1Execution.html#a36e006e87e514bc255b450b730571200">BPMNOS::Execution::make_distribution_impl</a></div><div class="ttdeci">RandomDistribution make_distribution_impl(nlohmann::json const &amp;input, Parameters... parameters)</div><div class="ttdef"><b>Definition</b> <a href="RandomDistributionFactory_8h_source.html#l00017">RandomDistributionFactory.h:17</a></div></div>
 <div class="ttc" id="anamespaceBPMNOS_1_1Execution_html_a6b42a448f59c7baa481d24373cb7043f"><div class="ttname"><a href="namespaceBPMNOS_1_1Execution.html#a6b42a448f59c7baa481d24373cb7043f">BPMNOS::Execution::RandomDistribution</a></div><div class="ttdeci">std::function&lt; double(RandomGenerator &amp;)&gt; RandomDistribution</div><div class="ttdef"><b>Definition</b> <a href="RandomDistributionFactory_8h_source.html#l00014">RandomDistributionFactory.h:14</a></div></div>
 <div class="ttc" id="anamespaceBPMNOS_1_1Execution_html_abe930e110641512ebfef7570878e6ba8"><div class="ttname"><a href="namespaceBPMNOS_1_1Execution.html#abe930e110641512ebfef7570878e6ba8">BPMNOS::Execution::make_distribution</a></div><div class="ttdeci">RandomDistribution make_distribution(const std::string &amp;jsonString)</div><div class="ttdef"><b>Definition</b> <a href="#l00011">RandomDistributionFactory.cpp:11</a></div></div>
-<div class="ttc" id="anamespaceBPMNOS_html_a8c9337d0b6b5dda40248ff9cc1917f40"><div class="ttname"><a href="namespaceBPMNOS.html#a8c9337d0b6b5dda40248ff9cc1917f40">BPMNOS::to_vector</a></div><div class="ttdeci">std::vector&lt; double &gt; to_vector(const Object &amp;object)</div><div class="ttdoc">Returns the values of an array of single values as decimals, an undefined value as a quiet NaN,...</div><div class="ttdef"><b>Definition</b> <a href="Object_8cpp_source.html#l00309">Object.cpp:309</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 </div><!-- container -->
