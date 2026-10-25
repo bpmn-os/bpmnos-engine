@@ -26,8 +26,6 @@ var dir_e45acae5b50bd2a67d7be80fadc068be =
     [ "Parameter.h", "Parameter_8h.html", "Parameter_8h" ],
     [ "Restriction.cpp", "Restriction_8cpp.html", "Restriction_8cpp" ],
     [ "Restriction.h", "Restriction_8h.html", "Restriction_8h" ],
-    [ "Schema.cpp", "Schema_8cpp.html", null ],
-    [ "Schema.h", "Schema_8h.html", "Schema_8h" ],
     [ "SignalDefinition.cpp", "SignalDefinition_8cpp.html", null ],
     [ "SignalDefinition.h", "SignalDefinition_8h.html", "SignalDefinition_8h" ]
 ];

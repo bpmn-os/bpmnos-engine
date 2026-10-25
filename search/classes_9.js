@@ -1,7 +1,7 @@
 var searchData=
 [
   ['laneset_0',['laneSet',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1laneSet.html',1,'XML::bpmn']]],
-  ['layout_1',['Layout',['../structBPMNOS_1_1Object_1_1Layout.html',1,'BPMNOS::Object']]],
+  ['layout_1',['Layout',['../structBPMNOS_1_1Layout.html',1,'BPMNOS']]],
   ['linkeventdefinition_2',['linkEventDefinition',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1linkEventDefinition.html',1,'XML::bpmn']]],
   ['linksourceevent_3',['LinkSourceEvent',['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1LinkSourceEvent.html',1,'BPMN']]],
   ['linktargetevent_4',['LinkTargetEvent',['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1LinkTargetEvent.html',1,'BPMN']]],

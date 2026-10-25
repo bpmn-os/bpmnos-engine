@@ -10,15 +10,12 @@ var classBPMNOS_1_1Model_1_1Attribute =
     [ "category", "classBPMNOS_1_1Model_1_1Attribute.html#a1ee7d0aa9c8aa5eed633b96bf5b96e0a", null ],
     [ "declaration", "classBPMNOS_1_1Model_1_1Attribute.html#a28add65097efff77d4f89205ee172627", null ],
     [ "element", "classBPMNOS_1_1Model_1_1Attribute.html#a8eb1fcf257615811b0bde19883af7470", null ],
-    [ "expression", "classBPMNOS_1_1Model_1_1Attribute.html#a4c3dbc016c148d4d91658789caf5901f", null ],
     [ "id", "classBPMNOS_1_1Model_1_1Attribute.html#a2b6347767756cbbefb784c7451901fa7", null ],
     [ "index", "classBPMNOS_1_1Model_1_1Attribute.html#abf105720196b9757cc88d55a3cfce98f", null ],
-    [ "initialExpression", "classBPMNOS_1_1Model_1_1Attribute.html#aec1f08b7c76574071c01cfe9d7cb8c94", null ],
-    [ "initialObject", "classBPMNOS_1_1Model_1_1Attribute.html#a924d469c16a404eb3b7ea4934c485da1", null ],
+    [ "initialization", "classBPMNOS_1_1Model_1_1Attribute.html#a31113207759bf3271d4db563a1fdb5f5", null ],
     [ "isGlobal", "classBPMNOS_1_1Model_1_1Attribute.html#a0b3fd64f580e521313755ec90a3002ee", null ],
     [ "isImmutable", "classBPMNOS_1_1Model_1_1Attribute.html#af1334d5ee239fa37ca74f2d55add7b24", null ],
     [ "name", "classBPMNOS_1_1Model_1_1Attribute.html#aaa2f7e4ec65c31c445de3272c43bf550", null ],
-    [ "schema", "classBPMNOS_1_1Model_1_1Attribute.html#a2cba0df767ab2f8581424dec40e60668", null ],
-    [ "type", "classBPMNOS_1_1Model_1_1Attribute.html#a373e9bc4fe265aacc4051a201930facb", null ],
+    [ "type", "classBPMNOS_1_1Model_1_1Attribute.html#a721bfeff772a97cf390fe99a9db0b015", null ],
     [ "weight", "classBPMNOS_1_1Model_1_1Attribute.html#a2278499c8feceadeb7cd13a2c120b6d9", null ]
 ];

@@ -14,11 +14,11 @@ var namespaceBPMNOS_1_1Model =
     [ "Operator", "classBPMNOS_1_1Model_1_1Operator.html", "classBPMNOS_1_1Model_1_1Operator" ],
     [ "Parameter", "classBPMNOS_1_1Model_1_1Parameter.html", "classBPMNOS_1_1Model_1_1Parameter" ],
     [ "Restriction", "classBPMNOS_1_1Model_1_1Restriction.html", "classBPMNOS_1_1Model_1_1Restriction" ],
-    [ "Schema", "structBPMNOS_1_1Model_1_1Schema.html", "structBPMNOS_1_1Model_1_1Schema" ],
     [ "SignalDefinition", "classBPMNOS_1_1Model_1_1SignalDefinition.html", "classBPMNOS_1_1Model_1_1SignalDefinition" ],
     [ "Input", "classBPMNOS_1_1Model_1_1Input.html", "classBPMNOS_1_1Model_1_1Input" ],
     [ "LookupTable", "classBPMNOS_1_1Model_1_1LookupTable.html", "classBPMNOS_1_1Model_1_1LookupTable" ],
     [ "Model", "classBPMNOS_1_1Model_1_1Model.html", "classBPMNOS_1_1Model_1_1Model" ],
+    [ "SchemaProvider", "classBPMNOS_1_1Model_1_1SchemaProvider.html", "classBPMNOS_1_1Model_1_1SchemaProvider" ],
     [ "SequentialAdHocSubProcess", "classBPMNOS_1_1Model_1_1SequentialAdHocSubProcess.html", "classBPMNOS_1_1Model_1_1SequentialAdHocSubProcess" ],
     [ "ParameterMap", "namespaceBPMNOS_1_1Model.html#a3afc968f97816dc421cdc353ade49dca", null ]
 ];

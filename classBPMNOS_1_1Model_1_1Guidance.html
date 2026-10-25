@@ -143,9 +143,9 @@ Public Types</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ab76e2bfa2dfe1087e61aa4572a0f2cda" id="r_ab76e2bfa2dfe1087e61aa4572a0f2cda"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab76e2bfa2dfe1087e61aa4572a0f2cda">Guidance</a> (<a class="el" href="classXML_1_1bpmnos_1_1tGuidance.html">XML::bpmnos::tGuidance</a> *guidance, const <a class="el" href="classBPMNOS_1_1Model_1_1AttributeRegistry.html">AttributeRegistry</a> &amp;<a class="el" href="#a826c810bbae74f9d7dc79d2027168129">attributeRegistry</a>)</td></tr>
-<tr class="memitem:a5aec07db99aa4ff02a2eb446aa990bde" id="r_a5aec07db99aa4ff02a2eb446aa990bde"><td class="memTemplParams" colspan="2">template&lt;typename DataType&gt; </td></tr>
-<tr class="memitem:a5aec07db99aa4ff02a2eb446aa990bde template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5aec07db99aa4ff02a2eb446aa990bde">apply</a> (<a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, DataType &amp;data) const</td></tr>
-<tr class="memdesc:a5aec07db99aa4ff02a2eb446aa990bde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method appending the attributes of the guidance to the status and applying the operators.  <br /></td></tr>
+<tr class="memitem:a0ae88791e2ff3719f96d47d3ee44eeda" id="r_a0ae88791e2ff3719f96d47d3ee44eeda"><td class="memTemplParams" colspan="2">template&lt;typename DataType&gt; </td></tr>
+<tr class="memitem:a0ae88791e2ff3719f96d47d3ee44eeda template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0ae88791e2ff3719f96d47d3ee44eeda">apply</a> (<a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, DataType &amp;data, const <a class="el" href="classBPMNOS_1_1Model_1_1SchemaProvider.html">SchemaProvider</a> &amp;schemaProvider) const</td></tr>
+<tr class="memdesc:a0ae88791e2ff3719f96d47d3ee44eeda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method appending the attributes of the guidance to the status and applying the operators.  <br /></td></tr>
 <tr class="memitem:abc2bf36f187bc24fdf3aaac0d6e362c8" id="r_abc2bf36f187bc24fdf3aaac0d6e362c8"><td class="memTemplParams" colspan="2">template&lt;typename DataType&gt; </td></tr>
 <tr class="memitem:abc2bf36f187bc24fdf3aaac0d6e362c8 template"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abc2bf36f187bc24fdf3aaac0d6e362c8">getObjective</a> (const <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, const DataType &amp;data) const</td></tr>
 <tr class="memitem:adff2d4ceb1716dd19cd758ba41e46727" id="r_adff2d4ceb1716dd19cd758ba41e46727"><td class="memTemplParams" colspan="2">template&lt;typename DataType&gt; </td></tr>
@@ -218,8 +218,8 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a5aec07db99aa4ff02a2eb446aa990bde" name="a5aec07db99aa4ff02a2eb446aa990bde"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5aec07db99aa4ff02a2eb446aa990bde">&#9670;&#160;</a></span>apply()</h2>
+<a id="a0ae88791e2ff3719f96d47d3ee44eeda" name="a0ae88791e2ff3719f96d47d3ee44eeda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ae88791e2ff3719f96d47d3ee44eeda">&#9670;&#160;</a></span>apply()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -234,11 +234,16 @@ template&lt;typename DataType&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">DataType &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;) const</td>
+          <td class="paramtype">DataType &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Model_1_1SchemaProvider.html">SchemaProvider</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>schemaProvider</em></span>&#160;) const</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The attributes take only the values the model assigns to them, so each is appended undefined, or with the value of its expression if it has one. </p>
+<p>The attributes take only the values the model assigns to them, so each is appended undefined, or with the value of its expression if it has one. The schema provider gives the effective schemas of the objects the operators write. </p>
 
 <p class="definition">Definition at line <a class="el" href="Guidance_8cpp_source.html#l00115">115</a> of file <a class="el" href="Guidance_8cpp_source.html">Guidance.cpp</a>.</p>
 

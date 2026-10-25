@@ -144,8 +144,8 @@ $(function(){initNavTree('Expression_8cpp.html','',''); });
 Functions</h2></td></tr>
 <tr class="memitem:a3dae8d15cb321bc924629c59c373cbb5" id="r_a3dae8d15cb321bc924629c59c373cbb5"><td class="memItemLeft" align="right" valign="top">template std::optional&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3dae8d15cb321bc924629c59c373cbb5">Expression::execute&lt; BPMNOS::Data &gt;</a> (const <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, const <a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &amp;data) const</td></tr>
 <tr class="memitem:a9e9348bef13a4e382d0eac9e6bb34f1c" id="r_a9e9348bef13a4e382d0eac9e6bb34f1c"><td class="memItemLeft" align="right" valign="top">template std::optional&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9e9348bef13a4e382d0eac9e6bb34f1c">Expression::execute&lt; BPMNOS::SharedData &gt;</a> (const <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, const <a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &amp;data) const</td></tr>
-<tr class="memitem:a5eb826784668e815242e9efa7c3b2a10" id="r_a5eb826784668e815242e9efa7c3b2a10"><td class="memItemLeft" align="right" valign="top">template void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5eb826784668e815242e9efa7c3b2a10">Expression::writeToObject&lt; BPMNOS::Data &gt;</a> (<a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, <a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &amp;data) const</td></tr>
-<tr class="memitem:a34f457056abc892ce4983fde83817ae5" id="r_a34f457056abc892ce4983fde83817ae5"><td class="memItemLeft" align="right" valign="top">template void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a34f457056abc892ce4983fde83817ae5">Expression::writeToObject&lt; BPMNOS::SharedData &gt;</a> (<a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, <a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &amp;data) const</td></tr>
+<tr class="memitem:aafd13e67d99bcc1ab523a279a501dfab" id="r_aafd13e67d99bcc1ab523a279a501dfab"><td class="memItemLeft" align="right" valign="top">template void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aafd13e67d99bcc1ab523a279a501dfab">Expression::writeToObject&lt; BPMNOS::Data &gt;</a> (<a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, <a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &amp;data, const <a class="el" href="classBPMNOS_1_1Model_1_1SchemaProvider.html">SchemaProvider</a> &amp;schemaProvider) const</td></tr>
+<tr class="memitem:a8d1faf232823825be960584f430698c2" id="r_a8d1faf232823825be960584f430698c2"><td class="memItemLeft" align="right" valign="top">template void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8d1faf232823825be960584f430698c2">Expression::writeToObject&lt; BPMNOS::SharedData &gt;</a> (<a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, <a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &amp;data, const <a class="el" href="classBPMNOS_1_1Model_1_1SchemaProvider.html">SchemaProvider</a> &amp;schemaProvider) const</td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
 <a id="a3dae8d15cb321bc924629c59c373cbb5" name="a3dae8d15cb321bc924629c59c373cbb5"></a>
@@ -190,42 +190,52 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a5eb826784668e815242e9efa7c3b2a10" name="a5eb826784668e815242e9efa7c3b2a10"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5eb826784668e815242e9efa7c3b2a10">&#9670;&#160;</a></span>Expression::writeToObject&lt; BPMNOS::Data &gt;()</h2>
+<a id="aafd13e67d99bcc1ab523a279a501dfab" name="aafd13e67d99bcc1ab523a279a501dfab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafd13e67d99bcc1ab523a279a501dfab">&#9670;&#160;</a></span>Expression::writeToObject&lt; BPMNOS::Data &gt;()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">template void <a class="el" href="classBPMNOS_1_1Model_1_1Expression.html#ae20dddc54433626b613fe1e6d8241a32">Expression::writeToObject</a>&lt; <a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &gt; </td>
+          <td class="memname">template void <a class="el" href="classBPMNOS_1_1Model_1_1Expression.html#a0b5faaf451caca6febbcef6f4d55351b">Expression::writeToObject</a>&lt; <a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &gt; </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;) const</td>
+          <td class="paramtype"><a class="el" href="structBPMNOS_1_1Data.html">BPMNOS::Data</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Model_1_1SchemaProvider.html">SchemaProvider</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>schemaProvider</em></span>&#160;) const</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a34f457056abc892ce4983fde83817ae5" name="a34f457056abc892ce4983fde83817ae5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a34f457056abc892ce4983fde83817ae5">&#9670;&#160;</a></span>Expression::writeToObject&lt; BPMNOS::SharedData &gt;()</h2>
+<a id="a8d1faf232823825be960584f430698c2" name="a8d1faf232823825be960584f430698c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d1faf232823825be960584f430698c2">&#9670;&#160;</a></span>Expression::writeToObject&lt; BPMNOS::SharedData &gt;()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">template void <a class="el" href="classBPMNOS_1_1Model_1_1Expression.html#ae20dddc54433626b613fe1e6d8241a32">Expression::writeToObject</a>&lt; <a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &gt; </td>
+          <td class="memname">template void <a class="el" href="classBPMNOS_1_1Model_1_1Expression.html#a0b5faaf451caca6febbcef6f4d55351b">Expression::writeToObject</a>&lt; <a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &gt; </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>status</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;) const</td>
+          <td class="paramtype"><a class="el" href="structBPMNOS_1_1SharedData.html">BPMNOS::SharedData</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Model_1_1SchemaProvider.html">SchemaProvider</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>schemaProvider</em></span>&#160;) const</td>
         </tr>
       </table>
 </div><div class="memdoc">

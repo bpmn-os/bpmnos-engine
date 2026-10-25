@@ -73,8 +73,7 @@ var models =
           [ "Operators", "assignment_problem.html#operators-1", null ],
           [ "Message", "assignment_problem.html#message", [
             [ "<em>Name</em> Message", "assignment_problem.html#name-message", [
-              [ "Header (0)", "assignment_problem.html#header-0", null ],
-              [ "Content (0)", "assignment_problem.html#content-0", null ]
+              [ "Header (0)", "assignment_problem.html#header-0", null ]
             ] ]
           ] ]
         ] ],
@@ -95,8 +94,7 @@ var models =
           [ "Data", "assignment_problem.html#data-6", null ],
           [ "Message", "assignment_problem.html#message-1", [
             [ "<em>Name</em> Message", "assignment_problem.html#name-message-1", [
-              [ "Header (0)", "assignment_problem.html#header-0-1", null ],
-              [ "Content (0)", "assignment_problem.html#content-0-1", null ]
+              [ "Header (0)", "assignment_problem.html#header-0-1", null ]
             ] ]
           ] ],
           [ "Operators", "assignment_problem.html#operators-2", null ]
@@ -128,8 +126,7 @@ var models =
           [ "Operators", "knapsack_problem.html#operators-16", null ],
           [ "Message", "knapsack_problem.html#message-8", [
             [ "<em>Name</em> Request", "knapsack_problem.html#name-request-4", [
-              [ "Header (0)", "knapsack_problem.html#header-0-5", null ],
-              [ "Content (0)", "knapsack_problem.html#content-0-8", null ]
+              [ "Header (0)", "knapsack_problem.html#header-0-5", null ]
             ] ]
           ] ]
         ] ],
@@ -142,8 +139,7 @@ var models =
           [ "Data", "knapsack_problem.html#data-63", null ],
           [ "Message", "knapsack_problem.html#message-9", [
             [ "<em>Name</em> Acceptance", "knapsack_problem.html#name-acceptance", [
-              [ "Header (0)", "knapsack_problem.html#header-0-6", null ],
-              [ "Content (0)", "knapsack_problem.html#content-0-9", null ]
+              [ "Header (0)", "knapsack_problem.html#header-0-6", null ]
             ] ]
           ] ]
         ] ],
@@ -156,8 +152,7 @@ var models =
           [ "Data", "knapsack_problem.html#data-65", null ],
           [ "Message", "knapsack_problem.html#message-10", [
             [ "<em>Name</em> Rejection", "knapsack_problem.html#name-rejection", [
-              [ "Header (0)", "knapsack_problem.html#header-0-7", null ],
-              [ "Content (0)", "knapsack_problem.html#content-0-10", null ]
+              [ "Header (0)", "knapsack_problem.html#header-0-7", null ]
             ] ]
           ] ]
         ] ],
@@ -194,8 +189,7 @@ var models =
           [ "Data", "knapsack_problem.html#data-73", null ],
           [ "Message", "knapsack_problem.html#message-11", [
             [ "<em>Name</em> Rejection", "knapsack_problem.html#name-rejection-1", [
-              [ "Header (1)", "knapsack_problem.html#header-1-3", null ],
-              [ "Content (0)", "knapsack_problem.html#content-0-11", null ]
+              [ "Header (1)", "knapsack_problem.html#header-1-3", null ]
             ] ]
           ] ]
         ] ],
@@ -209,8 +203,7 @@ var models =
           [ "Data", "knapsack_problem.html#data-75", null ],
           [ "Message", "knapsack_problem.html#message-12", [
             [ "<em>Name</em> Acceptance", "knapsack_problem.html#name-acceptance-1", [
-              [ "Header (1)", "knapsack_problem.html#header-1-4", null ],
-              [ "Content (0)", "knapsack_problem.html#content-0-12", null ]
+              [ "Header (1)", "knapsack_problem.html#header-1-4", null ]
             ] ]
           ] ]
         ] ],
@@ -223,8 +216,7 @@ var models =
           [ "Data", "knapsack_problem.html#data-77", null ],
           [ "Message", "knapsack_problem.html#message-13", [
             [ "<em>Name</em> Request", "knapsack_problem.html#name-request-5", [
-              [ "Header (0)", "knapsack_problem.html#header-0-8", null ],
-              [ "Content (0)", "knapsack_problem.html#content-0-13", null ]
+              [ "Header (0)", "knapsack_problem.html#header-0-8", null ]
             ] ]
           ] ],
           [ "Operators", "knapsack_problem.html#operators-18", null ]
@@ -280,8 +272,7 @@ var models =
           [ "Operators", "bin_packing_problem.html#operators-3", null ],
           [ "Message", "bin_packing_problem.html#message-2", [
             [ "<em>Name</em> Request", "bin_packing_problem.html#name-request", [
-              [ "Header (0)", "bin_packing_problem.html#header-0-2", null ],
-              [ "Content (0)", "bin_packing_problem.html#content-0-2", null ]
+              [ "Header (0)", "bin_packing_problem.html#header-0-2", null ]
             ] ]
           ] ]
         ] ],
@@ -345,8 +336,7 @@ var models =
           [ "Entry restrictions", "bin_packing_problem.html#entry-restrictions-6", null ],
           [ "Message", "bin_packing_problem.html#message-3", [
             [ "<em>Name</em> Request", "bin_packing_problem.html#name-request-1", [
-              [ "Header (0)", "bin_packing_problem.html#header-0-3", null ],
-              [ "Content (0)", "bin_packing_problem.html#content-0-3", null ]
+              [ "Header (0)", "bin_packing_problem.html#header-0-3", null ]
             ] ]
           ] ],
           [ "Operators", "bin_packing_problem.html#operators-4", null ],
@@ -473,8 +463,7 @@ var models =
           [ "Operators", "job_shop_scheduling_problem.html#operators-12", null ],
           [ "Message", "job_shop_scheduling_problem.html#message-4", [
             [ "<em>Name</em> Request", "job_shop_scheduling_problem.html#name-request-2", [
-              [ "Header (1)", "job_shop_scheduling_problem.html#header-1", null ],
-              [ "Content (0)", "job_shop_scheduling_problem.html#content-0-4", null ]
+              [ "Header (1)", "job_shop_scheduling_problem.html#header-1", null ]
             ] ]
           ] ]
         ] ],
@@ -484,8 +473,7 @@ var models =
           [ "Globals", "job_shop_scheduling_problem.html#globals-29", null ],
           [ "Message", "job_shop_scheduling_problem.html#message-5", [
             [ "<em>Name</em> Completion", "job_shop_scheduling_problem.html#name-completion", [
-              [ "Header (0)", "job_shop_scheduling_problem.html#header-0-4", null ],
-              [ "Content (0)", "job_shop_scheduling_problem.html#content-0-5", null ]
+              [ "Header (0)", "job_shop_scheduling_problem.html#header-0-4", null ]
             ] ]
           ] ],
           [ "Operators", "job_shop_scheduling_problem.html#operators-13", null ]
@@ -527,8 +515,7 @@ var models =
           [ "Globals", "job_shop_scheduling_problem.html#globals-36", null ],
           [ "Message", "job_shop_scheduling_problem.html#message-6", [
             [ "<em>Name</em> Request", "job_shop_scheduling_problem.html#name-request-3", [
-              [ "Header (1)", "job_shop_scheduling_problem.html#header-1-1", null ],
-              [ "Content (0)", "job_shop_scheduling_problem.html#content-0-6", null ]
+              [ "Header (1)", "job_shop_scheduling_problem.html#header-1-1", null ]
             ] ]
           ] ],
           [ "Operators", "job_shop_scheduling_problem.html#operators-15", null ]
@@ -539,8 +526,7 @@ var models =
           [ "Globals", "job_shop_scheduling_problem.html#globals-37", null ],
           [ "Message", "job_shop_scheduling_problem.html#message-7", [
             [ "<em>Name</em> Completion", "job_shop_scheduling_problem.html#name-completion-1", [
-              [ "Header (1)", "job_shop_scheduling_problem.html#header-1-2", null ],
-              [ "Content (0)", "job_shop_scheduling_problem.html#content-0-7", null ]
+              [ "Header (1)", "job_shop_scheduling_problem.html#header-1-2", null ]
             ] ]
           ] ]
         ] ],
@@ -589,8 +575,7 @@ var models =
           [ "Operators", "vehicle_routing_problem.html#operators-37", null ],
           [ "Message", "vehicle_routing_problem.html#message-24", [
             [ "<em>Name</em> Request", "vehicle_routing_problem.html#name-request-8", [
-              [ "Header (0)", "vehicle_routing_problem.html#header-0-15", null ],
-              [ "Content (0)", "vehicle_routing_problem.html#content-0-24", null ]
+              [ "Header (0)", "vehicle_routing_problem.html#header-0-15", null ]
             ] ]
           ] ]
         ] ],
@@ -600,8 +585,7 @@ var models =
           [ "Globals", "vehicle_routing_problem.html#globals-83", null ],
           [ "Message", "vehicle_routing_problem.html#message-25", [
             [ "<em>Name</em> Arrival", "vehicle_routing_problem.html#name-arrival-4", [
-              [ "Header (0)", "vehicle_routing_problem.html#header-0-16", null ],
-              [ "Content (0)", "vehicle_routing_problem.html#content-0-25", null ]
+              [ "Header (0)", "vehicle_routing_problem.html#header-0-16", null ]
             ] ]
           ] ]
         ] ],
@@ -628,8 +612,7 @@ var models =
           [ "Globals", "vehicle_routing_problem.html#globals-87", null ],
           [ "Message", "vehicle_routing_problem.html#message-26", [
             [ "<em>Name</em> Ready", "vehicle_routing_problem.html#name-ready", [
-              [ "Header (0)", "vehicle_routing_problem.html#header-0-17", null ],
-              [ "Content (0)", "vehicle_routing_problem.html#content-0-26", null ]
+              [ "Header (0)", "vehicle_routing_problem.html#header-0-17", null ]
             ] ]
           ] ]
         ] ],
@@ -682,8 +665,7 @@ var models =
           [ "Globals", "vehicle_routing_problem.html#globals-96", null ],
           [ "Message", "vehicle_routing_problem.html#message-27", [
             [ "<em>Name</em> Request", "vehicle_routing_problem.html#name-request-9", [
-              [ "Header (0)", "vehicle_routing_problem.html#header-0-18", null ],
-              [ "Content (0)", "vehicle_routing_problem.html#content-0-27", null ]
+              [ "Header (0)", "vehicle_routing_problem.html#header-0-18", null ]
             ] ]
           ] ],
           [ "Operators", "vehicle_routing_problem.html#operators-40", null ]
@@ -715,8 +697,7 @@ var models =
           [ "Globals", "vehicle_routing_problem.html#globals-101", null ],
           [ "Message", "vehicle_routing_problem.html#message-28", [
             [ "<em>Name</em> Arrival", "vehicle_routing_problem.html#name-arrival-5", [
-              [ "Header (1)", "vehicle_routing_problem.html#header-1-9", null ],
-              [ "Content (0)", "vehicle_routing_problem.html#content-0-28", null ]
+              [ "Header (1)", "vehicle_routing_problem.html#header-1-9", null ]
             ] ]
           ] ]
         ] ],
@@ -726,8 +707,7 @@ var models =
           [ "Globals", "vehicle_routing_problem.html#globals-102", null ],
           [ "Message", "vehicle_routing_problem.html#message-29", [
             [ "<em>Name</em> Ready", "vehicle_routing_problem.html#name-ready-1", [
-              [ "Header (1)", "vehicle_routing_problem.html#header-1-10", null ],
-              [ "Content (0)", "vehicle_routing_problem.html#content-0-29", null ]
+              [ "Header (1)", "vehicle_routing_problem.html#header-1-10", null ]
             ] ]
           ] ]
         ] ],
@@ -769,8 +749,7 @@ var models =
           [ "Globals", "pickup_delivery_problem.html#globals-45", null ],
           [ "Message", "pickup_delivery_problem.html#message-14", [
             [ "<em>Name</em> Unloaded", "pickup_delivery_problem.html#name-unloaded", [
-              [ "Header (0)", "pickup_delivery_problem.html#header-0-9", null ],
-              [ "Content (0)", "pickup_delivery_problem.html#content-0-14", null ]
+              [ "Header (0)", "pickup_delivery_problem.html#header-0-9", null ]
             ] ]
           ] ]
         ] ],
@@ -809,8 +788,7 @@ var models =
           [ "Globals", "pickup_delivery_problem.html#globals-51", null ],
           [ "Message", "pickup_delivery_problem.html#message-15", [
             [ "<em>Name</em> Arrival", "pickup_delivery_problem.html#name-arrival", [
-              [ "Header (0)", "pickup_delivery_problem.html#header-0-10", null ],
-              [ "Content (0)", "pickup_delivery_problem.html#content-0-15", null ]
+              [ "Header (0)", "pickup_delivery_problem.html#header-0-10", null ]
             ] ]
           ] ]
         ] ],
@@ -820,8 +798,7 @@ var models =
           [ "Globals", "pickup_delivery_problem.html#globals-52", null ],
           [ "Message", "pickup_delivery_problem.html#message-16", [
             [ "<em>Name</em> Loaded", "pickup_delivery_problem.html#name-loaded", [
-              [ "Header (0)", "pickup_delivery_problem.html#header-0-11", null ],
-              [ "Content (0)", "pickup_delivery_problem.html#content-0-16", null ]
+              [ "Header (0)", "pickup_delivery_problem.html#header-0-11", null ]
             ] ]
           ] ]
         ] ],
@@ -831,8 +808,7 @@ var models =
           [ "Globals", "pickup_delivery_problem.html#globals-53", null ],
           [ "Message", "pickup_delivery_problem.html#message-17", [
             [ "<em>Name</em> Arrival", "pickup_delivery_problem.html#name-arrival-1", [
-              [ "Header (0)", "pickup_delivery_problem.html#header-0-12", null ],
-              [ "Content (0)", "pickup_delivery_problem.html#content-0-17", null ]
+              [ "Header (0)", "pickup_delivery_problem.html#header-0-12", null ]
             ] ]
           ] ]
         ] ],
@@ -843,8 +819,7 @@ var models =
           [ "Operators", "pickup_delivery_problem.html#operators-21", null ],
           [ "Message", "pickup_delivery_problem.html#message-18", [
             [ "<em>Name</em> Request", "pickup_delivery_problem.html#name-request-6", [
-              [ "Header (0)", "pickup_delivery_problem.html#header-0-13", null ],
-              [ "Content (0)", "pickup_delivery_problem.html#content-0-18", null ]
+              [ "Header (0)", "pickup_delivery_problem.html#header-0-13", null ]
             ] ]
           ] ]
         ] ],
@@ -869,8 +844,7 @@ var models =
           [ "Globals", "pickup_delivery_problem.html#globals-58", null ],
           [ "Message", "pickup_delivery_problem.html#message-19", [
             [ "<em>Name</em> Request", "pickup_delivery_problem.html#name-request-7", [
-              [ "Header (0)", "pickup_delivery_problem.html#header-0-14", null ],
-              [ "Content (0)", "pickup_delivery_problem.html#content-0-19", null ]
+              [ "Header (0)", "pickup_delivery_problem.html#header-0-14", null ]
             ] ]
           ] ],
           [ "Operators", "pickup_delivery_problem.html#operators-22", null ]
@@ -903,8 +877,7 @@ var models =
           [ "Globals", "pickup_delivery_problem.html#globals-63", null ],
           [ "Message", "pickup_delivery_problem.html#message-20", [
             [ "<em>Name</em> Arrival", "pickup_delivery_problem.html#name-arrival-2", [
-              [ "Header (1)", "pickup_delivery_problem.html#header-1-5", null ],
-              [ "Content (0)", "pickup_delivery_problem.html#content-0-20", null ]
+              [ "Header (1)", "pickup_delivery_problem.html#header-1-5", null ]
             ] ]
           ] ]
         ] ],
@@ -919,8 +892,7 @@ var models =
           [ "Globals", "pickup_delivery_problem.html#globals-65", null ],
           [ "Message", "pickup_delivery_problem.html#message-21", [
             [ "<em>Name</em> Loaded", "pickup_delivery_problem.html#name-loaded-1", [
-              [ "Header (1)", "pickup_delivery_problem.html#header-1-6", null ],
-              [ "Content (0)", "pickup_delivery_problem.html#content-0-21", null ]
+              [ "Header (1)", "pickup_delivery_problem.html#header-1-6", null ]
             ] ]
           ] ],
           [ "Operators", "pickup_delivery_problem.html#operators-24", null ]
@@ -947,8 +919,7 @@ var models =
           [ "Globals", "pickup_delivery_problem.html#globals-69", null ],
           [ "Message", "pickup_delivery_problem.html#message-22", [
             [ "<em>Name</em> Arrival", "pickup_delivery_problem.html#name-arrival-3", [
-              [ "Header (1)", "pickup_delivery_problem.html#header-1-7", null ],
-              [ "Content (0)", "pickup_delivery_problem.html#content-0-22", null ]
+              [ "Header (1)", "pickup_delivery_problem.html#header-1-7", null ]
             ] ]
           ] ]
         ] ],
@@ -963,8 +934,7 @@ var models =
           [ "Globals", "pickup_delivery_problem.html#globals-71", null ],
           [ "Message", "pickup_delivery_problem.html#message-23", [
             [ "<em>Name</em> Unloaded", "pickup_delivery_problem.html#name-unloaded-1", [
-              [ "Header (1)", "pickup_delivery_problem.html#header-1-8", null ],
-              [ "Content (0)", "pickup_delivery_problem.html#content-0-23", null ]
+              [ "Header (1)", "pickup_delivery_problem.html#header-1-8", null ]
             ] ]
           ] ],
           [ "Operators", "pickup_delivery_problem.html#operators-26", null ]

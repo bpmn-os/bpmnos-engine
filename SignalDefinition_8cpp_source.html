@@ -139,7 +139,7 @@ $(function(){initNavTree('SignalDefinition_8cpp_source.html','',''); });
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>  <span class="comment">// the content is an object, without fields if the signal states no type</span></div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>  <span class="keywordflow">if</span> ( signal-&gt;<a class="code hl_variable" href="classXML_1_1bpmnos_1_1tSignal.html#ac6c9e1b88301e1435191c1e2eba1a2c2">type</a>.has_value() ) {</div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    schema = Schema::parse(signal-&gt;type-&gt;get().value.value);</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    if ( schema.isScalar() ) {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    if ( std::holds_alternative&lt;ValueType&gt;(schema) ) {</div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>      throw std::runtime_error(<span class="stringliteral">&quot;SignalDefinition: the type of signal &#39;&quot;</span> + signal-&gt;name.value.value + <span class="stringliteral">&quot;&#39; must be an object&quot;</span>);</div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    }</div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>  }</div>

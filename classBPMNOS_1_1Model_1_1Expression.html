@@ -168,9 +168,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:acecdcb643451d0a6844b1259e4672fbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the expression assigns an object, a part of one, or the length of one of its dimensions.  <br /></td></tr>
 <tr class="memitem:a2ad5677c5541b34c9c88a68ba3068e36" id="r_a2ad5677c5541b34c9c88a68ba3068e36"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2ad5677c5541b34c9c88a68ba3068e36">isResize</a> () const</td></tr>
 <tr class="memdesc:a2ad5677c5541b34c9c88a68ba3068e36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the expression is <span class="tt">resize(path) := n</span>, which changes the length of a dimension of an array.  <br /></td></tr>
-<tr class="memitem:ae20dddc54433626b613fe1e6d8241a32" id="r_ae20dddc54433626b613fe1e6d8241a32"><td class="memTemplParams" colspan="2">template&lt;typename DataType&gt; </td></tr>
-<tr class="memitem:ae20dddc54433626b613fe1e6d8241a32 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae20dddc54433626b613fe1e6d8241a32">writeToObject</a> (<a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, DataType &amp;data) const</td></tr>
-<tr class="memdesc:ae20dddc54433626b613fe1e6d8241a32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes what an assignment to an object states: a value or an array or object to an element, an array or object to the whole object, or the length of a dimension.  <br /></td></tr>
+<tr class="memitem:a0b5faaf451caca6febbcef6f4d55351b" id="r_a0b5faaf451caca6febbcef6f4d55351b"><td class="memTemplParams" colspan="2">template&lt;typename DataType&gt; </td></tr>
+<tr class="memitem:a0b5faaf451caca6febbcef6f4d55351b template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0b5faaf451caca6febbcef6f4d55351b">writeToObject</a> (<a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, DataType &amp;data, const <a class="el" href="classBPMNOS_1_1Model_1_1SchemaProvider.html">SchemaProvider</a> &amp;schemaProvider) const</td></tr>
+<tr class="memdesc:a0b5faaf451caca6febbcef6f4d55351b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes what an assignment to an object states: a value or an array or object to an element, an array or object to the whole object, or the length of a dimension.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -354,7 +354,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Expression_8cpp_source.html#l00420">420</a> of file <a class="el" href="Expression_8cpp_source.html">Expression.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Expression_8cpp_source.html#l00398">398</a> of file <a class="el" href="Expression_8cpp_source.html">Expression.cpp</a>.</p>
 
 </div>
 </div>
@@ -379,7 +379,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Expression_8cpp_source.html#l00509">509</a> of file <a class="el" href="Expression_8cpp_source.html">Expression.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Expression_8cpp_source.html#l00487">487</a> of file <a class="el" href="Expression_8cpp_source.html">Expression.cpp</a>.</p>
 
 </div>
 </div>
@@ -398,7 +398,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Expression_8cpp_source.html#l00496">496</a> of file <a class="el" href="Expression_8cpp_source.html">Expression.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Expression_8cpp_source.html#l00474">474</a> of file <a class="el" href="Expression_8cpp_source.html">Expression.cpp</a>.</p>
 
 </div>
 </div>
@@ -506,8 +506,8 @@ template&lt;typename DataType&gt; </div>
 
 </div>
 </div>
-<a id="ae20dddc54433626b613fe1e6d8241a32" name="ae20dddc54433626b613fe1e6d8241a32"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae20dddc54433626b613fe1e6d8241a32">&#9670;&#160;</a></span>writeToObject()</h2>
+<a id="a0b5faaf451caca6febbcef6f4d55351b" name="a0b5faaf451caca6febbcef6f4d55351b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b5faaf451caca6febbcef6f4d55351b">&#9670;&#160;</a></span>writeToObject()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -522,15 +522,20 @@ template&lt;typename DataType&gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">DataType &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>&#160;) const</td>
+          <td class="paramtype">DataType &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Model_1_1SchemaProvider.html">SchemaProvider</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>schemaProvider</em></span>&#160;) const</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The object is copied first if anyone else holds it. An element keeps its lengths, except those not yet determined, which the value determines for every element; the whole object keeps the lengths of its fixed dimensions, a shorter value being padded with undefined values and a longer one being an error, and takes the lengths of its open ones. </p>
+<p>The object is copied first if anyone else holds it. An array or object assigned is kept or converted for the target schema built from the effective schema of the target, which the schema provider gives, and the current layout of the target: a fixed array keeps its size, a shorter value being padded with undefined values and a longer one being cut off if only undefined values are cut and rejected otherwise, and an open array takes the size of the value. An open array within an element takes the new size in every element of the enclosing array. </p>
 <p>&lt; The indices of the source path</p>
 <p>&lt; The position of the source path</p>
 
-<p class="definition">Definition at line <a class="el" href="Expression_8cpp_source.html#l00582">582</a> of file <a class="el" href="Expression_8cpp_source.html">Expression.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Expression_8cpp_source.html#l00560">560</a> of file <a class="el" href="Expression_8cpp_source.html">Expression.cpp</a>.</p>
 
 </div>
 </div>

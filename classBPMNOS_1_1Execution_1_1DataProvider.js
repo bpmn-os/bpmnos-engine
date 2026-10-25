@@ -11,9 +11,11 @@ var classBPMNOS_1_1Execution_1_1DataProvider =
     [ "getEarliestInstantiationTime", "classBPMNOS_1_1Execution_1_1DataProvider.html#acb9a02aee1a81713d461134c3c93bb24", null ],
     [ "getGlobals", "classBPMNOS_1_1Execution_1_1DataProvider.html#a9a1b0adc6894899bb4cd92813b59603c", null ],
     [ "getModel", "classBPMNOS_1_1Execution_1_1DataProvider.html#af2b1791886a4c226fd4aca7684c98b26", null ],
+    [ "getSchema", "classBPMNOS_1_1Execution_1_1DataProvider.html#a6b2986d6a4e04970dbf881c501caaade", null ],
     [ "notice", "classBPMNOS_1_1Execution_1_1DataProvider.html#afbc3fc922848c640dcc3df2e5830a705", null ],
     [ "clockTickDuration", "classBPMNOS_1_1Execution_1_1DataProvider.html#af7d70208bdffd442e2d2099edfd86e30", null ],
     [ "defaultContents", "classBPMNOS_1_1Execution_1_1DataProvider.html#a4e958158168d3912b222f743dfed7f67", null ],
     [ "defaultObjects", "classBPMNOS_1_1Execution_1_1DataProvider.html#ad47d4be227d21a6373f3992af84cb85a", null ],
-    [ "model", "classBPMNOS_1_1Execution_1_1DataProvider.html#a1ee135e62b41f4990a3c0f5c45d15cd1", null ]
+    [ "model", "classBPMNOS_1_1Execution_1_1DataProvider.html#a1ee135e62b41f4990a3c0f5c45d15cd1", null ],
+    [ "schemas", "classBPMNOS_1_1Execution_1_1DataProvider.html#a8fa57aff1fb6c4aadc0867f732aebfc4", null ]
 ];

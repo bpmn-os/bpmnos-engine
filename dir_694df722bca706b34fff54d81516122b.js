@@ -9,6 +9,7 @@ var dir_694df722bca706b34fff54d81516122b =
     [ "LookupTable.h", "LookupTable_8h.html", "LookupTable_8h" ],
     [ "Model.cpp", "Model_8cpp.html", null ],
     [ "Model.h", "Model_8h.html", "Model_8h" ],
+    [ "SchemaProvider.h", "SchemaProvider_8h.html", "SchemaProvider_8h" ],
     [ "SequentialAdHocSubProcess.cpp", "SequentialAdHocSubProcess_8cpp.html", null ],
     [ "SequentialAdHocSubProcess.h", "SequentialAdHocSubProcess_8h.html", "SequentialAdHocSubProcess_8h" ]
 ];

@@ -3,7 +3,7 @@ var classBPMNOS_1_1Model_1_1ExtensionElements =
     [ "Index", "structBPMNOS_1_1Model_1_1ExtensionElements_1_1Index.html", "structBPMNOS_1_1Model_1_1ExtensionElements_1_1Index" ],
     [ "Position", "structBPMNOS_1_1Model_1_1ExtensionElements_1_1Position.html", "structBPMNOS_1_1Model_1_1ExtensionElements_1_1Position" ],
     [ "ExtensionElements", "classBPMNOS_1_1Model_1_1ExtensionElements.html#a88d6b36a993db92f9afdf3dc999ac9dc", null ],
-    [ "applyOperators", "classBPMNOS_1_1Model_1_1ExtensionElements.html#afda243f636c77903a5a9e0e9fe057765", null ],
+    [ "applyOperators", "classBPMNOS_1_1Model_1_1ExtensionElements.html#ae5e1ad6d4d45621a9fea68784a035091", null ],
     [ "conditionsSatisfied", "classBPMNOS_1_1Model_1_1ExtensionElements.html#a73c7c3b8ae88a97d3dfebfa9ac4518c6", null ],
     [ "feasibleCompletion", "classBPMNOS_1_1Model_1_1ExtensionElements.html#a2f1daaf7c61a340dc5b60331046d8652", null ],
     [ "feasibleEntry", "classBPMNOS_1_1Model_1_1ExtensionElements.html#a9b95828c1c29677140e473aa2321f0a7", null ],

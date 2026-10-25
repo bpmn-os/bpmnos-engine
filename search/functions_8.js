@@ -17,7 +17,7 @@ var searchData=
   ['instantdirectmessage_14',['InstantDirectMessage',['../classBPMNOS_1_1Execution_1_1InstantDirectMessage.html#a19f8bd3936573d3c823b654e180cd02f',1,'BPMNOS::Execution::InstantDirectMessage']]],
   ['instantentry_15',['InstantEntry',['../classBPMNOS_1_1Execution_1_1InstantEntry.html#a380fcd5ac3877a4e60e1fa033899806d',1,'BPMNOS::Execution::InstantEntry']]],
   ['instantexit_16',['InstantExit',['../classBPMNOS_1_1Execution_1_1InstantExit.html#a3bf0fe86f09f766f3558d33464b6f7be',1,'BPMNOS::Execution::InstantExit']]],
-  ['instantiate_17',['instantiate',['../classBPMNOS_1_1ObjectInitializer.html#a3343d7f39dc48aaf68a53eda530a0a8c',1,'BPMNOS::ObjectInitializer::instantiate()'],['../classBPMNOS_1_1Execution_1_1InstanceDataReader.html#a1e8f0a00e044797a073b95358c392919',1,'BPMNOS::Execution::InstanceDataReader::instantiate()']]],
+  ['instantiate_17',['instantiate',['../classBPMNOS_1_1ObjectInitializer.html#a3343d7f39dc48aaf68a53eda530a0a8c',1,'BPMNOS::ObjectInitializer::instantiate()'],['../classBPMNOS_1_1Execution_1_1InstanceDataReader.html#add93f8fa7eb93f54a8d59239d3586c0c',1,'BPMNOS::Execution::InstanceDataReader::instantiate()']]],
   ['instantiationevent_18',['InstantiationEvent',['../structBPMNOS_1_1Execution_1_1InstantiationEvent.html#a32618a90835f0208ab6e8b2ca9d257f1',1,'BPMNOS::Execution::InstantiationEvent']]],
   ['intermediatecatchevent_19',['intermediateCatchEvent',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1intermediateCatchEvent.html#a18495221d78cc9567804d502b90a466f',1,'XML::bpmn::intermediateCatchEvent']]],
   ['intermediatethrowevent_20',['intermediateThrowEvent',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1intermediateThrowEvent.html#a2ab391da8e5dc670e4bb1bf124a58991',1,'XML::bpmn::intermediateThrowEvent']]],
@@ -25,13 +25,10 @@ var searchData=
   ['iospecification_22',['ioSpecification',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1ioSpecification.html#a98fc37fcbf809accdad7414bf2e05bc0',1,'XML::bpmn::ioSpecification']]],
   ['is_23',['is',['https://bpmn-os.github.io/bpmnpp/classXML_1_1XMLObject.html#af411b270804032d54f9983da51143b1e',1,'XML::XMLObject::is()'],['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1BaseElement.html#a05dd1779e7ed7f0b4ecd95dacb9c28e2',1,'BPMN::BaseElement::is()'],['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1BaseElement.html#a3ebff0eb590c66df7a20dab40fce253e',1,'BPMN::BaseElement::is() const'],['../classBPMNOS_1_1Model_1_1Operator.html#a3d3abc24a207bdb8a95f4a1007e6269f',1,'BPMNOS::Model::Operator::is()'],['../classBPMNOS_1_1Model_1_1Operator.html#aab4ba0f76cb680de4b00cb2ac5f6b91b',1,'BPMNOS::Model::Operator::is() const'],['../structBPMNOS_1_1Execution_1_1Event.html#afd80178ad79513efc632cdf0ec3a1657',1,'BPMNOS::Execution::Event::is()']]],
   ['isattribute_24',['isAttribute',['../classBPMNOS_1_1Model_1_1Expression.html#a44c4192399f901e96100f2895316c507',1,'BPMNOS::Model::Expression']]],
-  ['isfixed_25',['isFixed',['../structBPMNOS_1_1Model_1_1Schema.html#a5be6e35d5e2c5479f27eacf9906322fc',1,'BPMNOS::Model::Schema']]],
-  ['isobject_26',['isObject',['../classBPMNOS_1_1Model_1_1Attribute.html#a184c6e7d804a2617caf26920ee5765d0',1,'BPMNOS::Model::Attribute']]],
-  ['isresize_27',['isResize',['../classBPMNOS_1_1Model_1_1Expression.html#a2ad5677c5541b34c9c88a68ba3068e36',1,'BPMNOS::Model::Expression']]],
-  ['issatisfied_28',['isSatisfied',['../classBPMNOS_1_1Model_1_1Restriction.html#a88efb0aee18b266528f000fcf65069a1',1,'BPMNOS::Model::Restriction']]],
-  ['isscalar_29',['isScalar',['../structBPMNOS_1_1Model_1_1Schema.html#a9d43c1b423c3eafdd84ab0f16f6fdc41',1,'BPMNOS::Model::Schema']]],
-  ['isvector_30',['isVector',['../structBPMNOS_1_1Object.html#a9e375b81422b16a4cb1e97f7114832f9',1,'BPMNOS::Object']]],
-  ['itemdefinition_31',['itemDefinition',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1itemDefinition.html#a7d7a50e22a84ccef72544d8aa21ec2ae',1,'XML::bpmn::itemDefinition']]],
-  ['iterator_32',['Iterator',['../classBPMNOS_1_1Execution_1_1CompetingCandidates_1_1Iterator.html#ab4764443871333c6ffc821fe7b40da60',1,'BPMNOS::Execution::CompetingCandidates::Iterator']]],
-  ['iterator_33',['iterator',['../structBPMNOS_1_1Execution_1_1auto__list_1_1iterator.html#ac1db8f4cca2164a54ee3e661747aff09',1,'BPMNOS::Execution::auto_list::iterator::iterator()'],['../structBPMNOS_1_1Execution_1_1auto__set_1_1iterator.html#a14c37c0395e8d8538a22224facd2bcbf',1,'BPMNOS::Execution::auto_set::iterator::iterator()']]]
+  ['isobject_25',['isObject',['../classBPMNOS_1_1Model_1_1Attribute.html#a184c6e7d804a2617caf26920ee5765d0',1,'BPMNOS::Model::Attribute']]],
+  ['isresize_26',['isResize',['../classBPMNOS_1_1Model_1_1Expression.html#a2ad5677c5541b34c9c88a68ba3068e36',1,'BPMNOS::Model::Expression']]],
+  ['issatisfied_27',['isSatisfied',['../classBPMNOS_1_1Model_1_1Restriction.html#a88efb0aee18b266528f000fcf65069a1',1,'BPMNOS::Model::Restriction']]],
+  ['itemdefinition_28',['itemDefinition',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1itemDefinition.html#a7d7a50e22a84ccef72544d8aa21ec2ae',1,'XML::bpmn::itemDefinition']]],
+  ['iterator_29',['Iterator',['../classBPMNOS_1_1Execution_1_1CompetingCandidates_1_1Iterator.html#ab4764443871333c6ffc821fe7b40da60',1,'BPMNOS::Execution::CompetingCandidates::Iterator']]],
+  ['iterator_30',['iterator',['../structBPMNOS_1_1Execution_1_1auto__list_1_1iterator.html#ac1db8f4cca2164a54ee3e661747aff09',1,'BPMNOS::Execution::auto_list::iterator::iterator()'],['../structBPMNOS_1_1Execution_1_1auto__set_1_1iterator.html#a14c37c0395e8d8538a22224facd2bcbf',1,'BPMNOS::Execution::auto_set::iterator::iterator()']]]
 ];

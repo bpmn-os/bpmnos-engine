@@ -11,6 +11,8 @@ var dir_5020890d0da222eace0f0d6e8406ec77 =
     [ "Object.h", "Object_8h.html", "Object_8h" ],
     [ "ObjectRegistry.cpp", "ObjectRegistry_8cpp.html", "ObjectRegistry_8cpp" ],
     [ "ObjectRegistry.h", "ObjectRegistry_8h.html", "ObjectRegistry_8h" ],
+    [ "Schema.cpp", "Schema_8cpp.html", null ],
+    [ "Schema.h", "Schema_8h.html", "Schema_8h" ],
     [ "string_utility.h", "string__utility_8h.html", "string__utility_8h" ],
     [ "StringRegistry.cpp", "StringRegistry_8cpp.html", "StringRegistry_8cpp" ],
     [ "StringRegistry.h", "StringRegistry_8h.html", "StringRegistry_8h" ],

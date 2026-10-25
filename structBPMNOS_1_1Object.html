@@ -130,30 +130,30 @@ $(function(){initNavTree('structBPMNOS_1_1Object.html','','structBPMNOS_1_1Objec
 <p>An object, i.e. an array or a structured value, stored flat.  
  <a href="#details">More...</a></p>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The values of an object are held in one vector, and its layout states where each of them is: an element is one slot at an offset computed from the layout. An object is shared copy-on-write wherever it is held, as a <span class="tt">std::shared_ptr&lt;const Object&gt;</span>, so that copying a status or data copies no values. </p>
+<div class="textblock"><p>The values of an object are held in one vector, and its layout states where each of them is and, through its schema, what value type it has. An object is shared copy-on-write wherever it is held, as a <span class="tt">std::shared_ptr&lt;const Object&gt;</span>, so that copying a status or data copies no values. </p>
 
-<p class="definition">Definition at line <a class="el" href="Object_8h_source.html#l00020">20</a> of file <a class="el" href="Object_8h_source.html">Object.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Object_8h_source.html#l00077">77</a> of file <a class="el" href="Object_8h_source.html">Object.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="Object_8h_source.html">Object.h</a>&gt;</code></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:Layout" id="r_Layout"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Object_1_1Layout.html">Layout</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The shape of an object with the sizes of its dimensions known.  <a href="structBPMNOS_1_1Object_1_1Layout.html#details">More...</a><br /></td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a9e375b81422b16a4cb1e97f7114832f9" id="r_a9e375b81422b16a4cb1e97f7114832f9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9e375b81422b16a4cb1e97f7114832f9">isVector</a> () const</td></tr>
-<tr class="memdesc:a9e375b81422b16a4cb1e97f7114832f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the object is an array of scalar values with a single dimension.  <br /></td></tr>
+<tr class="memitem:af1625be37b9e0904d7d0835c4dc588a8" id="r_af1625be37b9e0904d7d0835c4dc588a8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af1625be37b9e0904d7d0835c4dc588a8">Object</a> ()=default</td></tr>
+<tr class="memitem:a369776d6b9578b9534e246f924b869bc" id="r_a369776d6b9578b9534e246f924b869bc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a369776d6b9578b9534e246f924b869bc">Object</a> (const <a class="el" href="structBPMNOS_1_1Schema.html">Schema</a> &amp;schema)</td></tr>
+<tr class="memdesc:a369776d6b9578b9534e246f924b869bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs an object of the given schema with every value undefined, every open array having size 0.  <br /></td></tr>
+<tr class="memitem:a7eb24c6743bc1d25ebc077e62caae418" id="r_a7eb24c6743bc1d25ebc077e62caae418"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7eb24c6743bc1d25ebc077e62caae418">Object</a> (const <a class="el" href="structBPMNOS_1_1Schema.html">Schema</a> &amp;schema, const nlohmann::json &amp;json)</td></tr>
+<tr class="memdesc:a7eb24c6743bc1d25ebc077e62caae418"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs an object of the given schema holding the values of the given JSON value.  <br /></td></tr>
+<tr class="memitem:aacd103ee55fd9354e7463e8e8b558325" id="r_aacd103ee55fd9354e7463e8e8b558325"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aacd103ee55fd9354e7463e8e8b558325">Object</a> (const <a class="el" href="structBPMNOS_1_1Schema.html">Schema</a> &amp;schema, const Object &amp;source)</td></tr>
+<tr class="memdesc:aacd103ee55fd9354e7463e8e8b558325"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs an object of the given schema, the target, from the given source object, whose schema is the schema of its layout.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a1747a728fc8a11cbaa68f0f274c91cf7" id="r_a1747a728fc8a11cbaa68f0f274c91cf7"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object_1_1Layout.html">Layout</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1747a728fc8a11cbaa68f0f274c91cf7">layout</a></td></tr>
+<tr class="memitem:a1747a728fc8a11cbaa68f0f274c91cf7" id="r_a1747a728fc8a11cbaa68f0f274c91cf7"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Layout.html">Layout</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1747a728fc8a11cbaa68f0f274c91cf7">layout</a></td></tr>
 <tr class="memitem:a90c090db3261c036c4740683f231a4e4" id="r_a90c090db3261c036c4740683f231a4e4"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceBPMNOS.html#a1d48010757e20edcdc3786ddeeb53bc7">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a90c090db3261c036c4740683f231a4e4">values</a></td></tr>
 </table>
-<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a9e375b81422b16a4cb1e97f7114832f9" name="a9e375b81422b16a4cb1e97f7114832f9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9e375b81422b16a4cb1e97f7114832f9">&#9670;&#160;</a></span>isVector()</h2>
+<a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="af1625be37b9e0904d7d0835c4dc588a8" name="af1625be37b9e0904d7d0835c4dc588a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1625be37b9e0904d7d0835c4dc588a8">&#9670;&#160;</a></span>Object() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -162,20 +162,93 @@ Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool BPMNOS::Object::isVector </td>
+          <td class="memname">BPMNOS::Object::Object </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel default">default</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Object_8h_source.html#l00054">54</a> of file <a class="el" href="Object_8h_source.html">Object.h</a>.</p>
+</div>
+</div>
+<a id="a369776d6b9578b9534e246f924b869bc" name="a369776d6b9578b9534e246f924b869bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a369776d6b9578b9534e246f924b869bc">&#9670;&#160;</a></span>Object() <span class="overload">[2/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">BPMNOS::Object::Object </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Schema.html">Schema</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>schema</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Object_8cpp_source.html#l00545">545</a> of file <a class="el" href="Object_8cpp_source.html">Object.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a7eb24c6743bc1d25ebc077e62caae418" name="a7eb24c6743bc1d25ebc077e62caae418"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7eb24c6743bc1d25ebc077e62caae418">&#9670;&#160;</a></span>Object() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">BPMNOS::Object::Object </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Schema.html">Schema</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>schema</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const nlohmann::json &amp;</td>          <td class="paramname"><span class="paramname"><em>json</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>A JSON array is an array, whose elements have equal sizes at an open array and at most the declared size at a fixed one, a JSON object is an object, whose keys must be fields of the schema, and a number, truth value or text is a single value of the value type the schema states, <span class="tt">null</span> being undefined. A fixed array is padded with undefined values, an open array takes the size of the JSON array, and a field the JSON lacks is undefined. </p>
+
+<p class="definition">Definition at line <a class="el" href="Object_8cpp_source.html#l00551">551</a> of file <a class="el" href="Object_8cpp_source.html">Object.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aacd103ee55fd9354e7463e8e8b558325" name="aacd103ee55fd9354e7463e8e8b558325"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacd103ee55fd9354e7463e8e8b558325">&#9670;&#160;</a></span>Object() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">BPMNOS::Object::Object </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Schema.html">Schema</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>schema</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Object &amp;</td>          <td class="paramname"><span class="paramname"><em>source</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>At a value type, the source holds a single value of the same value type; arrays and objects are not cast. At an array type, the source is an array. A fixed array of size n has size n, a shorter source being padded with undefined elements and a longer source being cut off if every value beyond the n-th element is undefined and rejected otherwise; an open array has the size of the source. At an object type, the source is an object whose fields are fields of the target; a field the source lacks is undefined, every open array in it having size 0. Every part of the layout determined that equals the corresponding part of the layout of the source is that part, so that it is shared. A source that cannot be converted is rejected with an error. </p>
+
+<p class="definition">Definition at line <a class="el" href="Object_8cpp_source.html#l00558">558</a> of file <a class="el" href="Object_8cpp_source.html">Object.cpp</a>.</p>
 
 </div>
 </div>
@@ -187,12 +260,12 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt;const <a class="el" href="structBPMNOS_1_1Object_1_1Layout.html">Layout</a>&gt; BPMNOS::Object::layout</td>
+          <td class="memname">std::shared_ptr&lt;const <a class="el" href="structBPMNOS_1_1Layout.html">Layout</a>&gt; BPMNOS::Object::layout</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Object_8h_source.html#l00050">50</a> of file <a class="el" href="Object_8h_source.html">Object.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Object_8h_source.html#l00078">78</a> of file <a class="el" href="Object_8h_source.html">Object.h</a>.</p>
 
 </div>
 </div>
@@ -208,12 +281,13 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Object_8h_source.html#l00051">51</a> of file <a class="el" href="Object_8h_source.html">Object.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Object_8h_source.html#l00079">79</a> of file <a class="el" href="Object_8h_source.html">Object.h</a>.</p>
 
 </div>
 </div>
-<hr/>The documentation for this struct was generated from the following file:<ul>
+<hr/>The documentation for this struct was generated from the following files:<ul>
 <li>model/utility/src/<a class="el" href="Object_8h_source.html">Object.h</a></li>
+<li>model/utility/src/<a class="el" href="Object_8cpp_source.html">Object.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

@@ -14,7 +14,7 @@ var searchData=
   ['removesubscriber_11',['removeSubscriber',['../classBPMNOS_1_1Execution_1_1Notifier.html#aca492321535d47573e2aec8950bf25b4',1,'BPMNOS::Execution::Notifier']]],
   ['replace_5fall_12',['replace_all',['../namespaceBPMNOS.html#af058a649665dc751474d5b313e7273b4',1,'BPMNOS']]],
   ['represents_13',['represents',['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Element.html#ae21b3b16116c0ad565fe12753bd26a08',1,'BPMN::Element::represents()'],['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Element.html#a0fe83a2468dacb374d748f0f16114276',1,'BPMN::Element::represents() const']]],
-  ['resized_14',['resized',['../namespaceBPMNOS.html#a8f51d54f73e8012997cb6713af679542',1,'BPMNOS']]],
+  ['resize_14',['resize',['../namespaceBPMNOS.html#a04b8e8219a56d6f477b9b346eaeb0e79',1,'BPMNOS']]],
   ['resolvereference_15',['resolveReference',['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1BoundaryEvent.html#a4d47462d4445bb16a84d4586ad63adb1',1,'BPMN::BoundaryEvent']]],
   ['resourceassignmentexpression_16',['resourceAssignmentExpression',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1resourceAssignmentExpression.html#aae682a8a52a8882851c6e7354510de75',1,'XML::bpmn::resourceAssignmentExpression']]],
   ['resourceparameter_17',['resourceParameter',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1resourceParameter.html#a69fbcb76a3ad5c10d2eab2359632f9ed',1,'XML::bpmn::resourceParameter']]],

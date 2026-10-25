@@ -1,7 +1,7 @@
 var ExtensionElements_8cpp =
 [
-    [ "ExtensionElements::applyOperators< BPMNOS::Data >", "ExtensionElements_8cpp.html#a560ba06850f7d8755ca00994d832d92b", null ],
-    [ "ExtensionElements::applyOperators< BPMNOS::SharedData >", "ExtensionElements_8cpp.html#aac2d47413d56ad01d8e38fcad08d8a63", null ],
+    [ "ExtensionElements::applyOperators< BPMNOS::Data >", "ExtensionElements_8cpp.html#aee592a90441c1cc2c7b333669bf14aaf", null ],
+    [ "ExtensionElements::applyOperators< BPMNOS::SharedData >", "ExtensionElements_8cpp.html#aeeaae2783fc4d1be6cea4da716862706", null ],
     [ "ExtensionElements::conditionsSatisfied< BPMNOS::Data >", "ExtensionElements_8cpp.html#ae5480cfc1efae6bebed1cf33fc2bf1f4", null ],
     [ "ExtensionElements::conditionsSatisfied< BPMNOS::SharedData >", "ExtensionElements_8cpp.html#ab42913671dfe9285eb9639a3ca303fbf", null ],
     [ "ExtensionElements::feasibleCompletion< BPMNOS::Data >", "ExtensionElements_8cpp.html#aa87e333920390b5295c74a0600eb61e1", null ],
