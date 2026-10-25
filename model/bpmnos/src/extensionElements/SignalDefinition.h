@@ -15,7 +15,7 @@ public:
   SignalDefinition(XML::bpmnos::tSignal* signal);
   XML::bpmnos::tSignal* element;
   BPMNOS::number name; ///< Signal name
-  Schema schema; ///< The type of the content, an object, without fields if the signal states no type
+  Schema schema = ObjectType{}; ///< The type of the content, an object, without fields if the signal states no type
 };
 
 } // namespace BPMNOS::Model

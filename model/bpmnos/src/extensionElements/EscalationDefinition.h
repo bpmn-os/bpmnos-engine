@@ -15,7 +15,7 @@ public:
   EscalationDefinition(XML::bpmnos::tEscalation* escalation);
   XML::bpmnos::tEscalation* element;
   BPMNOS::number name; ///< Escalation name
-  Schema schema; ///< The type of the content, an object, without fields if the escalation states no type
+  Schema schema = ObjectType{}; ///< The type of the content, an object, without fields if the escalation states no type
 };
 
 } // namespace BPMNOS::Model

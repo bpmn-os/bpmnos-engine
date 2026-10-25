@@ -45,7 +45,7 @@ std::vector< std::pair<std::string, BPMNOS::Schema> > LookupTable::parseColumns(
     throw std::runtime_error(std::format("LookupTable: table '{}' requires a key and a result column", name));
   }
   for ( size_t i = 0; i + 1 < result.size(); i++ ) {
-    if ( !result[i].second.isScalar() ) {
+    if ( !std::holds_alternative<ValueType>(result[i].second) ) {
       throw std::runtime_error(std::format("LookupTable: key column '{}' of table '{}' must have a scalar type", result[i].first, name));
     }
   }
@@ -130,8 +130,9 @@ void LookupTable::populate(const std::string& sourceLabel, CSVReader reader) {
     for ( size_t i = 0; i < row.size(); i++ ) {
       auto& [columnName, schema] = this->columns[i];
       auto type = types[j][i];
-      bool fits = schema.isScalar() ?
-        ( schema.scalar.value() == BPMNOS::ValueType::STRING ? type == BPMNOS::CSVReader::Type::STRING : type == BPMNOS::CSVReader::Type::NUMBER ) :
+      auto valueType = std::get_if<BPMNOS::ValueType>(&schema);
+      bool fits = valueType ?
+        ( *valueType == BPMNOS::ValueType::STRING ? type == BPMNOS::CSVReader::Type::STRING : type == BPMNOS::CSVReader::Type::NUMBER ) :
         type == BPMNOS::CSVReader::Type::OBJECT;
       if ( !fits ) {
         throw std::runtime_error(std::format("LookupTable: cell of row {} in column '{}' of table '{}' is no {}", j, columnName, name, schema.stringify()));

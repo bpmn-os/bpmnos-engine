@@ -46,7 +46,7 @@ MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, const Attri
   // the content is an object, without fields if the message states no type
   if ( message->type.has_value() ) {
     schema = Schema::parse(message->type->get().value.value);
-    if ( schema.isScalar() ) {
+    if ( std::holds_alternative<ValueType>(schema) ) {
       throw std::runtime_error("MessageDefinition: the type of message '" + message->name.value.value + "' must be an object");
     }
   }

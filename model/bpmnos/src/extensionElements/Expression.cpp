@@ -242,25 +242,32 @@ Expression::Step Expression::walk(size_t path) const {
   if ( !schema ) {
     throw std::runtime_error("Expression: '" + text + "' does not address an object in '" + expression +"'");
   }
-  // the steps are followed through the schema: every index takes the next dimension, and a field may only
-  // follow once every dimension is indexed
+  // the steps are followed through the schema: an index descends into the element type of an array, and a field
+  // into the type of a field of an object
   Step result{ schema, 0, {} };
   for ( auto& step : description.steps ) {
     if ( !step.has_value() ) {
-      if ( result.dimension == result.schema->dimensions.size() ) {
+      auto array = std::get_if<ArrayType>(result.schema);
+      if ( !array ) {
         throw std::runtime_error("Expression: '" + text + "' has more indices than '" + description.name + "' has dimensions in '" + expression +"'");
       }
+      result.schema = array->type.get();
       result.dimension++;
       continue;
     }
-    if ( result.dimension < result.schema->dimensions.size() ) {
+    if ( std::holds_alternative<ArrayType>(*result.schema) ) {
       throw std::runtime_error("Expression: field '" + step.value() + "' of an array in '" + text + "', whose dimensions must be indexed first, in '" + expression +"'");
     }
-    auto field = std::ranges::find_if(result.schema->fields, [&step](auto& candidate) { return candidate.first == step.value(); });
-    if ( field == result.schema->fields.end() ) {
+    const Field* field = nullptr;
+    if ( auto object = std::get_if<ObjectType>(result.schema) ) {
+      if ( auto it = std::ranges::find_if(object->fields, [&step](auto& candidate) { return candidate.name == step.value(); }); it != object->fields.end() ) {
+        field = &*it;
+      }
+    }
+    if ( !field ) {
       throw std::runtime_error("Expression: unknown field '" + step.value() + "' in '" + text + "' in '" + expression +"'");
     }
-    result.schema = &field->second;
+    result.schema = field->type.get();
     result.dimension = 0;
     result.fields.push_back(step.value());
   }
@@ -273,18 +280,19 @@ void Expression::bind(size_t path, bool asArray, bool lengthOnly) const {
   if ( description.steps.empty() && !schemaOf(description.name) ) {
     throw std::runtime_error("Expression: '" + description.name + "' is not an array in '" + expression +"'");
   }
-  auto [schema, dimension, _] = walk(path);
+  auto schema = walk(path).schema;
   if ( lengthOnly ) {
-    if ( dimension == schema->dimensions.size() ) {
+    if ( !std::holds_alternative<ArrayType>(*schema) ) {
       throw std::runtime_error("Expression: '" + text + "' is not an array in '" + expression +"'");
     }
   }
   else if ( asArray ) {
-    if ( !schema->scalar.has_value() || schema->dimensions.size() != dimension + 1 ) {
+    auto array = std::get_if<ArrayType>(schema);
+    if ( !array || !std::holds_alternative<ValueType>(*array->type) ) {
       throw std::runtime_error("Expression: '" + text + "' is not an array of values with a single dimension in '" + expression +"'");
     }
   }
-  else if ( !schema->scalar.has_value() || dimension != schema->dimensions.size() ) {
+  else if ( !std::holds_alternative<ValueType>(*schema) ) {
     throw std::runtime_error("Expression: '" + text + "' does not address a value in '" + expression +"'");
   }
 }
@@ -296,13 +304,13 @@ void Expression::analyseTarget(const std::vector<size_t>& literals) {
     // the length of the dimension the target addresses is assigned a scalar value
     if ( targetPath.has_value() ) {
       auto step = walk(targetPath.value());
-      if ( step.dimension == step.schema->dimensions.size() ) {
+      if ( !std::holds_alternative<ArrayType>(*step.schema) ) {
         throw std::runtime_error("Expression: '" + pathText(compiled.getPaths()[targetPath.value()]) + "' is not an array in '" + expression + "'");
       }
       resizeFields = step.fields;
       resizeDimension = step.dimension;
     }
-    else if ( attribute->schema->dimensions.empty() ) {
+    else if ( !std::holds_alternative<ArrayType>(*attribute->schema) ) {
       throw std::runtime_error("Expression: object '" + attribute->name + "' is not an array in '" + expression + "'");
     }
     return;
@@ -313,7 +321,7 @@ void Expression::analyseTarget(const std::vector<size_t>& literals) {
   }
   if ( targetPath.has_value() ) {
     auto step = walk(targetPath.value());
-    objectValue = !( step.schema->scalar.has_value() && step.dimension == step.schema->dimensions.size() );
+    objectValue = !std::holds_alternative<ValueType>(*step.schema);
     targetFields = step.fields;
     targetDimension = step.dimension;
   }
@@ -357,7 +365,7 @@ void Expression::analyseTarget(const std::vector<size_t>& literals) {
   else if ( value.type == LIMEX::Type::path ) {
     size_t path = std::get<size_t>(value.operands[0]);
     auto step = walk(path);
-    if ( step.schema->scalar.has_value() && step.dimension == step.schema->dimensions.size() ) {
+    if ( std::holds_alternative<ValueType>(*step.schema) ) {
       throw illegal();
     }
     sourcePath = path;

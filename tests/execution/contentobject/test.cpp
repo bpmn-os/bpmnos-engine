@@ -93,7 +93,7 @@ std::string exchangeModel(const std::string& element, const std::string& name, c
             @CAUGHT@
           </bpmnos:operators>
         </bpmnos:status>
-        <bpmnos:@ELEMENT@ name="@NAME@" type="{ pair: { b: integer, a: integer }, count: integer }" />
+        <bpmnos:@ELEMENT@ name="@NAME@" type="{ count: integer, pair: { a: integer, b: integer } }" />
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_3</bpmn2:incoming>
       <bpmn2:outgoing>Flow_4</bpmn2:outgoing>
@@ -205,7 +205,6 @@ namespace {
 std::string routeModel(const std::string& element, const std::vector<std::string>& thrown) {
   auto xml = exchangeModel(element, "Exchange", thrown, { "stops := Exchange.route" });
   xml = fill(xml, R"(type="{ count: integer, pair: { a: integer, b: integer } }" />)", R"(type="{ route: integer[] }" />)");
-  xml = fill(xml, R"(type="{ pair: { b: integer, a: integer }, count: integer }" />)", R"(type="{ route: integer[] }" />)");
   return fill(xml, R"(<bpmnos:attribute id="Other" type="integer" name="other" />)", R"(<bpmnos:attribute id="Other" type="integer" name="other" />
           <bpmnos:attribute id="Stops" type="integer[]" name="stops" />)");
 }

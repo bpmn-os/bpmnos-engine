@@ -10,7 +10,7 @@ EscalationDefinition::EscalationDefinition(XML::bpmnos::tEscalation* escalation)
   // the content is an object, without fields if the escalation states no type
   if ( escalation->type.has_value() ) {
     schema = Schema::parse(escalation->type->get().value.value);
-    if ( schema.isScalar() ) {
+    if ( std::holds_alternative<ValueType>(schema) ) {
       throw std::runtime_error("EscalationDefinition: the type of escalation '" + escalation->name.value.value + "' must be an object");
     }
   }

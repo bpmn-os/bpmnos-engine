@@ -23,7 +23,9 @@ Input::Input(std::string name, Type type, Schema schema, const std::string& cont
 }
 
 std::shared_ptr<const BPMNOS::Object> Input::readMatrix(const std::string& content) const {
-  if ( schema.dimensions.size() != 2 ) {
+  auto array = std::get_if<BPMNOS::ArrayType>(&schema);
+  auto row = array ? std::get_if<BPMNOS::ArrayType>(array->type.get()) : nullptr;
+  if ( !row || std::holds_alternative<BPMNOS::ArrayType>(*row->type) ) {
     throw std::runtime_error("Input: matrix '" + name + "' requires a schema with two dimensions, not '" + schema.stringify() + "'");
   }
   // the content is read as content, which a single line without a line break would not be
@@ -31,9 +33,9 @@ std::shared_ptr<const BPMNOS::Object> Input::readMatrix(const std::string& conte
   auto table = reader.read();
   auto& types = reader.types();
 
-  // the base of the schema, of which every cell holds one value or literal
-  Schema base = schema;
-  base.dimensions.clear();
+  // the element type of the matrix, of which every cell holds one value or literal
+  auto& base = *row->type;
+  auto valueType = std::get_if<BPMNOS::ValueType>(&base);
   size_t columns = table.empty() ? 0 : table.front().size();
   BPMNOS::Object::Layout cellLayout;
   std::vector< std::shared_ptr<const BPMNOS::Object> > cells;
@@ -44,8 +46,8 @@ std::shared_ptr<const BPMNOS::Object> Input::readMatrix(const std::string& conte
     for ( size_t j = 0; j < columns; j++ ) {
       auto type = types[i][j];
       auto where = "cell " + std::to_string(j + 1) + " of row " + std::to_string(i + 1) + " of matrix '" + name + "'";
-      if ( base.isScalar() ) {
-        bool fits = ( base.scalar.value() == BPMNOS::ValueType::STRING ? type == BPMNOS::CSVReader::Type::STRING : type == BPMNOS::CSVReader::Type::NUMBER );
+      if ( valueType ) {
+        bool fits = ( *valueType == BPMNOS::ValueType::STRING ? type == BPMNOS::CSVReader::Type::STRING : type == BPMNOS::CSVReader::Type::NUMBER );
         if ( !fits ) {
           throw std::runtime_error("Input: " + where + " is no " + base.stringify());
         }
@@ -68,8 +70,8 @@ std::shared_ptr<const BPMNOS::Object> Input::readMatrix(const std::string& conte
   // the cells stand one after the other in the order of the rows
   auto matrix = std::make_shared<BPMNOS::Object>();
   BPMNOS::Object::Layout layout;
-  if ( base.isScalar() ) {
-    layout.scalar = base.scalar;
+  if ( valueType ) {
+    layout.scalar = *valueType;
   }
   else {
     layout = cellLayout;
@@ -80,7 +82,7 @@ std::shared_ptr<const BPMNOS::Object> Input::readMatrix(const std::string& conte
   matrix->values.reserve( layout.size() );
   for ( size_t i = 0; i < table.size(); i++ ) {
     for ( size_t j = 0; j < columns; j++ ) {
-      if ( base.isScalar() ) {
+      if ( valueType ) {
         matrix->values.push_back( std::get<BPMNOS::number>(table[i][j]) );
       }
       else {

@@ -105,31 +105,57 @@ TEST_CASE( "Parse the schema of an attribute", "[model][schema]" ) {
       {"boolean", BOOLEAN}, {"integer", INTEGER}, {"decimal", DECIMAL}, {"string", STRING}
     } ) {
       auto schema = Schema::parse(text);
-      REQUIRE( schema.isScalar() );
-      REQUIRE( schema.scalar == type );
+      REQUIRE( std::holds_alternative<ValueType>(schema) );
+      REQUIRE( std::get<ValueType>(schema) == type );
       REQUIRE( schema.stringify() == text );
     }
   }
 
-  SECTION( "Arrays with fixed and open dimensions in index order" ) {
+  SECTION( "Arrays with fixed and open dimensions, outermost first" ) {
     auto schema = Schema::parse(" boolean [3][ ] [4]");
-    REQUIRE( !schema.isScalar() );
-    REQUIRE( schema.scalar == BOOLEAN );
-    REQUIRE( schema.dimensions == std::vector< std::optional<size_t> >{ 3, std::nullopt, 4 } );
+    auto& outer = std::get<BPMNOS::ArrayType>(schema);
+    REQUIRE( outer.size == 3 );
+    auto& middle = std::get<BPMNOS::ArrayType>(*outer.type);
+    REQUIRE( !middle.size.has_value() );
+    auto& inner = std::get<BPMNOS::ArrayType>(*middle.type);
+    REQUIRE( inner.size == 4 );
+    REQUIRE( std::get<ValueType>(*inner.type) == BOOLEAN );
     REQUIRE( schema.stringify() == "boolean[3][][4]" );
   }
 
   SECTION( "Objects with nested fields" ) {
     auto schema = Schema::parse("{ cost: decimal, flags: boolean[2], position: { x: decimal, y: decimal } }[]");
-    REQUIRE( !schema.isScalar() );
-    REQUIRE( !schema.scalar.has_value() );
-    REQUIRE( schema.dimensions == std::vector< std::optional<size_t> >{ std::nullopt } );
-    REQUIRE( schema.fields.size() == 3 );
-    REQUIRE( schema.fields[0].first == "cost" );
-    REQUIRE( schema.fields[0].second.isScalar() );
-    REQUIRE( schema.fields[1].second.dimensions == std::vector< std::optional<size_t> >{ 2 } );
-    REQUIRE( schema.fields[2].second.fields.size() == 2 );
+    auto& array = std::get<BPMNOS::ArrayType>(schema);
+    REQUIRE( !array.size.has_value() );
+    auto& fields = std::get<BPMNOS::ObjectType>(*array.type).fields;
+    REQUIRE( fields.size() == 3 );
+    REQUIRE( fields[0].name == "cost" );
+    REQUIRE( std::get<ValueType>(*fields[0].type) == DECIMAL );
+    REQUIRE( std::get<BPMNOS::ArrayType>(*fields[1].type).size == 2 );
+    REQUIRE( std::get<BPMNOS::ObjectType>(*fields[2].type).fields.size() == 2 );
     REQUIRE( schema.stringify() == "{ cost: decimal, flags: boolean[2], position: { x: decimal, y: decimal } }[]" );
+  }
+
+  SECTION( "Equality respects the order of the fields" ) {
+    REQUIRE( Schema::parse("{ a: integer, b: { x: decimal }[2] }") == Schema::parse("{a:integer,b:{x:decimal}[2]}") );
+    REQUIRE( Schema::parse("{ a: integer, b: decimal }") != Schema::parse("{ b: decimal, a: integer }") );
+    REQUIRE( Schema::parse("integer[2]") != Schema::parse("integer[]") );
+    REQUIRE( Schema::parse("integer[2]") != Schema::parse("decimal[2]") );
+  }
+
+  SECTION( "Size declarations return a new schema sharing the parts they leave unchanged" ) {
+    auto schema = Schema::parse("{ flags: boolean[], cost: decimal }[]");
+    auto declared = schema.declareSizes("[6].flags[3]");
+    REQUIRE( declared.stringify() == "{ flags: boolean[3], cost: decimal }[6]" );
+    REQUIRE( schema.stringify() == "{ flags: boolean[], cost: decimal }[]" );
+    auto& fields = std::get<BPMNOS::ObjectType>(*std::get<BPMNOS::ArrayType>(schema).type).fields;
+    auto& declaredFields = std::get<BPMNOS::ObjectType>(*std::get<BPMNOS::ArrayType>(declared).type).fields;
+    REQUIRE( declaredFields[1].type == fields[1].type );
+    REQUIRE( declaredFields[0].type != fields[0].type );
+    REQUIRE( Schema::parse("integer[2]").declareSizes("[2]") == Schema::parse("integer[2]") );
+    REQUIRE_THROWS_WITH( Schema::parse("integer[2]").declareSizes("[3]"), Catch::Matchers::StartsWith("Schema: illegal size declaration") );
+    REQUIRE_THROWS_WITH( Schema::parse("integer[]").declareSizes("[2][2]"), Catch::Matchers::StartsWith("Schema: illegal size declaration") );
+    REQUIRE_THROWS_WITH( Schema::parse("{ a: integer }[]").declareSizes(".b"), Catch::Matchers::StartsWith("Schema: illegal size declaration") );
   }
 
   SECTION( "Illegal schemas" ) {

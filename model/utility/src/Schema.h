@@ -4,83 +4,102 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <utility>
+#include <variant>
 #include <vector>
 #include "Value.h"
 #include "Object.h"
 
 namespace BPMNOS {
 
+struct Schema;
+
 /**
- * @brief The shape of an attribute, as stated by its `type`.
- *
- * A type is a base followed by its dimensions, `type := base dimension*`. The base is a scalar type, one of
- * `boolean`, `integer`, `decimal` and `string`, or an object `{ name: type, ... }` whose fields
- * have types of their own. A dimension is written `[n]` if its size is fixed and `[]` if it is open, and the
- * dimensions are read from left to right in the order of the indices: `boolean[3][4]` has 3 elements, each a
- * `boolean[4]`, accessed as `x[i][j]` with `i <= 3` and `j <= 4`. A schema without dimensions whose base is a
- * scalar type describes a scalar attribute; every other schema describes an object.
+ * @brief An array type: the type of its elements and its size, which is std::nullopt if the array is open.
  */
-struct Schema {
-  std::optional<ValueType> scalar; ///< The scalar type of the base, or nullopt if the base is an object
-  std::vector< std::pair<std::string, Schema> > fields; ///< The fields of an object base, in declaration order
-  std::vector< std::optional<size_t> > dimensions; ///< The sizes of the dimensions in index order, nullopt if open
+struct ArrayType {
+  std::shared_ptr<const Schema> type; ///< The element type
+  std::optional<size_t> size; ///< The size of a fixed array, std::nullopt for an open array
+};
 
-  /// @brief Parses the text of a type, throwing an error describing the first violation of the grammar.
+/**
+ * @brief A field of an object type: its name and its type.
+ */
+struct Field {
+  std::string name;
+  std::shared_ptr<const Schema> type;
+};
+
+/**
+ * @brief An object type: its fields in the order of their declaration.
+ */
+struct ObjectType {
+  std::vector<Field> fields;
+};
+
+/**
+ * @brief A type: a value type, an array type or an object type.
+ *
+ * A schema is written in the notation `schema := ( valuetype | "{" field ( "," field )* "}" ) dimension*`, with
+ * `field := name ":" schema` and `dimension := "[" n "]" | "[]"`, a dimension `[n]` denoting a fixed array of size
+ * `n` and `[]` an open array. The dimensions are written outermost first: `boolean[3][4]` is the array type of size
+ * 3 whose element type is the array type of size 4 whose element type is `boolean`.
+ *
+ * A schema never changes once built, and refers to the schemas it contains through `std::shared_ptr<const Schema>`,
+ * so that a schema derived from another shares every part it does not change.
+ */
+struct Schema : std::variant<ValueType, ArrayType, ObjectType> {
+  using variant::variant;
+
+  /// @brief Parses the notation of a type, throwing an error describing the first violation of the grammar.
   static Schema parse(const std::string& text);
-  /// @brief Returns true if the schema describes a scalar attribute.
-  bool isScalar() const { return scalar.has_value() && dimensions.empty(); }
-  /// @brief Returns the text of the type in its canonical form.
+  /// @brief Returns the notation of the type in its canonical form.
   std::string stringify() const;
-  /// @brief Returns true if the schemas agree: they have the same scalar type or the same set of field names, each
-  /// field agreeing in turn, regardless of the order of the fields, and the same dimensions with the same sizes.
-  bool agrees(const Schema& other) const;
+  /// @brief Returns true if the schemas describe the same type: the same value types, the same arrays with the same
+  /// sizes, and the same fields, in the same order and with equal types.
+  bool operator==(const Schema& other) const;
 
   /**
-   * @brief Fixes the sizes a size declaration states, given as the text following the name of the attribute.
+   * @brief Returns the schema with the sizes a size declaration states, given as the text following the name of the
+   * attribute.
    *
-   * The text is a path of dimensions and fields, e.g. `[6].flags[3]`, in which every number in brackets is the
-   * size of the next dimension of the base or field it follows and `[]` leaves that dimension as it is. A size
-   * contradicting a size fixed before, more dimensions than the type has, and an unknown field are errors.
+   * The text is a path of steps, e.g. `[6].flags[3]`. A step `[n]` states the size `n` for the next array, a step
+   * `[]` states no size for it, and a step `.name` descends into the field `name`. The returned schema has new parts
+   * along the path and shares every other part with this schema. A size of 0, a size contradicting one fixed before,
+   * an index step where the schema has no array, and an unknown field are errors.
    */
-  void declareSizes(const std::string& steps);
-
-  /// @brief Returns true if every dimension, also of the fields, has a fixed size.
-  bool isFixed() const;
+  Schema declareSizes(const std::string& declaration) const;
 
   /**
-   * @brief Returns an object of this schema with every value undefined, an open dimension having no elements.
+   * @brief Returns an object of this schema with every value undefined, an open array having no elements.
    */
   std::shared_ptr<const BPMNOS::Object> undefinedObject() const;
 
   /**
    * @brief Returns an object of this schema holding the values of the given constant object.
    *
-   * The constant object must have as many dimensions as the schema at the base and at every field, its
-   * scalar values must be convertible to the types of the schema, and its fields must be fields of the schema.
-   * A dimension of fixed size is padded with undefined values and must not be exceeded, an open dimension takes
-   * the length of the constant object, and a field it lacks is undefined. If the constant object has exactly the
-   * layout of the schema, it is returned itself, so that it is shared.
+   * The constant object must have as many arrays as the schema at every level, its values must be convertible to
+   * the value types of the schema, and its fields must be fields of the schema. A fixed array is padded with
+   * undefined values and must not be exceeded, an open array takes the size of the constant object, and a field it
+   * lacks is undefined. If the constant object has exactly the layout of the schema, it is returned itself, so that
+   * it is shared.
    */
   std::shared_ptr<const BPMNOS::Object> conform(const std::shared_ptr<const BPMNOS::Object>& constant) const;
 
   /**
    * @brief Returns the schema an object of the given layout imposes on a value assigned to it.
    *
-   * A value assigned to the whole object keeps the sizes of the fixed dimensions and takes those of the open
-   * ones. A value assigned to an element keeps every size, except a size zero of an open dimension, which the
-   * value determines.
+   * A value assigned to the whole object keeps the sizes of the fixed arrays and takes those of the open ones. A
+   * value assigned to an element keeps every size, except a size zero of an open array, which the value determines.
    */
   static Schema of(const BPMNOS::Object::Layout& layout, bool element);
 
   /**
    * @brief Returns an object of this schema holding the values of the given JSON text.
    *
-   * An array is a dimension, whose elements have equal lengths at an open dimension and at most the declared
-   * length at a fixed one, an object is a value with fields, whose keys must be fields of the schema, and a number,
-   * truth value or string is a value of the type the schema states, `null` being undefined. A fixed dimension is
-   * padded with undefined values, an open dimension takes the length of the JSON array, and a field the JSON lacks
-   * is undefined.
+   * A JSON array is an array, whose elements have equal sizes at an open array and at most the declared size at a
+   * fixed one, a JSON object is an object, whose keys must be fields of the schema, and a number, truth value or
+   * string is a value of the value type the schema states, `null` being undefined. A fixed array is padded with
+   * undefined values, an open array takes the size of the JSON array, and a field the JSON lacks is undefined.
    */
   std::shared_ptr<const BPMNOS::Object> fromJSON(const std::string& text) const;
 };

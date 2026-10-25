@@ -174,7 +174,7 @@ void Model::createInputs() {
       if ( declaration.type == "lookup" ) {
         lookupTables.push_back( std::make_unique<LookupTable>(name, content, declaration.schema) );
         auto table = lookupTables.back().get();
-        if ( auto& result = table->columns.back().second; !result.isScalar() ) {
+        if ( auto& result = table->columns.back().second; !std::holds_alternative<ValueType>(result) ) {
           // a lookup returning an array may only be assigned to an array, which expressions check by its name
           attributeRegistry.arrayLookups[table->name] = &result;
         }
@@ -194,7 +194,7 @@ void Model::createInputs() {
       catch ( const std::exception& error ) {
         throw std::runtime_error("Model: illegal schema of input '" + name + "'.\n" + error.what());
       }
-      if ( schema.isScalar() ) {
+      if ( std::holds_alternative<ValueType>(schema) ) {
         throw std::runtime_error("Model: input '" + name + "' requires the schema of an array or object");
       }
       Input::Type type;
@@ -424,7 +424,7 @@ void Model::validateErrors() {
         continue;
       }
       auto [ entry, inserted ] = firstErrorEvents.emplace( errorDefinition->name, errorEvent );
-      if ( !inserted && !errorDefinition->schema.agrees( entry->second->extensionElements->as<ExtensionElements>()->errorDefinition->schema ) ) {
+      if ( !inserted && errorDefinition->schema != entry->second->extensionElements->as<ExtensionElements>()->errorDefinition->schema ) {
         throw std::runtime_error("Model: error '" + BPMNOS::to_string(errorDefinition->name,STRING) + "' of '" + entry->second->id + "' and of '" + errorEvent->id + "' must have the same type");
       }
     }
@@ -443,7 +443,7 @@ void Model::validateEscalations() {
         continue;
       }
       auto [ entry, inserted ] = firstEscalationEvents.emplace( escalationDefinition->name, escalationEvent );
-      if ( !inserted && !escalationDefinition->schema.agrees( entry->second->extensionElements->as<ExtensionElements>()->escalationDefinition->schema ) ) {
+      if ( !inserted && escalationDefinition->schema != entry->second->extensionElements->as<ExtensionElements>()->escalationDefinition->schema ) {
         throw std::runtime_error("Model: escalation '" + BPMNOS::to_string(escalationDefinition->name,STRING) + "' of '" + entry->second->id + "' and of '" + escalationEvent->id + "' must have the same type");
       }
     }
@@ -458,7 +458,7 @@ void Model::validateSignals() {
       auto signalEvent = node->as<BPMN::FlowNode>();
       auto signalDefinition = signalEvent->extensionElements->as<ExtensionElements>()->signalDefinition.get();
       auto [ entry, inserted ] = firstSignalEvents.emplace( signalDefinition->name, signalEvent );
-      if ( !inserted && !signalDefinition->schema.agrees( entry->second->extensionElements->as<ExtensionElements>()->signalDefinition->schema ) ) {
+      if ( !inserted && signalDefinition->schema != entry->second->extensionElements->as<ExtensionElements>()->signalDefinition->schema ) {
         throw std::runtime_error("Model: signal '" + BPMNOS::to_string(signalDefinition->name,STRING) + "' of '" + entry->second->id + "' and of '" + signalEvent->id + "' must have the same type");
       }
     }
@@ -654,7 +654,7 @@ void Model::createMessageCandidates( BPMN::Process* sendingProcess, BPMN::FlowNo
     messageMayBeThrown(sendingProcess, throwingMessageEvent, receivingProcess, catchingMessageEvent)
   ) {
     // a sender and a receiver that may exchange a message agree on its type
-    if ( !outgoingMessageDefinition->schema.agrees(incomingMessageDefinition->schema) ) {
+    if ( outgoingMessageDefinition->schema != incomingMessageDefinition->schema ) {
       throw std::runtime_error("Model: message '" + BPMNOS::to_string(outgoingMessageDefinition->name,STRING) + "' sent by '" + throwingMessageEvent->id + "' and received by '" + catchingMessageEvent->id + "' must have the same type");
     }
     // add message events to collection of candidates of each other

@@ -245,35 +245,35 @@ void InstanceDataReader::setObject(const Row& row, const LIMEX::Handle<double>& 
 
 namespace {
 
-/// Returns the scalar type a schema gives at the path of a member of a literal, nullopt if the path does not fit the
+/// Returns the value type a schema gives at the path of a member of a literal, nullopt if the path does not fit the
 /// schema.
 std::optional<BPMNOS::ValueType> scalarAt(const BPMNOS::Schema& schema, const BPMNOS::ObjectInitializer::Path& path) {
   const BPMNOS::Schema* current = &schema;
-  size_t dimension = 0;
   for ( auto& step : path ) {
     if ( step.empty() ) {
       // an element of an array
-      if ( dimension == current->dimensions.size() ) {
+      auto array = std::get_if<BPMNOS::ArrayType>(current);
+      if ( !array ) {
         return std::nullopt;
       }
-      dimension++;
+      current = array->type.get();
       continue;
     }
-    // a field of a value with fields
-    if ( dimension != current->dimensions.size() ) {
+    // a field of an object
+    auto object = std::get_if<BPMNOS::ObjectType>(current);
+    if ( !object ) {
       return std::nullopt;
     }
-    auto field = std::find_if(current->fields.begin(), current->fields.end(), [&step](auto& candidate) { return candidate.first == step; });
-    if ( field == current->fields.end() ) {
+    auto field = std::ranges::find_if(object->fields, [&step](auto& candidate) { return candidate.name == step; });
+    if ( field == object->fields.end() ) {
       return std::nullopt;
     }
-    current = &field->second;
-    dimension = 0;
+    current = field->type.get();
   }
-  if ( dimension != current->dimensions.size() ) {
-    return std::nullopt;
+  if ( auto valueType = std::get_if<BPMNOS::ValueType>(current) ) {
+    return *valueType;
   }
-  return current->scalar;
+  return std::nullopt;
 }
 
 } // namespace
@@ -306,7 +306,7 @@ void InstanceDataReader::declareSizes(const Row& row) {
   auto name = text.substr(0, end);
   auto declare = [&text,end](BPMNOS::Schema& schema) {
     try {
-      schema.declareSizes( text.substr(end) );
+      schema = schema.declareSizes( text.substr(end) );
     }
     catch ( const std::exception& error ) {
       throw std::runtime_error("InstanceDataReader: illegal size declaration '" + text + "'.\n" + error.what());

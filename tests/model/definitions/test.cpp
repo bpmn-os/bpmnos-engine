@@ -73,11 +73,18 @@ TEST_CASE( "Definitions of messages and signals", "[model][definitions]" ) {
   for ( std::string element : { "message", "signal" } ) {
     DYNAMIC_SECTION( "A " << element ) {
 
-      SECTION( "Types agreeing regardless of spacing and of the order of fields, at every depth, are accepted" ) {
+      SECTION( "Types equal regardless of spacing, at every depth, are accepted" ) {
         REQUIRE_NOTHROW( modelFrom(exchangeModel(element, "Exchange",
           stated("{ a: integer, b: { x: decimal, y: string }, c: { p: integer, q: boolean }[2] }"),
-          stated("{c:{q:boolean,p:integer}[2],b:{y:string,x:decimal},a:integer}")
+          stated("{a:integer,b:{x:decimal,y:string},c:{p:integer,q:boolean}[2]}")
         )) );
+      }
+
+      SECTION( "Types differing in the order of fields are refused" ) {
+        REQUIRE_THROWS_WITH(
+          modelFrom(exchangeModel(element, "Exchange", stated("{ a: integer, b: decimal }"), stated("{ b: decimal, a: integer }"))),
+          Catch::Matchers::ContainsSubstring("must have the same type")
+        );
       }
 
       SECTION( "Types differing in a field, the type of a field or the size of a dimension are refused" ) {

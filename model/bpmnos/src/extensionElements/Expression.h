@@ -98,7 +98,7 @@ private:
   size_t targetDimension = 0; ///< The number of dimensions the target path indexes after its last field
   std::vector<std::string> resizeFields; ///< The fields naming the array whose dimension is resized
   size_t resizeDimension = 0; ///< The position of the dimension resized
-  /// The schema a path reaches, the number of its dimensions indexed, and the fields it names
+  /// The schema a path reaches, the number of indices following its last field, and the fields it names
   struct Step {
     const Schema* schema;
     size_t dimension;

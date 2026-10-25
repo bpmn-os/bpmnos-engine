@@ -6,42 +6,73 @@
 #include <cassert>
 #include <functional>
 #include <stdexcept>
+#include <variant>
 
 using namespace BPMNOS;
 
 namespace {
 
 /**
- * @brief Recursive descent parser of the grammar `type := base dimension*`.
+ * @brief A schema in the form today's layouts take: a value type or fields, followed by the sizes of the arrays
+ * around it, outermost first.
+ *
+ * The functions building and reading layouts work on this form, into which a schema is flattened.
+ */
+struct FlatSchema {
+  std::optional<ValueType> scalar;
+  std::vector< std::pair<std::string, FlatSchema> > fields;
+  std::vector< std::optional<size_t> > dimensions;
+};
+
+/// Returns the flat form of a schema.
+FlatSchema flatten(const Schema& schema) {
+  FlatSchema result;
+  const Schema* current = &schema;
+  while ( auto array = std::get_if<ArrayType>(current) ) {
+    result.dimensions.push_back(array->size);
+    current = array->type.get();
+  }
+  if ( auto valueType = std::get_if<ValueType>(current) ) {
+    result.scalar = *valueType;
+  }
+  else {
+    for ( auto& field : std::get<ObjectType>(*current).fields ) {
+      result.fields.emplace_back(field.name, flatten(*field.type));
+    }
+  }
+  return result;
+}
+
+/**
+ * @brief Recursive descent parser of the notation `schema := ( valuetype | object ) dimension*`.
  */
 class SchemaParser {
 public:
   explicit SchemaParser(const std::string& text) : text(text), position(0) {}
 
   Schema parseType() {
-    Schema schema;
     skipWhitespace();
-    if ( peek() == '{' ) {
-      parseObject(schema);
-    }
-    else {
-      schema.scalar = parseScalar();
-    }
+    Schema result = ( peek() == '{' ) ? Schema(parseObject()) : Schema(parseValueType());
     skipWhitespace();
+    std::vector< std::optional<size_t> > sizes;
     while ( peek() == '[' ) {
       ++position;
       skipWhitespace();
       if ( peek() == ']' ) {
-        schema.dimensions.push_back(std::nullopt);
+        sizes.push_back(std::nullopt);
       }
       else {
-        schema.dimensions.push_back(parseSize());
+        sizes.push_back(parseSize());
       }
       skipWhitespace();
       expect(']');
       skipWhitespace();
     }
-    return schema;
+    // the dimensions are written outermost first, so that the innermost array is built first
+    for ( auto it = sizes.rbegin(); it != sizes.rend(); ++it ) {
+      result = Schema( ArrayType{ std::make_shared<const Schema>(std::move(result)), *it } );
+    }
+    return result;
   }
 
   void expectEnd() {
@@ -87,12 +118,12 @@ private:
     return text.substr(start, position - start);
   }
 
-  BPMNOS::ValueType parseScalar() {
+  ValueType parseValueType() {
     std::string name = parseName();
-    if ( name == "boolean" ) return BPMNOS::ValueType::BOOLEAN;
-    if ( name == "integer" ) return BPMNOS::ValueType::INTEGER;
-    if ( name == "decimal" ) return BPMNOS::ValueType::DECIMAL;
-    if ( name == "string" ) return BPMNOS::ValueType::STRING;
+    if ( name == "boolean" ) return ValueType::BOOLEAN;
+    if ( name == "integer" ) return ValueType::INTEGER;
+    if ( name == "decimal" ) return ValueType::DECIMAL;
+    if ( name == "string" ) return ValueType::STRING;
     fail("unknown type '" + name + "'");
   }
 
@@ -111,7 +142,8 @@ private:
     return size;
   }
 
-  void parseObject(Schema& schema) {
+  ObjectType parseObject() {
+    ObjectType object;
     expect('{');
     skipWhitespace();
     if ( peek() == '}' ) {
@@ -120,21 +152,21 @@ private:
     while ( true ) {
       skipWhitespace();
       std::string name = parseName();
-      for ( auto& [field, _] : schema.fields ) {
-        if ( field == name ) {
+      for ( auto& field : object.fields ) {
+        if ( field.name == name ) {
           fail("duplicate field '" + name + "'");
         }
       }
       skipWhitespace();
       expect(':');
-      schema.fields.emplace_back(name, parseType());
+      object.fields.push_back( Field{ name, std::make_shared<const Schema>(parseType()) } );
       skipWhitespace();
       if ( peek() == ',' ) {
         ++position;
         continue;
       }
       expect('}');
-      return;
+      return object;
     }
   }
 };
@@ -149,129 +181,146 @@ Schema Schema::parse(const std::string& text) {
 }
 
 std::string Schema::stringify() const {
+  // the sizes of the arrays are written after the type of the innermost elements, outermost first
+  std::string sizes;
+  const Schema* current = this;
+  while ( auto array = std::get_if<ArrayType>(current) ) {
+    sizes += array->size.has_value() ? "[" + std::to_string(array->size.value()) + "]" : "[]";
+    current = array->type.get();
+  }
   std::string result;
-  if ( scalar.has_value() ) {
-    switch ( scalar.value() ) {
-      case BPMNOS::ValueType::BOOLEAN: result = "boolean"; break;
-      case BPMNOS::ValueType::INTEGER: result = "integer"; break;
-      case BPMNOS::ValueType::DECIMAL: result = "decimal"; break;
-      case BPMNOS::ValueType::STRING: result = "string"; break;
+  if ( auto valueType = std::get_if<ValueType>(current) ) {
+    switch ( *valueType ) {
+      case ValueType::BOOLEAN: result = "boolean"; break;
+      case ValueType::INTEGER: result = "integer"; break;
+      case ValueType::DECIMAL: result = "decimal"; break;
+      case ValueType::STRING: result = "string"; break;
     }
   }
   else {
+    auto& fields = std::get<ObjectType>(*current).fields;
     result = "{ ";
     for ( size_t i = 0; i < fields.size(); i++ ) {
-      result += ( i ? ", " : "" ) + fields[i].first + ": " + fields[i].second.stringify();
+      result += ( i ? ", " : "" ) + fields[i].name + ": " + fields[i].type->stringify();
     }
     result += " }";
   }
-  for ( auto& dimension : dimensions ) {
-    result += dimension.has_value() ? "[" + std::to_string(dimension.value()) + "]" : "[]";
-  }
-  return result;
+  return result + sizes;
 }
 
-bool Schema::agrees(const Schema& other) const {
-  if ( scalar != other.scalar || dimensions != other.dimensions || fields.size() != other.fields.size() ) {
+bool Schema::operator==(const Schema& other) const {
+  if ( index() != other.index() ) {
     return false;
   }
-  // fields are matched by name, their order being irrelevant
-  for ( auto& [name, field] : fields ) {
-    auto it = std::find_if(other.fields.begin(), other.fields.end(), [&name](auto& candidate) { return candidate.first == name; });
-    if ( it == other.fields.end() || !field.agrees(it->second) ) {
-      return false;
-    }
+  if ( auto valueType = std::get_if<ValueType>(this) ) {
+    return *valueType == std::get<ValueType>(other);
   }
-  return true;
+  if ( auto array = std::get_if<ArrayType>(this) ) {
+    auto& otherArray = std::get<ArrayType>(other);
+    return array->size == otherArray.size && *array->type == *otherArray.type;
+  }
+  auto& fields = std::get<ObjectType>(*this).fields;
+  auto& otherFields = std::get<ObjectType>(other).fields;
+  return std::ranges::equal(fields, otherFields, [](auto& field, auto& otherField) {
+    return field.name == otherField.name && *field.type == *otherField.type;
+  });
 }
 
-void Schema::declareSizes(const std::string& steps) {
-  Schema* node = this;
-  size_t dimension = 0;
-  size_t position = 0;
-  auto fail = [&steps](const std::string& reason) {
-    throw std::runtime_error("Schema: illegal size declaration '" + steps + "': " + reason);
+Schema Schema::declareSizes(const std::string& declaration) const {
+  auto error = [&declaration](const std::string& reason) {
+    return std::runtime_error("Schema: illegal size declaration '" + declaration + "': " + reason);
   };
+  // the steps of the declaration: the size an index states, std::nullopt for `[]`, or the name of a field
+  std::vector< std::variant< std::optional<size_t>, std::string > > steps;
+  size_t position = 0;
   auto skipWhitespace = [&]() {
-    while ( position < steps.size() && std::isspace((unsigned char)steps[position]) ) {
+    while ( position < declaration.size() && std::isspace((unsigned char)declaration[position]) ) {
       ++position;
     }
   };
   while ( true ) {
     skipWhitespace();
-    if ( position == steps.size() ) {
-      return;
+    if ( position == declaration.size() ) {
+      break;
     }
-    if ( steps[position] == '[' ) {
+    if ( declaration[position] == '[' ) {
       ++position;
       skipWhitespace();
       size_t start = position;
-      while ( position < steps.size() && std::isdigit((unsigned char)steps[position]) ) {
+      while ( position < declaration.size() && std::isdigit((unsigned char)declaration[position]) ) {
         ++position;
       }
       std::optional<size_t> size;
       if ( position > start ) {
-        size = std::stoul(steps.substr(start, position - start));
+        size = std::stoul(declaration.substr(start, position - start));
         if ( size.value() == 0 ) {
-          fail("a size must be positive");
+          throw error("a size must be positive");
         }
       }
       skipWhitespace();
-      if ( position == steps.size() || steps[position] != ']' ) {
-        fail("expected ']'");
+      if ( position == declaration.size() || declaration[position] != ']' ) {
+        throw error("expected ']'");
       }
       ++position;
-      if ( dimension >= node->dimensions.size() ) {
-        fail("more dimensions than the type has");
-      }
-      auto& declared = node->dimensions[dimension];
-      if ( size.has_value() ) {
-        if ( declared.has_value() && declared.value() != size.value() ) {
-          fail("size " + std::to_string(size.value()) + " contradicts size " + std::to_string(declared.value()));
-        }
-        declared = size;
-      }
-      ++dimension;
+      steps.emplace_back(size);
     }
-    else if ( steps[position] == '.' ) {
+    else if ( declaration[position] == '.' ) {
       ++position;
       size_t start = position;
-      while ( position < steps.size() && ( std::isalnum((unsigned char)steps[position]) || steps[position] == '_' ) ) {
+      while ( position < declaration.size() && ( std::isalnum((unsigned char)declaration[position]) || declaration[position] == '_' ) ) {
         ++position;
       }
-      std::string name = steps.substr(start, position - start);
-      auto field = std::find_if(node->fields.begin(), node->fields.end(), [&name](auto& candidate) { return candidate.first == name; });
-      if ( field == node->fields.end() ) {
-        fail("unknown field '" + name + "'");
-      }
-      node = &field->second;
-      dimension = 0;
+      steps.emplace_back( declaration.substr(start, position - start) );
     }
     else {
-      fail("unexpected '" + steps.substr(position) + "'");
+      throw error("unexpected '" + declaration.substr(position) + "'");
     }
   }
-}
 
-bool Schema::isFixed() const {
-  for ( auto& dimension : dimensions ) {
-    if ( !dimension.has_value() ) {
-      return false;
+  // the parts along the path are built anew, every other part is shared
+  std::function<Schema(const Schema&, size_t)> apply = [&](const Schema& schema, size_t step) -> Schema {
+    if ( step == steps.size() ) {
+      return schema;
     }
-  }
-  for ( auto& [_, field] : fields ) {
-    if ( !field.isFixed() ) {
-      return false;
+    if ( auto size = std::get_if< std::optional<size_t> >(&steps[step]) ) {
+      auto array = std::get_if<ArrayType>(&schema);
+      if ( !array ) {
+        throw error("more dimensions than the type has");
+      }
+      auto declared = array->size;
+      if ( size->has_value() ) {
+        if ( declared.has_value() && declared.value() != size->value() ) {
+          throw error("size " + std::to_string(size->value()) + " contradicts size " + std::to_string(declared.value()));
+        }
+        declared = size->value();
+      }
+      return Schema( ArrayType{ std::make_shared<const Schema>(apply(*array->type, step + 1)), declared } );
     }
-  }
-  return true;
+    auto& name = std::get<std::string>(steps[step]);
+    if ( auto array = std::get_if<ArrayType>(&schema) ) {
+      // a field is reached through the arrays around its object, whose sizes stay as they are
+      return Schema( ArrayType{ std::make_shared<const Schema>(apply(*array->type, step)), array->size } );
+    }
+    auto object = std::get_if<ObjectType>(&schema);
+    if ( !object ) {
+      throw error("unknown field '" + name + "'");
+    }
+    ObjectType result = *object;
+    auto field = std::ranges::find_if(result.fields, [&name](auto& candidate) { return candidate.name == name; });
+    if ( field == result.fields.end() ) {
+      throw error("unknown field '" + name + "'");
+    }
+    field->type = std::make_shared<const Schema>(apply(*field->type, step + 1));
+    return Schema(std::move(result));
+  };
+  return apply(*this, 0);
 }
 
 namespace {
 
 /// Returns the layout of a schema whose dimensions all have sizes, a dimension being fixed if it has a size in
 /// the schema declared, of which the schema is a resolution.
-BPMNOS::Object::Layout layoutOf(const Schema& schema, const Schema& declared) {
+BPMNOS::Object::Layout layoutOf(const FlatSchema& schema, const FlatSchema& declared) {
   BPMNOS::Object::Layout layout;
   layout.scalar = schema.scalar;
   layout.fields.reserve(schema.fields.size());
@@ -290,7 +339,7 @@ BPMNOS::Object::Layout layoutOf(const Schema& schema, const Schema& declared) {
 }
 
 /// Fixes the open dimensions of a schema by the layout of a constant object, checking that it fits.
-void resolve(Schema& schema, const BPMNOS::Object::Layout& constant, const std::string& path) {
+void resolve(FlatSchema& schema, const BPMNOS::Object::Layout& constant, const std::string& path) {
   if ( constant.dimensions.size() != schema.dimensions.size() ) {
     throw std::runtime_error("Schema: '" + path + "' has " + std::to_string(constant.dimensions.size()) + " dimensions instead of " + std::to_string(schema.dimensions.size()));
   }
@@ -329,7 +378,7 @@ void resolve(Schema& schema, const BPMNOS::Object::Layout& constant, const std::
 
 /// Gives the dimensions still open, of a field the value lacks or below an empty array, the length zero, which
 /// leaves them undetermined until the first assignment of a value to one of their elements.
-void close(Schema& schema) {
+void close(FlatSchema& schema) {
   for ( auto& dimension : schema.dimensions ) {
     if ( !dimension.has_value() ) {
       dimension = 0;
@@ -387,19 +436,21 @@ void copyValues(const BPMNOS::Object::Layout& target, const BPMNOS::Object::Layo
 std::shared_ptr<const BPMNOS::Object> Schema::undefinedObject() const {
   // an object is created modifiable, so that a write may change it in place once it is no longer shared
   // an open dimension has no elements
-  Schema closed = *this;
+  FlatSchema declared = flatten(*this);
+  FlatSchema closed = declared;
   close(closed);
   auto object = std::make_shared<BPMNOS::Object>();
-  object->layout = std::make_shared<const BPMNOS::Object::Layout>( layoutOf(closed, *this) );
+  object->layout = std::make_shared<const BPMNOS::Object::Layout>( layoutOf(closed, declared) );
   object->values.resize( object->layout->size() );
   return object;
 }
 
 std::shared_ptr<const BPMNOS::Object> Schema::conform(const std::shared_ptr<const BPMNOS::Object>& constant) const {
-  Schema resolved = *this;
+  FlatSchema declared = flatten(*this);
+  FlatSchema resolved = declared;
   resolve(resolved, *constant->layout, BPMNOS::to_string(*constant));
   close(resolved);
-  auto layout = layoutOf(resolved, *this);
+  auto layout = layoutOf(resolved, declared);
   if ( layout == *constant->layout ) {
     // the object holds exactly what the attribute declares, with the same dimensions fixed, and is shared
     return constant;
@@ -414,18 +465,24 @@ std::shared_ptr<const BPMNOS::Object> Schema::conform(const std::shared_ptr<cons
 
 Schema Schema::of(const BPMNOS::Object::Layout& layout, bool element) {
   Schema schema;
-  schema.scalar = layout.scalar;
-  schema.fields.reserve(layout.fields.size());
-  for ( auto& field : layout.fields ) {
-    schema.fields.emplace_back( field.name, of(field.layout, element) );
+  if ( layout.scalar.has_value() ) {
+    schema = Schema(layout.scalar.value());
   }
-  schema.dimensions.reserve(layout.dimensions.size());
-  for ( size_t d = 0; d < layout.dimensions.size(); d++ ) {
+  else {
+    ObjectType object;
+    object.fields.reserve(layout.fields.size());
+    for ( auto& field : layout.fields ) {
+      object.fields.push_back( Field{ field.name, std::make_shared<const Schema>(of(field.layout, element)) } );
+    }
+    schema = Schema(std::move(object));
+  }
+  // the dimensions are outermost first, so that the innermost array is built first
+  for ( size_t d = layout.dimensions.size(); d-- > 0; ) {
     bool fixed = d < layout.fixed.size() && layout.fixed[d];
     // an element keeps every length but one still undetermined, whereas an object replaced keeps only the
     // lengths that are fixed
     bool keep = element ? ( fixed || layout.dimensions[d] > 0 ) : fixed;
-    schema.dimensions.push_back( keep ? std::optional<size_t>(layout.dimensions[d]) : std::nullopt );
+    schema = Schema( ArrayType{ std::make_shared<const Schema>(std::move(schema)), keep ? std::optional<size_t>(layout.dimensions[d]) : std::nullopt } );
   }
   return schema;
 }
@@ -436,7 +493,7 @@ using Json = nlohmann::json;
 
 /// Fixes the open dimensions of a schema by the JSON values standing where it applies, every array at an open
 /// dimension having the same length.
-void resolveJson(Schema& schema, const std::vector<const Json*>& values, const std::string& path) {
+void resolveJson(FlatSchema& schema, const std::vector<const Json*>& values, const std::string& path) {
   std::vector<const Json*> level = values;
   for ( auto& dimension : schema.dimensions ) {
     std::optional<size_t> length;
@@ -563,11 +620,12 @@ std::shared_ptr<const BPMNOS::Object> Schema::fromJSON(const std::string& text) 
   catch ( const std::exception& error ) {
     throw std::runtime_error(std::string("Schema: illegal JSON.\n") + error.what());
   }
-  Schema resolved = *this;
+  FlatSchema declared = flatten(*this);
+  FlatSchema resolved = declared;
   resolveJson(resolved, { &root }, "");
   close(resolved);
   auto object = std::make_shared<BPMNOS::Object>();
-  object->layout = std::make_shared<const BPMNOS::Object::Layout>( layoutOf(resolved, *this) );
+  object->layout = std::make_shared<const BPMNOS::Object::Layout>( layoutOf(resolved, declared) );
   object->values.resize( object->layout->size() );
   fillJson(*object->layout, root, object->values, 0, 0, "");
   return object;

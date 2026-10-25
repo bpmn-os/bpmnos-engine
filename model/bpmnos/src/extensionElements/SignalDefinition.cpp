@@ -10,7 +10,7 @@ SignalDefinition::SignalDefinition(XML::bpmnos::tSignal* signal)
   // the content is an object, without fields if the signal states no type
   if ( signal->type.has_value() ) {
     schema = Schema::parse(signal->type->get().value.value);
-    if ( schema.isScalar() ) {
+    if ( std::holds_alternative<ValueType>(schema) ) {
       throw std::runtime_error("SignalDefinition: the type of signal '" + signal->name.value.value + "' must be an object");
     }
   }

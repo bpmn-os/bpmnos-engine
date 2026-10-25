@@ -12,6 +12,22 @@
 
 using namespace BPMNOS::Model;
 
+namespace {
+
+/// Returns the value type of the innermost elements of an array of values, or decimal for an object.
+BPMNOS::ValueType valueTypeOf(const BPMNOS::Schema& schema) {
+  const BPMNOS::Schema* current = &schema;
+  while ( auto array = std::get_if<BPMNOS::ArrayType>(current) ) {
+    current = array->type.get();
+  }
+  if ( auto valueType = std::get_if<BPMNOS::ValueType>(current) ) {
+    return *valueType;
+  }
+  return BPMNOS::ValueType::DECIMAL;
+}
+
+} // namespace
+
 Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category category, AttributeRegistry& attributeRegistry)
   : element(attribute)
   , category(category)
@@ -23,7 +39,7 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category cat
 {
 //std::cerr << "Attribute: " << name << std::endl;
   // the type of a scalar attribute, the type having been parsed and checked when the schema was determined
-  type = schema ? schema->scalar.value_or(ValueType::DECIMAL) : Schema::parse(attribute->type.value.value).scalar.value();
+  type = schema ? valueTypeOf(*schema) : std::get<ValueType>(Schema::parse(attribute->type.value.value));
   if ( schema ) {
     if ( id == Keyword::Instance || id == Keyword::Timestamp ) {
       throw std::runtime_error("Attribute: '" + id + "' must not be an object");
@@ -82,7 +98,7 @@ Attribute::Attribute(std::string& name, const Schema& schema, AttributeRegistry&
   , id(name)
   , schema(std::make_unique<const Schema>(schema))
   , name(name)
-  , type(schema.scalar.value_or(ValueType::DECIMAL))
+  , type(valueTypeOf(schema))
   , weight(0)
   , isImmutable(false)
 {
@@ -139,7 +155,7 @@ std::unique_ptr<const BPMNOS::Schema> Attribute::getSchema(const std::string& in
   catch ( const std::exception& error ) {
     throw std::runtime_error("Attribute: illegal type of attribute '" + id + "'.\n" + error.what());
   }
-  if ( parsed.isScalar() ) {
+  if ( std::holds_alternative<ValueType>(parsed) ) {
     return nullptr;
   }
   return std::make_unique<const Schema>(std::move(parsed));

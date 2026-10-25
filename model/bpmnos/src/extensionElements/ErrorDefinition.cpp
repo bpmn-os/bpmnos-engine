@@ -10,7 +10,7 @@ ErrorDefinition::ErrorDefinition(XML::bpmnos::tError* error)
   // the content is an object, without fields if the error states no type
   if ( error->type.has_value() ) {
     schema = Schema::parse(error->type->get().value.value);
-    if ( schema.isScalar() ) {
+    if ( std::holds_alternative<ValueType>(schema) ) {
       throw std::runtime_error("ErrorDefinition: the type of error '" + error->name.value.value + "' must be an object");
     }
   }
