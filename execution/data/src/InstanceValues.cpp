@@ -56,8 +56,8 @@ InstanceValues::InstanceValues(
 
   // the own attributes are given their initial values in declaration order, the model deciding the source
   auto initialise = [&](const BPMNOS::Model::Attribute* attribute) {
-    if ( attribute->expression ) {
-      attributeRegistry.setValue( attribute, status, chain, BPMNOS::to_value( attribute->expression->execute(status, chain) ) );
+    if ( auto expression = std::get_if< std::unique_ptr<const BPMNOS::Model::Expression> >(&attribute->initialization) ) {
+      attributeRegistry.setValue( attribute, status, chain, BPMNOS::to_value( (*expression)->execute(status, chain) ) );
     }
     else if ( auto it = givenValues.find(attribute); it != givenValues.end() ) {
       attributeRegistry.setValue( attribute, status, chain, it->second );
@@ -77,8 +77,8 @@ InstanceValues::InstanceValues(
   }
   for ( auto objects : { &extensionElements->statusObjects, &extensionElements->dataObjects } ) {
     for ( auto& object : *objects ) {
-      if ( object->expression ) {
-        object->expression->writeToObject(status, chain);
+      if ( auto expression = std::get_if< std::unique_ptr<const BPMNOS::Model::Expression> >(&object->initialization) ) {
+        (*expression)->writeToObject(status, chain);
       }
     }
   }
@@ -91,6 +91,6 @@ void InstanceValues::assign(const BPMNOS::Model::Expression& expression) {
   }
   auto target = expression.target.value();
   if ( auto value = expression.execute(status, chain); value.has_value() ) {
-    attributeRegistry.setValue( target, status, chain, InstanceDataReader::convert(value.value(), target->type) );
+    attributeRegistry.setValue( target, status, chain, InstanceDataReader::convert(value.value(), std::get<BPMNOS::ValueType>(target->type)) );
   }
 }

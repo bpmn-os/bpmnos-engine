@@ -32,7 +32,7 @@ SCENARIO( "Reading instance data", "[data][reader]" ) {
         auto& row = reader.rows[2];
         auto [attribute, expression] = reader.lookupAttribute(row.node, row.initialization);
         REQUIRE( attribute->name == "size" );
-        auto value = reader.evaluate(row.instanceId, row.node, expression, attribute->type, model.limexHandle);
+        auto value = reader.evaluate(row.instanceId, row.node, expression, std::get<BPMNOS::ValueType>(attribute->type), model.limexHandle);
         REQUIRE( value == 20 );
         reader.setValue(row.instanceId, attribute, value);
         REQUIRE( reader.evaluate(row.instanceId, row.node, "size * 2", DECIMAL, model.limexHandle) == 40 );

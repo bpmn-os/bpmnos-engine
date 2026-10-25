@@ -64,9 +64,9 @@ void StaticDataProvider::readInstances(const std::string& instanceFileOrString, 
   // attributes declared before it
   globals = BPMNOS::Data(this->model->attributes.size());
   for ( auto& attribute : this->model->attributes ) {
-    if ( attribute->expression ) {
+    if ( auto expression = std::get_if< std::unique_ptr<const BPMNOS::Model::Expression> >(&attribute->initialization) ) {
       // the global attributes are the first data attributes
-      auto value = attribute->expression->execute(BPMNOS::Status{}, globals);
+      auto value = (*expression)->execute(BPMNOS::Status{}, globals);
       if ( !value.has_value() ) {
         throw std::runtime_error("StaticDataProvider: failed to evaluate global attribute '" + attribute->id + "'");
       }
@@ -89,8 +89,8 @@ void StaticDataProvider::readInstances(const std::string& instanceFileOrString, 
   };
   for ( auto object : objectsOf() ) {
     auto schema = reader.getSchema(object);
-    if ( object->initialObject.has_value() ) {
-      defaultObjects[object] = conform(object, object->initialObject.value(), "in the model");
+    if ( auto literal = std::get_if<size_t>(&object->initialization) ) {
+      defaultObjects[object] = conform(object, *literal, "in the model");
     }
     else {
       // an open dimension has no elements until an assignment gives it its length
@@ -148,7 +148,7 @@ void StaticDataProvider::readValue(InstanceDataReader& reader, const InstanceDat
   }
   else if ( !row.initialization.empty() ) {
     auto [attribute, expression] = reader.lookupAttribute(row.node, row.initialization);
-    reader.setValue(row.instanceId, attribute, reader.evaluate(row.instanceId, row.node, expression, attribute->type, handle));
+    reader.setValue(row.instanceId, attribute, reader.evaluate(row.instanceId, row.node, expression, std::get<BPMNOS::ValueType>(attribute->type), handle));
   }
 }
 

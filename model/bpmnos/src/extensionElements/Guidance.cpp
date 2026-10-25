@@ -31,8 +31,8 @@ Guidance::Guidance(XML::bpmnos::tGuidance* guidance, const AttributeRegistry& at
     for ( XML::bpmnos::tAttribute& attributeElement : guidance->attributes.value().get().attribute ) {
       try {
         auto attribute = std::make_unique<Attribute>(&attributeElement, Attribute::Category::STATUS, this->attributeRegistry);
-        if ( attribute->expression ) {
-          for ( auto input : attribute->expression->inputs ) {
+        if ( auto expression = std::get_if< std::unique_ptr<const Expression> >(&attribute->initialization) ) {
+          for ( auto input : (*expression)->inputs ) {
             dependencies.insert(input);
           }
         }
@@ -118,9 +118,9 @@ void Guidance::apply(BPMNOS::Status& status, DataType& data) const {
 
   for ( auto& attribute : attributes ) {
     status.attributes.push_back( std::nullopt );
-    if ( attribute->expression ) {
+    if ( auto expression = std::get_if< std::unique_ptr<const Expression> >(&attribute->initialization) ) {
       // compute initial value
-      status.attributes.back() = BPMNOS::to_value( attribute->expression->execute(status,data) );
+      status.attributes.back() = BPMNOS::to_value( (*expression)->execute(status,data) );
     }
   }
   

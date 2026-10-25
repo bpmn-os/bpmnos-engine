@@ -40,8 +40,8 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
           auto attribute = std::make_unique<Attribute>(&attributeElement, Attribute::Category::STATUS, attributeRegistry);
           if ( attribute->isObject() ) {
             // objects are held and numbered separately from scalar attributes
-            if ( attribute->expression ) {
-              for ( auto input : attribute->expression->inputs ) {
+            if ( auto expression = std::get_if< std::unique_ptr<const Expression> >(&attribute->initialization) ) {
+              for ( auto input : (*expression)->inputs ) {
                 entryDependencies.insert(input);
               }
             }
@@ -76,8 +76,8 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
           }
           else {
             // TODO: add entry data dependencies
-            if ( attribute->expression ) {
-              for ( auto input : attribute->expression->inputs ) {
+            if ( auto expression = std::get_if< std::unique_ptr<const Expression> >(&attribute->initialization) ) {
+              for ( auto input : (*expression)->inputs ) {
                 entryDependencies.insert(input);
               }
             }
@@ -93,8 +93,8 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     auto attribute = std::make_unique<Attribute>(&attributeElement, Attribute::Category::DATA, attributeRegistry);
     if ( attribute->isObject() ) {
       // objects are held and numbered separately from scalar attributes
-      if ( attribute->expression ) {
-        for ( auto input : attribute->expression->inputs ) {
+      if ( auto expression = std::get_if< std::unique_ptr<const Expression> >(&attribute->initialization) ) {
+        for ( auto input : (*expression)->inputs ) {
           entryDependencies.insert(input);
         }
       }
@@ -103,8 +103,8 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     }
     data.push_back( std::move(attribute) );
     // TODO: add entry data dependencies
-    if ( data.back()->expression ) {
-      for ( auto input : data.back()->expression->inputs ) {
+    if ( auto expression = std::get_if< std::unique_ptr<const Expression> >(&data.back()->initialization) ) {
+      for ( auto input : (*expression)->inputs ) {
         entryDependencies.insert(input);
       }
     }

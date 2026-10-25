@@ -151,7 +151,7 @@ std::pair<const BPMNOS::Model::Attribute*, std::string> InstanceDataReader::look
   }
 
   auto attribute = extensionElements->attributeRegistry[attributeName];
-  if ( attribute->expression || attribute->initialObject.has_value() ) {
+  if ( !std::holds_alternative<std::monostate>(attribute->initialization) ) {
     throw std::runtime_error("InstanceDataReader: attribute '" + attributeName + "' is assigned by the model and must not be given");
   }
   return {attribute, expression};
@@ -199,7 +199,7 @@ std::pair<const BPMNOS::Model::Attribute*, BPMNOS::ObjectInitializer> InstanceDa
   const BPMNOS::Model::Attribute* object = nullptr;
   if ( !row.node ) {
     object = findObject(model, nullptr, name);
-    if ( object->initialObject.has_value() || object->expression ) {
+    if ( !std::holds_alternative<std::monostate>(object->initialization) ) {
       throw std::runtime_error("InstanceDataReader: global object '" + name + "' is assigned by the model and must not be given");
     }
   }
@@ -314,7 +314,7 @@ void InstanceDataReader::declareSizes(const Row& row) {
   };
 
   if ( auto object = findObject(model, row.node, name) ) {
-    declare( schemas.try_emplace(object, *object->schema).first->second );
+    declare( schemas.try_emplace(object, object->type).first->second );
     return;
   }
 
@@ -324,7 +324,7 @@ void InstanceDataReader::declareSizes(const Row& row) {
       for ( auto node : process->find_all([](const BPMN::Node* node) { return node->represents<BPMN::SignalThrowEvent>() || node->represents<BPMN::SignalCatchEvent>(); }) ) {
         auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
         if ( extensionElements->content->name == name ) {
-          declare( signalSchemas.try_emplace(extensionElements->signalDefinition->name, *extensionElements->content->schema).first->second );
+          declare( signalSchemas.try_emplace(extensionElements->signalDefinition->name, extensionElements->content->type).first->second );
           return;
         }
       }
@@ -343,7 +343,7 @@ void InstanceDataReader::declareSizes(const Row& row) {
   if ( !row.node->represents<BPMN::ThrowEvent>() ) {
     throw std::runtime_error("InstanceDataReader: size declaration '" + text + "' at node '" + row.node->id + "' must be given at the node throwing the content");
   }
-  declare( schemas.try_emplace(extensionElements->content.get(), *extensionElements->content->schema).first->second );
+  declare( schemas.try_emplace(extensionElements->content.get(), extensionElements->content->type).first->second );
 }
 
 BPMNOS::Schema InstanceDataReader::getSignalSchema(BPMNOS::number name, const BPMNOS::Schema& type) const {
@@ -364,11 +364,12 @@ std::shared_ptr<const BPMNOS::Object> InstanceDataReader::knownObject(std::optio
   else if ( auto given = globalObjects.find(object); given != globalObjects.end() ) {
     return given->second;
   }
-  if ( !object->initialObject.has_value() ) {
+  auto literal = std::get_if<size_t>(&object->initialization);
+  if ( !literal ) {
     return nullptr;
   }
   try {
-    return getSchema(object).conform( objectRegistry[object->initialObject.value()] );
+    return getSchema(object).conform( objectRegistry[*literal] );
   }
   catch ( const std::exception& error ) {
     throw std::runtime_error("InstanceDataReader: illegal value of object '" + object->name + "'.\n" + error.what());
@@ -379,7 +380,7 @@ BPMNOS::Schema InstanceDataReader::getSchema(const BPMNOS::Model::Attribute* obj
   if ( auto it = schemas.find(object); it != schemas.end() ) {
     return it->second;
   }
-  return *object->schema;
+  return object->type;
 }
 
 void InstanceDataReader::evaluateGlobal(const std::string& initialization, const LIMEX::Handle<double>& handle) {
@@ -395,11 +396,11 @@ void InstanceDataReader::evaluateGlobal(const std::string& initialization, const
   if ( !attribute ) {
     throw std::runtime_error("InstanceDataReader: unknown global attribute '" + attributeName + "'");
   }
-  if ( attribute->expression ) {
+  if ( !std::holds_alternative<std::monostate>(attribute->initialization) ) {
     throw std::runtime_error("InstanceDataReader: global attribute '" + attributeName + "' is assigned by the model and must not be given");
   }
 
-  globals[attribute] = convert(execute(std::nullopt, nullptr, expressionString, handle), attribute->type);
+  globals[attribute] = convert(execute(std::nullopt, nullptr, expressionString, handle), std::get<BPMNOS::ValueType>(attribute->type));
 }
 
 BPMNOS::number InstanceDataReader::evaluate(size_t instanceId, const BPMN::Node* node, const std::string& expressionString, ValueType type, const LIMEX::Handle<double>& handle) const {
@@ -471,7 +472,7 @@ void InstanceDataReader::addDefaultValues(size_t instanceId, std::unordered_map<
   auto timestampAttribute = extensionElements->attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp].get();
   for ( auto [attribute, value] : { std::pair{instanceAttribute, BPMNOS::number(instanceId)}, std::pair{timestampAttribute, BPMNOS::number(0)} } ) {
     if ( !instanceValues.contains(attribute) ) {
-      if ( attribute->expression ) {
+      if ( !std::holds_alternative<std::monostate>(attribute->initialization) ) {
         throw std::runtime_error("InstanceDataReader: the default attribute '" + attribute->name + "' must not be assigned by the model");
       }
       instanceValues[attribute] = value;

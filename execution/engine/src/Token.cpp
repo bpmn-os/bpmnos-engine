@@ -239,7 +239,7 @@ nlohmann::ordered_json Token::jsonify() const {
   for ( auto attribute : attributeRegistry.statusAttributes ) {
     // an attribute that is not yet included in the status is skipped
     if ( attribute->index < status.attributes.size() ) {
-      statusEntries.emplace_back( attribute->declaration, attribute->name, valueOf(status.attributes[attribute->index], attribute->type) );
+      statusEntries.emplace_back( attribute->declaration, attribute->name, valueOf(status.attributes[attribute->index], std::get<BPMNOS::ValueType>(attribute->type)) );
     }
   }
   for ( auto object : attributeRegistry.statusObjects ) {
@@ -259,7 +259,7 @@ nlohmann::ordered_json Token::jsonify() const {
   for ( auto attribute : attributeRegistry.dataAttributes ) {
     // an attribute that is not yet included in the data is skipped
     if ( attribute->index < data->attributes.size() ) {
-      ( attribute->isGlobal ? globalEntries : dataEntries ).emplace_back( attribute->declaration, attribute->name, valueOf(data->attributes[attribute->index].get(), attribute->type) );
+      ( attribute->isGlobal ? globalEntries : dataEntries ).emplace_back( attribute->declaration, attribute->name, valueOf(data->attributes[attribute->index].get(), std::get<BPMNOS::ValueType>(attribute->type)) );
     }
   }
   for ( auto object : attributeRegistry.dataObjects ) {

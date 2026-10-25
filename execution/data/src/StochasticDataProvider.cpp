@@ -144,7 +144,7 @@ void StochasticDataProvider::requireInitialised(const InstanceDataReader& reader
     if ( !object ) {
       continue;
     }
-    bool known = object->initialObject.has_value() || ( object->isGlobal ? reader.globalObjects.contains(object) : initialisedBefore(instanceId, object) );
+    bool known = std::holds_alternative<size_t>(object->initialization) || ( object->isGlobal ? reader.globalObjects.contains(object) : initialisedBefore(instanceId, object) );
     if ( !known ) {
       throw std::runtime_error("StochasticDataProvider: expression '" + text + "' refers to object '" + object->name + "' without a value");
     }
@@ -326,7 +326,7 @@ void StochasticDataProvider::sample(Scenario& scenario, const Scenario* original
       }
       else {
         auto evaluate = [&]() {
-          return convert(valueOf(*initialization.value), initialization.attribute->type);
+          return convert(valueOf(*initialization.value), std::get<BPMNOS::ValueType>(initialization.attribute->type));
         };
         value = evaluate();
         if ( isTimestamp ) {
@@ -408,7 +408,7 @@ std::optional<BPMNOS::number> StochasticDataProvider::getReadyTimestamp(StaticDa
   randomDistributionFactory.setCurrentRng(&static_cast<Scenario&>(scenario).getRandomNumberGenerator(instanceId, token->node));
   auto evaluate = [&]() -> std::optional<BPMNOS::number> {
     if ( auto value = expression.execute(token->status, *token->data) ) {
-      return convert(value.value(), target->type);
+      return convert(value.value(), std::get<BPMNOS::ValueType>(target->type));
     }
     return std::nullopt;
   };
@@ -474,7 +474,7 @@ void StochasticDataProvider::computeStatus(Scenario& scenario, size_t instanceId
       }
       else if ( auto value = expression->execute(status, data) ) {
         auto target = expression->target.value();
-        status.attributes[target->index] = convert(value.value(), target->type);
+        status.attributes[target->index] = convert(value.value(), std::get<BPMNOS::ValueType>(target->type));
       }
     }
   };

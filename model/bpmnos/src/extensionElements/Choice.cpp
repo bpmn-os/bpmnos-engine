@@ -53,7 +53,7 @@ Choice::Choice(XML::bpmnos::tDecision* decision, const AttributeRegistry& attrib
   if ( attribute->isObject() ) {
     throw std::runtime_error("Choice: attribute '" + attribute->id + "' is an object, whereas a choice chooses a scalar value");
   }
-  if ( attribute->type == STRING && enumeration.empty() ) {
+  if ( std::get<BPMNOS::ValueType>(attribute->type) == STRING && enumeration.empty() ) {
     throw std::runtime_error("Choice: no enumeration provided for string");
   }
 
@@ -162,7 +162,7 @@ void Choice::parseDiscretizer(const std::string& input) {
 
 template <typename DataType>
 std::pair<BPMNOS::number,BPMNOS::number> Choice::getBounds(const BPMNOS::Status& status, const DataType& data) const {
-  assert( attribute->type != STRING );
+  assert( std::get<BPMNOS::ValueType>(attribute->type) != STRING );
   assert( lowerBound.has_value() );  
   assert( upperBound.has_value() );
   auto& [LB,strictLB] = lowerBound.value();
@@ -179,7 +179,7 @@ std::pair<BPMNOS::number,BPMNOS::number> Choice::getBounds(const BPMNOS::Status&
     max -= BPMNOS_NUMBER_PRECISION;
   }
 
-  if ( attribute->type != DECIMAL ) {
+  if ( std::get<BPMNOS::ValueType>(attribute->type) != DECIMAL ) {
     min = std::ceil((double)min);
     max = std::floor((double)max);
   }
@@ -210,7 +210,7 @@ std::vector<BPMNOS::number> Choice::getEnumeration(const BPMNOS::Status& status,
     auto [LB, UB] = getBounds(status, data);
     auto discretizer = multipleOf->execute(status, data);
     if ( !discretizer.has_value() ) {
-      if ( attribute->type == BPMNOS::ValueType::BOOLEAN || attribute->type == BPMNOS::ValueType::INTEGER ) {
+      if ( std::get<BPMNOS::ValueType>(attribute->type) == BPMNOS::ValueType::BOOLEAN || std::get<BPMNOS::ValueType>(attribute->type) == BPMNOS::ValueType::INTEGER ) {
         discretizer = 1;
       }
       else {

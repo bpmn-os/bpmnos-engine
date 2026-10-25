@@ -47,7 +47,7 @@ std::shared_ptr<Event> RandomChoice::dispatchEvent( const SystemState* systemSta
             choices.clear();
             break;
           }
-          if ( choice->attribute->type == DECIMAL ) {
+          if ( std::get<BPMNOS::ValueType>(choice->attribute->type) == DECIMAL ) {
             std::uniform_real_distribution<> random_distribution((double)min,(double)max);
             choices.push_back( BPMNOS::number( random_distribution(randomGenerator) ) );
             choice->attributeRegistry.setValue(choice->attribute, status, data, choices.back());

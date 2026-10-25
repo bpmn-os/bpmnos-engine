@@ -35,28 +35,23 @@ public:
   size_t declaration = 0;
 
   std::string& id;
-  /// The shape of an object attribute, stated by its type; nullptr for a scalar attribute.
-  std::unique_ptr<const Schema> schema;
-  /// The index in the object registry of the literal an object is initialised with, if the model gives one.
-  std::optional<size_t> initialObject;
-  /// The assignment an object is initialised with if the model gives one other than a literal, such as a lookup.
-  std::optional<std::string> initialExpression;
-  std::unique_ptr<const Expression> expression;
+  Schema type; ///< The attribute type
+  /// How the model initialises the attribute: std::monostate if it gives no initial value, the index in the object
+  /// registry of the literal an object attribute is initialised with, or the compiled assignment in every other case.
+  std::variant<std::monostate, size_t, std::unique_ptr<const Expression>> initialization;
   const std::string name;
 
-  /// The type of a scalar attribute; for an object, the scalar type of its base, or decimal for an object base.
-  ValueType type;
-  /// Returns true if the attribute is an object, i.e. an array or a structured value, numbered separately from
-  /// the scalar attributes.
-  bool isObject() const { return schema != nullptr; }
+  /// Returns true if the attribute is an object attribute, i.e. its type is an array type or an object type, numbered
+  /// separately from the other attributes.
+  bool isObject() const { return !std::holds_alternative<ValueType>(type); }
  
   double weight; ///< Weight to be used for objective (assuming maximization). 
 
   bool isImmutable; ///< Flag indicating whether attribute value may be changed by operator, choice, or intermediate catch event. 
   bool isGlobal = false; ///< Flag indicating whether the attribute is global, i.e. declared by a data store, whether it is a scalar attribute or an object.
 private:
-  std::unique_ptr<const Expression> getExpression(std::string& input, AttributeRegistry& attributeRegistry);
-  std::unique_ptr<const Schema> getSchema(const std::string& input);
+  std::variant<std::monostate, size_t, std::unique_ptr<const Expression>> getInitialization(std::string& input, AttributeRegistry& attributeRegistry);
+  Schema getType(const std::string& input);
   std::string getName(std::string& input);
 };
 

@@ -218,7 +218,7 @@ void Model::createGlobals() {
   for ( XML::bpmnos::tAttribute& attributeElement : getGlobals() ) {
     auto attribute = std::make_unique<Attribute>(&attributeElement, Attribute::Category::DATA, attributeRegistry);
     attribute->isGlobal = true;
-    if ( attribute->isObject() && attribute->expression ) {
+    if ( attribute->isObject() && std::holds_alternative< std::unique_ptr<const Expression> >(attribute->initialization) ) {
       throw std::runtime_error("Model: global object '" + attribute->id + "' must be initialised by a literal");
     }
     ( attribute->isObject() ? objects : attributes ).push_back( std::move(attribute) );

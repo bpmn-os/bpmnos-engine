@@ -23,7 +23,10 @@ std::optional<BPMNOS::ValueType> getHeaderType(const XML::bpmnos::tParameter& el
   }
 
   if ( auto attribute = parameter.expression->isAttribute() ) {
-    return attribute->type;
+    if ( attribute->isObject() ) {
+      throw std::runtime_error("MessageDefinition: header parameter '" + parameter.name + "' must not state an object");
+    }
+    return std::get<BPMNOS::ValueType>(attribute->type);
   }
 
   auto& root = parameter.expression->compiled.getRoot();

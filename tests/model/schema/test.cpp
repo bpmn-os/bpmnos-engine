@@ -199,7 +199,7 @@ TEST_CASE( "Number objects separately from scalar attributes", "[model][schema]"
   REQUIRE( registry["route"]->index == 0 );
   REQUIRE( registry.dataObjects.size() == 2 );
   REQUIRE( registry.statusObjects.size() == 1 );
-  REQUIRE( registry["facilities"]->schema->stringify() == "{ cost: decimal, flags: boolean[2] }[]" );
+  REQUIRE( registry["facilities"]->type.stringify() == "{ cost: decimal, flags: boolean[2] }[]" );
 
   // the scope declares its own objects apart from its scalar attributes
   REQUIRE( processExtension->statusObjects.size() == 1 );

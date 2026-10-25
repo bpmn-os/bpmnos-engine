@@ -12,45 +12,29 @@
 
 using namespace BPMNOS::Model;
 
-namespace {
-
-/// Returns the value type of the innermost elements of an array of values, or decimal for an object.
-BPMNOS::ValueType valueTypeOf(const BPMNOS::Schema& schema) {
-  const BPMNOS::Schema* current = &schema;
-  while ( auto array = std::get_if<BPMNOS::ArrayType>(current) ) {
-    current = array->type.get();
-  }
-  if ( auto valueType = std::get_if<BPMNOS::ValueType>(current) ) {
-    return *valueType;
-  }
-  return BPMNOS::ValueType::DECIMAL;
-}
-
-} // namespace
-
 Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category category, AttributeRegistry& attributeRegistry)
   : element(attribute)
   , category(category)
   , index(std::numeric_limits<size_t>::max())
   , id(attribute->id.value.value)
-  , schema(getSchema(attribute->type.value.value))
-  , expression(getExpression(attribute->name.value.value,attributeRegistry))
+  , type(getType(attribute->type.value.value))
+  , initialization(getInitialization(attribute->name.value.value,attributeRegistry))
   , name(getName(attribute->name.value.value))
 {
 //std::cerr << "Attribute: " << name << std::endl;
-  // the type of a scalar attribute, the type having been parsed and checked when the schema was determined
-  type = schema ? valueTypeOf(*schema) : std::get<ValueType>(Schema::parse(attribute->type.value.value));
-  if ( schema ) {
+  if ( isObject() ) {
     if ( id == Keyword::Instance || id == Keyword::Timestamp ) {
       throw std::runtime_error("Attribute: '" + id + "' must not be an object");
     }
   }
   // the registry numbers objects separately from scalar attributes, so it must know which this is
   attributeRegistry.add(this);
-  if ( initialExpression.has_value() ) {
-    // the expression assigning an object finds the object by its name
+  if ( isObject() && std::holds_alternative<std::monostate>(initialization) && attribute->name.value.value.contains(":=") ) {
+    // the assignment initialising an object other than by a literal finds the object by its name, and is therefore
+    // compiled once the attribute is registered
+    std::unique_ptr<const Expression> expression;
     try {
-      expression = std::make_unique<const Expression>(InputEncoder(initialExpression.value()), attributeRegistry);
+      expression = std::make_unique<const Expression>(InputEncoder(attribute->name.value.value), attributeRegistry);
     }
     catch ( const std::exception& error ) {
       throw std::runtime_error("Attribute: illegal initial value of object '" + id + "'.\n" + error.what());
@@ -58,16 +42,17 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category cat
     if ( !expression->writesToObject() ) {
       throw std::runtime_error("Attribute: illegal initial value of object '" + id + "'");
     }
+    initialization = std::move(expression);
   }
   if ( id == Keyword::Timestamp && index != ExtensionElements::Index::Timestamp ) {
     throw std::runtime_error("Attribute: timestamp must be first status attribute");
   }
-  if ( expression ) {
+  if ( auto expression = std::get_if< std::unique_ptr<const Expression> >(&initialization) ) {
     // expression requires pointer to target attribute
-    const_cast<Expression*>(expression.get())->target = std::make_optional<const Attribute*>(this);
+    const_cast<Expression*>(expression->get())->target = std::make_optional<const Attribute*>(this);
   }
 
-  if ( attribute->weight.has_value() && ( schema || ( type != ValueType::BOOLEAN && type != ValueType::INTEGER && type != ValueType::DECIMAL ) ) ) {
+  if ( attribute->weight.has_value() && ( isObject() || std::get<ValueType>(type) == ValueType::STRING ) ) {
     throw std::runtime_error("Attribute: objective of attribute '" + id + "' requires type boolean, integer, or decimal");
   }
   if ( attribute->weight.has_value() ) {
@@ -96,9 +81,8 @@ Attribute::Attribute(std::string& name, const Schema& schema, AttributeRegistry&
   , category(Category::STATUS)
   , index(std::numeric_limits<size_t>::max())
   , id(name)
-  , schema(std::make_unique<const Schema>(schema))
+  , type(schema)
   , name(name)
-  , type(valueTypeOf(schema))
   , weight(0)
   , isImmutable(false)
 {
@@ -111,29 +95,28 @@ Attribute::Attribute(std::string& name, const Schema& schema, AttributeRegistry&
   attributeRegistry.add(this);
 }
 
-std::unique_ptr<const Expression> Attribute::getExpression(std::string& input, AttributeRegistry& attributeRegistry) {
+std::variant<std::monostate, size_t, std::unique_ptr<const Expression>> Attribute::getInitialization(std::string& input, AttributeRegistry& attributeRegistry) {
   if ( !input.contains(":=") ) {
-    return nullptr;
+    return std::monostate{};
   }
 
-  if ( schema ) {
+  if ( isObject() ) {
     // an object initialised with a literal, which is registered as a constant object and checked against the
-    // schema, is shared by every instance and needs no expression; an object initialised otherwise is written by
+    // type, is shared by every instance and needs no expression; an object initialised otherwise is written by
     // an expression compiled once the attribute is registered, when its scope is created
     auto value = BPMNOS::trim_copy( input.substr( input.find(":=") + 2 ) );
     InputEncoder encoder(value);
     if ( !encoder.object().has_value() ) {
-      initialExpression = input;
-      return nullptr;
+      return std::monostate{};
     }
-    initialObject = encoder.object().value();
+    size_t literal = encoder.object().value();
     try {
-      schema->conform( objectRegistry[initialObject.value()] );
+      type.conform( objectRegistry[literal] );
     }
     catch ( const std::exception& error ) {
       throw std::runtime_error("Attribute: illegal initial value of object '" + id + "'.\n" + error.what());
     }
-    return nullptr;
+    return literal;
   }
 
   auto expression = std::make_unique<const Expression>(InputEncoder(input),attributeRegistry,true);
@@ -147,26 +130,21 @@ std::unique_ptr<const Expression> Attribute::getExpression(std::string& input, A
   return expression;
 }
 
-std::unique_ptr<const BPMNOS::Schema> Attribute::getSchema(const std::string& input) {
-  Schema parsed;
+BPMNOS::Schema Attribute::getType(const std::string& input) {
   try {
-    parsed = Schema::parse(input);
+    return Schema::parse(input);
   }
   catch ( const std::exception& error ) {
     throw std::runtime_error("Attribute: illegal type of attribute '" + id + "'.\n" + error.what());
   }
-  if ( std::holds_alternative<ValueType>(parsed) ) {
-    return nullptr;
-  }
-  return std::make_unique<const Schema>(std::move(parsed));
 }
 
 std::string Attribute::getName(std::string& input) {
-  if ( expression ) {
-    assert( expression->compiled.getTarget().has_value() );
-    return expression->compiled.getTarget().value();
+  if ( auto expression = std::get_if< std::unique_ptr<const Expression> >(&initialization) ) {
+    assert( (*expression)->compiled.getTarget().has_value() );
+    return (*expression)->compiled.getTarget().value();
   }
-  if ( schema && input.contains(":=") ) {
+  if ( isObject() && input.contains(":=") ) {
     return BPMNOS::trim_copy( input.substr( 0, input.find(":=") ) );
   }
   return input;

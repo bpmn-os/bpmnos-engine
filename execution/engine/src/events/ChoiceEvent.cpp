@@ -30,20 +30,20 @@ nlohmann::ordered_json ChoiceEvent::jsonify() const {
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   for (size_t i = 0; i < extensionElements->choices.size(); i++) {
     auto attribute = extensionElements->choices[i]->attribute;
-    if ( attribute->type == BOOLEAN) {
+    if ( std::get<BPMNOS::ValueType>(attribute->type) == BOOLEAN) {
       bool value = (bool)choices[i];
       jsonObject["choices"][attribute->name] = value ;
     }
-    else if ( attribute->type == INTEGER) {
+    else if ( std::get<BPMNOS::ValueType>(attribute->type) == INTEGER) {
       int value = (int)choices[i];
       jsonObject["choices"][attribute->name] = value ;
     }
-    else if ( attribute->type == DECIMAL) {
+    else if ( std::get<BPMNOS::ValueType>(attribute->type) == DECIMAL) {
       double value = (double)choices[i];
       jsonObject["choices"][attribute->name] = value ;
     }
-    else if ( attribute->type == STRING) {
-      std::string value = BPMNOS::to_string(choices[i],attribute->type);
+    else if ( std::get<BPMNOS::ValueType>(attribute->type) == STRING) {
+      std::string value = BPMNOS::to_string(choices[i],std::get<BPMNOS::ValueType>(attribute->type));
       jsonObject["choices"][attribute->name] = value ;
     }
   }

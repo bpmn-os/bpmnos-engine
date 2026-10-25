@@ -118,7 +118,7 @@ TEST_CASE( "Read matrix and object inputs in expressions", "[model][inputs]" ) {
 
   SECTION( "An input is assigned to an object" ) {
     auto row = registry["row"];
-    status.objects[row->index] = row->schema->undefinedObject();
+    status.objects[row->index] = row->type.undefinedObject();
     Model::Expression expression(InputEncoder("row := distance[2]"), registry);
     expression.writeToObject(status, data);
     REQUIRE( to_string(*status.objects[row->index]) == "[ 5, 0, 7 ]" );

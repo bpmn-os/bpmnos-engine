@@ -232,7 +232,8 @@ const BPMNOS::Schema* Expression::schemaOf(const std::string& name) const {
   if ( auto input = attributeRegistry.inputs.find(name); input != attributeRegistry.inputs.end() ) {
     return &input->second->schema;
   }
-  return attributeRegistry[name]->schema.get();
+  auto attribute = attributeRegistry[name];
+  return attribute->isObject() ? &attribute->type : nullptr;
 }
 
 Expression::Step Expression::walk(size_t path) const {
@@ -310,7 +311,7 @@ void Expression::analyseTarget(const std::vector<size_t>& literals) {
       resizeFields = step.fields;
       resizeDimension = step.dimension;
     }
-    else if ( !std::holds_alternative<ArrayType>(*attribute->schema) ) {
+    else if ( !std::holds_alternative<ArrayType>(attribute->type) ) {
       throw std::runtime_error("Expression: object '" + attribute->name + "' is not an array in '" + expression + "'");
     }
     return;
@@ -557,7 +558,7 @@ std::string Expression::stringify(const BPMNOS::Status& status, const DataType& 
     }
     result += ( result.empty() ? "" : ", " ) + attribute->name + " = ";
     auto value = attributeRegistry.getValue(attribute,status,data);
-    result += value.has_value() ? BPMNOS::to_string(value.value(),attribute->type) : "undefined";
+    result += value.has_value() ? BPMNOS::to_string(value.value(),std::get<BPMNOS::ValueType>(attribute->type)) : "undefined";
   }
   return result;
 }
