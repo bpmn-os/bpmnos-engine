@@ -145,7 +145,12 @@ std::shared_ptr<const BPMNOS::Object> assigned(const BPMNOS::Model::Attribute* o
     return value;
   }
   try {
-    return std::make_shared<BPMNOS::Object>(target, *value);
+    auto converted = std::make_shared<BPMNOS::Object>(target, *value);
+    if ( *converted->layout == *current->layout ) {
+      // the object keeps the layout of the current object, as after padding its fixed arrays
+      converted->layout = current->layout;
+    }
+    return converted;
   }
   catch ( const std::exception& error ) {
     throw std::runtime_error("AttributeRegistry: illegal value of object '" + object->name + "'.\n" + error.what());

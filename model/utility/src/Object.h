@@ -101,8 +101,8 @@ struct Object {
    * undefined elements and a longer source being cut off if every value beyond the n-th element is undefined and
    * rejected otherwise; an open array has the size of the source. At an object type, the source is an object whose
    * fields are fields of the target; a field the source lacks is undefined, every open array in it having size 0.
-   * If the layout determined equals the layout of the source, the object takes the layout of the source. A source
-   * that cannot be converted is rejected with an error.
+   * Every part of the layout determined that equals the corresponding part of the layout of the source is that
+   * part, so that it is shared. A source that cannot be converted is rejected with an error.
    */
   Object(const Schema& schema, const Object& source);
 };

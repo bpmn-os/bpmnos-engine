@@ -124,8 +124,11 @@ TEST_CASE( "Write objects, elements and lengths", "[execution][objects][writing]
   }
 
   SECTION( "A whole assignment pads a fixed dimension and takes the length of an open one" ) {
+    auto layout = object("location")->layout;
     write("location := [7]");
     REQUIRE( render("location") == "[ 7, undefined, undefined ]" );
+    // the padded object keeps the layout of the current object
+    REQUIRE( object("location")->layout == layout );
     REQUIRE_THROWS_WITH( write("location := [1, 2, 3, 4]"), Catch::Matchers::ContainsSubstring("4 elements where 3 are declared") );
     write("route := [4, 5, 6]");
     REQUIRE( render("route") == "[ 4, 5, 6 ]" );

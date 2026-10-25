@@ -226,6 +226,25 @@ TEST_CASE( "Keep or convert objects for a schema", "[model][schema]" ) {
     REQUIRE_THROWS_WITH( BPMNOS::Object(Schema::parse("{ x: decimal }"), *partial), Catch::Matchers::ContainsSubstring("unknown field 'cost'") );
   }
 
+  SECTION( "A converted object shares every part of the layout of the source it does not change" ) {
+    auto source = literal("{ cost := 1.0, route := [ 1, 2 ] }");
+    BPMNOS::Object object(Schema::parse("{ cost: decimal, route: integer[], open: boolean }"), *source);
+    REQUIRE( object.layout != source->layout );
+    auto& fields = std::get<BPMNOS::ObjectLayout>(*object.layout).fields;
+    auto& sourceFields = std::get<BPMNOS::ObjectLayout>(*source->layout).fields;
+    REQUIRE( fields[0].layout == sourceFields[0].layout );
+    REQUIRE( fields[1].layout == sourceFields[1].layout );
+  }
+
+  SECTION( "A merge of objects of equal layouts keeps their layout" ) {
+    auto first = std::make_shared<BPMNOS::Object>(Schema::parse("integer[2]"));
+    auto second = std::make_shared<BPMNOS::Object>(Schema::parse("integer[2]"));
+    second->values[0] = BPMNOS::number(1);
+    auto merged = BPMNOS::merge({ first, second });
+    REQUIRE( merged->layout == first->layout );
+    REQUIRE( to_string(*merged) == "[ 1, undefined ]" );
+  }
+
   SECTION( "The target schema fixes the arrays fixed in the effective schema at their current sizes" ) {
     auto source = literal("[ [ 1, 2 ], [ 3, 4 ] ]");
     REQUIRE( Schema(Schema::parse("integer[3][]"), *source->layout).stringify() == "integer[2][]" );
