@@ -15,17 +15,6 @@ using namespace BPMNOS::Execution;
 
 namespace {
 
-BPMNOS::number convert(double value, BPMNOS::ValueType type) {
-  switch ( type ) {
-    case BPMNOS::ValueType::INTEGER:
-      return BPMNOS::number((int)value);
-    case BPMNOS::ValueType::BOOLEAN:
-      return BPMNOS::number(value != 0 ? 1 : 0);
-    default:
-      return BPMNOS::number(value);
-  }
-}
-
 /// @brief Returns true if an expression assigns the timestamp.
 bool assignsTimestamp(const BPMNOS::Model::Expression& expression) {
   auto target = expression.target.value();
@@ -322,11 +311,11 @@ void StochasticDataProvider::sample(Scenario& scenario, const Scenario* original
           memberValues.push_back( valueOf(*member) );
         }
         object = InstanceDataReader::instantiate(initialization.object->schema, initialization.attribute, initialization.object->initializer, memberValues);
-        attributeRegistry.setObject(initialization.attribute, status, data, object, initialization.object->schema, *this);
+        attributeRegistry.setObject(initialization.attribute, status, data, object, *this);
       }
       else {
         auto evaluate = [&]() {
-          return convert(valueOf(*initialization.value), std::get<BPMNOS::ValueType>(initialization.attribute->type));
+          return BPMNOS::cast(valueOf(*initialization.value), std::get<BPMNOS::ValueType>(initialization.attribute->type));
         };
         value = evaluate();
         if ( isTimestamp ) {
@@ -408,7 +397,7 @@ std::optional<BPMNOS::number> StochasticDataProvider::getReadyTimestamp(StaticDa
   randomDistributionFactory.setCurrentRng(&static_cast<Scenario&>(scenario).getRandomNumberGenerator(instanceId, token->node));
   auto evaluate = [&]() -> std::optional<BPMNOS::number> {
     if ( auto value = expression.execute(token->status, *token->data) ) {
-      return convert(value.value(), std::get<BPMNOS::ValueType>(target->type));
+      return BPMNOS::cast(value.value(), std::get<BPMNOS::ValueType>(target->type));
     }
     return std::nullopt;
   };
@@ -474,7 +463,7 @@ void StochasticDataProvider::computeStatus(Scenario& scenario, size_t instanceId
       }
       else if ( auto value = expression->execute(status, data) ) {
         auto target = expression->target.value();
-        status.attributes[target->index] = convert(value.value(), std::get<BPMNOS::ValueType>(target->type));
+        status.attributes[target->index] = BPMNOS::cast(value.value(), std::get<BPMNOS::ValueType>(target->type));
       }
     }
   };

@@ -49,17 +49,17 @@ public:
   /// @copydoc getObject(const Attribute*, Status&, Data&) const
   std::shared_ptr<const Object>& getObject(const Attribute* object, Status& status, SharedData& data) const;
   /**
-   * @brief Method assigning an array or object of the given schema to an object attribute as a whole.
+   * @brief Method assigning an array or object to an object attribute as a whole.
    *
    * The value is kept or converted for the target schema built from the effective schema of the attribute, which
    * the schema provider gives, and the layout of its current object: a fixed array keeps its size, a shorter value
    * being padded with undefined values and a longer one being cut off if only undefined values are cut and rejected
-   * otherwise, and an open array takes the size of the value. A value whose schema the target schema supports is
-   * kept, so that it is shared.
+   * otherwise, and an open array takes the size of the value. A value whose schema, the schema of its layout, the
+   * target schema supports is kept, so that it is shared.
    */
-  void setObject(const Attribute* object, Status& status, Data& data, const std::shared_ptr<const Object>& value, const Schema& valueSchema, const SchemaProvider& schemaProvider) const;
-  /// @copydoc setObject(const Attribute*, Status&, Data&, const std::shared_ptr<const Object>&, const Schema&, const SchemaProvider&) const
-  void setObject(const Attribute* object, Status& status, SharedData& data, const std::shared_ptr<const Object>& value, const Schema& valueSchema, const SchemaProvider& schemaProvider) const;
+  void setObject(const Attribute* object, Status& status, Data& data, const std::shared_ptr<const Object>& value, const SchemaProvider& schemaProvider) const;
+  /// @copydoc setObject(const Attribute*, Status&, Data&, const std::shared_ptr<const Object>&, const SchemaProvider&) const
+  void setObject(const Attribute* object, Status& status, SharedData& data, const std::shared_ptr<const Object>& value, const SchemaProvider& schemaProvider) const;
   /// @brief Method setting the value of an attribute and returning the change of the objective, which is the
   /// change of the value times the weight of the attribute for a data attribute and zero for a status attribute,
   /// the previous value being available here and nowhere later.

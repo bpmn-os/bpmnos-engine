@@ -157,6 +157,9 @@ TEST_CASE( "Write objects, elements and lengths", "[execution][objects][writing]
     write("grid[1][3] := location[3]");
     REQUIRE( render("grid") == "[ [ 1, 10, undefined ], [ 4, 5, 6 ] ]" );
     REQUIRE_THROWS_WITH( write("grid[3][1] := 1"), Catch::Matchers::ContainsSubstring("illegal index") );
+    // a value is cast to the value type of the element
+    write("grid[2][1] := 2.7");
+    REQUIRE( read("grid[2][1]") == 2 );
   }
 
   SECTION( "An array or object written to an element keeps its lengths" ) {

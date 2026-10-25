@@ -143,10 +143,10 @@ public:
   /// Returns the expression members in the order in which they are written.
   const std::vector<Member>& members() const { return expressionMembers; }
 
-  /// Returns the object the literal states and its schema, each expression member having the value given at its
-  /// position in @ref members, with its type; the value of a string is its index in the string registry. The schema
-  /// states the value types of the object and leaves every array open, as the constant schema of a literal does.
-  std::pair<std::shared_ptr<const Object>, Schema> instantiate(const std::vector<std::pair<double, ValueType>>& values) const;
+  /// Returns the object the literal states, each expression member having the value given at its position in
+  /// @ref members, with its type; the value of a string is its index in the string registry. The schema of the
+  /// object states its value types and leaves every array open, as the constant schema of a literal does.
+  std::shared_ptr<const Object> instantiate(const std::vector<std::pair<double, ValueType>>& values) const;
 
 private:
   std::string text;

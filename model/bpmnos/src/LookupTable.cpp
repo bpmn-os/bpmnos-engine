@@ -140,9 +140,9 @@ void LookupTable::populate(const std::string& sourceLabel, CSVReader reader) {
       if ( type == BPMNOS::CSVReader::Type::OBJECT ) {
         try {
           // the conversion rejects a constant that does not fit the type of the column
-          auto index = (size_t)std::get<BPMNOS::number>(row[i]);
-          if ( !schema.supports(objectRegistry.schema(index)) ) {
-            BPMNOS::Object(schema, *objectRegistry[index], objectRegistry.schema(index));
+          auto& constant = *objectRegistry[(size_t)std::get<BPMNOS::number>(row[i])];
+          if ( !schema.supports(*constant.layout->schema) ) {
+            BPMNOS::Object(schema, constant);
           }
         }
         catch ( const std::exception& error ) {

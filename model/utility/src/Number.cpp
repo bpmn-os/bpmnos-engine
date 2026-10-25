@@ -86,6 +86,17 @@ Value to_value(std::optional<double> result) {
   return number(result.value());
 }
 
+number cast(double value, const ValueType& type) {
+  switch ( type ) {
+    case ValueType::INTEGER:
+      return number( (long)value );
+    case ValueType::BOOLEAN:
+      return number( value != 0 ? 1 : 0 );
+    default:
+      return number(value);
+  }
+}
+
 std::string to_string(number numericValue, const ValueType& type) {
   switch ( type ) {
     case ValueType::BOOLEAN:

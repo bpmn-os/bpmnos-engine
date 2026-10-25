@@ -92,6 +92,6 @@ void InstanceValues::assign(const BPMNOS::Model::Expression& expression) {
   }
   auto target = expression.target.value();
   if ( auto value = expression.execute(status, chain); value.has_value() ) {
-    attributeRegistry.setValue( target, status, chain, InstanceDataReader::convert(value.value(), std::get<BPMNOS::ValueType>(target->type)) );
+    attributeRegistry.setValue( target, status, chain, BPMNOS::cast(value.value(), std::get<BPMNOS::ValueType>(target->type)) );
   }
 }

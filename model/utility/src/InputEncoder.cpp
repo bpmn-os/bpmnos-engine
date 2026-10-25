@@ -297,8 +297,7 @@ size_t Scan::registerObject(const Literal& literal) const {
   object.layout = determineLayout(literal);
   object.values.resize( object.layout->size );
   flatten(literal, *object.layout, object.values, 0);
-  auto schema = *object.layout->schema;
-  return objectRegistry( std::move(object), std::move(schema) );
+  return objectRegistry( std::move(object) );
 }
 
 Literal Scan::scanArray() {
@@ -633,9 +632,9 @@ ObjectInitializer::ObjectInitializer(size_t constant)
 {
 }
 
-std::pair<std::shared_ptr<const Object>, Schema> ObjectInitializer::instantiate(const std::vector<std::pair<double, ValueType>>& values) const {
+std::shared_ptr<const Object> ObjectInitializer::instantiate(const std::vector<std::pair<double, ValueType>>& values) const {
   if ( constant.has_value() ) {
-    return { objectRegistry[constant.value()], objectRegistry.schema(constant.value()) };
+    return objectRegistry[constant.value()];
   }
   assert( values.size() == expressionMembers.size() );
 
@@ -652,6 +651,5 @@ std::pair<std::shared_ptr<const Object>, Schema> ObjectInitializer::instantiate(
   object->layout = scan.determineLayout(instance);
   object->values.resize( object->layout->size );
   scan.flatten(instance, *object->layout, object->values, 0);
-  auto schema = *object->layout->schema;
-  return { std::move(object), std::move(schema) };
+  return object;
 }

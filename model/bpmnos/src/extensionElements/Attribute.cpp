@@ -112,8 +112,9 @@ std::variant<std::monostate, size_t, std::unique_ptr<const Expression>> Attribut
     size_t literal = encoder.getObjectIndex().value();
     try {
       // the conversion rejects a literal that does not fit the type
-      if ( !type.supports(objectRegistry.schema(literal)) ) {
-        BPMNOS::Object(type, *objectRegistry[literal], objectRegistry.schema(literal));
+      auto& constant = *objectRegistry[literal];
+      if ( !type.supports(*constant.layout->schema) ) {
+        BPMNOS::Object(type, constant);
       }
     }
     catch ( const std::exception& error ) {

@@ -285,12 +285,12 @@ std::shared_ptr<const BPMNOS::Object> InstanceDataReader::instantiate(const BPMN
   auto& members = initializer.members();
   for ( size_t k = 0; k < members.size(); k++ ) {
     auto type = scalarAt(schema, members[k].path).value_or(ValueType::DECIMAL);
-    auto value = (double)convert(values[k], type);
+    auto value = (double)BPMNOS::cast(values[k], type);
     typedValues.emplace_back( value, type );
   }
   try {
-    auto [value, valueSchema] = initializer.instantiate(typedValues);
-    return schema.supports(valueSchema) ? value : std::make_shared<const BPMNOS::Object>(schema, *value, valueSchema);
+    auto value = initializer.instantiate(typedValues);
+    return schema.supports(*value->layout->schema) ? value : std::make_shared<const BPMNOS::Object>(schema, *value);
   }
   catch ( const std::exception& error ) {
     throw std::runtime_error("InstanceDataReader: illegal value of object '" + object->name + "'.\n" + error.what());
@@ -370,8 +370,8 @@ std::shared_ptr<const BPMNOS::Object> InstanceDataReader::knownObject(std::optio
   }
   try {
     auto schema = getSchema(object);
-    auto& literalSchema = objectRegistry.schema(*literal);
-    return schema.supports(literalSchema) ? objectRegistry[*literal] : std::make_shared<const BPMNOS::Object>(schema, *objectRegistry[*literal], literalSchema);
+    auto& constant = objectRegistry[*literal];
+    return schema.supports(*constant->layout->schema) ? constant : std::make_shared<const BPMNOS::Object>(schema, *constant);
   }
   catch ( const std::exception& error ) {
     throw std::runtime_error("InstanceDataReader: illegal value of object '" + object->name + "'.\n" + error.what());
@@ -402,11 +402,11 @@ void InstanceDataReader::evaluateGlobal(const std::string& initialization, const
     throw std::runtime_error("InstanceDataReader: global attribute '" + attributeName + "' is assigned by the model and must not be given");
   }
 
-  globals[attribute] = convert(execute(std::nullopt, nullptr, expressionString, handle), std::get<BPMNOS::ValueType>(attribute->type));
+  globals[attribute] = BPMNOS::cast(execute(std::nullopt, nullptr, expressionString, handle), std::get<BPMNOS::ValueType>(attribute->type));
 }
 
 BPMNOS::number InstanceDataReader::evaluate(size_t instanceId, const BPMN::Node* node, const std::string& expressionString, ValueType type, const LIMEX::Handle<double>& handle) const {
-  return convert(execute(instanceId, node, expressionString, handle), type);
+  return BPMNOS::cast(execute(instanceId, node, expressionString, handle), type);
 }
 
 double InstanceDataReader::execute(std::optional<size_t> instanceId, const BPMN::Node* node, const std::string& expressionString, const LIMEX::Handle<double>& handle) const {
@@ -482,13 +482,3 @@ void InstanceDataReader::addDefaultValues(size_t instanceId, std::unordered_map<
   }
 }
 
-BPMNOS::number InstanceDataReader::convert(double value, ValueType type) {
-  switch ( type ) {
-    case ValueType::INTEGER:
-      return BPMNOS::number((int)value);
-    case ValueType::BOOLEAN:
-      return BPMNOS::number(value != 0 ? 1 : 0);
-    default:
-      return BPMNOS::number(value);
-  }
-}

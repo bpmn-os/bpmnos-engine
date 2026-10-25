@@ -330,25 +330,18 @@ size_t countArrays(const Schema& schema) {
   return count;
 }
 
-/// Returns the layout of the object converted to the schema from a source of the given schema and layout, or, if no
-/// source is given, of an object of the schema with every open array having size 0.
-std::shared_ptr<const Layout> determineLayout(const std::shared_ptr<const Schema>& schema, const Schema* sourceSchema, const Layout* source, const std::string& path) {
+/// Returns the layout of the object converted to the schema from a source of the given layout, or, if no source is
+/// given, of an object of the schema with every open array having size 0.
+std::shared_ptr<const Layout> determineLayout(const std::shared_ptr<const Schema>& schema, const Layout* source, const std::string& path) {
+  const Schema* sourceSchema = source ? source->schema.get() : nullptr;
   if ( sourceSchema && countArrays(*sourceSchema) != countArrays(*schema) ) {
     throw std::runtime_error("Object: '" + path + "' has " + std::to_string(countArrays(*sourceSchema)) + " dimensions instead of " + std::to_string(countArrays(*schema)));
   }
   if ( auto array = std::get_if<ArrayType>(schema.get()) ) {
     // a fixed array has its size, an open array the size of the source
-    const Schema* sourceElementSchema = nullptr;
-    const Layout* sourceElement = nullptr;
-    size_t sourceSize = 0;
-    if ( sourceSchema ) {
-      auto& sourceArray = std::get<ArrayLayout>(*source);
-      sourceElementSchema = std::get<ArrayType>(*sourceSchema).type.get();
-      sourceElement = sourceArray.layout.get();
-      sourceSize = sourceArray.size;
-    }
-    auto element = determineLayout(array->type, sourceElementSchema, sourceElement, path);
-    return std::make_shared<const Layout>(schema, element, array->size.value_or(sourceSize));
+    auto sourceArray = source ? &std::get<ArrayLayout>(*source) : nullptr;
+    auto element = determineLayout(array->type, sourceArray ? sourceArray->layout.get() : nullptr, path);
+    return std::make_shared<const Layout>(schema, element, array->size.value_or( sourceArray ? sourceArray->size : 0 ));
   }
   if ( auto valueType = std::get_if<ValueType>(schema.get()) ) {
     if ( sourceSchema ) {
@@ -379,15 +372,13 @@ std::shared_ptr<const Layout> determineLayout(const std::shared_ptr<const Schema
   std::vector< std::shared_ptr<const Layout> > layouts;
   layouts.reserve(fields.size());
   for ( auto& field : fields ) {
-    const Schema* sourceFieldSchema = nullptr;
-    const Layout* sourceFieldLayout = nullptr;
+    const Layout* sourceField = nullptr;
     if ( sourceFields ) {
       if ( auto it = std::ranges::find_if(*sourceFields, [&field](auto& candidate) { return candidate.name == field.name; }); it != sourceFields->end() ) {
-        sourceFieldSchema = it->type.get();
-        sourceFieldLayout = std::get<ObjectLayout>(*source).fields[(size_t)std::distance(sourceFields->begin(), it)].layout.get();
+        sourceField = std::get<ObjectLayout>(*source).fields[(size_t)std::distance(sourceFields->begin(), it)].layout.get();
       }
     }
-    layouts.push_back( determineLayout(field.type, sourceFieldSchema, sourceFieldLayout, path + "." + field.name) );
+    layouts.push_back( determineLayout(field.type, sourceField, path + "." + field.name) );
   }
   return std::make_shared<const Layout>(schema, layouts);
 }
@@ -548,7 +539,7 @@ void fill(const Layout& layout, const Json& value, std::vector<Value>& values, s
 } // namespace
 
 Object::Object(const Schema& schema)
-  : layout( determineLayout(std::make_shared<const Schema>(schema), nullptr, nullptr, "") )
+  : layout( determineLayout(std::make_shared<const Schema>(schema), nullptr, "") )
   , values( layout->size )
 {
 }
@@ -560,9 +551,9 @@ Object::Object(const Schema& schema, const nlohmann::json& json)
   fill(*layout, json, values, 0, "");
 }
 
-Object::Object(const Schema& schema, const Object& source, const Schema& sourceSchema) {
+Object::Object(const Schema& schema, const Object& source) {
   auto path = to_string(source);
-  auto determined = determineLayout(std::make_shared<const Schema>(schema), &sourceSchema, source.layout.get(), path);
+  auto determined = determineLayout(std::make_shared<const Schema>(schema), source.layout.get(), path);
   layout = ( *determined == *source.layout ) ? source.layout : std::move(determined);
   values.resize( layout->size );
   copy(*source.layout, source.values, 0, *layout, values, 0, path);

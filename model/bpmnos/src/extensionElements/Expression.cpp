@@ -606,19 +606,18 @@ void Expression::writeToObject(BPMNOS::Status& status, DataType& data, const Sch
     }
 
     if ( !objectValue ) {
-      // a value is written to an element, which never changes a length
+      // a value is written to an element, cast to the value type of the element, which never changes a size
       auto value = evaluate(variableValues, pathObjects);
       auto location = locateTarget();
-      modifiable(slot).values[location.offset] = BPMNOS::to_value(value);
+      auto type = std::get<ValueType>(*(*location.layout)->schema);
+      modifiable(slot).values[location.offset] = value.has_value() ? BPMNOS::Value( BPMNOS::cast(value.value(), type) ) : std::nullopt;
       return;
     }
 
-    // the array or object assigned, with its schema
+    // the array or object assigned, whose layout refers to its schema
     std::shared_ptr<const BPMNOS::Object> source;
-    const Schema* sourceSchema = nullptr;
     if ( sourceLiteral.has_value() ) {
       source = objectRegistry[sourceLiteral.value()];
-      sourceSchema = &objectRegistry.schema(sourceLiteral.value());
     }
     else if ( sourceCall ) {
       // the value of the assignment is the index of the constant object the lookup returns
@@ -630,15 +629,12 @@ void Expression::writeToObject(BPMNOS::Status& status, DataType& data, const Sch
         throw std::runtime_error("Expression: undefined argument");
       }
       source = objectRegistry[(size_t)index];
-      sourceSchema = &objectRegistry.schema((size_t)index);
     }
     else if ( sourceObject ) {
       source = attributeRegistry.getObject(sourceObject, status, data);
-      sourceSchema = &sourceObject->type;
     }
     else if ( sourceInput ) {
       source = sourceInput->object;
-      sourceSchema = &sourceInput->schema;
     }
     else {
       // the indices of the source path are those LIMEX evaluates for the value of the assignment, which a
@@ -665,14 +661,11 @@ void Expression::writeToObject(BPMNOS::Status& status, DataType& data, const Sch
       catch ( const Undefined& ) {
         throw std::runtime_error("Expression: undefined index");
       }
-      // the part of the declared schema the source path reaches
-      auto& description = compiled.getPaths()[sourcePath.value()];
-      sourceSchema = &walk(sourcePath.value(), *getSchema(description.name));
     }
 
     if ( !targetPath.has_value() ) {
       // the whole object keeps the sizes of its fixed arrays and takes those of its open ones
-      attributeRegistry.setObject(target.value(), status, data, source, *sourceSchema, schemaProvider);
+      attributeRegistry.setObject(target.value(), status, data, source, schemaProvider);
       return;
     }
 
@@ -682,7 +675,7 @@ void Expression::writeToObject(BPMNOS::Status& status, DataType& data, const Sch
     // the layout of the element is kept, the object holding it being replaced when a size changes
     auto element = *location.layout;
     Schema targetSchema( walk(targetPath.value(), schemaProvider.getSchema(target.value())), *element );
-    auto value = targetSchema.supports(*sourceSchema) ? source : std::make_shared<const BPMNOS::Object>(targetSchema, *source, *sourceSchema);
+    auto value = targetSchema.supports(*source->layout->schema) ? source : std::make_shared<const BPMNOS::Object>(targetSchema, *source);
     std::function<void(const BPMNOS::Layout&, const BPMNOS::Layout&, std::vector< std::optional<std::string> >&)> determine =
       [&](const BPMNOS::Layout& current, const BPMNOS::Layout& given, std::vector< std::optional<std::string> >& steps) {
         if ( auto array = std::get_if<BPMNOS::ArrayLayout>(&current) ) {

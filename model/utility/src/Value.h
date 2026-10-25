@@ -86,6 +86,12 @@ number to_number(const std::string& valueString, const ValueType& type);
 Value to_value(std::optional<double> result);
 
 /**
+ * @brief Casts a number to a single value of the given type as in C++: to an integer by truncation towards zero, to
+ * a boolean as 1 for every number but 0, and to a decimal or string unchanged.
+ */
+number cast(double value, const ValueType& type);
+
+/**
  * @brief Converts a number to the text of a value of the given type, a decimal always being written with a decimal
  * point, `1.0` rather than `1`, so that the text is read back as a value of the same type.
  */

@@ -171,10 +171,9 @@ TEST_CASE( "Parse the schema of an attribute", "[model][schema]" ) {
 
 TEST_CASE( "Keep or convert objects for a schema", "[model][schema]" ) {
   using BPMNOS::Schema;
-  // a literal as a constant object together with its constant schema
+  // a literal as a constant object, whose layout refers to its constant schema
   auto literal = [](const std::string& text) {
-    auto index = InputEncoder(text).getObjectIndex().value();
-    return std::pair{ objectRegistry[index], objectRegistry.schema(index) };
+    return objectRegistry[ InputEncoder(text).getObjectIndex().value() ];
   };
 
   SECTION( "A schema supports the schemas that differ from it at most in which arrays are fixed" ) {
@@ -191,29 +190,29 @@ TEST_CASE( "Keep or convert objects for a schema", "[model][schema]" ) {
   }
 
   SECTION( "A fixed array is padded, and cut off where only undefined values are cut" ) {
-    auto [source, sourceSchema] = literal("[ 1, 2 ]");
-    BPMNOS::Object padded(Schema::parse("integer[3]"), *source, sourceSchema);
+    auto source = literal("[ 1, 2 ]");
+    BPMNOS::Object padded(Schema::parse("integer[3]"), *source);
     REQUIRE( to_string(padded) == "[ 1, 2, undefined ]" );
-    BPMNOS::Object cut(Schema::parse("integer[2]"), padded, Schema::parse("integer[3]"));
+    BPMNOS::Object cut(Schema::parse("integer[2]"), padded);
     REQUIRE( to_string(cut) == "[ 1, 2 ]" );
-    REQUIRE_THROWS_WITH( BPMNOS::Object(Schema::parse("integer[1]"), *source, sourceSchema), Catch::Matchers::ContainsSubstring("2 elements where 1 are declared") );
+    REQUIRE_THROWS_WITH( BPMNOS::Object(Schema::parse("integer[1]"), *source), Catch::Matchers::ContainsSubstring("2 elements where 1 are declared") );
     // an open array takes the size of the source
-    REQUIRE( to_string(BPMNOS::Object(Schema::parse("integer[]"), *source, sourceSchema)) == "[ 1, 2 ]" );
+    REQUIRE( to_string(BPMNOS::Object(Schema::parse("integer[]"), *source)) == "[ 1, 2 ]" );
   }
 
   SECTION( "Arrays and objects are not cast" ) {
-    auto [decimals, decimalSchema] = literal("[ 2.7, 0.2 ]");
-    REQUIRE_THROWS_WITH( BPMNOS::Object(Schema::parse("integer[3]"), *decimals, decimalSchema), Catch::Matchers::ContainsSubstring("cannot be converted") );
-    auto [integers, integerSchema] = literal("[ 1, 2 ]");
-    REQUIRE_THROWS_WITH( BPMNOS::Object(Schema::parse("decimal[3]"), *integers, integerSchema), Catch::Matchers::ContainsSubstring("cannot be converted") );
-    REQUIRE_THROWS( BPMNOS::Object(Schema::parse("boolean[3]"), *integers, integerSchema) );
-    auto [strings, stringSchema] = literal(R"([ "A" ])");
-    REQUIRE_THROWS( BPMNOS::Object(Schema::parse("decimal[]"), *strings, stringSchema) );
+    auto decimals = literal("[ 2.7, 0.2 ]");
+    REQUIRE_THROWS_WITH( BPMNOS::Object(Schema::parse("integer[3]"), *decimals), Catch::Matchers::ContainsSubstring("cannot be converted") );
+    auto integers = literal("[ 1, 2 ]");
+    REQUIRE_THROWS_WITH( BPMNOS::Object(Schema::parse("decimal[3]"), *integers), Catch::Matchers::ContainsSubstring("cannot be converted") );
+    REQUIRE_THROWS( BPMNOS::Object(Schema::parse("boolean[3]"), *integers) );
+    auto strings = literal(R"([ "A" ])");
+    REQUIRE_THROWS( BPMNOS::Object(Schema::parse("decimal[]"), *strings) );
   }
 
   SECTION( "A field the source lacks is undefined, its open arrays having size 0" ) {
-    auto [source, sourceSchema] = literal("[ { cost := 10.0, flags := [ true ] } ]");
-    BPMNOS::Object object(Schema::parse("{ cost: decimal, flags: boolean[3] }[6]"), *source, sourceSchema);
+    auto source = literal("[ { cost := 10.0, flags := [ true ] } ]");
+    BPMNOS::Object object(Schema::parse("{ cost: decimal, flags: boolean[3] }[6]"), *source);
     REQUIRE( object.values.size() == 24 );
     size_t defined = 0;
     for ( auto& value : object.values ) {
@@ -222,13 +221,13 @@ TEST_CASE( "Keep or convert objects for a schema", "[model][schema]" ) {
       }
     }
     REQUIRE( defined == 2 );
-    auto [partial, partialSchema] = literal("{ cost := 1.0 }");
-    REQUIRE( to_string(BPMNOS::Object(Schema::parse("{ cost: decimal, flags: boolean[] }"), *partial, partialSchema)) == "{ cost := 1.0, flags := [ ] }" );
-    REQUIRE_THROWS_WITH( BPMNOS::Object(Schema::parse("{ x: decimal }"), *partial, partialSchema), Catch::Matchers::ContainsSubstring("unknown field 'cost'") );
+    auto partial = literal("{ cost := 1.0 }");
+    REQUIRE( to_string(BPMNOS::Object(Schema::parse("{ cost: decimal, flags: boolean[] }"), *partial)) == "{ cost := 1.0, flags := [ ] }" );
+    REQUIRE_THROWS_WITH( BPMNOS::Object(Schema::parse("{ x: decimal }"), *partial), Catch::Matchers::ContainsSubstring("unknown field 'cost'") );
   }
 
   SECTION( "The target schema fixes the arrays fixed in the effective schema at their current sizes" ) {
-    auto [source, sourceSchema] = literal("[ [ 1, 2 ], [ 3, 4 ] ]");
+    auto source = literal("[ [ 1, 2 ], [ 3, 4 ] ]");
     REQUIRE( Schema(Schema::parse("integer[3][]"), *source->layout).stringify() == "integer[2][]" );
   }
 }
@@ -236,7 +235,7 @@ TEST_CASE( "Keep or convert objects for a schema", "[model][schema]" ) {
 TEST_CASE( "Lay out an object", "[model][schema]" ) {
   using BPMNOS::Schema;
   auto index = InputEncoder("[ { cost := 10.0, flags := [ true, false ] }, { cost := 20.0, flags := [ false, false ] }, { cost := 30.0, flags := [ true, true ] } ]").getObjectIndex().value();
-  BPMNOS::Object object(Schema::parse("{ cost: decimal, flags: boolean[3] }[]"), *objectRegistry[index], objectRegistry.schema(index));
+  BPMNOS::Object object(Schema::parse("{ cost: decimal, flags: boolean[3] }[]"), *objectRegistry[index]);
 
   SECTION( "The layout has the structure of the schema with the actual sizes, each part referring to its schema" ) {
     REQUIRE( object.layout->schema->stringify() == "{ cost: decimal, flags: boolean[3] }[]" );

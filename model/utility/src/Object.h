@@ -93,7 +93,8 @@ struct Object {
    */
   Object(const Schema& schema, const nlohmann::json& json);
   /**
-   * @brief Constructs an object of the given schema, the target, from the given source object, whose schema is given.
+   * @brief Constructs an object of the given schema, the target, from the given source object, whose schema is the
+   * schema of its layout.
    *
    * At a value type, the source holds a single value of the same value type; arrays and objects are not cast. At an
    * array type, the source is an array. A fixed array of size n has size n, a shorter source being padded with
@@ -103,7 +104,7 @@ struct Object {
    * If the layout determined equals the layout of the source, the object takes the layout of the source. A source
    * that cannot be converted is rejected with an error.
    */
-  Object(const Schema& schema, const Object& source, const Schema& sourceSchema);
+  Object(const Schema& schema, const Object& source);
 };
 
 /**

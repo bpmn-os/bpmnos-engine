@@ -82,8 +82,8 @@ void StaticDataProvider::readInstances(const std::string& instanceFileOrString, 
   auto convert = [&reader](const BPMNOS::Model::Attribute* object, size_t index, const std::string& owner) -> std::shared_ptr<const BPMNOS::Object> {
     try {
       auto schema = reader.getSchema(object);
-      auto& literalSchema = objectRegistry.schema(index);
-      return schema.supports(literalSchema) ? objectRegistry[index] : std::make_shared<const BPMNOS::Object>(schema, *objectRegistry[index], literalSchema);
+      auto& constant = objectRegistry[index];
+      return schema.supports(*constant->layout->schema) ? constant : std::make_shared<const BPMNOS::Object>(schema, *constant);
     }
     catch ( const std::exception& error ) {
       throw std::runtime_error("StaticDataProvider: illegal value of object '" + object->id + "' " + owner + ".\n" + error.what());

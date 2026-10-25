@@ -155,10 +155,6 @@ public:
   std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::Schema> schemas; ///< The schema of each object whose sizes are declared
   std::unordered_map<BPMNOS::number, BPMNOS::Schema> signalSchemas; ///< The schema of the content of each signal whose sizes are declared, by the name of the signal
 
-  /// @brief Converts the value of an expression of the instance data to a value of the given type, an integer
-  /// being truncated and a boolean being true for every value but zero.
-  static BPMNOS::number convert(double value, ValueType type);
-
 private:
   const BPMN::Node* findNode(const std::string& nodeId) const;
   /// @brief Method evaluating an expression of the instance data at a node of an instance, or of the global values if

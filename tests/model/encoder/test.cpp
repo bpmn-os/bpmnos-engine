@@ -17,7 +17,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
         REQUIRE( encoder.getObjectIndex().has_value() );
         auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
         REQUIRE( objectRegistry[index]->layout->stringify() == "string[3]" );
-        REQUIRE( objectRegistry.schema(index).stringify() == "string[]" );
+        REQUIRE( objectRegistry[index]->layout->schema->stringify() == "string[]" );
         REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == R"([ "A", "B", "C" ])" );
       }
     }
@@ -28,7 +28,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
         REQUIRE( encoder.getObjectIndex().has_value() );
         auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
         REQUIRE( objectRegistry[index]->layout->stringify() == "decimal[2]" );
-        REQUIRE( objectRegistry.schema(index).stringify() == "decimal[]" );
+        REQUIRE( objectRegistry[index]->layout->schema->stringify() == "decimal[]" );
         REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == "[ 1.0, 2.5 ]" );
       }
     }
@@ -39,7 +39,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
         REQUIRE( encoder.getObjectIndex().has_value() );
         auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
         REQUIRE( objectRegistry[index]->layout->stringify() == "integer[2]" );
-        REQUIRE( objectRegistry.schema(index).stringify() == "integer[]" );
+        REQUIRE( objectRegistry[index]->layout->schema->stringify() == "integer[]" );
         REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == "[ 1, -2 ]" );
       }
     }
@@ -59,7 +59,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
         REQUIRE( encoder.getObjectIndex().has_value() );
         auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
         REQUIRE( objectRegistry[index]->layout->stringify() == "string[3][2]" );
-        REQUIRE( objectRegistry.schema(index).stringify() == "string[][]" );
+        REQUIRE( objectRegistry[index]->layout->schema->stringify() == "string[][]" );
         REQUIRE( objectRegistry[index]->values.size() == 6 );
         REQUIRE( objectRegistry[index]->values[3] == BPMNOS::number(stringRegistry("D")) );
         REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == R"([ [ "A", "B" ], [ "C", "D" ], [ "E", "F" ] ])" );
@@ -72,7 +72,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
         REQUIRE( encoder.getObjectIndex().has_value() );
         auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
         REQUIRE( objectRegistry[index]->layout->stringify() == "{ name: string, position: decimal[2] }" );
-        REQUIRE( objectRegistry.schema(index).stringify() == "{ name: string, position: decimal[] }" );
+        REQUIRE( objectRegistry[index]->layout->schema->stringify() == "{ name: string, position: decimal[] }" );
         REQUIRE( objectRegistry[index]->values.size() == 3 );
         REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == R"({ name := "Depot", position := [ 0.0, 1.5 ] })" );
       }
@@ -221,9 +221,9 @@ SCENARIO( "Object initializers", "[model][encoder]" ) {
       REQUIRE( initializer.members()[1].path == ObjectInitializer::Path{ "flags", "" } );
     }
     THEN( "It is instantiated with the values of its expression members" ) {
-      auto [object, schema] = initializer.instantiate({ { 2.5, DECIMAL }, { 0, BOOLEAN } });
+      auto object = initializer.instantiate({ { 2.5, DECIMAL }, { 0, BOOLEAN } });
       REQUIRE( BPMNOS::to_string(*object) == R"({ x := 2.5, name := "Depot", flags := [ true, false ] })" );
-      REQUIRE( schema.stringify() == "{ x: decimal, name: string, flags: boolean[] }" );
+      REQUIRE( object->layout->schema->stringify() == "{ x: decimal, name: string, flags: boolean[] }" );
     }
   }
 
@@ -241,5 +241,5 @@ TEST_CASE( "Write values as they are read", "[model][encoder]" ) {
   REQUIRE( BPMNOS::to_string(BPMNOS::number(2), INTEGER) == "2" );
   // a decimal written is read back as a decimal
   auto index = InputEncoder("[ " + BPMNOS::to_string(BPMNOS::number(4), DECIMAL) + " ]").getObjectIndex().value();
-  REQUIRE( objectRegistry.schema(index).stringify() == "decimal[]" );
+  REQUIRE( objectRegistry[index]->layout->schema->stringify() == "decimal[]" );
 }
