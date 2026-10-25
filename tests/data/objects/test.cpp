@@ -140,6 +140,15 @@ TEST_CASE( "Create objects from the model and the instance data", "[data][object
     REQUIRE( to_string(*provider->objectOf(*scenario, instance1, process, "route")) == "[ undefined, undefined ]" );
   }
 
+  SECTION( "The data provider keeps the effective schemas" ) {
+    auto& registry = process->extensionElements->as<Model::ExtensionElements>()->attributeRegistry;
+    REQUIRE( provider->getSchema(registry["route"]).stringify() == "integer[2]" );
+    REQUIRE( provider->getSchema(registry["facilities"]).stringify() == "{ cost: decimal, flags: boolean[2] }[2]" );
+    // an object without size declarations has its attribute type
+    auto grid = nodeOf(*model, "SubProcess_1")->extensionElements->as<Model::ExtensionElements>()->attributeRegistry["grid"];
+    REQUIRE( &provider->getSchema(grid) == &grid->type );
+  }
+
   SECTION( "A data object takes the value an instance gives and is padded at fixed dimensions" ) {
     auto facilities = provider->objectOf(*scenario, instance1, process, "facilities");
     REQUIRE( facilities->layout->stringify() == "{ cost: decimal, flags: boolean[2] }[2]" );

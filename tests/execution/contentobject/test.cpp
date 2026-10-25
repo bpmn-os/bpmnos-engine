@@ -257,6 +257,19 @@ TEST_CASE( "Size declarations of the content of messages and signals", "[executi
     auto model = modelFrom(routeModel("signal", {}));
     auto provider = std::make_shared<Execution::StaticDataProvider>(model, "INSTANCE_ID; NODE_ID; INITIALIZATION\n; ; Exchange.route[4]\nInstance_1; Thrower;\n");
     REQUIRE( provider->getDefaultContent(BPMNOS::to_number(std::string("Exchange"),STRING))->values.size() == 4 );
+    // the content of every node of the signal has the effective schema declared by its name
+    for ( std::string id : { "Throw", "Catch" } ) {
+      INFO( id );
+      const BPMN::Node* node = nullptr;
+      for ( auto& process : model->processes ) {
+        for ( auto found : process->find_all([&id](const BPMN::Node* candidate) { return candidate->id == id; }) ) {
+          node = found;
+        }
+      }
+      REQUIRE( node );
+      auto content = node->extensionElements->as<Model::ExtensionElements>()->content.get();
+      REQUIRE( provider->getSchema(content).stringify() == "{ route: integer[4] }" );
+    }
   }
 
   SECTION( "Illegal size declarations of content are refused" ) {

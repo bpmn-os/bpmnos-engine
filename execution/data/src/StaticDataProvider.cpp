@@ -102,12 +102,17 @@ void StaticDataProvider::readInstances(const std::string& instanceFileOrString, 
   for ( auto& [name, schema] : reader.signalSchemas ) {
     defaultContents[name] = schema.undefinedObject();
   }
+  // the effective schemas are kept, the content of every node of a signal having the schema declared by its name
+  schemas = reader.schemas;
   for ( auto& process : this->model->processes ) {
     for ( auto node : process->find_all([](const BPMN::Node* node) { return node->extensionElements && node->extensionElements->represents<const BPMNOS::Model::ExtensionElements>() && node->extensionElements->as<const BPMNOS::Model::ExtensionElements>()->content; }) ) {
       auto extensionElements = node->extensionElements->as<const BPMNOS::Model::ExtensionElements>();
       auto content = extensionElements->content.get();
       if ( auto signalDefinition = extensionElements->signalDefinition.get() ) {
         defaultObjects[content] = defaultContents.at(signalDefinition->name);
+        if ( auto it = reader.signalSchemas.find(signalDefinition->name); it != reader.signalSchemas.end() ) {
+          schemas[content] = it->second;
+        }
       }
       else if ( reader.schemas.contains(content) ) {
         defaultObjects[content] = reader.getSchema(content).undefinedObject();

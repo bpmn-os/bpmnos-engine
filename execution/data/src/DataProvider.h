@@ -6,6 +6,7 @@
 #include <memory>
 #include <unordered_map>
 #include "model/bpmnos/src/Model.h"
+#include "model/bpmnos/src/SchemaProvider.h"
 #include "model/utility/src/Value.h"
 
 namespace BPMNOS::Execution {
@@ -34,7 +35,7 @@ typedef std::deque< std::shared_ptr<Event> > EventQueue; ///< Events enqueued fo
  * number of milliseconds after the previous clock tick, and supplies nothing before. A data provider never
  * blocks, since the controller may decide while time does not advance.
  */
-class DataProvider : public std::enable_shared_from_this<DataProvider> {
+class DataProvider : public std::enable_shared_from_this<DataProvider>, public BPMNOS::Model::SchemaProvider {
 public:
   /**
    * @param model The model the data provider is built on, whose ownership it shares.
@@ -118,12 +119,21 @@ public:
    */
   const std::shared_ptr<const BPMNOS::Object>& getDefaultContent(BPMNOS::number signalName) const;
 
+  /**
+   * @brief Method returning the effective schema of an object attribute, which has the sizes the size declarations
+   * fix, those of the content of a signal being declared by its name; without size declarations, it is the attribute
+   * type.
+   */
+  const BPMNOS::Schema& getSchema(const BPMNOS::Model::Attribute* object) const override;
+
 protected:
   const std::shared_ptr<const BPMNOS::Model::Model> model; ///< The model the data provider is built on, whose ownership it shares
   /// The default object of each object attribute
   std::unordered_map<const BPMNOS::Model::Attribute*, std::shared_ptr<const BPMNOS::Object>> defaultObjects;
   /// The default content object of each signal, by its name
   std::unordered_map<BPMNOS::number, std::shared_ptr<const BPMNOS::Object>> defaultContents;
+  /// The effective schema of each object attribute whose sizes are declared
+  std::unordered_map<const BPMNOS::Model::Attribute*, BPMNOS::Schema> schemas;
 };
 
 } // namespace BPMNOS::Execution

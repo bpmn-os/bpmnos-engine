@@ -52,6 +52,13 @@ const std::shared_ptr<const BPMNOS::Object>& DataProvider::getDefaultContent(BPM
   return it->second;
 }
 
+const BPMNOS::Schema& DataProvider::getSchema(const BPMNOS::Model::Attribute* object) const {
+  if ( auto it = schemas.find(object); it != schemas.end() ) {
+    return it->second;
+  }
+  return object->type;
+}
+
 void DataProvider::advance(const SystemState* systemState, Scenario& scenario, EventQueue& queue) const {
   auto now = std::chrono::steady_clock::now();
   // the elapsed time is compared in milliseconds rather than the duration added to the previous clock tick,

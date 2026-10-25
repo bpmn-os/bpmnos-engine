@@ -31,6 +31,7 @@ set(bpmn_SOURCES
 
 set(bpmn_HEADERS
   extensionElements/Attribute.h
+  SchemaProvider.h
   extensionElements/AttributeRegistry.h
   extensionElements/Parameter.h
   extensionElements/Expression.h
