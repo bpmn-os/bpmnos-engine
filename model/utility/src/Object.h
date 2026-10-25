@@ -56,9 +56,8 @@ struct Object {
   /**
    * @brief Constructs an object of the given schema, the target, from the given source object, whose schema is given.
    *
-   * At a value type, the source holds a single value whose value type converts to the target's: a value type
-   * converts to itself, and `boolean`, `integer` and `decimal` convert to one another as in a C++ cast, whereas a
-   * `string` converts only to `string`. At an array type, the source is an array. A fixed array of size n has size
+   * At a value type, the source holds a single value of the same value type; arrays and objects are not cast. At an
+   * array type, the source is an array. A fixed array of size n has size
    * n, a shorter source being padded with undefined elements and a longer source being cut off if every value beyond
    * the n-th element is undefined and rejected otherwise; an open array has the size of the source. At an object
    * type, the source is an object whose fields are fields of the target; a field the source lacks is undefined, every

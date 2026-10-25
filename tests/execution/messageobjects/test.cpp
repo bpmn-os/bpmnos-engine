@@ -25,7 +25,7 @@ std::string messagingModel(const std::string& stopsType) {
       <bpmn2:extensionElements>
         <bpmnos:attributes>
           <bpmnos:attribute id="Instance" type="string" name="instance" />
-          <bpmnos:attribute id="Depot" type="{ x: decimal }" name="depot := { x := 3 }" />
+          <bpmnos:attribute id="Depot" type="{ x: decimal }" name="depot := { x := 3.0 }" />
         </bpmnos:attributes>
       </bpmn2:extensionElements>
     </bpmn2:dataObject>

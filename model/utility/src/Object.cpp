@@ -305,8 +305,8 @@ Object::Layout determineLayout(const Schema& schema, const Schema* sourceSchema,
       if ( !sourceType ) {
         throw std::runtime_error("Object: '" + path + "' has fields where a value is expected");
       }
-      bool numeric = ( *valueType != ValueType::STRING && *sourceType != ValueType::STRING );
-      if ( *valueType != *sourceType && !numeric ) {
+      // arrays and objects are not cast
+      if ( *valueType != *sourceType ) {
         throw std::runtime_error("Object: '" + path + "' cannot be converted to the type of the attribute");
       }
     }
@@ -339,28 +339,13 @@ Object::Layout determineLayout(const Schema& schema, const Schema* sourceSchema,
   return layout;
 }
 
-/// Converts a value to the given value type as in a C++ cast.
-Value convert(const Value& value, ValueType type) {
-  if ( !value.has_value() ) {
-    return std::nullopt;
-  }
-  switch ( type ) {
-    case ValueType::INTEGER:
-      return number( (long)(double)value.value() );
-    case ValueType::BOOLEAN:
-      return number( value.value() != number(0) ? 1 : 0 );
-    default:
-      return value;
-  }
-}
-
-/// Copies the values of a source of the layout `from` into an object of the layout `to`, converting each, and
-/// rejects a source whose elements beyond the size of a fixed array hold a defined value.
+/// Copies the values of a source of the layout `from` into an object of the layout `to`, and rejects a source whose
+/// elements beyond the size of a fixed array hold a defined value.
 void copy(const Object::Layout& from, const std::vector<Value>& source, size_t sourceOffset, const Object::Layout& to, std::vector<Value>& target, size_t targetOffset, const std::string& path) {
   std::function<void(size_t, size_t, size_t)> walk = [&](size_t dimension, size_t sourcePosition, size_t targetPosition) {
     if ( dimension == from.dimensions.size() ) {
       if ( to.scalar.has_value() ) {
-        target[targetPosition] = convert(source[sourcePosition], to.scalar.value());
+        target[targetPosition] = source[sourcePosition];
         return;
       }
       for ( auto& field : from.fields ) {

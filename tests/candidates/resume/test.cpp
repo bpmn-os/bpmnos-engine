@@ -18,11 +18,11 @@ SCENARIO( "GreedyController terminates when resumed from an installed system sta
       "Machine2; MachineProcess; jobs := 3\n"
       "Machine3; MachineProcess; jobs := 3\n"
       "Order1; OrderProcess; machines := [\"Machine1\",\"Machine2\",\"Machine3\"]\n"
-      "Order1; OrderProcess; durations := [3,2,2]\n"
+      "Order1; OrderProcess; durations := [3.0,2.0,2.0]\n"
       "Order2; OrderProcess; machines := [\"Machine1\",\"Machine3\",\"Machine2\"]\n"
-      "Order2; OrderProcess; durations := [2,1,4]\n"
+      "Order2; OrderProcess; durations := [2.0,1.0,4.0]\n"
       "Order3; OrderProcess; machines := [\"Machine2\",\"Machine3\"]\n"
-      "Order3; OrderProcess; durations := [4,3]\n"
+      "Order3; OrderProcess; durations := [4.0,3.0]\n"
     ;
     auto model = std::make_shared<const Model::Model>(modelFile);
     auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
@@ -91,7 +91,7 @@ SCENARIO( "GreedyController terminates when resumed from a minimal one-job state
       "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
       "Machine1; MachineProcess; jobs := 1\n"
       "Order1; OrderProcess; machines := [\"Machine1\"]\n"
-      "Order1; OrderProcess; durations := [2]\n"
+      "Order1; OrderProcess; durations := [2.0]\n"
     ;
     auto model = std::make_shared<const Model::Model>(modelFile);
     auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
@@ -142,9 +142,9 @@ SCENARIO( "GreedyController terminates when resumed from a one-machine two-job s
       "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
       "Machine1; MachineProcess; jobs := 2\n"
       "Order1; OrderProcess; machines := [\"Machine1\"]\n"
-      "Order1; OrderProcess; durations := [2]\n"
+      "Order1; OrderProcess; durations := [2.0]\n"
       "Order2; OrderProcess; machines := [\"Machine1\"]\n"
-      "Order2; OrderProcess; durations := [3]\n"
+      "Order2; OrderProcess; durations := [3.0]\n"
     ;
     auto model = std::make_shared<const Model::Model>(modelFile);
     auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
@@ -195,7 +195,7 @@ SCENARIO( "GreedyController terminates when resumed from a one-order two-sequent
       "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
       "Machine1; MachineProcess; jobs := 2\n"
       "Order1; OrderProcess; machines := [\"Machine1\",\"Machine1\"]\n"
-      "Order1; OrderProcess; durations := [2,3]\n"
+      "Order1; OrderProcess; durations := [2.0,3.0]\n"
     ;
     auto model = std::make_shared<const Model::Model>(modelFile);
     auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);

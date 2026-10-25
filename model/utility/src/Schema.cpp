@@ -231,10 +231,7 @@ bool Schema::supports(const Schema& source) const {
     return false;
   }
   if ( auto valueType = std::get_if<ValueType>(this) ) {
-    auto sourceType = std::get<ValueType>(source);
-    return *valueType == sourceType ||
-      ( *valueType == ValueType::INTEGER && sourceType == ValueType::BOOLEAN ) ||
-      ( *valueType == ValueType::DECIMAL && ( sourceType == ValueType::BOOLEAN || sourceType == ValueType::INTEGER ) );
+    return *valueType == std::get<ValueType>(source);
   }
   if ( auto array = std::get_if<ArrayType>(this) ) {
     auto& sourceArray = std::get<ArrayType>(source);

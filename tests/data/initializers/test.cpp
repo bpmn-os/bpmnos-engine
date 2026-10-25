@@ -152,7 +152,7 @@ TEST_CASE( "Object initializers of the instance data", "[data][initializers]" ) 
     auto provider = std::make_shared<StaticProvider>(model,
       "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
       "; ; location := [ 2 * 2, 3 ]\n"
-      "Instance_1; Process_1; depot := { x := pow(2, 2) + 0.5, y := 2.7 }\n"
+      "Instance_1; Process_1; depot := { x := pow(2, 2) + 0.5, y := 3 - 0.3 }\n"
       "Instance_1; Process_1; site := { x := depot.x + 1 }\n"
     );
     auto scenario = provider->createScenario();
@@ -184,7 +184,7 @@ TEST_CASE( "Object initializers of the instance data", "[data][initializers]" ) 
       std::make_shared<Execution::StaticDataProvider>(model,
         "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
         "Instance_1; Process_1; site := { x := depot.x }\n"
-        "Instance_1; Process_1; depot := { x := 1, y := 2 }\n"
+        "Instance_1; Process_1; depot := { x := 1.0, y := 2 }\n"
       ),
       Catch::Matchers::ContainsSubstring("refers to object 'depot' without a value")
     );
@@ -194,8 +194,18 @@ TEST_CASE( "Object initializers of the instance data", "[data][initializers]" ) 
     REQUIRE_THROWS(
       std::make_shared<Execution::StaticDataProvider>(model,
         "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
-        "Instance_1; Process_1; depot := { x := 1, y := x }\n"
+        "Instance_1; Process_1; depot := { x := 1.0, y := x }\n"
       )
+    );
+  }
+
+  SECTION( "A constant member is typed as it is written" ) {
+    REQUIRE_THROWS_WITH(
+      std::make_shared<Execution::StaticDataProvider>(model,
+        "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+        "Instance_1; Process_1; depot := { x := 1, y := 2 }\n"
+      ),
+      Catch::Matchers::ContainsSubstring("cannot be converted")
     );
   }
 
@@ -211,7 +221,7 @@ TEST_CASE( "Object initializers of the instance data", "[data][initializers]" ) 
   SECTION( "The dynamic data provider discloses an object with its row" ) {
     auto provider = std::make_shared<Execution::DynamicDataProvider>(model,
       "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE\n"
-      "Instance_1; Process_1; depot := { x := 1, y := 2 }; 3\n"
+      "Instance_1; Process_1; depot := { x := 1.0, y := 2 }; 3\n"
     );
     REQUIRE( provider->getEarliestInstantiationTime(*provider->createScenario()) == 3 );
   }
@@ -253,7 +263,7 @@ TEST_CASE( "Object initializers sampled by the stochastic data provider", "[data
       std::make_shared<StochasticProvider>(model,
         "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
         "Instance_1; Process_1; site := { x := depot.x }\n"
-        "Instance_1; Process_1; depot := { x := 1, y := 2 }\n"
+        "Instance_1; Process_1; depot := { x := 1.0, y := 2 }\n"
       ),
       Catch::Matchers::ContainsSubstring("refers to object 'depot' without a value")
     );
@@ -264,7 +274,7 @@ TEST_CASE( "Ready and completion expressions assign objects", "[data][initialize
   auto model = initializerModel();
   const std::string head =
     "INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION\n"
-    "Instance_1; Process_1; depot := { x := 1, y := 2 };;;\n";
+    "Instance_1; Process_1; depot := { x := 1.0, y := 2 };;;\n";
 
   auto run = [&model](const std::string& csv) {
     auto provider = std::make_shared<Execution::StochasticDataProvider>(model, csv, 7);

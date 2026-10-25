@@ -68,7 +68,7 @@ TEST_CASE( "The log shows objects as JSON in the order of declaration", "[execut
     "; ; limit := 3\n"
     "Instance_1; Process_1; route := [1, 2]\n"
     "Instance_1; Process_1; count := 2\n"
-    "Instance_1; Process_1; facilities := [ { cost := 10, open := true, name := \"North\", flags := [ true ] } ]\n"
+    "Instance_1; Process_1; facilities := [ { cost := 10.0, open := true, name := \"North\", flags := [ true ] } ]\n"
     "Instance_1; Process_1; label := \"Depot\"\n"
   );
   Execution::Engine engine(model);

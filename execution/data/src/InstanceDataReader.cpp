@@ -279,15 +279,14 @@ std::optional<BPMNOS::ValueType> scalarAt(const BPMNOS::Schema& schema, const BP
 } // namespace
 
 std::shared_ptr<const BPMNOS::Object> InstanceDataReader::instantiate(const BPMNOS::Schema& schema, const BPMNOS::Model::Attribute* object, const BPMNOS::ObjectInitializer& initializer, const std::vector<double>& values) {
-  // a member takes the type of its position, read as a literal is read: a string and a truth value keep their
-  // types and every number is a decimal, so that it agrees with the constant members; a member whose position the
-  // schema lacks is refused when the object is converted
+  // a member is a single value cast to the value type the schema states at its position; a member whose position the
+  // schema lacks is taken as a decimal and refused when the object is converted
   std::vector<std::pair<double, ValueType>> typedValues;
   auto& members = initializer.members();
   for ( size_t k = 0; k < members.size(); k++ ) {
     auto type = scalarAt(schema, members[k].path).value_or(ValueType::DECIMAL);
     auto value = (double)convert(values[k], type);
-    typedValues.emplace_back( value, ( type == ValueType::STRING || type == ValueType::BOOLEAN ) ? type : ValueType::DECIMAL );
+    typedValues.emplace_back( value, type );
   }
   try {
     auto [value, valueSchema] = initializer.instantiate(typedValues);

@@ -85,7 +85,7 @@ TEST_CASE( "Write objects, elements and lengths", "[execution][objects][writing]
     "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
     "; ; location := [1, 2]\n"
     "Instance_1; Process_1; route := [1, 2]\n"
-    "Instance_1; Process_1; facilities := [ { cost := 1 }, { cost := 2 } ]\n"
+    "Instance_1; Process_1; facilities := [ { cost := 1.0 }, { cost := 2.0 } ]\n"
     "Instance_1; Process_1; grid := [ [1, 2, 3], [4, 5, 6] ]\n"
     "Instance_1; Process_1; visits := [9]\n"
   );
@@ -163,7 +163,7 @@ TEST_CASE( "Write objects, elements and lengths", "[execution][objects][writing]
     write("grid[2] := [7]");
     REQUIRE( render("grid") == "[ [ 1, 2, 3 ], [ 7, undefined, undefined ] ]" );
     REQUIRE_THROWS_WITH( write("grid[2] := [1, 2, 3, 4]"), Catch::Matchers::ContainsSubstring("4 elements where 3 are declared") );
-    write("facilities[1] := { cost := 5 }");
+    write("facilities[1] := { cost := 5.0 }");
     REQUIRE( render("facilities") == "[ { cost := 5, flags := [ ] }, { cost := 2, flags := [ ] } ]" );
   }
 
@@ -378,8 +378,8 @@ TEST_CASE( "Operators write the locations of the Quadratic Assignment Problem", 
   Capture capture;
   run(model,
     "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
-    "; ; flow := [ [0, 1, 2], [1, 0, 3], [2, 3, 0] ]\n"
-    "; ; distance := [ [0, 5, 6], [5, 0, 7], [6, 7, 0] ]\n"
+    "; ; flow := [ [0.0, 1.0, 2.0], [1.0, 0.0, 3.0], [2.0, 3.0, 0.0] ]\n"
+    "; ; distance := [ [0.0, 5.0, 6.0], [5.0, 0.0, 7.0], [6.0, 7.0, 0.0] ]\n"
     "Instance_1; Process_1;\n",
     capture
   );

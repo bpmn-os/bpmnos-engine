@@ -5,6 +5,7 @@
 #include <cctype>
 #include <functional>
 #include <stdexcept>
+#include <string_view>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -16,10 +17,11 @@
 
 using namespace BPMNOS;
 
-/// A single value: a number, read as a decimal, a truth value, or a string, held as its index in the string registry.
+/// A single value: a number, an integer or a decimal as it is written, a truth value, or a string, held as its index
+/// in the string registry.
 struct BPMNOS::InputEncoder::Scalar {
   double value;
-  ValueType type; ///< DECIMAL, BOOLEAN or STRING
+  ValueType type;
 };
 
 /// An expression member of an object initializer, which has a value only once it is evaluated.
@@ -410,17 +412,18 @@ Literal Scan::scanMember(char closing) {
     return Literal{ Scalar{ 1.0, BOOLEAN } };
   }
 
-  // a number is recorded as a decimal, so that whole and fractional members agree in type
-  size_t consumed = 0;
-  double value = 0;
-  try {
-    value = std::stod(member, &consumed);
+  // a number is an integer if it is written without a decimal point and a decimal if it is written with one, and has
+  // digits before and after the decimal point
+  auto digits = [](std::string_view text) {
+    return !text.empty() && std::ranges::all_of(text, [](char character) { return std::isdigit(static_cast<unsigned char>(character)) != 0; });
+  };
+  std::string_view number(member);
+  if ( number.front() == '-' ) {
+    number.remove_prefix(1);
   }
-  catch ( const std::exception& ) {
-    consumed = 0;
-  }
-  if ( consumed == member.size() ) {
-    return Literal{ Scalar{ value, DECIMAL } };
+  auto point = number.find('.');
+  if ( point == std::string_view::npos ? digits(number) : ( digits(number.substr(0, point)) && digits(number.substr(point + 1)) ) ) {
+    return Literal{ Scalar{ std::stod(member), point == std::string_view::npos ? INTEGER : DECIMAL } };
   }
 
   if ( !initializers ) {

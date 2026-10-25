@@ -26,7 +26,7 @@ std::shared_ptr<const Model::Model> readingModel() {
           <bpmnos:attribute id="Instance" name="instance" type="string" />
           <bpmnos:attribute id="Facilities" name="facilities" type="{ cost: decimal, flags: boolean[2] }[]" />
           <bpmnos:attribute id="Grid" name="grid" type="integer[2][3]" />
-          <bpmnos:attribute id="Depot" name="depot := { x := 1, y := 2 }" type="{ x: decimal, y: decimal }" />
+          <bpmnos:attribute id="Depot" name="depot := { x := 1.0, y := 2.0 }" type="{ x: decimal, y: decimal }" />
           <bpmnos:attribute id="Budget" name="budget" type="decimal" />
           <bpmnos:attribute id="Offset" name="offset" type="decimal" />
         </bpmnos:attributes>
@@ -72,9 +72,9 @@ struct ReadingProvider : Execution::StaticDataProvider {
 const std::string instanceData =
   "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
   "; ; location := [2, 1]\n"
-  "; ; flow := [ [1, 2], [3, 4] ]\n"
+  "; ; flow := [ [1.0, 2.0], [3.0, 4.0] ]\n"
   "; Process_1; facilities[3]\n"
-  "Instance_1; Process_1; facilities := [ { cost := 10, flags := [ true, false ] }, { cost := 20, flags := [ false, false ] } ]\n"
+  "Instance_1; Process_1; facilities := [ { cost := 10.0, flags := [ true, false ] }, { cost := 20.0, flags := [ false, false ] } ]\n"
   "Instance_1; Process_1; grid := [ [1, 2, 3], [4, 5, 6] ]\n"
   "Instance_1; Process_1; route := [1, 2]\n"
   "Instance_1; Process_1; budget := sum(location)\n"
@@ -316,6 +316,6 @@ TEST_CASE( "Guards reading an object route a token at an exclusive gateway", "[e
     return tasks;
   };
 
-  REQUIRE( route("10") == std::set<std::string>{ "Task_Cheap" } );
-  REQUIRE( route("20") == std::set<std::string>{ "Task_Expensive" } );
+  REQUIRE( route("10.0") == std::set<std::string>{ "Task_Cheap" } );
+  REQUIRE( route("20.0") == std::set<std::string>{ "Task_Expensive" } );
 }

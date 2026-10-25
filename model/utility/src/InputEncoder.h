@@ -35,9 +35,10 @@ namespace BPMNOS {
  * bracket opens a literal. A brace opens a literal with fields, `{ name := value, ... }`, where a literal may
  * stand and a name followed by `:=` follows it; any other brace is a set or the body of an aggregation and is
  * copied. The members of an array and the values of the fields are read one by one, each by the same rules,
- * so that each is a quoted string, a truth value, a number, or a literal of its own, to any depth. A numeric
- * value is recorded as a decimal, so that a literal may hold whole and fractional numbers alike and both are
- * written out as they were read. The members of an array are uniform: they agree in type and, being arrays
+ * so that each is a quoted string, a truth value, a number, or a literal of its own, to any depth. A number is
+ * an integer if it is written as an optional minus sign followed by digits, and a decimal if it is written as an
+ * optional minus sign followed by digits, a decimal point and digits; any other form of a number is refused. The
+ * members of an array are uniform: they agree in type and, being arrays
  * or values with fields themselves, in the sizes of their arrays and in their fields. The literal is
  * registered in the object registry as a constant object, stored flat, together with its constant schema, which
  * states the value types of the literal and leaves every array open, and emitted as its index there.

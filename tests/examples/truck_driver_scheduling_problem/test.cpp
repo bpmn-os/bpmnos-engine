@@ -8,10 +8,10 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
 
     std::string csv =
       "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
-      "Driver1; TruckDriverProcess; travel_times := [90,90]\n"
-      "Driver1; TruckDriverProcess; service_times := [30,30]\n"
-      "Driver1; TruckDriverProcess; earliest_visits := [0,0]\n"
-      "Driver1; TruckDriverProcess; latest_visits := [1440,1440]\n"
+      "Driver1; TruckDriverProcess; travel_times := [90.0,90.0]\n"
+      "Driver1; TruckDriverProcess; service_times := [30.0,30.0]\n"
+      "Driver1; TruckDriverProcess; earliest_visits := [0.0,0.0]\n"
+      "Driver1; TruckDriverProcess; latest_visits := [1440.0,1440.0]\n"
     ;
 
     auto model = std::make_shared<const Model::Model>(modelFile);
@@ -50,10 +50,10 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
 
     std::string csv =
       "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
-      "Driver1; TruckDriverProcess; travel_times := [510]\n"
-      "Driver1; TruckDriverProcess; service_times := [30]\n"
-      "Driver1; TruckDriverProcess; earliest_visits := [900]\n"
-      "Driver1; TruckDriverProcess; latest_visits := [1440]\n"
+      "Driver1; TruckDriverProcess; travel_times := [510.0]\n"
+      "Driver1; TruckDriverProcess; service_times := [30.0]\n"
+      "Driver1; TruckDriverProcess; earliest_visits := [900.0]\n"
+      "Driver1; TruckDriverProcess; latest_visits := [1440.0]\n"
     ;
     // T_MAX_DRIVING_SINCE_REST: 11h
     // T_MAX_ELAPSED_SINCE_REST: 14h
@@ -100,10 +100,10 @@ SCENARIO( "Truck driver scheduling problem", "[examples][truck_driver_scheduling
 
     std::string csv =
       "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
-      "Driver1; TruckDriverProcess; travel_times := [360,360]\n"  // Two 6h trips
-      "Driver1; TruckDriverProcess; service_times := [30,30]\n"    // Two ½h services
-      "Driver1; TruckDriverProcess; earliest_visits := [600,900]\n"
-      "Driver1; TruckDriverProcess; latest_visits := [1800,1800]\n"
+      "Driver1; TruckDriverProcess; travel_times := [360.0,360.0]\n"  // Two 6h trips
+      "Driver1; TruckDriverProcess; service_times := [30.0,30.0]\n"    // Two ½h services
+      "Driver1; TruckDriverProcess; earliest_visits := [600.0,900.0]\n"
+      "Driver1; TruckDriverProcess; latest_visits := [1800.0,1800.0]\n"
     ;
     // T_MAX_DRIVING_SINCE_REST: 11h
     // T_MAX_ELAPSED_SINCE_REST: 14h

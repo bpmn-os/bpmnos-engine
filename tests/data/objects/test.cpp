@@ -47,7 +47,7 @@ std::shared_ptr<const Model::Model> objectModel() {
         <bpmn2:extensionElements>
           <bpmnos:status>
             <bpmnos:attributes>
-              <bpmnos:attribute id="Visit" name="visit := { x := 1 }" type="{ x: decimal }" />
+              <bpmnos:attribute id="Visit" name="visit := { x := 1.0 }" type="{ x: decimal }" />
             </bpmnos:attributes>
           </bpmnos:status>
         </bpmn2:extensionElements>
@@ -116,7 +116,7 @@ const std::string declarations =
   "; ; location := [3, 1]\n"
   "; Process_1; route[2]\n"
   "; Process_1; facilities[2]\n"
-  "Instance_1; Process_1; facilities := [ { cost := 10, flags := [ true ] }, { cost := 20, flags := [ false ] } ]\n"
+  "Instance_1; Process_1; facilities := [ { cost := 10.0, flags := [ true ] }, { cost := 20.0, flags := [ false ] } ]\n"
   "Instance_2; Process_1;\n";
 
 } // namespace
@@ -220,9 +220,9 @@ TEST_CASE( "Refuse illegal sizes and values of objects", "[data][objects]" ) {
     REQUIRE_THROWS_WITH( provide("; SubProcess_1; route[2]\n" + valid), Catch::Matchers::ContainsSubstring("names no object") );
   }
   SECTION( "A value for an object the model initialises" ) {
-    REQUIRE_THROWS_WITH( provide(valid + "Instance_1; Task_1; visit := { x := 2 }\n"), Catch::Matchers::ContainsSubstring("assigned by the model") );
+    REQUIRE_THROWS_WITH( provide(valid + "Instance_1; Task_1; visit := { x := 2.0 }\n"), Catch::Matchers::ContainsSubstring("assigned by the model") );
   }
   SECTION( "A ragged literal" ) {
-    REQUIRE_THROWS( provide(valid + "Instance_1; Process_1; facilities := [ { cost := 1, flags := [ true ] }, { cost := 2, flags := [ true, false ] } ]\n") );
+    REQUIRE_THROWS( provide(valid + "Instance_1; Process_1; facilities := [ { cost := 1.0, flags := [ true ] }, { cost := 2.0, flags := [ true, false ] } ]\n") );
   }
 }

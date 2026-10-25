@@ -22,14 +22,25 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
       }
     }
 
-    WHEN( "The literal is an array of numbers" ) {
-      InputEncoder encoder("[ 1, 2.5 ]");
-      THEN( "Whole and fractional members agree in type and are written out as they were read" ) {
+    WHEN( "The literal is an array of numbers written with a decimal point" ) {
+      InputEncoder encoder("[ 1.0, 2.5 ]");
+      THEN( "The members are decimals" ) {
         REQUIRE( encoder.getObjectIndex().has_value() );
         auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
         REQUIRE( objectRegistry[index]->layout->stringify() == "decimal[2]" );
         REQUIRE( objectRegistry.schema(index).stringify() == "decimal[]" );
         REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == "[ 1, 2.5 ]" );
+      }
+    }
+
+    WHEN( "The literal is an array of numbers written without a decimal point" ) {
+      InputEncoder encoder("[ 1, -2 ]");
+      THEN( "The members are integers" ) {
+        REQUIRE( encoder.getObjectIndex().has_value() );
+        auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
+        REQUIRE( objectRegistry[index]->layout->stringify() == "integer[2]" );
+        REQUIRE( objectRegistry.schema(index).stringify() == "integer[]" );
+        REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == "[ 1, -2 ]" );
       }
     }
 
@@ -56,7 +67,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
     }
 
     WHEN( "The literal has fields" ) {
-      InputEncoder encoder(R"({ name := "Depot", position := [ 0, 1.5 ] })");
+      InputEncoder encoder(R"({ name := "Depot", position := [ 0.0, 1.5 ] })");
       THEN( "The fields are stored one after the other in their order" ) {
         REQUIRE( encoder.getObjectIndex().has_value() );
         auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
@@ -68,7 +79,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
     }
 
     WHEN( "The literal is an array of values with fields" ) {
-      InputEncoder encoder("[ { cost := 10, flags := [ true, false ] }, { cost := 20, flags := [ false, false ] } ]");
+      InputEncoder encoder("[ { cost := 10.0, flags := [ true, false ] }, { cost := 20.0, flags := [ false, false ] } ]");
       THEN( "Each element is a stride of values apart" ) {
         auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
         auto& object = *objectRegistry[index];
@@ -167,6 +178,10 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
   GIVEN( "A text that cannot be read" ) {
     THEN( "It is refused" ) {
       REQUIRE_THROWS( InputEncoder(R"([ "A", 1 ])") );            // members of different type
+      REQUIRE_THROWS( InputEncoder("[ 1, 2.5 ]") );               // an integer and a decimal
+      REQUIRE_THROWS( InputEncoder("[ 1e3 ]") );                  // a number in another form
+      REQUIRE_THROWS( InputEncoder("[ .5 ]") );                   // a number in another form
+      REQUIRE_THROWS( InputEncoder("[ 1. ]") );                   // a number in another form
       REQUIRE_THROWS( InputEncoder(R"([ 1, [ 2 ] ])") );          // a value and an array
       REQUIRE_THROWS( InputEncoder(R"([ [ "A", "B" ], [ "C" ] ])") ); // arrays of different size
       REQUIRE_THROWS( InputEncoder(R"([ [ "A" ], [ 1 ] ])") );    // arrays of different type

@@ -71,10 +71,8 @@ struct Schema : std::variant<ValueType, ArrayType, ObjectType> {
   /**
    * @brief Returns true if every object of the given source schema is, unchanged, an object of this schema.
    *
-   * The two schemas must have the same structure. At a value type, this value type is the source's or holds every
-   * value of it unchanged, as `integer` and `decimal` hold every `boolean` and `decimal` holds every `integer`. At an
-   * array type, this array is open, or both arrays are fixed at the same size. At an object type, both have the same
-   * fields in the same order.
+   * The two schemas must have the same structure, the same value types and the same fields in the same order, and at
+   * every array type this array must be open or both arrays must be fixed at the same size.
    */
   bool supports(const Schema& source) const;
 
