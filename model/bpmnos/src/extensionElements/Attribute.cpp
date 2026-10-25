@@ -106,10 +106,10 @@ std::variant<std::monostate, size_t, std::unique_ptr<const Expression>> Attribut
     // an expression compiled once the attribute is registered, when its scope is created
     auto value = BPMNOS::trim_copy( input.substr( input.find(":=") + 2 ) );
     InputEncoder encoder(value);
-    if ( !encoder.object().has_value() ) {
+    if ( !encoder.getObjectIndex().has_value() ) {
       return std::monostate{};
     }
-    size_t literal = encoder.object().value();
+    size_t literal = encoder.getObjectIndex().value();
     try {
       type.conform( objectRegistry[literal] );
     }

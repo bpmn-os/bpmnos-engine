@@ -6,17 +6,18 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
     WHEN( "The literal is a string" ) {
       InputEncoder encoder(R"("A")");
       THEN( "It is registered as a string and is no object" ) {
-        REQUIRE( !encoder.object().has_value() );
-        REQUIRE( encoder.text() == std::to_string( stringRegistry("A") ) );
+        REQUIRE( !encoder.getObjectIndex().has_value() );
+        REQUIRE( encoder.getEncodedInput() == std::to_string( stringRegistry("A") ) );
       }
     }
 
     WHEN( "The literal is an array of strings" ) {
       InputEncoder encoder(R"([ "A", "B", "C" ])");
       THEN( "It is reported as an array holding strings" ) {
-        REQUIRE( encoder.object().has_value() );
-        auto index = (size_t)BPMNOS::stoi( encoder.text() );
+        REQUIRE( encoder.getObjectIndex().has_value() );
+        auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
         REQUIRE( objectRegistry[index]->layout->stringify() == "string[3]" );
+        REQUIRE( objectRegistry.schema(index).stringify() == "string[]" );
         REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == R"([ "A", "B", "C" ])" );
       }
     }
@@ -24,9 +25,10 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
     WHEN( "The literal is an array of numbers" ) {
       InputEncoder encoder("[ 1, 2.5 ]");
       THEN( "Whole and fractional members agree in type and are written out as they were read" ) {
-        REQUIRE( encoder.object().has_value() );
-        auto index = (size_t)BPMNOS::stoi( encoder.text() );
+        REQUIRE( encoder.getObjectIndex().has_value() );
+        auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
         REQUIRE( objectRegistry[index]->layout->stringify() == "decimal[2]" );
+        REQUIRE( objectRegistry.schema(index).stringify() == "decimal[]" );
         REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == "[ 1, 2.5 ]" );
       }
     }
@@ -34,7 +36,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
     WHEN( "The literal is an array of truth values" ) {
       InputEncoder encoder("[ true, false ]");
       THEN( "It is reported as an array holding truth values" ) {
-        auto index = (size_t)BPMNOS::stoi( encoder.text() );
+        auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
         REQUIRE( objectRegistry[index]->layout->stringify() == "boolean[2]" );
         REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == "[ true, false ]" );
       }
@@ -43,9 +45,10 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
     WHEN( "The literal is an array of arrays" ) {
       InputEncoder encoder(R"([ [ "A", "B" ], [ "C", "D" ], [ "E", "F" ] ])");
       THEN( "It is stored flat with its dimensions in index order and written out as it was read" ) {
-        REQUIRE( encoder.object().has_value() );
-        auto index = (size_t)BPMNOS::stoi( encoder.text() );
+        REQUIRE( encoder.getObjectIndex().has_value() );
+        auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
         REQUIRE( objectRegistry[index]->layout->stringify() == "string[3][2]" );
+        REQUIRE( objectRegistry.schema(index).stringify() == "string[][]" );
         REQUIRE( objectRegistry[index]->values.size() == 6 );
         REQUIRE( objectRegistry[index]->values[3] == BPMNOS::number(stringRegistry("D")) );
         REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == R"([ [ "A", "B" ], [ "C", "D" ], [ "E", "F" ] ])" );
@@ -55,9 +58,10 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
     WHEN( "The literal has fields" ) {
       InputEncoder encoder(R"({ name := "Depot", position := [ 0, 1.5 ] })");
       THEN( "The fields are stored one after the other in their order" ) {
-        REQUIRE( encoder.object().has_value() );
-        auto index = (size_t)BPMNOS::stoi( encoder.text() );
+        REQUIRE( encoder.getObjectIndex().has_value() );
+        auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
         REQUIRE( objectRegistry[index]->layout->stringify() == "{ name: string, position: decimal[2] }" );
+        REQUIRE( objectRegistry.schema(index).stringify() == "{ name: string, position: decimal[] }" );
         REQUIRE( objectRegistry[index]->values.size() == 3 );
         REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == R"({ name := "Depot", position := [ 0, 1.5 ] })" );
       }
@@ -66,7 +70,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
     WHEN( "The literal is an array of values with fields" ) {
       InputEncoder encoder("[ { cost := 10, flags := [ true, false ] }, { cost := 20, flags := [ false, false ] } ]");
       THEN( "Each element is a stride of values apart" ) {
-        auto index = (size_t)BPMNOS::stoi( encoder.text() );
+        auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
         auto& object = *objectRegistry[index];
         REQUIRE( object.layout->stringify() == "{ cost: decimal, flags: boolean[2] }[2]" );
         REQUIRE( object.layout->stride == 3 );
@@ -77,15 +81,15 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
 
     WHEN( "The same literal is stated twice" ) {
       THEN( "It is registered once" ) {
-        REQUIRE( InputEncoder("[ 1, 2, 3 ]").text() == InputEncoder("[1,2,3]").text() );
-        REQUIRE( InputEncoder("{ x := 1 }").text() == InputEncoder("{x:=1}").text() );
+        REQUIRE( InputEncoder("[ 1, 2, 3 ]").getEncodedInput() == InputEncoder("[1,2,3]").getEncodedInput() );
+        REQUIRE( InputEncoder("{ x := 1 }").getEncodedInput() == InputEncoder("{x:=1}").getEncodedInput() );
       }
     }
 
     WHEN( "The literal holds a string with a comma and a bracket" ) {
       InputEncoder encoder(R"([ "A, [B]", "C" ])");
       THEN( "The string is text rather than structure" ) {
-        auto index = (size_t)BPMNOS::stoi( encoder.text() );
+        auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
         REQUIRE( objectRegistry[index]->values.size() == 2 );
         REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == R"([ "A, [B]", "C" ])" );
       }
@@ -100,8 +104,8 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
           (double)stringRegistry("B")
         };
         InputEncoder identical("[ " + BPMNOS::to_string(stringIndices[0]) + ", " + BPMNOS::to_string(stringIndices[1]) + " ]");
-        REQUIRE( identical.text() != strings.text() );
-        REQUIRE( numbers.text() != strings.text() );
+        REQUIRE( identical.getEncodedInput() != strings.getEncodedInput() );
+        REQUIRE( numbers.getEncodedInput() != strings.getEncodedInput() );
       }
     }
   }
@@ -111,51 +115,51 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
     WHEN( "An array is indexed" ) {
       InputEncoder encoder("x[1]");
       THEN( "The brackets are copied and no literal is registered" ) {
-        REQUIRE( encoder.text() == "x[1]" );
-        REQUIRE( !encoder.object().has_value() );
+        REQUIRE( encoder.getEncodedInput() == "x[1]" );
+        REQUIRE( !encoder.getObjectIndex().has_value() );
       }
     }
 
     WHEN( "An index is indexed" ) {
       InputEncoder encoder("x[ y[1] ]");
       THEN( "The brackets are copied" ) {
-        REQUIRE( encoder.text() == "x[ y[1] ]" );
+        REQUIRE( encoder.getEncodedInput() == "x[ y[1] ]" );
       }
     }
 
     WHEN( "A set is stated after a membership operator" ) {
       THEN( "The brackets are copied, whether the operator is a name or a symbol" ) {
-        REQUIRE( InputEncoder("x in [1,2,3]").text() == "x in [1,2,3]" );
-        REQUIRE( InputEncoder("x ∈ [1,2,3]").text() == "x ∈ [1,2,3]" );
-        REQUIRE( InputEncoder("x not in [1,2,3]").text() == "x not in [1,2,3]" );
-        REQUIRE( InputEncoder("x ∉ [1,2,3]").text() == "x ∉ [1,2,3]" );
+        REQUIRE( InputEncoder("x in [1,2,3]").getEncodedInput() == "x in [1,2,3]" );
+        REQUIRE( InputEncoder("x ∈ [1,2,3]").getEncodedInput() == "x ∈ [1,2,3]" );
+        REQUIRE( InputEncoder("x not in [1,2,3]").getEncodedInput() == "x not in [1,2,3]" );
+        REQUIRE( InputEncoder("x ∉ [1,2,3]").getEncodedInput() == "x ∉ [1,2,3]" );
       }
       AND_THEN( "A string among the members is registered where it stands" ) {
-        REQUIRE( InputEncoder(R"(x in ["A"])").text() == "x in [" + std::to_string( stringRegistry("A") ) + "]" );
+        REQUIRE( InputEncoder(R"(x in ["A"])").getEncodedInput() == "x in [" + std::to_string( stringRegistry("A") ) + "]" );
       }
     }
 
     WHEN( "Braces state a set or the body of an aggregation" ) {
       THEN( "They are copied" ) {
-        REQUIRE( InputEncoder("x in {1,2}").text() == "x in {1,2}" );
-        REQUIRE( InputEncoder("sum{ i | i in 1..3 }").text() == "sum{ i | i in 1..3 }" );
-        REQUIRE( InputEncoder("max{ a, b }").text() == "max{ a, b }" );
+        REQUIRE( InputEncoder("x in {1,2}").getEncodedInput() == "x in {1,2}" );
+        REQUIRE( InputEncoder("sum{ i | i in 1..3 }").getEncodedInput() == "sum{ i | i in 1..3 }" );
+        REQUIRE( InputEncoder("max{ a, b }").getEncodedInput() == "max{ a, b }" );
       }
     }
 
     WHEN( "A literal is assigned" ) {
       InputEncoder encoder(R"(x := [ "A" ])");
       THEN( "The literal is registered and the text states more than it" ) {
-        REQUIRE( !encoder.object().has_value() );
-        REQUIRE( encoder.text() != R"(x := [ "A" ])" );
+        REQUIRE( !encoder.getObjectIndex().has_value() );
+        REQUIRE( encoder.getEncodedInput() != R"(x := [ "A" ])" );
       }
     }
 
     WHEN( "The text is a line of an instance file" ) {
       InputEncoder encoder(R"(Instance_1; Process_1; x := [ "A", "B" ])");
       THEN( "The delimiters outside the literal are kept" ) {
-        REQUIRE( encoder.text().starts_with("Instance_1; Process_1; x := ") );
-        REQUIRE( !encoder.text().contains("[") );
+        REQUIRE( encoder.getEncodedInput().starts_with("Instance_1; Process_1; x := ") );
+        REQUIRE( !encoder.getEncodedInput().contains("[") );
       }
     }
   }
@@ -185,10 +189,10 @@ SCENARIO( "Object initializers", "[model][encoder]" ) {
     InputEncoder encoder(line, true);
 
     THEN( "A literal with an expression member is copied unchanged and a constant literal is registered" ) {
-      REQUIRE( encoder.text().contains(R"({ x := uniform(1, 3), name := "Depot;A" })") );
-      REQUIRE( encoder.spans().size() == 2 );
-      REQUIRE( encoder.spans()[0].type == InputEncoder::Span::Type::INITIALIZER );
-      REQUIRE( encoder.spans()[1].type == InputEncoder::Span::Type::OBJECT );
+      REQUIRE( encoder.getEncodedInput().contains(R"({ x := uniform(1, 3), name := "Depot;A" })") );
+      REQUIRE( encoder.getEncodedLiterals().size() == 2 );
+      REQUIRE( encoder.getEncodedLiterals()[0].type == InputEncoder::EncodedLiteral::Type::INITIALIZER );
+      REQUIRE( encoder.getEncodedLiterals()[1].type == InputEncoder::EncodedLiteral::Type::OBJECT );
     }
   }
 
@@ -202,8 +206,9 @@ SCENARIO( "Object initializers", "[model][encoder]" ) {
       REQUIRE( initializer.members()[1].path == ObjectInitializer::Path{ "flags", "" } );
     }
     THEN( "It is instantiated with the values of its expression members" ) {
-      auto object = initializer.instantiate({ { 2.5, DECIMAL }, { 0, BOOLEAN } });
+      auto [object, schema] = initializer.instantiate({ { 2.5, DECIMAL }, { 0, BOOLEAN } });
       REQUIRE( BPMNOS::to_string(*object) == R"({ x := 2.5, name := "Depot", flags := [ true, false ] })" );
+      REQUIRE( schema.stringify() == "{ x: decimal, name: string, flags: boolean[] }" );
     }
   }
 

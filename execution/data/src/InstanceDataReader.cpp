@@ -213,7 +213,7 @@ std::pair<const BPMNOS::Model::Attribute*, BPMNOS::ObjectInitializer> InstanceDa
     size_t consumed = 0;
     size_t index = std::stoul(text, &consumed);
     if ( consumed == text.size() ) {
-      return { object, BPMNOS::ObjectInitializer( objectRegistry[index] ) };
+      return { object, BPMNOS::ObjectInitializer(index) };
     }
   }
   catch ( const std::exception& ) {
@@ -290,7 +290,7 @@ std::shared_ptr<const BPMNOS::Object> InstanceDataReader::instantiate(const BPMN
     typedValues.emplace_back( value, ( type == ValueType::STRING || type == ValueType::BOOLEAN ) ? type : ValueType::DECIMAL );
   }
   try {
-    return schema.conform( initializer.instantiate(typedValues) );
+    return schema.conform( initializer.instantiate(typedValues).first );
   }
   catch ( const std::exception& error ) {
     throw std::runtime_error("InstanceDataReader: illegal value of object '" + object->name + "'.\n" + error.what());

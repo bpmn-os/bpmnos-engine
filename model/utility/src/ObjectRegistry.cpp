@@ -7,13 +7,14 @@ using namespace BPMNOS;
 
 namespace {
 
-/// Returns the hash of an object: of its layout, which is short, and of its values, an undefined value being
-/// distinguished from every number.
-size_t hashOf(const Object& object) {
-  size_t hash = std::hash<std::string>{}( object.layout->stringify() );
+/// Returns the hash of a constant: of its schema and its layout, which are short, and of its values, an undefined
+/// value being distinguished from every number.
+size_t hashOf(const Object& object, const Schema& schema) {
+  size_t hash = std::hash<std::string>{}( schema.stringify() );
   auto combine = [&hash](size_t value) {
     hash ^= value + 0x9e3779b97f4a7c15ULL + (hash << 6) + (hash >> 2);
   };
+  combine( std::hash<std::string>{}( object.layout->stringify() ) );
   for ( auto& value : object.values ) {
     combine( value.has_value() ? std::hash<double>{}( (double)value.value() ) : 0x5bd1e995ULL );
   }
@@ -28,7 +29,7 @@ ObjectRegistry::~ObjectRegistry() {
   }
 }
 
-const std::shared_ptr<const Object>& ObjectRegistry::operator[](size_t i) const {
+const std::pair<std::shared_ptr<const Object>, Schema>& ObjectRegistry::entry(size_t i) const {
   // the entry is published before the counter is raised, so that an index below the counter refers to an
   // entry and a block that are completely written
   if ( i >= published.load(std::memory_order_acquire) ) {
@@ -37,28 +38,36 @@ const std::shared_ptr<const Object>& ObjectRegistry::operator[](size_t i) const 
   return blocks[i / blockSize].load(std::memory_order_acquire)[i % blockSize];
 }
 
-std::optional<size_t> ObjectRegistry::find(const Object& object, size_t hash) const {
+const std::shared_ptr<const Object>& ObjectRegistry::operator[](size_t i) const {
+  return entry(i).first;
+}
+
+const Schema& ObjectRegistry::schema(size_t i) const {
+  return entry(i).second;
+}
+
+std::optional<size_t> ObjectRegistry::find(const Object& object, const Schema& schema, size_t hash) const {
   auto [first, last] = index.equal_range(hash);
   for ( auto it = first; it != last; ++it ) {
-    auto& candidate = *blocks[it->second / blockSize].load(std::memory_order_acquire)[it->second % blockSize];
-    if ( *candidate.layout == *object.layout && candidate.values == object.values ) {
+    auto& [candidate, candidateSchema] = blocks[it->second / blockSize].load(std::memory_order_acquire)[it->second % blockSize];
+    if ( candidateSchema == schema && *candidate->layout == *object.layout && candidate->values == object.values ) {
       return it->second;
     }
   }
   return std::nullopt;
 }
 
-size_t ObjectRegistry::operator()(Object object) {
-  auto hash = hashOf(object);
+size_t ObjectRegistry::operator()(Object object, Schema schema) {
+  auto hash = hashOf(object, schema);
 
   std::shared_lock read_lock(registryMutex);
-  if ( auto found = find(object, hash) ) {
+  if ( auto found = find(object, schema, hash) ) {
     return found.value();
   }
   read_lock.unlock();
 
   std::unique_lock write_lock(registryMutex);
-  if ( auto found = find(object, hash) ) {
+  if ( auto found = find(object, schema, hash) ) {
     // registered by another thread in the meantime
     return found.value();
   }
@@ -69,10 +78,10 @@ size_t ObjectRegistry::operator()(Object object) {
   }
   auto block = blocks[i / blockSize].load(std::memory_order_relaxed);
   if ( !block ) {
-    block = new std::shared_ptr<const Object>[blockSize];
+    block = new std::pair<std::shared_ptr<const Object>, Schema>[blockSize];
     blocks[i / blockSize].store(block, std::memory_order_release);
   }
-  block[i % blockSize] = std::make_shared<const Object>(std::move(object));
+  block[i % blockSize] = { std::make_shared<const Object>(std::move(object)), std::move(schema) };
   index.emplace(hash, i);
   published.store(i + 1, std::memory_order_release);
   return i;

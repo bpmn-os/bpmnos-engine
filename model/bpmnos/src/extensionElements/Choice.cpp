@@ -16,7 +16,7 @@ Choice::Choice(XML::bpmnos::tDecision* decision, const AttributeRegistry& attrib
   // collection literal, which it is not: its alternatives may be expressions.
   auto condition = decision->condition.value.value;
   BPMNOS::replace_all( condition, "∈", " in ");
-  auto input = InputEncoder(condition).text();
+  auto input = InputEncoder(condition).getEncodedInput();
 
   if ( input.contains(" in ") ) {
     parseEnumeration(input);

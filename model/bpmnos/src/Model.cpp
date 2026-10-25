@@ -174,10 +174,7 @@ void Model::createInputs() {
       if ( declaration.type == "lookup" ) {
         lookupTables.push_back( std::make_unique<LookupTable>(name, content, declaration.schema) );
         auto table = lookupTables.back().get();
-        if ( auto& result = table->columns.back().second; !std::holds_alternative<ValueType>(result) ) {
-          // a lookup returning an array may only be assigned to an array, which expressions check by its name
-          attributeRegistry.arrayLookups[table->name] = &result;
-        }
+        attributeRegistry.lookupTables[table->name] = table;
         limexHandle.addFunction(
           table->name,
           [table](const std::vector<double>& args)

@@ -13,6 +13,7 @@
 namespace BPMNOS::Model {
 
 class Input;
+class LookupTable;
 
 class AttributeRegistry {
 public:
@@ -23,9 +24,9 @@ public:
   std::vector<Attribute*> dataAttributes; ///< The scalar data attributes, the global attributes of the model first
   std::vector<Attribute*> statusObjects; ///< The status objects, numbered by their position, separately from scalars
   std::vector<Attribute*> dataObjects; ///< The data objects, the global objects of the model first
-  /// The schema of the result of each lookup returning an array, by its name, which an expression may only
-  /// assign to an array
-  std::unordered_map< std::string, const Schema*> arrayLookups;
+  /// The lookup tables the inputs of the model provide, by their names; a lookup whose result column has an array or
+  /// object type returns the index of a constant object, which an expression may only assign to an object attribute
+  std::unordered_map< std::string, const LookupTable*> lookupTables;
   /// The matrices and objects the inputs of the model provide, by their names, which expressions read as constant
   /// objects and never write
   std::unordered_map< std::string, const Input*> inputs;

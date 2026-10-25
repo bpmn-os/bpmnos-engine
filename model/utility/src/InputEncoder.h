@@ -9,6 +9,7 @@
 
 #include "Value.h"
 #include "Object.h"
+#include "Schema.h"
 
 namespace BPMNOS {
 
@@ -38,7 +39,8 @@ namespace BPMNOS {
  * value is recorded as a decimal, so that a literal may hold whole and fractional numbers alike and both are
  * written out as they were read. The members of an array are uniform: they agree in type and, being arrays
  * or values with fields themselves, in the sizes of their arrays and in their fields. The literal is
- * registered in the object registry as a constant object, stored flat, and emitted as its index there.
+ * registered in the object registry as a constant object, stored flat, together with its constant schema, which
+ * states the value types of the literal and leaves every array open, and emitted as its index there.
  *
  * Everything else, which is to say names, numbers, operators, whitespace, and the delimiters of a line,
  * is copied unchanged, a membership operator included. Of the grammar the expression parser applies, the
@@ -53,7 +55,7 @@ namespace BPMNOS {
  * A text may be scanned admitting object initializers, as the instance data are, where an object is given a
  * literal whose members may be expressions. A literal with an expression member is then neither registered nor
  * refused but copied unchanged, so that it is read by @ref ObjectInitializer where it initialises an object,
- * and its span tells a reader splitting the text that no delimiter within it separates anything.
+ * and its encoded literal tells a reader splitting the text that no delimiter within it separates anything.
  */
 class InputEncoder {
 public:
@@ -61,17 +63,17 @@ public:
   InputEncoder(const std::string& input, bool initializers = false);
 
   /// Returns the text with every literal replaced by the number encoding it.
-  const std::string& text() const { return encoded; }
+  const std::string& getEncodedInput() const { return encoded; }
 
   /// Returns the index in the object registry of the constant object if the text states one literal array or
   /// value with fields and nothing besides whitespace, and no value otherwise. This is what a caller needs where
   /// the text states an object rather than an expression.
-  const std::optional<size_t>& object() const { return literalObject; }
+  const std::optional<size_t>& getObjectIndex() const { return literalObject; }
 
   /// Where a literal stands in the text with every literal replaced: the positions of the first character of
   /// the number encoding it, or of an object initializer copied unchanged, and of the character following it, and
   /// what it is.
-  struct Span {
+  struct EncodedLiteral {
     enum class Type { STRING, OBJECT, INITIALIZER };
     size_t begin;
     size_t end;
@@ -80,12 +82,12 @@ public:
 
   /// Returns where each literal stands in the text with every literal replaced, in their order, so that a
   /// reader splitting that text can tell a cell stating a literal from a cell stating a number.
-  const std::vector<Span>& spans() const { return literalSpans; }
+  const std::vector<EncodedLiteral>& getEncodedLiterals() const { return encodedLiterals; }
 
   /// Returns the indices in the object registry of the constant objects the literals of the text state, in
   /// their order, so that a caller can tell a number standing for a constant object from a number. A part of
   /// a text scanned already states none.
-  const std::vector<size_t>& objects() const { return literalObjects; }
+  const std::vector<size_t>& getObjectIndices() const { return literalObjects; }
 
   /// Returns a part of a text that has been scanned already, such as one alternative of an enumeration.
   /// No type is stated, a part of a text being no literal of its own.
@@ -107,7 +109,7 @@ private:
   std::string encoded;
   std::optional<size_t> literalObject;
   std::vector<size_t> literalObjects;
-  std::vector<Span> literalSpans;
+  std::vector<EncodedLiteral> encodedLiterals;
 };
 
 /**
@@ -124,8 +126,8 @@ class ObjectInitializer {
 public:
   /// Constructor reading the given text, which states one literal and nothing besides whitespace.
   ObjectInitializer(const std::string& text);
-  /// Constructor for a constant object, which has no expression members.
-  ObjectInitializer(std::shared_ptr<const Object> constant);
+  /// Constructor for the constant with the given index in the object registry, which has no expression members.
+  ObjectInitializer(size_t constant);
 
   /// A step of the path from the object to a member: the name of a field, or an empty name for an element of an
   /// array.
@@ -140,14 +142,15 @@ public:
   /// Returns the expression members in the order in which they are written.
   const std::vector<Member>& members() const { return expressionMembers; }
 
-  /// Returns the object the literal states, each expression member having the value given at its position in
-  /// @ref members, with its type; the value of a string is its index in the string registry.
-  std::shared_ptr<const Object> instantiate(const std::vector<std::pair<double, ValueType>>& values) const;
+  /// Returns the object the literal states and its schema, each expression member having the value given at its
+  /// position in @ref members, with its type; the value of a string is its index in the string registry. The schema
+  /// states the value types of the object and leaves every array open, as the constant schema of a literal does.
+  std::pair<std::shared_ptr<const Object>, Schema> instantiate(const std::vector<std::pair<double, ValueType>>& values) const;
 
 private:
   std::string text;
   std::shared_ptr<const InputEncoder::Literal> literal;
-  std::shared_ptr<const Object> constant;
+  std::optional<size_t> constant; ///< The index in the object registry of a constant, which has no expression members
   std::vector<Member> expressionMembers;
 };
 

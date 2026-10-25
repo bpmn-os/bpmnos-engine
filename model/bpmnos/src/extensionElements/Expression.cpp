@@ -21,7 +21,7 @@ Expression::Expression(const LIMEX::Handle<double>& handle, const InputEncoder& 
                        const AttributeRegistry& attributeRegistry, bool newTarget)
   : attributeRegistry(attributeRegistry)
   , handle(handle)
-  , expression(encoder.text())
+  , expression(encoder.getEncodedInput())
   , compiled(getExpression(expression))
   , type(getType())
 {
@@ -53,7 +53,7 @@ Expression::Expression(const LIMEX::Handle<double>& handle, const InputEncoder& 
     if ( compound && !compiled.getTargetPath().has_value() ) {
       throw std::runtime_error("Expression: object '" + target.value()->name + "' must be assigned by ':=' in '" + expression + "'");
     }
-    analyseTarget(encoder.objects());
+    analyseTarget(encoder.getObjectIndices());
   }
 
   bindPaths();
@@ -213,7 +213,7 @@ void Expression::bindPaths() {
     if ( node.type == LIMEX::Type::function_call && &node != sourceCall ) {
       // a lookup returning an array may only be the entire value of an assignment to an array
       auto& name = handle.getFunctionNames()[ std::get<size_t>(node.operands[0]) ];
-      if ( attributeRegistry.arrayLookups.contains(name) ) {
+      if ( attributeRegistry.lookupTables.contains(name) && !std::holds_alternative<ValueType>(attributeRegistry.lookupTables.at(name)->columns.back().second) ) {
         throw std::runtime_error("Expression: lookup '" + name + "' returns an array, which may only be assigned to an array, in '" + expression + "'");
       }
     }
@@ -359,7 +359,11 @@ void Expression::analyseTarget(const std::vector<size_t>& literals) {
     }
     sourceObject = source;
   }
-  else if ( value.type == LIMEX::Type::function_call && attributeRegistry.arrayLookups.contains( handle.getFunctionNames()[ std::get<size_t>(value.operands[0]) ] ) ) {
+  else if (
+    value.type == LIMEX::Type::function_call &&
+    attributeRegistry.lookupTables.contains( handle.getFunctionNames()[ std::get<size_t>(value.operands[0]) ] ) &&
+    !std::holds_alternative<ValueType>( attributeRegistry.lookupTables.at( handle.getFunctionNames()[ std::get<size_t>(value.operands[0]) ] )->columns.back().second )
+  ) {
     // a lookup returning an array, which arrives as the index of a constant object
     sourceCall = &value;
   }

@@ -39,7 +39,7 @@ CSVReader::Table CSVReader::read() {
   std::string line;
   while (std::getline(*input, line)) {
     InputEncoder encoder( line, initializers );
-    line = encoder.text();
+    line = encoder.getEncodedInput();
     if ( BPMNOS::trim_copy(line).empty() ) continue; // skip empty lines
     // the cells are the stretches between delimiters, a literal having been replaced by the number encoding it and
     // an object initializer having been kept as it is written, so that a delimiter within either separates nothing
@@ -50,9 +50,9 @@ CSVReader::Table CSVReader::read() {
     size_t begin = line.find_first_not_of(" \t\r\n\f\v");
     while ( begin <= lineEnd ) {
       size_t end = line.find_first_of(delimiters, begin);
-      for ( auto& span : encoder.spans() ) {
-        if ( span.type == InputEncoder::Span::Type::INITIALIZER && span.begin < end && end < span.end ) {
-          end = line.find_first_of(delimiters, span.end);
+      for ( auto& literal : encoder.getEncodedLiterals() ) {
+        if ( literal.type == InputEncoder::EncodedLiteral::Type::INITIALIZER && literal.begin < end && end < literal.end ) {
+          end = line.find_first_of(delimiters, literal.end);
         }
       }
       end = std::min(end, lineEnd);
@@ -63,11 +63,11 @@ CSVReader::Table CSVReader::read() {
       std::string cell = line.substr(first, last - first);
       begin = end + 1;
 
-      auto span = std::ranges::find_if(encoder.spans(), [first, last](auto& candidate) { return candidate.begin == first && candidate.end == last; });
-      if ( span != encoder.spans().end() && span->type != InputEncoder::Span::Type::INITIALIZER ) {
+      auto literal = std::ranges::find_if(encoder.getEncodedLiterals(), [first, last](auto& candidate) { return candidate.begin == first && candidate.end == last; });
+      if ( literal != encoder.getEncodedLiterals().end() && literal->type != InputEncoder::EncodedLiteral::Type::INITIALIZER ) {
         // the cell states a literal, which the number encodes
         row.push_back((BPMNOS::number)std::stod(cell));
-        types.push_back( span->type == InputEncoder::Span::Type::OBJECT ? Type::OBJECT : Type::STRING );
+        types.push_back( literal->type == InputEncoder::EncodedLiteral::Type::OBJECT ? Type::OBJECT : Type::STRING );
       }
       else if ( !cell.empty() && (std::isdigit( cell[0] ) || cell[0] == '.' || cell[0] == '-') ) {
         // treat cell as number

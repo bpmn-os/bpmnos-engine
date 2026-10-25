@@ -99,19 +99,22 @@ public:
 
   /// Returns the index of the constant object if the text states one literal array or value with fields and
   /// nothing besides whitespace.
-  std::optional<size_t> object() const;
+  std::optional<size_t> getObjectIndex() const;
 
   /// Returns the indices of the constant objects the literals of the text state, in their order.
-  const std::vector<size_t>& objects() const { return objectIndices; }
+  const std::vector<size_t>& getObjectIndices() const { return objectIndices; }
 
   /// Returns where in what the scan emitted each literal stands.
-  const std::vector<InputEncoder::Span>& spans() const { return literalSpans; }
+  const std::vector<InputEncoder::EncodedLiteral>& getEncodedLiterals() const { return encodedLiterals; }
 
   /// Reads a text stating one literal and nothing besides whitespace.
   Literal scanInitializer();
   /// Returns the layout of a literal without expression members, refusing elements of an array that differ in
   /// layout.
   Object::Layout layoutOf(const Literal& literal) const;
+  /// Returns the schema of a literal without expression members, which states its value types and leaves every
+  /// array open, the elements of an array being uniform.
+  Schema schemaOf(const Literal& literal) const;
   /// Writes the values of a literal without expression members into the values of an object, beginning at the
   /// given offset.
   void flatten(const Literal& literal, std::vector<Value>& values, size_t offset) const;
@@ -153,7 +156,7 @@ private:
   bool literalAllowed = true;
   size_t literals = 0;
   std::vector<size_t> objectIndices;
-  std::vector<InputEncoder::Span> literalSpans;
+  std::vector<InputEncoder::EncodedLiteral> encodedLiterals;
   size_t literalBegin = 0;
   size_t literalEnd = 0;
   bool literalObject = false;
@@ -167,7 +170,7 @@ void Scan::run() {
       size_t begin = position;
       size_t emitted = output.size();
       output += std::to_string( scanString() );
-      literalSpans.push_back( InputEncoder::Span{ emitted, output.size(), InputEncoder::Span::Type::STRING } );
+      encodedLiterals.push_back( InputEncoder::EncodedLiteral{ emitted, output.size(), InputEncoder::EncodedLiteral::Type::STRING } );
       recordLiteral(begin, false);
       literalAllowed = false;
     }
@@ -178,13 +181,13 @@ void Scan::run() {
       if ( containsExpression(literal) ) {
         // an object initializer is copied unchanged, to be read where it initialises an object
         output += input.substr(begin, position - begin);
-        literalSpans.push_back( InputEncoder::Span{ emitted, output.size(), InputEncoder::Span::Type::INITIALIZER } );
+        encodedLiterals.push_back( InputEncoder::EncodedLiteral{ emitted, output.size(), InputEncoder::EncodedLiteral::Type::INITIALIZER } );
         recordLiteral(begin, false);
       }
       else {
         objectIndices.push_back( registerObject(literal) );
         output += std::to_string( objectIndices.back() );
-        literalSpans.push_back( InputEncoder::Span{ emitted, output.size(), InputEncoder::Span::Type::OBJECT } );
+        encodedLiterals.push_back( InputEncoder::EncodedLiteral{ emitted, output.size(), InputEncoder::EncodedLiteral::Type::OBJECT } );
         recordLiteral(begin, true);
       }
       literalAllowed = false;
@@ -225,7 +228,7 @@ void Scan::run() {
   }
 }
 
-std::optional<size_t> Scan::object() const {
+std::optional<size_t> Scan::getObjectIndex() const {
   if ( literals != 1 || !literalObject ) {
     return std::nullopt;
   }
@@ -295,7 +298,7 @@ size_t Scan::registerObject(const Literal& literal) const {
   object.layout = std::make_shared<const Object::Layout>( layoutOf(literal) );
   object.values.resize( object.layout->size() );
   flatten(literal, object.values, 0);
-  return objectRegistry( std::move(object) );
+  return objectRegistry( std::move(object), schemaOf(literal) );
 }
 
 Literal Scan::scanArray() {
@@ -494,6 +497,29 @@ Object::Layout Scan::layoutOf(const Literal& literal) const {
   }, literal.node);
 }
 
+Schema Scan::schemaOf(const Literal& literal) const {
+  return std::visit(Overloaded{
+    [](const Scalar& scalar) {
+      return Schema(scalar.type);
+    },
+    [this](const Expression&) -> Schema {
+      // an expression member has a schema only once it has a value
+      fail("expression member without a value");
+    },
+    [this](const Array& array) {
+      // a literal states no sizes, so that the array is open
+      return Schema( ArrayType{ std::make_shared<const Schema>( schemaOf(array.elements.front()) ), std::nullopt } );
+    },
+    [this](const Fields& fields) {
+      ObjectType object;
+      for ( auto& [name, member] : fields.members ) {
+        object.fields.push_back( Field{ name, std::make_shared<const Schema>( schemaOf(member) ) } );
+      }
+      return Schema( std::move(object) );
+    }
+  }, literal.node);
+}
+
 void Scan::flatten(const Literal& literal, std::vector<Value>& values, size_t offset) const {
   std::visit(Overloaded{
     [&](const Scalar& scalar) {
@@ -550,9 +576,9 @@ InputEncoder::InputEncoder(const std::string& input, bool initializers) {
   Scan scan(input, initializers);
   scan.run();
   encoded = scan.result();
-  literalObject = scan.object();
-  literalObjects = scan.objects();
-  literalSpans = scan.spans();
+  literalObject = scan.getObjectIndex();
+  literalObjects = scan.getObjectIndices();
+  encodedLiterals = scan.getEncodedLiterals();
 }
 
 InputEncoder::InputEncoder(std::string text, std::nullopt_t)
@@ -629,14 +655,14 @@ ObjectInitializer::ObjectInitializer(const std::string& text)
   literal = std::move(read);
 }
 
-ObjectInitializer::ObjectInitializer(std::shared_ptr<const Object> constant)
-  : constant(std::move(constant))
+ObjectInitializer::ObjectInitializer(size_t constant)
+  : constant(constant)
 {
 }
 
-std::shared_ptr<const Object> ObjectInitializer::instantiate(const std::vector<std::pair<double, ValueType>>& values) const {
-  if ( constant ) {
-    return constant;
+std::pair<std::shared_ptr<const Object>, Schema> ObjectInitializer::instantiate(const std::vector<std::pair<double, ValueType>>& values) const {
+  if ( constant.has_value() ) {
+    return { objectRegistry[constant.value()], objectRegistry.schema(constant.value()) };
   }
   assert( values.size() == expressionMembers.size() );
 
@@ -653,5 +679,5 @@ std::shared_ptr<const Object> ObjectInitializer::instantiate(const std::vector<s
   object->layout = std::make_shared<const Object::Layout>( scan.layoutOf(instance) );
   object->values.resize( object->layout->size() );
   scan.flatten(instance, object->values, 0);
-  return object;
+  return { std::move(object), scan.schemaOf(instance) };
 }
