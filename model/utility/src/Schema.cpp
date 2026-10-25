@@ -1,6 +1,4 @@
 #include "Schema.h"
-#include "model/utility/src/StringRegistry.h"
-#include <nlohmann/json.hpp>
 #include <cctype>
 #include <algorithm>
 #include <cassert>
@@ -11,37 +9,6 @@
 using namespace BPMNOS;
 
 namespace {
-
-/**
- * @brief A schema in the form today's layouts take: a value type or fields, followed by the sizes of the arrays
- * around it, outermost first.
- *
- * The functions building and reading layouts work on this form, into which a schema is flattened.
- */
-struct FlatSchema {
-  std::optional<ValueType> scalar;
-  std::vector< std::pair<std::string, FlatSchema> > fields;
-  std::vector< std::optional<size_t> > dimensions;
-};
-
-/// Returns the flat form of a schema.
-FlatSchema flatten(const Schema& schema) {
-  FlatSchema result;
-  const Schema* current = &schema;
-  while ( auto array = std::get_if<ArrayType>(current) ) {
-    result.dimensions.push_back(array->size);
-    current = array->type.get();
-  }
-  if ( auto valueType = std::get_if<ValueType>(current) ) {
-    result.scalar = *valueType;
-  }
-  else {
-    for ( auto& field : std::get<ObjectType>(*current).fields ) {
-      result.fields.emplace_back(field.name, flatten(*field.type));
-    }
-  }
-  return result;
-}
 
 /**
  * @brief Recursive descent parser of the notation `schema := ( valuetype | object ) dimension*`.
@@ -246,30 +213,30 @@ bool Schema::supports(const Schema& source) const {
 
 namespace {
 
-/// Returns the target schema for the effective schema and the current layout, the arrays of the schema corresponding
-/// to the dimensions of the layout from the given one on.
-Schema targetSchema(const Schema& effectiveSchema, const BPMNOS::Object::Layout& currentLayout, size_t dimension) {
+/// Returns the target schema for the effective schema and the current layout.
+Schema determineTargetSchema(const Schema& effectiveSchema, const BPMNOS::Layout& currentLayout) {
   if ( auto array = std::get_if<ArrayType>(&effectiveSchema) ) {
-    assert( dimension < currentLayout.dimensions.size() );
-    auto size = array->size.has_value() ? std::optional<size_t>(currentLayout.dimensions[dimension]) : std::nullopt;
-    return Schema( ArrayType{ std::make_shared<const Schema>( targetSchema(*array->type, currentLayout, dimension + 1) ), size } );
+    auto& current = std::get<BPMNOS::ArrayLayout>(currentLayout);
+    auto size = array->size.has_value() ? std::optional<size_t>(current.size) : std::nullopt;
+    return Schema( ArrayType{ std::make_shared<const Schema>( determineTargetSchema(*array->type, *current.layout) ), size } );
   }
   if ( std::holds_alternative<ValueType>(effectiveSchema) ) {
     return effectiveSchema;
   }
+  auto& fields = std::get<ObjectType>(effectiveSchema).fields;
+  auto& current = std::get<BPMNOS::ObjectLayout>(currentLayout).fields;
+  assert( fields.size() == current.size() );
   ObjectType object;
-  for ( auto& field : std::get<ObjectType>(effectiveSchema).fields ) {
-    auto current = std::ranges::find_if(currentLayout.fields, [&field](auto& candidate) { return candidate.name == field.name; });
-    assert( current != currentLayout.fields.end() );
-    object.fields.push_back( Field{ field.name, std::make_shared<const Schema>( targetSchema(*field.type, current->layout, 0) ) } );
+  for ( size_t k = 0; k < fields.size(); k++ ) {
+    object.fields.push_back( Field{ fields[k].name, std::make_shared<const Schema>( determineTargetSchema(*fields[k].type, *current[k].layout) ) } );
   }
   return Schema( std::move(object) );
 }
 
 } // namespace
 
-Schema::Schema(const Schema& effectiveSchema, const BPMNOS::Object::Layout& currentLayout)
-  : Schema( targetSchema(effectiveSchema, currentLayout, 0) )
+Schema::Schema(const Schema& effectiveSchema, const BPMNOS::Layout& currentLayout)
+  : Schema( determineTargetSchema(effectiveSchema, currentLayout) )
 {
 }
 
@@ -361,198 +328,4 @@ Schema Schema::declareSizes(const std::string& declaration) const {
     return Schema(std::move(result));
   };
   return apply(*this, 0);
-}
-
-namespace {
-
-/// Returns the layout of a schema whose dimensions all have sizes, a dimension being fixed if it has a size in
-/// the schema declared, of which the schema is a resolution.
-BPMNOS::Object::Layout layoutOf(const FlatSchema& schema, const FlatSchema& declared) {
-  BPMNOS::Object::Layout layout;
-  layout.scalar = schema.scalar;
-  layout.fields.reserve(schema.fields.size());
-  for ( size_t k = 0; k < schema.fields.size(); k++ ) {
-    layout.fields.push_back( BPMNOS::Object::Layout::Field{ schema.fields[k].first, 0, layoutOf(schema.fields[k].second, declared.fields[k].second) } );
-  }
-  layout.dimensions.reserve(schema.dimensions.size());
-  layout.fixed.reserve(schema.dimensions.size());
-  for ( size_t d = 0; d < schema.dimensions.size(); d++ ) {
-    assert( schema.dimensions[d].has_value() );
-    layout.dimensions.push_back( schema.dimensions[d].value() );
-    layout.fixed.push_back( declared.dimensions[d].has_value() );
-  }
-  layout.arrange();
-  return layout;
-}
-
-/// Gives the dimensions still open, of a field the value lacks or below an empty array, the length zero, which
-/// leaves them undetermined until the first assignment of a value to one of their elements.
-void close(FlatSchema& schema) {
-  for ( auto& dimension : schema.dimensions ) {
-    if ( !dimension.has_value() ) {
-      dimension = 0;
-    }
-  }
-  for ( auto& [name, field] : schema.fields ) {
-    close(field);
-  }
-}
-
-} // namespace
-
-std::shared_ptr<const BPMNOS::Object> Schema::undefinedObject() const {
-  // an object is created modifiable, so that a write may change it in place once it is no longer shared
-  // an open dimension has no elements
-  FlatSchema declared = flatten(*this);
-  FlatSchema closed = declared;
-  close(closed);
-  auto object = std::make_shared<BPMNOS::Object>();
-  object->layout = std::make_shared<const BPMNOS::Object::Layout>( layoutOf(closed, declared) );
-  object->values.resize( object->layout->size() );
-  return object;
-}
-
-
-namespace {
-
-using Json = nlohmann::json;
-
-/// Fixes the open dimensions of a schema by the JSON values standing where it applies, every array at an open
-/// dimension having the same length.
-void resolveJson(FlatSchema& schema, const std::vector<const Json*>& values, const std::string& path) {
-  std::vector<const Json*> level = values;
-  for ( auto& dimension : schema.dimensions ) {
-    std::optional<size_t> length;
-    std::vector<const Json*> next;
-    for ( auto value : level ) {
-      if ( value->is_null() ) {
-        continue;
-      }
-      if ( !value->is_array() ) {
-        throw std::runtime_error("Schema: '" + path + "' holds '" + value->dump() + "' where an array is expected");
-      }
-      if ( dimension.has_value() ) {
-        if ( value->size() > dimension.value() ) {
-          throw std::runtime_error("Schema: '" + path + "' has " + std::to_string(value->size()) + " elements where " + std::to_string(dimension.value()) + " are declared");
-        }
-      }
-      else if ( length.has_value() && value->size() != length.value() ) {
-        throw std::runtime_error("Schema: '" + path + "' holds arrays of different lengths");
-      }
-      length = value->size();
-      for ( auto& element : *value ) {
-        next.push_back(&element);
-      }
-    }
-    if ( !dimension.has_value() ) {
-      dimension = length.value_or(0);
-    }
-    level = std::move(next);
-  }
-  if ( schema.scalar.has_value() ) {
-    return;
-  }
-  for ( auto value : level ) {
-    if ( value->is_null() ) {
-      continue;
-    }
-    if ( !value->is_object() ) {
-      throw std::runtime_error("Schema: '" + path + "' holds '" + value->dump() + "' where fields are expected");
-    }
-    for ( auto& [key, _] : value->items() ) {
-      if ( std::ranges::none_of(schema.fields, [&key](auto& field) { return field.first == key; }) ) {
-        throw std::runtime_error("Schema: '" + path + "' has the unknown field '" + key + "'");
-      }
-    }
-  }
-  for ( auto& [name, field] : schema.fields ) {
-    std::vector<const Json*> nested;
-    for ( auto value : level ) {
-      if ( !value->is_null() ) {
-        if ( auto it = value->find(name); it != value->end() ) {
-          nested.push_back(&*it);
-        }
-      }
-    }
-    resolveJson(field, nested, path + "." + name);
-  }
-}
-
-/// Returns the value a JSON value states for a scalar of the given type.
-BPMNOS::Value jsonValue(const Json& value, BPMNOS::ValueType type, const std::string& path) {
-  if ( value.is_null() ) {
-    return std::nullopt;
-  }
-  switch ( type ) {
-    case BPMNOS::ValueType::BOOLEAN:
-      if ( value.is_boolean() ) {
-        return BPMNOS::number( value.get<bool>() ? 1 : 0 );
-      }
-      break;
-    case BPMNOS::ValueType::INTEGER:
-      if ( value.is_number() ) {
-        return BPMNOS::number( (long)value.get<double>() );
-      }
-      break;
-    case BPMNOS::ValueType::DECIMAL:
-      if ( value.is_number() ) {
-        return BPMNOS::number( value.get<double>() );
-      }
-      break;
-    case BPMNOS::ValueType::STRING:
-      if ( value.is_string() ) {
-        return BPMNOS::number( stringRegistry( value.get<std::string>() ) );
-      }
-      break;
-  }
-  throw std::runtime_error("Schema: '" + path + "' holds '" + value.dump() + "', which is no value of its type");
-}
-
-/// Writes the values a JSON value states into an object of the given layout.
-void fillJson(const BPMNOS::Object::Layout& layout, const Json& value, std::vector<BPMNOS::Value>& values, size_t offset, size_t dimension, const std::string& path) {
-  if ( value.is_null() ) {
-    return;
-  }
-  if ( dimension < layout.dimensions.size() ) {
-    size_t span = layout.stride;
-    for ( size_t d = dimension + 1; d < layout.dimensions.size(); d++ ) {
-      span *= layout.dimensions[d];
-    }
-    size_t i = 0;
-    for ( auto& element : value ) {
-      fillJson(layout, element, values, offset + i * span, dimension + 1, path);
-      ++i;
-    }
-    return;
-  }
-  if ( layout.scalar.has_value() ) {
-    values[offset] = jsonValue(value, layout.scalar.value(), path);
-    return;
-  }
-  for ( auto& field : layout.fields ) {
-    if ( auto it = value.find(field.name); it != value.end() ) {
-      fillJson(field.layout, *it, values, offset + field.offset, 0, path + "." + field.name);
-    }
-  }
-}
-
-} // namespace
-
-std::shared_ptr<const BPMNOS::Object> Schema::fromJSON(const std::string& text) const {
-  Json root;
-  try {
-    root = Json::parse(text);
-  }
-  catch ( const std::exception& error ) {
-    throw std::runtime_error(std::string("Schema: illegal JSON.\n") + error.what());
-  }
-  FlatSchema declared = flatten(*this);
-  FlatSchema resolved = declared;
-  resolveJson(resolved, { &root }, "");
-  close(resolved);
-  auto object = std::make_shared<BPMNOS::Object>();
-  object->layout = std::make_shared<const BPMNOS::Object::Layout>( layoutOf(resolved, declared) );
-  object->values.resize( object->layout->size() );
-  fillJson(*object->layout, root, object->values, 0, 0, "");
-  return object;
 }

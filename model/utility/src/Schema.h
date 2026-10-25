@@ -59,7 +59,7 @@ struct Schema : std::variant<ValueType, ArrayType, ObjectType> {
    * at the size it has in the current layout, and every open array stays open, so that an assignment keeps the size
    * of a fixed array, which may have been resized during the run, and gives an open array the size of the source.
    */
-  Schema(const Schema& effectiveSchema, const BPMNOS::Object::Layout& currentLayout);
+  Schema(const Schema& effectiveSchema, const BPMNOS::Layout& currentLayout);
 
   /// @brief Parses the notation of a type, throwing an error describing the first violation of the grammar.
   static Schema parse(const std::string& text);
@@ -86,21 +86,6 @@ struct Schema : std::variant<ValueType, ArrayType, ObjectType> {
    * an index step where the schema has no array, and an unknown field are errors.
    */
   Schema declareSizes(const std::string& declaration) const;
-
-  /**
-   * @brief Returns an object of this schema with every value undefined, an open array having no elements.
-   */
-  std::shared_ptr<const BPMNOS::Object> undefinedObject() const;
-
-  /**
-   * @brief Returns an object of this schema holding the values of the given JSON text.
-   *
-   * A JSON array is an array, whose elements have equal sizes at an open array and at most the declared size at a
-   * fixed one, a JSON object is an object, whose keys must be fields of the schema, and a number, truth value or
-   * string is a value of the value type the schema states, `null` being undefined. A fixed array is padded with
-   * undefined values, an open array takes the size of the JSON array, and a field the JSON lacks is undefined.
-   */
-  std::shared_ptr<const BPMNOS::Object> fromJSON(const std::string& text) const;
 };
 
 } // namespace BPMNOS

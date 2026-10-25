@@ -233,6 +233,47 @@ TEST_CASE( "Keep or convert objects for a schema", "[model][schema]" ) {
   }
 }
 
+TEST_CASE( "Lay out an object", "[model][schema]" ) {
+  using BPMNOS::Schema;
+  auto index = InputEncoder("[ { cost := 10.0, flags := [ true, false ] }, { cost := 20.0, flags := [ false, false ] }, { cost := 30.0, flags := [ true, true ] } ]").getObjectIndex().value();
+  BPMNOS::Object object(Schema::parse("{ cost: decimal, flags: boolean[3] }[]"), *objectRegistry[index], objectRegistry.schema(index));
+
+  SECTION( "The layout has the structure of the schema with the actual sizes, each part referring to its schema" ) {
+    REQUIRE( object.layout->schema->stringify() == "{ cost: decimal, flags: boolean[3] }[]" );
+    REQUIRE( object.layout->size == 12 );
+    auto& array = std::get<BPMNOS::ArrayLayout>(*object.layout);
+    REQUIRE( array.size == 3 );
+    auto& element = *array.layout;
+    REQUIRE( element.size == 4 );
+    REQUIRE( element.schema->stringify() == "{ cost: decimal, flags: boolean[3] }" );
+    auto& fields = std::get<BPMNOS::ObjectLayout>(element).fields;
+    REQUIRE( fields[0].offset == 0 );
+    REQUIRE( fields[0].layout->schema->stringify() == "decimal" );
+    REQUIRE( fields[1].offset == 1 );
+    REQUIRE( fields[1].layout->size == 3 );
+    REQUIRE( fields[1].layout->schema->stringify() == "boolean[3]" );
+  }
+
+  SECTION( "The values are stored depth first" ) {
+    // facilities[2].flags[2] is at position 6, and the third flag of every element is undefined
+    REQUIRE( object.values[6] == BPMNOS::number(0) );
+    REQUIRE( !object.values[3].has_value() );
+    REQUIRE( to_string(object) == "[ { cost := 10.0, flags := [ true, false, undefined ] }, { cost := 20.0, flags := [ false, false, undefined ] }, { cost := 30.0, flags := [ true, true, undefined ] } ]" );
+  }
+
+  SECTION( "A resized fixed array stays fixed at its new size in every element" ) {
+    auto resized = BPMNOS::resize(object, { std::nullopt, "flags" }, 2);
+    REQUIRE( resized->layout->schema->stringify() == "{ cost: decimal, flags: boolean[2] }[]" );
+    REQUIRE( to_string(*resized) == "[ { cost := 10.0, flags := [ true, false ] }, { cost := 20.0, flags := [ false, false ] }, { cost := 30.0, flags := [ true, true ] } ]" );
+  }
+
+  SECTION( "An object built from a schema alone has every open array empty" ) {
+    BPMNOS::Object empty(Schema::parse("{ cost: decimal, flags: boolean[] }[3]"));
+    REQUIRE( empty.layout->stringify() == "{ cost: decimal, flags: boolean[0] }[3]" );
+    REQUIRE( to_string(empty) == "[ { cost := undefined, flags := [ ] }, { cost := undefined, flags := [ ] }, { cost := undefined, flags := [ ] } ]" );
+  }
+}
+
 TEST_CASE( "Number objects separately from scalar attributes", "[model][schema]" ) {
   Declarations declarations;
   declarations.globals = attribute("Location", "location", "integer[3]") + attribute("Limit", "limit", "integer");

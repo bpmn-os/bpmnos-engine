@@ -96,13 +96,13 @@ void StaticDataProvider::readInstances(const std::string& instanceFileOrString, 
     }
     else {
       // an open dimension has no elements until an assignment gives it its length
-      defaultObjects[object] = schema.undefinedObject();
+      defaultObjects[object] = std::make_shared<BPMNOS::Object>(schema);
     }
   }
   // the default content with the sizes declared at the node throwing it or, for a signal, by its name, every node of
   // a signal sharing one
   for ( auto& [name, schema] : reader.signalSchemas ) {
-    defaultContents[name] = schema.undefinedObject();
+    defaultContents[name] = std::make_shared<BPMNOS::Object>(schema);
   }
   // the effective schemas are kept, the content of every node of a signal having the schema declared by its name
   schemas = reader.schemas;
@@ -117,7 +117,7 @@ void StaticDataProvider::readInstances(const std::string& instanceFileOrString, 
         }
       }
       else if ( reader.schemas.contains(content) ) {
-        defaultObjects[content] = reader.getSchema(content).undefinedObject();
+        defaultObjects[content] = std::make_shared<BPMNOS::Object>(reader.getSchema(content));
       }
     }
   }

@@ -95,22 +95,14 @@ private:
   const Input* sourceInput = nullptr; ///< The input whose object is assigned
   std::optional<size_t> sourcePath; ///< The path to the part of an object assigned
   const LIMEX::Node<double>* sourceCall = nullptr; ///< The call of a lookup returning the array assigned
-  std::vector<std::string> targetFields; ///< The fields the target path names, one within the other
-  size_t targetDimension = 0; ///< The number of dimensions the target path indexes after its last field
-  std::vector<std::string> resizeFields; ///< The fields naming the array whose dimension is resized
-  size_t resizeDimension = 0; ///< The position of the dimension resized
-  /// The schema a path reaches, the number of indices following its last field, and the fields it names
-  struct Step {
-    const Schema* schema;
-    size_t dimension;
-    std::vector<std::string> fields;
-  };
   /// Checks every path against the schema for the way it is read and records `skipsUndefined` and `readsLengthOnly`.
   void bindPaths();
-  /// Returns the schema of the object an attribute or input of the given name holds, nullptr for a scalar attribute.
-  const Schema* schemaOf(const std::string& name) const;
-  /// Follows a path through the given schema, which is the schema of the object the path addresses.
-  Step walk(size_t path, const Schema& schema) const;
+  /// Returns the declared schema of the object an attribute or input of the given name holds, nullptr for an attribute
+  /// of a value type.
+  const Schema* getSchema(const std::string& name) const;
+  /// Follows a path through the given schema, which is the schema of the object the path addresses, and returns the
+  /// part of the schema it reaches.
+  const Schema& walk(size_t path, const Schema& schema) const;
   /// Checks that a path addresses a value, an array of values with a single dimension if it is read as an array, or an
   /// array if only its length is read.
   void bind(size_t path, bool asArray, bool lengthOnly) const;

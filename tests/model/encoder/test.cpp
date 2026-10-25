@@ -84,7 +84,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
         auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
         auto& object = *objectRegistry[index];
         REQUIRE( object.layout->stringify() == "{ cost: decimal, flags: boolean[2] }[2]" );
-        REQUIRE( object.layout->stride == 3 );
+        REQUIRE( std::get<BPMNOS::ArrayLayout>(*object.layout).layout->size == 3 );
         REQUIRE( object.values[3] == BPMNOS::number(20) );
         REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == "[ { cost := 10.0, flags := [ true, false ] }, { cost := 20.0, flags := [ false, false ] } ]" );
       }

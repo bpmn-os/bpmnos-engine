@@ -9,7 +9,7 @@ namespace {
 
 /// Returns the hash of a constant: of its schema and its layout, which are short, and of its values, an undefined
 /// value being distinguished from every number.
-size_t hashOf(const Object& object, const Schema& schema) {
+size_t computeHash(const Object& object, const Schema& schema) {
   size_t hash = std::hash<std::string>{}( schema.stringify() );
   auto combine = [&hash](size_t value) {
     hash ^= value + 0x9e3779b97f4a7c15ULL + (hash << 6) + (hash >> 2);
@@ -29,7 +29,7 @@ ObjectRegistry::~ObjectRegistry() {
   }
 }
 
-const std::pair<std::shared_ptr<const Object>, Schema>& ObjectRegistry::entry(size_t i) const {
+const std::pair<std::shared_ptr<const Object>, Schema>& ObjectRegistry::getEntry(size_t i) const {
   // the entry is published before the counter is raised, so that an index below the counter refers to an
   // entry and a block that are completely written
   if ( i >= published.load(std::memory_order_acquire) ) {
@@ -39,11 +39,11 @@ const std::pair<std::shared_ptr<const Object>, Schema>& ObjectRegistry::entry(si
 }
 
 const std::shared_ptr<const Object>& ObjectRegistry::operator[](size_t i) const {
-  return entry(i).first;
+  return getEntry(i).first;
 }
 
 const Schema& ObjectRegistry::schema(size_t i) const {
-  return entry(i).second;
+  return getEntry(i).second;
 }
 
 std::optional<size_t> ObjectRegistry::find(const Object& object, const Schema& schema, size_t hash) const {
@@ -58,7 +58,7 @@ std::optional<size_t> ObjectRegistry::find(const Object& object, const Schema& s
 }
 
 size_t ObjectRegistry::operator()(Object object, Schema schema) {
-  auto hash = hashOf(object, schema);
+  auto hash = computeHash(object, schema);
 
   std::shared_lock read_lock(registryMutex);
   if ( auto found = find(object, schema, hash) ) {

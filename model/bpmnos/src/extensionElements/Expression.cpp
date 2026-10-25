@@ -102,93 +102,64 @@ std::string pathText(const LIMEX::Path& path) {
   return text;
 }
 
-/// The part of an object a path addresses: the layout of the base or field reached, the position of its first
-/// value, and the number of its dimensions indexed.
+/// The part of an object a path addresses: the pointer holding its layout, and the position of its first value.
 struct Location {
-  const BPMNOS::Object::Layout* layout;
+  const std::shared_ptr<const BPMNOS::Layout>* layout;
   size_t offset;
-  size_t dimension;
 };
 
 /// Thrown when a path reads an undefined value or is indexed by one, which makes the expression undefined.
 struct Undefined {};
 
-/// Returns the number of values one element of the given dimension of a layout spans.
-size_t span(const BPMNOS::Object::Layout& layout, size_t dimension) {
-  size_t result = layout.stride;
-  for ( size_t d = dimension + 1; d < layout.dimensions.size(); d++ ) {
-    result *= layout.dimensions[d];
-  }
-  return result;
-}
-
 /// Follows the steps of a path through an object, the indices counting from one.
 Location locate(const BPMNOS::Object& object, const LIMEX::Path& path, const std::vector<double>& indices) {
-  Location location{ object.layout.get(), 0, 0 };
+  Location location{ &object.layout, 0 };
   size_t next = 0;
   for ( auto& step : path.steps ) {
+    auto& layout = **location.layout;
     if ( step.has_value() ) {
-      // the fields of an element, every dimension being indexed, as the schema guarantees
-      auto& fields = location.layout->fields;
-      auto field = std::ranges::find_if(fields, [&step](auto& candidate) { return candidate.name == step.value(); });
-      assert( field != fields.end() );
-      location = Location{ &field->layout, location.offset + field->offset, 0 };
+      // a field of an object, as the schema guarantees
+      auto& types = std::get<BPMNOS::ObjectType>(*layout.schema).fields;
+      auto field = (size_t)std::distance(types.begin(), std::ranges::find_if(types, [&step](auto& candidate) { return candidate.name == step.value(); }));
+      assert( field < types.size() );
+      auto& fieldLayout = std::get<BPMNOS::ObjectLayout>(layout).fields[field];
+      location = Location{ &fieldLayout.layout, location.offset + fieldLayout.offset };
       continue;
     }
     double index = indices[next++];
     if ( std::isnan(index) ) {
       throw Undefined{};
     }
-    auto& layout = *location.layout;
-    if ( index < 1 || index != std::floor(index) || (size_t)index > layout.dimensions[location.dimension] ) {
-      throw std::runtime_error(std::format("Expression: illegal index {} for '{}' of size {}", index, pathText(path), layout.dimensions[location.dimension]));
+    auto& array = std::get<BPMNOS::ArrayLayout>(layout);
+    if ( index < 1 || index != std::floor(index) || (size_t)index > array.size ) {
+      throw std::runtime_error(std::format("Expression: illegal index {} for '{}' of size {}", index, pathText(path), array.size));
     }
-    location.offset += ( (size_t)index - 1 ) * span(layout, location.dimension);
-    location.dimension++;
+    location = Location{ &array.layout, location.offset + ( (size_t)index - 1 ) * array.layout->size };
   }
   return location;
 }
 
-/// Returns a view of an array of scalar values with a single dimension, an undefined value being a quiet NaN.
-LIMEX::View<double> valuesOf(const BPMNOS::Object* object, size_t offset, size_t count, size_t step) {
-  return LIMEX::View<double>( count, [object, offset, step](size_t k) -> double {
-    auto& value = object->values[offset + k * step];
+/// Returns a view of an array of single values, an undefined value being a quiet NaN.
+LIMEX::View<double> getValuesView(const BPMNOS::Object* object, size_t offset, size_t count) {
+  return LIMEX::View<double>( count, [object, offset](size_t k) -> double {
+    auto& value = object->values[offset + k];
     return value.has_value() ? (double)value.value() : std::numeric_limits<double>::quiet_NaN();
   });
 }
 
-/// Returns a view of the given length whose values are never read, for the argument of `size`.
-LIMEX::View<double> lengthOf(size_t count) {
+/// Returns a view of the given size whose values are never read, for the argument of `size`.
+LIMEX::View<double> getSizeView(size_t count) {
   return LIMEX::View<double>( count, [](size_t) -> double { return std::numeric_limits<double>::quiet_NaN(); });
 }
 
-/// Returns the layout of the part of an object a location addresses, which holds the dimensions not indexed.
-BPMNOS::Object::Layout elementLayout(const Location& location) {
-  auto& layout = *location.layout;
-  BPMNOS::Object::Layout element;
-  element.scalar = layout.scalar;
-  element.fields = layout.fields;
-  element.stride = layout.stride;
-  element.dimensions.assign(layout.dimensions.begin() + (long)location.dimension, layout.dimensions.end());
-  if ( !layout.fixed.empty() ) {
-    element.fixed.assign(layout.fixed.begin() + (long)location.dimension, layout.fixed.end());
-  }
-  return element;
-}
-
-/// Returns a copy of the part of an object a location addresses, whose values are contiguous.
-std::shared_ptr<const BPMNOS::Object> part(const BPMNOS::Object& object, const Location& location) {
+/// Returns a copy of the part of an object a location addresses, whose values are contiguous and which shares the
+/// layout of the part.
+std::shared_ptr<const BPMNOS::Object> copyPart(const BPMNOS::Object& object, const Location& location) {
   auto result = std::make_shared<BPMNOS::Object>();
-  result->layout = std::make_shared<const BPMNOS::Object::Layout>( elementLayout(location) );
+  result->layout = *location.layout;
   auto begin = object.values.begin() + (long)location.offset;
-  result->values.assign(begin, begin + (long)result->layout->size());
+  result->values.assign(begin, begin + (long)result->layout->size);
   return result;
-}
-
-/// Returns the array or object an object attribute holds.
-template <typename DataType>
-const BPMNOS::Object* objectOf(const AttributeRegistry& attributeRegistry, const Attribute* attribute, const BPMNOS::Status& status, const DataType& data) {
-  return attributeRegistry.getObject(attribute, status, data).get();
 }
 
 } // namespace
@@ -228,7 +199,7 @@ void Expression::bindPaths() {
   visit(compiled.getRoot(), false, false);
 }
 
-const BPMNOS::Schema* Expression::schemaOf(const std::string& name) const {
+const BPMNOS::Schema* Expression::getSchema(const std::string& name) const {
   if ( auto input = attributeRegistry.inputs.find(name); input != attributeRegistry.inputs.end() ) {
     return &input->second->schema;
   }
@@ -236,27 +207,26 @@ const BPMNOS::Schema* Expression::schemaOf(const std::string& name) const {
   return attribute->isObject() ? &attribute->type : nullptr;
 }
 
-Expression::Step Expression::walk(size_t path, const Schema& schema) const {
+const BPMNOS::Schema& Expression::walk(size_t path, const Schema& schema) const {
   auto& description = compiled.getPaths()[path];
   auto text = pathText(description);
   // the steps are followed through the schema: an index descends into the element type of an array, and a field
   // into the type of a field of an object
-  Step result{ &schema, 0, {} };
+  const Schema* result = &schema;
   for ( auto& step : description.steps ) {
     if ( !step.has_value() ) {
-      auto array = std::get_if<ArrayType>(result.schema);
+      auto array = std::get_if<ArrayType>(result);
       if ( !array ) {
         throw std::runtime_error("Expression: '" + text + "' has more indices than '" + description.name + "' has dimensions in '" + expression +"'");
       }
-      result.schema = array->type.get();
-      result.dimension++;
+      result = array->type.get();
       continue;
     }
-    if ( std::holds_alternative<ArrayType>(*result.schema) ) {
+    if ( std::holds_alternative<ArrayType>(*result) ) {
       throw std::runtime_error("Expression: field '" + step.value() + "' of an array in '" + text + "', whose dimensions must be indexed first, in '" + expression +"'");
     }
     const Field* field = nullptr;
-    if ( auto object = std::get_if<ObjectType>(result.schema) ) {
+    if ( auto object = std::get_if<ObjectType>(result) ) {
       if ( auto it = std::ranges::find_if(object->fields, [&step](auto& candidate) { return candidate.name == step.value(); }); it != object->fields.end() ) {
         field = &*it;
       }
@@ -264,24 +234,22 @@ Expression::Step Expression::walk(size_t path, const Schema& schema) const {
     if ( !field ) {
       throw std::runtime_error("Expression: unknown field '" + step.value() + "' in '" + text + "' in '" + expression +"'");
     }
-    result.schema = field->type.get();
-    result.dimension = 0;
-    result.fields.push_back(step.value());
+    result = field->type.get();
   }
-  return result;
+  return *result;
 }
 
 void Expression::bind(size_t path, bool asArray, bool lengthOnly) const {
   auto& description = compiled.getPaths()[path];
   auto text = pathText(description);
-  auto declared = schemaOf(description.name);
+  auto declared = getSchema(description.name);
   if ( !declared ) {
     if ( description.steps.empty() ) {
       throw std::runtime_error("Expression: '" + description.name + "' is not an array in '" + expression +"'");
     }
     throw std::runtime_error("Expression: '" + text + "' does not address an object in '" + expression +"'");
   }
-  auto schema = walk(path, *declared).schema;
+  auto schema = &walk(path, *declared);
   if ( lengthOnly ) {
     if ( !std::holds_alternative<ArrayType>(*schema) ) {
       throw std::runtime_error("Expression: '" + text + "' is not an array in '" + expression +"'");
@@ -304,12 +272,9 @@ void Expression::analyseTarget(const std::vector<size_t>& literals) {
   if ( resize ) {
     // the length of the dimension the target addresses is assigned a scalar value
     if ( targetPath.has_value() ) {
-      auto step = walk(targetPath.value(), attribute->type);
-      if ( !std::holds_alternative<ArrayType>(*step.schema) ) {
+      if ( !std::holds_alternative<ArrayType>(walk(targetPath.value(), attribute->type)) ) {
         throw std::runtime_error("Expression: '" + pathText(compiled.getPaths()[targetPath.value()]) + "' is not an array in '" + expression + "'");
       }
-      resizeFields = step.fields;
-      resizeDimension = step.dimension;
     }
     else if ( !std::holds_alternative<ArrayType>(attribute->type) ) {
       throw std::runtime_error("Expression: object '" + attribute->name + "' is not an array in '" + expression + "'");
@@ -321,10 +286,7 @@ void Expression::analyseTarget(const std::vector<size_t>& literals) {
     return;
   }
   if ( targetPath.has_value() ) {
-    auto step = walk(targetPath.value(), attribute->type);
-    objectValue = !std::holds_alternative<ValueType>(*step.schema);
-    targetFields = step.fields;
-    targetDimension = step.dimension;
+    objectValue = !std::holds_alternative<ValueType>(walk(targetPath.value(), attribute->type));
   }
   else {
     objectValue = true;
@@ -369,11 +331,11 @@ void Expression::analyseTarget(const std::vector<size_t>& literals) {
   }
   else if ( value.type == LIMEX::Type::path ) {
     size_t path = std::get<size_t>(value.operands[0]);
-    auto declared = schemaOf(compiled.getPaths()[path].name);
+    auto declared = getSchema(compiled.getPaths()[path].name);
     if ( !declared ) {
       throw std::runtime_error("Expression: '" + pathText(compiled.getPaths()[path]) + "' does not address an object in '" + expression +"'");
     }
-    if ( std::holds_alternative<ValueType>(*walk(path, *declared).schema) ) {
+    if ( std::holds_alternative<ValueType>(walk(path, *declared)) ) {
       throw illegal();
     }
     sourcePath = path;
@@ -422,11 +384,11 @@ public:
   }
   LIMEX::View<double> array(size_t path, const std::vector<double>& indices) const override {
     auto location = locate(*objects[path], owner.compiled.getPaths()[path], indices);
-    auto& layout = *location.layout;
+    auto& array = std::get<BPMNOS::ArrayLayout>(**location.layout);
     if ( owner.readsLengthOnly[path] ) {
-      return lengthOf(layout.dimensions[location.dimension]);
+      return getSizeView(array.size);
     }
-    return valuesOf(objects[path], location.offset, layout.dimensions[location.dimension], span(layout, location.dimension));
+    return getValuesView(objects[path], location.offset, array.size);
   }
 private:
   const Expression& owner;
@@ -586,7 +548,7 @@ bool Expression::setValues(const BPMNOS::Status& status, const DataType& data, s
   }
   // the arrays and objects the paths address, a name used as an array being a path without steps
   for ( size_t path = 0; path < paths.size(); path++ ) {
-    pathObjects.push_back( paths[path] ? objectOf(attributeRegistry, paths[path], status, data) : pathInputs[path]->object.get() );
+    pathObjects.push_back( paths[path] ? attributeRegistry.getObject(paths[path], status, data).get() : pathInputs[path]->object.get() );
     if ( !pathObjects.back() ) {
       return false;
     }
@@ -608,6 +570,9 @@ void Expression::writeToObject(BPMNOS::Status& status, DataType& data, const Sch
   }
   auto& slot = attributeRegistry.getObject(target.value(), status, data);
   auto targetPath = compiled.getTargetPath();
+  // the steps of the target path without its indices, which address the same part in every element
+  static const std::vector< std::optional<std::string> > noSteps;
+  auto& targetSteps = targetPath.has_value() ? compiled.getPaths()[targetPath.value()].steps : noSteps;
   try {
     PathResolver resolver(*this, pathObjects);
     // the indices of the target, all of which must be defined
@@ -636,7 +601,7 @@ void Expression::writeToObject(BPMNOS::Status& status, DataType& data, const Sch
         // the indices of the path are checked, the dimension changing in every element alike
         locateTarget();
       }
-      slot = BPMNOS::resized(*slot, resizeFields, resizeDimension, (size_t)length.value());
+      slot = BPMNOS::resize(*slot, targetSteps, (size_t)length.value());
       return;
     }
 
@@ -695,14 +660,14 @@ void Expression::writeToObject(BPMNOS::Status& status, DataType& data, const Sch
       SourceResolver capturing(*this, pathObjects, sourcePath.value());
       try {
         compiled.evaluate(variableValues, capturing);
-        source = part(*pathObjects[sourcePath.value()], locate(*pathObjects[sourcePath.value()], compiled.getPaths()[sourcePath.value()], capturing.sourceIndices));
+        source = copyPart(*pathObjects[sourcePath.value()], locate(*pathObjects[sourcePath.value()], compiled.getPaths()[sourcePath.value()], capturing.sourceIndices));
       }
       catch ( const Undefined& ) {
         throw std::runtime_error("Expression: undefined index");
       }
       // the part of the declared schema the source path reaches
       auto& description = compiled.getPaths()[sourcePath.value()];
-      sourceSchema = walk(sourcePath.value(), *schemaOf(description.name)).schema;
+      sourceSchema = &walk(sourcePath.value(), *getSchema(description.name));
     }
 
     if ( !targetPath.has_value() ) {
@@ -714,23 +679,33 @@ void Expression::writeToObject(BPMNOS::Status& status, DataType& data, const Sch
     // an element keeps the sizes of its fixed arrays, and its open arrays take the sizes of the value, which apply
     // to every element of the enclosing array
     auto location = locateTarget();
-    auto element = elementLayout(location);
-    Schema targetSchema( *walk(targetPath.value(), schemaProvider.getSchema(target.value())).schema, element );
+    // the layout of the element is kept, the object holding it being replaced when a size changes
+    auto element = *location.layout;
+    Schema targetSchema( walk(targetPath.value(), schemaProvider.getSchema(target.value())), *element );
     auto value = targetSchema.supports(*sourceSchema) ? source : std::make_shared<const BPMNOS::Object>(targetSchema, *source, *sourceSchema);
-    std::function<void(const BPMNOS::Object::Layout&, const BPMNOS::Object::Layout&, std::vector<std::string>, size_t)> determine =
-      [&](const BPMNOS::Object::Layout& current, const BPMNOS::Object::Layout& given, std::vector<std::string> fields, size_t first) {
-        for ( size_t d = 0; d < current.dimensions.size(); d++ ) {
-          if ( current.dimensions[d] != given.dimensions[d] ) {
-            slot = BPMNOS::resized(*slot, fields, first + d, given.dimensions[d]);
+    std::function<void(const BPMNOS::Layout&, const BPMNOS::Layout&, std::vector< std::optional<std::string> >&)> determine =
+      [&](const BPMNOS::Layout& current, const BPMNOS::Layout& given, std::vector< std::optional<std::string> >& steps) {
+        if ( auto array = std::get_if<BPMNOS::ArrayLayout>(&current) ) {
+          auto& givenArray = std::get<BPMNOS::ArrayLayout>(given);
+          if ( array->size != givenArray.size ) {
+            slot = BPMNOS::resize(*slot, steps, givenArray.size);
+          }
+          steps.push_back(std::nullopt);
+          determine(*array->layout, *givenArray.layout, steps);
+          steps.pop_back();
+        }
+        else if ( auto object = std::get_if<BPMNOS::ObjectLayout>(&current) ) {
+          auto& types = std::get<ObjectType>(*current.schema).fields;
+          auto& givenFields = std::get<BPMNOS::ObjectLayout>(given).fields;
+          for ( size_t k = 0; k < object->fields.size(); k++ ) {
+            steps.push_back(types[k].name);
+            determine(*object->fields[k].layout, *givenFields[k].layout, steps);
+            steps.pop_back();
           }
         }
-        for ( size_t k = 0; k < current.fields.size(); k++ ) {
-          auto nested = fields;
-          nested.push_back(current.fields[k].name);
-          determine(current.fields[k].layout, given.fields[k].layout, nested, 0);
-        }
       };
-    determine(element, *value->layout, targetFields, targetDimension);
+    auto steps = targetSteps;
+    determine(*element, *value->layout, steps);
     location = locateTarget();
     auto& values = modifiable(slot).values;
     assert( location.offset + value->values.size() <= values.size() );

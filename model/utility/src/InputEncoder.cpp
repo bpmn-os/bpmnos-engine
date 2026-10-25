@@ -111,15 +111,12 @@ public:
 
   /// Reads a text stating one literal and nothing besides whitespace.
   Literal scanInitializer();
-  /// Returns the layout of a literal without expression members, refusing elements of an array that differ in
-  /// layout.
-  Object::Layout layoutOf(const Literal& literal) const;
-  /// Returns the schema of a literal without expression members, which states its value types and leaves every
-  /// array open, the elements of an array being uniform.
-  Schema schemaOf(const Literal& literal) const;
-  /// Writes the values of a literal without expression members into the values of an object, beginning at the
-  /// given offset.
-  void flatten(const Literal& literal, std::vector<Value>& values, size_t offset) const;
+  /// Returns the layout of a literal without expression members, whose schema states the value types of the literal
+  /// and leaves every array open, refusing elements of an array that differ in their layouts.
+  std::shared_ptr<const Layout> determineLayout(const Literal& literal) const;
+  /// Writes the values of a literal without expression members, of the given layout, into the values of an object,
+  /// beginning at the given offset.
+  void flatten(const Literal& literal, const Layout& layout, std::vector<Value>& values, size_t offset) const;
 
 private:
   /// Reads a quoted span and returns its index in the string registry.
@@ -297,10 +294,11 @@ Literal Scan::scanInitializer() {
 
 size_t Scan::registerObject(const Literal& literal) const {
   Object object;
-  object.layout = std::make_shared<const Object::Layout>( layoutOf(literal) );
-  object.values.resize( object.layout->size() );
-  flatten(literal, object.values, 0);
-  return objectRegistry( std::move(object), schemaOf(literal) );
+  object.layout = determineLayout(literal);
+  object.values.resize( object.layout->size );
+  flatten(literal, *object.layout, object.values, 0);
+  auto schema = *object.layout->schema;
+  return objectRegistry( std::move(object), std::move(schema) );
 }
 
 Literal Scan::scanArray() {
@@ -463,67 +461,40 @@ size_t Scan::memberEnd() const {
   return end;
 }
 
-Object::Layout Scan::layoutOf(const Literal& literal) const {
+std::shared_ptr<const Layout> Scan::determineLayout(const Literal& literal) const {
   return std::visit(Overloaded{
     [](const Scalar& scalar) {
-      Object::Layout layout;
-      layout.scalar = scalar.type;
-      return layout;
+      return std::make_shared<const Layout>( std::make_shared<const Schema>(scalar.type) );
     },
-    [this](const Expression&) -> Object::Layout {
+    [this](const Expression&) -> std::shared_ptr<const Layout> {
       // an expression member has a layout only once it has a value
       fail("expression member without a value");
     },
     [this](const Array& array) {
       // the elements of an array are uniform: they agree in type and in the sizes of their own arrays
-      auto layout = layoutOf(array.elements.front());
-      for ( auto& element : array.elements ) {
-        if ( !( layoutOf(element) == layout ) ) {
+      auto element = determineLayout(array.elements.front());
+      for ( auto& other : array.elements ) {
+        if ( !( *determineLayout(other) == *element ) ) {
           fail("members of different type or size");
         }
       }
-      layout.dimensions.insert(layout.dimensions.begin(), array.elements.size());
-      return layout;
-    },
-    [this](const Fields& fields) {
-      Object::Layout layout;
-      size_t offset = 0;
-      for ( auto& [name, member] : fields.members ) {
-        auto fieldLayout = layoutOf(member);
-        auto size = fieldLayout.size();
-        layout.fields.push_back( Object::Layout::Field{ name, offset, std::move(fieldLayout) } );
-        offset += size;
-      }
-      layout.stride = offset;
-      return layout;
-    }
-  }, literal.node);
-}
-
-Schema Scan::schemaOf(const Literal& literal) const {
-  return std::visit(Overloaded{
-    [](const Scalar& scalar) {
-      return Schema(scalar.type);
-    },
-    [this](const Expression&) -> Schema {
-      // an expression member has a schema only once it has a value
-      fail("expression member without a value");
-    },
-    [this](const Array& array) {
       // a literal states no sizes, so that the array is open
-      return Schema( ArrayType{ std::make_shared<const Schema>( schemaOf(array.elements.front()) ), std::nullopt } );
+      auto schema = std::make_shared<const Schema>( ArrayType{ element->schema, std::nullopt } );
+      return std::make_shared<const Layout>(schema, element, array.elements.size());
     },
     [this](const Fields& fields) {
       ObjectType object;
+      std::vector< std::shared_ptr<const Layout> > layouts;
       for ( auto& [name, member] : fields.members ) {
-        object.fields.push_back( Field{ name, std::make_shared<const Schema>( schemaOf(member) ) } );
+        layouts.push_back( determineLayout(member) );
+        object.fields.push_back( Field{ name, layouts.back()->schema } );
       }
-      return Schema( std::move(object) );
+      return std::make_shared<const Layout>( std::make_shared<const Schema>( std::move(object) ), layouts );
     }
   }, literal.node);
 }
 
-void Scan::flatten(const Literal& literal, std::vector<Value>& values, size_t offset) const {
+void Scan::flatten(const Literal& literal, const Layout& layout, std::vector<Value>& values, size_t offset) const {
   std::visit(Overloaded{
     [&](const Scalar& scalar) {
       values[offset] = number(scalar.value);
@@ -532,16 +503,15 @@ void Scan::flatten(const Literal& literal, std::vector<Value>& values, size_t of
       fail("expression member without a value");
     },
     [&](const Array& array) {
-      size_t span = layoutOf(array.elements.front()).size();
+      auto& element = *std::get<ArrayLayout>(layout).layout;
       for ( size_t i = 0; i < array.elements.size(); i++ ) {
-        flatten(array.elements[i], values, offset + i * span);
+        flatten(array.elements[i], element, values, offset + i * element.size);
       }
     },
     [&](const Fields& fields) {
-      size_t memberOffset = 0;
-      for ( auto& [name, member] : fields.members ) {
-        flatten(member, values, offset + memberOffset);
-        memberOffset += layoutOf(member).size();
+      auto& fieldLayouts = std::get<ObjectLayout>(layout).fields;
+      for ( size_t k = 0; k < fields.members.size(); k++ ) {
+        flatten(fields.members[k].second, *fieldLayouts[k].layout, values, offset + fieldLayouts[k].offset);
       }
     }
   }, literal.node);
@@ -679,8 +649,9 @@ std::pair<std::shared_ptr<const Object>, Schema> ObjectInitializer::instantiate(
   // an object is created modifiable, so that a write may change it in place once it is no longer shared
   Scan scan(text);
   auto object = std::make_shared<Object>();
-  object->layout = std::make_shared<const Object::Layout>( scan.layoutOf(instance) );
-  object->values.resize( object->layout->size() );
-  scan.flatten(instance, object->values, 0);
-  return { std::move(object), scan.schemaOf(instance) };
+  object->layout = scan.determineLayout(instance);
+  object->values.resize( object->layout->size );
+  scan.flatten(instance, *object->layout, object->values, 0);
+  auto schema = *object->layout->schema;
+  return { std::move(object), std::move(schema) };
 }

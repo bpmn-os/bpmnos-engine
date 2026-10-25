@@ -118,7 +118,7 @@ TEST_CASE( "Read matrix and object inputs in expressions", "[model][inputs]" ) {
 
   SECTION( "An input is assigned to an object" ) {
     auto row = registry["row"];
-    status.objects[row->index] = row->type.undefinedObject();
+    status.objects[row->index] = std::make_shared<BPMNOS::Object>(row->type);
     auto provider = std::make_shared<Execution::StaticDataProvider>(model, "INSTANCE_ID; NODE_ID; INITIALIZATION\nInstance_1; Process_1;\n");
     Model::Expression expression(InputEncoder("row := distance[2]"), registry);
     expression.writeToObject(status, data, *provider);
@@ -172,8 +172,8 @@ TEST_CASE( "Fit inputs to their schema", "[model][inputs]" ) {
   SECTION( "JSON with a value of the wrong type" ) {
     REQUIRE_THROWS_WITH( modelWith(standardInputs, "depots.json", R"([ { "x": "far" } ])"), Catch::Matchers::ContainsSubstring("no value of its type") );
   }
-  SECTION( "JSON arrays of different lengths at an open dimension" ) {
-    REQUIRE_THROWS_WITH( modelFrom(inputModel(R"xml(<bpmnos:input id="Input_1" name="grid" type="object" source="grid.json" schema="decimal[][]" />)xml"), { { "grid.json", "[ [ 1, 2 ], [ 3 ] ]" } }), Catch::Matchers::ContainsSubstring("arrays of different lengths") );
+  SECTION( "JSON arrays of different sizes at an open array" ) {
+    REQUIRE_THROWS_WITH( modelFrom(inputModel(R"xml(<bpmnos:input id="Input_1" name="grid" type="object" source="grid.json" schema="decimal[][]" />)xml"), { { "grid.json", "[ [ 1, 2 ], [ 3 ] ]" } }), Catch::Matchers::ContainsSubstring("arrays of different sizes") );
   }
 }
 

@@ -388,7 +388,7 @@ SCENARIO( "Signal raised by the environment", "[data][provider][signal]" ) {
     REQUIRE( process->id == "Process_2" );
     // the environment builds the content object from the type of the signal
     auto catcher = process->find([](BPMN::Node* node) { return node->id == "SignalEvent_2"; });
-    auto content = catcher->extensionElements->as<Model::ExtensionElements>()->signalDefinition->schema.fromJSON(R"({ "emitter": "World" })");
+    auto content = std::make_shared<BPMNOS::Object>(catcher->extensionElements->as<Model::ExtensionElements>()->signalDefinition->schema, nlohmann::json::parse(R"({ "emitter": "World" })"));
     auto dataProvider = std::make_shared<const ScriptedDataProvider>(model, process, "Instance_2", 2, content, 5);
 
     WHEN( "The environment raises the signal at time 2" ) {

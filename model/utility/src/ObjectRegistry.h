@@ -58,7 +58,7 @@ private:
   /// The indices of the registered constants by the hash of their schema, layout and values.
   std::unordered_multimap<size_t, size_t> index;
   /// Returns the entry with the given index, which must be published.
-  const std::pair<std::shared_ptr<const Object>, Schema>& entry(size_t i) const;
+  const std::pair<std::shared_ptr<const Object>, Schema>& getEntry(size_t i) const;
   /// Returns the index of a registered constant equal to the given one with the given hash, if there is one.
   std::optional<size_t> find(const Object& object, const Schema& schema, size_t hash) const;
   mutable std::shared_mutex registryMutex; ///< Guards the index and serialises registrations

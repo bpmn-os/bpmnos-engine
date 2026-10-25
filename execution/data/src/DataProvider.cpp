@@ -17,11 +17,11 @@ DataProvider::DataProvider(std::shared_ptr<const BPMNOS::Model::Model> model, st
       auto extensionElements = node->extensionElements->as<const BPMNOS::Model::ExtensionElements>();
       auto content = extensionElements->content.get();
       if ( auto signalDefinition = extensionElements->signalDefinition.get() ) {
-        auto [it, _] = defaultContents.try_emplace(signalDefinition->name, content->type.undefinedObject());
+        auto [it, _] = defaultContents.try_emplace(signalDefinition->name, std::make_shared<BPMNOS::Object>(content->type));
         defaultObjects[content] = it->second;
       }
       else {
-        defaultObjects[content] = content->type.undefinedObject();
+        defaultObjects[content] = std::make_shared<BPMNOS::Object>(content->type);
       }
     }
   }
