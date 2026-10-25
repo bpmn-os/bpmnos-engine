@@ -1,7 +1,7 @@
 #include "ExpectedValueFactory.h"
-#include "model/utility/src/ObjectRegistry.h"
 #include <stdexcept>
 #include <algorithm>
+#include <cmath>
 
 using namespace BPMNOS::Execution;
 
@@ -123,26 +123,25 @@ void ExpectedValueFactory::registerFunctions(LIMEX::Handle<double>& handle) {
 
   // discrete(values, probabilities) - Mode: value with highest probability
   if (!nameExists("discrete")) {
-    handle.addFunction("discrete", [](const std::vector<double>& args) -> double {
-      if (args.size() != 2) {
-        throw std::runtime_error("discrete requires 2 arguments: values collection, probabilities collection");
-      }
-      size_t valuesIndex = static_cast<size_t>(args[0]);
-      size_t probsIndex = static_cast<size_t>(args[1]);
-
-      auto values = to_vector( *objectRegistry[valuesIndex] );
-      auto probs = to_vector( *objectRegistry[probsIndex] );
-
-      if (values.size() != probs.size()) {
+    handle.addAggregator("discrete", 2, [](const std::vector<LIMEX::View<double>>& arrays) -> double {
+      auto& values = arrays[0];
+      auto& probabilities = arrays[1];
+      if (values.size() != probabilities.size()) {
         throw std::runtime_error("discrete: values and probabilities must have the same size");
       }
-      if (values.empty()) {
-        throw std::runtime_error("discrete: collections must not be empty");
+      if (values.size() == 0) {
+        throw std::runtime_error("discrete: values and probabilities must not be empty");
       }
-
-      auto maxIt = std::max_element(probs.begin(), probs.end());
-      auto maxIndex = static_cast<size_t>(std::distance(probs.begin(), maxIt));
-      return values[maxIndex];
+      size_t mode = 0;
+      for (size_t i = 0; i < values.size(); i++) {
+        if (std::isnan(values[i]) || std::isnan(probabilities[i])) {
+          throw std::runtime_error("discrete: values and probabilities must be defined");
+        }
+        if (probabilities[i] > probabilities[mode]) {
+          mode = i;
+        }
+      }
+      return values[mode];
     });
   }
 }

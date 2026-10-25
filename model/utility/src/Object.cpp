@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <cassert>
 #include <functional>
-#include <limits>
 #include <stdexcept>
 
 namespace BPMNOS {
@@ -304,19 +303,6 @@ std::string to_string(const Object& object) {
 
 nlohmann::ordered_json to_json(const Object& object) {
   return json(*object.layout, object.values, 0);
-}
-
-std::vector<double> to_vector(const Object& object) {
-  auto array = std::get_if<ArrayType>(object.layout->schema.get());
-  if ( !array || !std::holds_alternative<ValueType>(*array->type) ) {
-    throw std::runtime_error("Object: '" + to_string(object) + "' is not an array of values");
-  }
-  std::vector<double> result;
-  result.reserve(object.values.size());
-  for ( auto& value : object.values ) {
-    result.push_back( value.has_value() ? (double)value.value() : std::numeric_limits<double>::quiet_NaN() );
-  }
-  return result;
 }
 
 namespace {

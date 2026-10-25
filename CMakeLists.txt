@@ -224,7 +224,7 @@ include_directories(
 FetchContent_Declare(
         limex
         GIT_REPOSITORY https://github.com/bpmn-os/limex/
-        GIT_TAG v0.2.0
+        GIT_TAG v0.3.0
 )
 
 FetchContent_GetProperties(limex)
