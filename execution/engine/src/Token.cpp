@@ -244,7 +244,7 @@ nlohmann::ordered_json Token::jsonify() const {
   }
   for ( auto object : attributeRegistry.statusObjects ) {
     if ( object->index < status.objects.size() ) {
-      statusEntries.emplace_back( object->declaration, object->name, BPMNOS::to_json(*status.objects[object->index]) );
+      statusEntries.emplace_back( object->declaration, object->name, status.objects[object->index]->jsonify() );
     }
   }
   jsonObject["status"] = render(statusEntries);
@@ -264,7 +264,7 @@ nlohmann::ordered_json Token::jsonify() const {
   }
   for ( auto object : attributeRegistry.dataObjects ) {
     if ( object->index < data->objects.size() ) {
-      ( object->isGlobal ? globalEntries : dataEntries ).emplace_back( object->declaration, object->name, BPMNOS::to_json(*data->objects[object->index].get()) );
+      ( object->isGlobal ? globalEntries : dataEntries ).emplace_back( object->declaration, object->name, data->objects[object->index].get()->jsonify() );
     }
   }
   if ( !dataEntries.empty() ) {

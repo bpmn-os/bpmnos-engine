@@ -9,7 +9,7 @@
 
 namespace BPMNOS {
 
-Layout::Layout(std::shared_ptr<const Schema> schema)
+Object::Layout::Layout(std::shared_ptr<const Schema> schema)
   : variant(std::monostate{})
   , schema(std::move(schema))
   , size(1)
@@ -17,7 +17,7 @@ Layout::Layout(std::shared_ptr<const Schema> schema)
   assert( std::holds_alternative<ValueType>(*this->schema) );
 }
 
-Layout::Layout(std::shared_ptr<const Schema> schema, std::shared_ptr<const Layout> layout, size_t size)
+Object::Layout::Layout(std::shared_ptr<const Schema> schema, std::shared_ptr<const Layout> layout, size_t size)
   : variant(ArrayLayout{ layout, size })
   , schema(std::move(schema))
   , size(size * layout->size)
@@ -25,14 +25,14 @@ Layout::Layout(std::shared_ptr<const Schema> schema, std::shared_ptr<const Layou
   assert( std::holds_alternative<ArrayType>(*this->schema) );
 }
 
-Layout::Layout(std::shared_ptr<const Schema> schema, const std::vector< std::shared_ptr<const Layout> >& fields)
-  : variant(ObjectLayout{})
+Object::Layout::Layout(std::shared_ptr<const Schema> schema, const std::vector< std::shared_ptr<const Layout> >& fields)
+  : variant(StructLayout{})
   , schema(std::move(schema))
   , size(0)
 {
-  assert( std::get<ObjectType>(*this->schema).fields.size() == fields.size() );
+  assert( std::get<StructType>(*this->schema).fields.size() == fields.size() );
   // the fields are stored one after the other in the order of the schema
-  auto& object = std::get<ObjectLayout>(*this);
+  auto& object = std::get<StructLayout>(*this);
   object.fields.reserve(fields.size());
   for ( auto& field : fields ) {
     object.fields.push_back( FieldLayout{ size, field } );
@@ -40,7 +40,7 @@ Layout::Layout(std::shared_ptr<const Schema> schema, const std::vector< std::sha
   }
 }
 
-std::string Layout::stringify() const {
+std::string Object::Layout::stringify() const {
   // the sizes of the arrays are written after the innermost elements, outermost first
   std::string sizes;
   const Layout* current = this;
@@ -51,8 +51,8 @@ std::string Layout::stringify() const {
   if ( std::holds_alternative<std::monostate>(*current) ) {
     return current->schema->stringify() + sizes;
   }
-  auto& fields = std::get<ObjectLayout>(*current).fields;
-  auto& types = std::get<ObjectType>(*current->schema).fields;
+  auto& fields = std::get<StructLayout>(*current).fields;
+  auto& types = std::get<StructType>(*current->schema).fields;
   std::string result = "{ ";
   for ( size_t k = 0; k < fields.size(); k++ ) {
     result += ( k ? ", " : "" ) + types[k].name + ": " + fields[k].layout->stringify();
@@ -60,7 +60,7 @@ std::string Layout::stringify() const {
   return result + " }" + sizes;
 }
 
-bool Layout::operator==(const Layout& other) const {
+bool Object::Layout::operator==(const Layout& other) const {
   if ( this == &other ) {
     return true;
   }
@@ -71,8 +71,8 @@ bool Layout::operator==(const Layout& other) const {
     auto& otherArray = std::get<ArrayLayout>(other);
     return array->size == otherArray.size && *array->layout == *otherArray.layout;
   }
-  if ( auto object = std::get_if<ObjectLayout>(this) ) {
-    return std::ranges::equal(object->fields, std::get<ObjectLayout>(other).fields, [](auto& field, auto& otherField) {
+  if ( auto object = std::get_if<StructLayout>(this) ) {
+    return std::ranges::equal(object->fields, std::get<StructLayout>(other).fields, [](auto& field, auto& otherField) {
       return field.offset == otherField.offset && *field.layout == *otherField.layout;
     });
   }
@@ -82,8 +82,8 @@ bool Layout::operator==(const Layout& other) const {
 namespace {
 
 /// Renders the values of a layout beginning at the given offset.
-std::string render(const Layout& layout, const std::vector<Value>& values, size_t offset) {
-  if ( auto array = std::get_if<ArrayLayout>(&layout) ) {
+std::string render(const Object::Layout& layout, const std::vector<Value>& values, size_t offset) {
+  if ( auto array = std::get_if<Object::ArrayLayout>(&layout) ) {
     if ( array->size == 0 ) {
       return "[ ]";
     }
@@ -103,8 +103,8 @@ std::string render(const Layout& layout, const std::vector<Value>& values, size_
     auto text = BPMNOS::to_string(value.value(), type);
     return type == ValueType::STRING ? "\"" + text + "\"" : text;
   }
-  auto& fields = std::get<ObjectLayout>(layout).fields;
-  auto& types = std::get<ObjectType>(*layout.schema).fields;
+  auto& fields = std::get<Object::StructLayout>(layout).fields;
+  auto& types = std::get<StructType>(*layout.schema).fields;
   std::string result = "{ ";
   for ( size_t k = 0; k < fields.size(); k++ ) {
     result += ( k ? ", " : "" ) + types[k].name + " := " + render(*fields[k].layout, values, offset + fields[k].offset);
@@ -113,8 +113,8 @@ std::string render(const Layout& layout, const std::vector<Value>& values, size_
 }
 
 /// Renders the values of a layout beginning at the given offset as JSON.
-nlohmann::ordered_json json(const Layout& layout, const std::vector<Value>& values, size_t offset) {
-  if ( auto array = std::get_if<ArrayLayout>(&layout) ) {
+nlohmann::ordered_json json(const Object::Layout& layout, const std::vector<Value>& values, size_t offset) {
+  if ( auto array = std::get_if<Object::ArrayLayout>(&layout) ) {
     auto result = nlohmann::ordered_json::array();
     for ( size_t i = 0; i < array->size; i++ ) {
       result.push_back( json(*array->layout, values, offset + i * array->layout->size) );
@@ -137,8 +137,8 @@ nlohmann::ordered_json json(const Layout& layout, const std::vector<Value>& valu
         return BPMNOS::to_string(value.value(), ValueType::STRING);
     }
   }
-  auto& fields = std::get<ObjectLayout>(layout).fields;
-  auto& types = std::get<ObjectType>(*layout.schema).fields;
+  auto& fields = std::get<Object::StructLayout>(layout).fields;
+  auto& types = std::get<StructType>(*layout.schema).fields;
   auto result = nlohmann::ordered_json::object();
   for ( size_t k = 0; k < fields.size(); k++ ) {
     result[types[k].name] = json(*fields[k].layout, values, offset + fields[k].offset);
@@ -150,9 +150,9 @@ nlohmann::ordered_json json(const Layout& layout, const std::vector<Value>& valu
  * Visits the values of an object of the layout `from` that an object of the layout `to`, of the same structure,
  * also has, calling `visit(source, target)` with the positions of each such value in the two objects.
  */
-void correspond(const Layout& from, size_t fromOffset, const Layout& to, size_t toOffset, const std::function<void(size_t, size_t)>& visit) {
-  if ( auto array = std::get_if<ArrayLayout>(&from) ) {
-    auto& toArray = std::get<ArrayLayout>(to);
+void correspond(const Object::Layout& from, size_t fromOffset, const Object::Layout& to, size_t toOffset, const std::function<void(size_t, size_t)>& visit) {
+  if ( auto array = std::get_if<Object::ArrayLayout>(&from) ) {
+    auto& toArray = std::get<Object::ArrayLayout>(to);
     size_t count = std::min(array->size, toArray.size);
     for ( size_t i = 0; i < count; i++ ) {
       correspond(*array->layout, fromOffset + i * array->layout->size, *toArray.layout, toOffset + i * toArray.layout->size, visit);
@@ -163,17 +163,17 @@ void correspond(const Layout& from, size_t fromOffset, const Layout& to, size_t 
     visit(fromOffset, toOffset);
     return;
   }
-  auto& fields = std::get<ObjectLayout>(from).fields;
-  auto& toFields = std::get<ObjectLayout>(to).fields;
+  auto& fields = std::get<Object::StructLayout>(from).fields;
+  auto& toFields = std::get<Object::StructLayout>(to).fields;
   for ( size_t k = 0; k < fields.size(); k++ ) {
     correspond(*fields[k].layout, fromOffset + fields[k].offset, *toFields[k].layout, toOffset + toFields[k].offset, visit);
   }
 }
 
 /// Returns the layouts of the fields of an object layout.
-std::vector< std::shared_ptr<const Layout> > fieldLayoutsOf(const Layout& layout) {
-  std::vector< std::shared_ptr<const Layout> > result;
-  for ( auto& field : std::get<ObjectLayout>(layout).fields ) {
+std::vector< std::shared_ptr<const Object::Layout> > fieldLayoutsOf(const Object::Layout& layout) {
+  std::vector< std::shared_ptr<const Object::Layout> > result;
+  for ( auto& field : std::get<Object::StructLayout>(layout).fields ) {
     result.push_back(field.layout);
   }
   return result;
@@ -181,23 +181,23 @@ std::vector< std::shared_ptr<const Layout> > fieldLayoutsOf(const Layout& layout
 
 /// Returns the layout in which the array the steps reach from the given one on has the given size, rebuilding the
 /// layouts and, where a fixed array changes its size, the schemas along the steps.
-std::shared_ptr<const Layout> rebuild(const std::shared_ptr<const Layout>& layout, const std::vector< std::optional<std::string> >& steps, size_t step, size_t size) {
+std::shared_ptr<const Object::Layout> rebuild(const std::shared_ptr<const Object::Layout>& layout, const std::vector< std::optional<std::string> >& steps, size_t step, size_t size) {
   if ( step == steps.size() ) {
-    auto& array = std::get<ArrayLayout>(*layout);
+    auto& array = std::get<Object::ArrayLayout>(*layout);
     auto& type = std::get<ArrayType>(*layout->schema);
     // an array fixed in the schema stays fixed at its new size
     auto schema = type.size.has_value() ? std::make_shared<const Schema>( ArrayType{ type.type, size } ) : layout->schema;
-    return std::make_shared<const Layout>(schema, array.layout, size);
+    return std::make_shared<const Object::Layout>(schema, array.layout, size);
   }
   if ( !steps[step].has_value() ) {
-    auto& array = std::get<ArrayLayout>(*layout);
+    auto& array = std::get<Object::ArrayLayout>(*layout);
     auto element = rebuild(array.layout, steps, step + 1, size);
     auto& type = std::get<ArrayType>(*layout->schema);
     auto schema = ( element->schema == array.layout->schema ) ? layout->schema : std::make_shared<const Schema>( ArrayType{ element->schema, type.size } );
-    return std::make_shared<const Layout>(schema, element, array.size);
+    return std::make_shared<const Object::Layout>(schema, element, array.size);
   }
   auto& name = steps[step].value();
-  auto type = std::get<ObjectType>(*layout->schema);
+  auto type = std::get<StructType>(*layout->schema);
   auto field = (size_t)std::distance(type.fields.begin(), std::ranges::find_if(type.fields, [&name](auto& candidate) { return candidate.name == name; }));
   if ( field == type.fields.size() ) {
     throw std::logic_error("Object: unknown field '" + name + "'");
@@ -210,27 +210,27 @@ std::shared_ptr<const Layout> rebuild(const std::shared_ptr<const Layout>& layou
     schema = std::make_shared<const Schema>( std::move(type) );
   }
   fields[field] = std::move(changed);
-  return std::make_shared<const Layout>(schema, fields);
+  return std::make_shared<const Object::Layout>(schema, fields);
 }
 
 /// Returns the layout in which every array has the largest size it has in the two layouts, and is fixed only where
 /// both fix it at the same size.
-std::shared_ptr<const Layout> widen(const std::shared_ptr<const Layout>& layout, const std::shared_ptr<const Layout>& other) {
+std::shared_ptr<const Object::Layout> widen(const std::shared_ptr<const Object::Layout>& layout, const std::shared_ptr<const Object::Layout>& other) {
   if ( layout == other || *layout == *other || std::holds_alternative<std::monostate>(*layout) ) {
     return layout;
   }
-  if ( auto array = std::get_if<ArrayLayout>(layout.get()) ) {
-    auto& otherArray = std::get<ArrayLayout>(*other);
+  if ( auto array = std::get_if<Object::ArrayLayout>(layout.get()) ) {
+    auto& otherArray = std::get<Object::ArrayLayout>(*other);
     auto element = widen(array->layout, otherArray.layout);
     auto& type = std::get<ArrayType>(*layout->schema);
     auto& otherType = std::get<ArrayType>(*other->schema);
     auto fixed = ( type.size.has_value() && type.size == otherType.size ) ? type.size : std::nullopt;
     auto schema = ( element->schema == array->layout->schema && fixed == type.size ) ? layout->schema : std::make_shared<const Schema>( ArrayType{ element->schema, fixed } );
-    return std::make_shared<const Layout>(schema, element, std::max(array->size, otherArray.size));
+    return std::make_shared<const Object::Layout>(schema, element, std::max(array->size, otherArray.size));
   }
   auto fields = fieldLayoutsOf(*layout);
   auto otherFields = fieldLayoutsOf(*other);
-  auto type = std::get<ObjectType>(*layout->schema);
+  auto type = std::get<StructType>(*layout->schema);
   bool changed = false;
   for ( size_t k = 0; k < fields.size(); k++ ) {
     auto widened = widen(fields[k], otherFields[k]);
@@ -240,31 +240,23 @@ std::shared_ptr<const Layout> widen(const std::shared_ptr<const Layout>& layout,
     }
     fields[k] = std::move(widened);
   }
-  return std::make_shared<const Layout>( changed ? std::make_shared<const Schema>( std::move(type) ) : layout->schema, fields );
+  return std::make_shared<const Object::Layout>( changed ? std::make_shared<const Schema>( std::move(type) ) : layout->schema, fields );
 }
 
 } // namespace
 
-Object& modifiable(std::shared_ptr<const Object>& slot) {
-  if ( slot.use_count() != 1 ) {
-    slot = std::make_shared<Object>(*slot);
-  }
-  // an object held by the slot alone was created modifiable, a constant object being held by the registry too
-  return const_cast<Object&>(*slot);
-}
-
-Location locate(const std::shared_ptr<const Layout>& layout, const std::vector< std::optional<std::string> >& steps, std::span<const size_t> indices) {
+Object::Location Object::locate(const std::vector< std::optional<std::string> >& steps, std::span<const size_t> indices) const {
   Location location{ &layout, 0 };
   size_t next = 0;
   for ( auto& step : steps ) {
     auto& current = **location.layout;
     if ( step.has_value() ) {
-      auto& types = std::get<ObjectType>(*current.schema).fields;
+      auto& types = std::get<StructType>(*current.schema).fields;
       auto field = (size_t)std::distance(types.begin(), std::ranges::find_if(types, [&step](auto& candidate) { return candidate.name == step.value(); }));
       if ( field == types.size() ) {
         throw std::logic_error("Object: unknown field '" + step.value() + "'");
       }
-      auto& fieldLayout = std::get<ObjectLayout>(current).fields[field];
+      auto& fieldLayout = std::get<StructLayout>(current).fields[field];
       location = Location{ &fieldLayout.layout, location.offset + fieldLayout.offset };
       continue;
     }
@@ -279,17 +271,17 @@ Location locate(const std::shared_ptr<const Layout>& layout, const std::vector< 
   return location;
 }
 
-std::shared_ptr<Object> resize(const Object& object, const std::vector< std::optional<std::string> >& steps, size_t size) {
+std::shared_ptr<Object> Object::resize(const std::vector< std::optional<std::string> >& steps, size_t size) const {
   auto result = std::make_shared<Object>();
-  result->layout = rebuild(object.layout, steps, 0, size);
+  result->layout = rebuild(layout, steps, 0, size);
   result->values.resize(result->layout->size);
-  correspond(*object.layout, 0, *result->layout, 0, [&](size_t source, size_t target) {
-    result->values[target] = object.values[source];
+  correspond(*layout, 0, *result->layout, 0, [&](size_t source, size_t target) {
+    result->values[target] = values[source];
   });
   return result;
 }
 
-std::shared_ptr<const Object> merge(const std::vector< std::shared_ptr<const Object> >& objects) {
+std::shared_ptr<const Object> Object::merge(const std::vector< std::shared_ptr<const Object> >& objects) {
   assert( !objects.empty() );
   if ( std::ranges::all_of(objects, [&objects](auto& object) { return object == objects.front(); }) ) {
     return objects.front();
@@ -323,12 +315,12 @@ std::shared_ptr<const Object> merge(const std::vector< std::shared_ptr<const Obj
   return result;
 }
 
-std::string to_string(const Object& object) {
-  return render(*object.layout, object.values, 0);
+std::string Object::stringify() const {
+  return render(*layout, values, 0);
 }
 
-nlohmann::ordered_json to_json(const Object& object) {
-  return json(*object.layout, object.values, 0);
+nlohmann::ordered_json Object::jsonify() const {
+  return json(*layout, values, 0);
 }
 
 namespace {
@@ -345,8 +337,8 @@ size_t countArrays(const Schema& schema) {
 /// Returns the layout of the object converted to the schema from a source whose layout the given pointer holds, or, if
 /// no source is given, of an object of the schema with every open array having size 0. Every part of the layout equal
 /// to the corresponding part of the layout of the source is that part, so that it is shared.
-std::shared_ptr<const Layout> determineLayout(const std::shared_ptr<const Schema>& schema, const std::shared_ptr<const Layout>* source, const std::string& path) {
-  auto share = [source](std::shared_ptr<const Layout> layout) {
+std::shared_ptr<const Object::Layout> determineLayout(const std::shared_ptr<const Schema>& schema, const std::shared_ptr<const Object::Layout>* source, const std::string& path) {
+  auto share = [source](std::shared_ptr<const Object::Layout> layout) {
     return ( source && *layout == **source ) ? *source : layout;
   };
   const Schema* sourceSchema = source ? (*source)->schema.get() : nullptr;
@@ -355,9 +347,9 @@ std::shared_ptr<const Layout> determineLayout(const std::shared_ptr<const Schema
   }
   if ( auto array = std::get_if<ArrayType>(schema.get()) ) {
     // a fixed array has its size, an open array the size of the source
-    auto sourceArray = source ? &std::get<ArrayLayout>(**source) : nullptr;
+    auto sourceArray = source ? &std::get<Object::ArrayLayout>(**source) : nullptr;
     auto element = determineLayout(array->type, sourceArray ? &sourceArray->layout : nullptr, path);
-    return share( std::make_shared<const Layout>(schema, element, array->size.value_or( sourceArray ? sourceArray->size : 0 )) );
+    return share( std::make_shared<const Object::Layout>(schema, element, array->size.value_or( sourceArray ? sourceArray->size : 0 )) );
   }
   if ( auto valueType = std::get_if<ValueType>(schema.get()) ) {
     if ( sourceSchema ) {
@@ -370,40 +362,40 @@ std::shared_ptr<const Layout> determineLayout(const std::shared_ptr<const Schema
         throw std::runtime_error("Object: '" + path + "' cannot be converted to the type of the attribute");
       }
     }
-    return share( std::make_shared<const Layout>(schema) );
+    return share( std::make_shared<const Object::Layout>(schema) );
   }
-  auto& fields = std::get<ObjectType>(*schema).fields;
+  auto& fields = std::get<StructType>(*schema).fields;
   const std::vector<Field>* sourceFields = nullptr;
   if ( sourceSchema ) {
     if ( std::holds_alternative<ValueType>(*sourceSchema) ) {
       throw std::runtime_error("Object: '" + path + "' is a value where fields are expected");
     }
-    sourceFields = &std::get<ObjectType>(*sourceSchema).fields;
+    sourceFields = &std::get<StructType>(*sourceSchema).fields;
     for ( auto& sourceField : *sourceFields ) {
       if ( std::ranges::none_of(fields, [&sourceField](auto& field) { return field.name == sourceField.name; }) ) {
         throw std::runtime_error("Object: '" + path + "' has the unknown field '" + sourceField.name + "'");
       }
     }
   }
-  std::vector< std::shared_ptr<const Layout> > layouts;
+  std::vector< std::shared_ptr<const Object::Layout> > layouts;
   layouts.reserve(fields.size());
   for ( auto& field : fields ) {
-    const std::shared_ptr<const Layout>* sourceField = nullptr;
+    const std::shared_ptr<const Object::Layout>* sourceField = nullptr;
     if ( sourceFields ) {
       if ( auto it = std::ranges::find_if(*sourceFields, [&field](auto& candidate) { return candidate.name == field.name; }); it != sourceFields->end() ) {
-        sourceField = &std::get<ObjectLayout>(**source).fields[(size_t)std::distance(sourceFields->begin(), it)].layout;
+        sourceField = &std::get<Object::StructLayout>(**source).fields[(size_t)std::distance(sourceFields->begin(), it)].layout;
       }
     }
     layouts.push_back( determineLayout(field.type, sourceField, path + "." + field.name) );
   }
-  return share( std::make_shared<const Layout>(schema, layouts) );
+  return share( std::make_shared<const Object::Layout>(schema, layouts) );
 }
 
 /// Copies the values of a source of the layout `from` into an object of the layout `to`, and rejects a source whose
 /// elements beyond the size of a fixed array hold a defined value.
-void copy(const Layout& from, const std::vector<Value>& source, size_t sourceOffset, const Layout& to, std::vector<Value>& target, size_t targetOffset, const std::string& path) {
-  if ( auto array = std::get_if<ArrayLayout>(&from) ) {
-    auto& toArray = std::get<ArrayLayout>(to);
+void copy(const Object::Layout& from, const std::vector<Value>& source, size_t sourceOffset, const Object::Layout& to, std::vector<Value>& target, size_t targetOffset, const std::string& path) {
+  if ( auto array = std::get_if<Object::ArrayLayout>(&from) ) {
+    auto& toArray = std::get<Object::ArrayLayout>(to);
     size_t span = array->layout->size;
     for ( size_t i = 0; i < array->size; i++ ) {
       if ( i < toArray.size ) {
@@ -420,10 +412,10 @@ void copy(const Layout& from, const std::vector<Value>& source, size_t sourceOff
     target[targetOffset] = source[sourceOffset];
     return;
   }
-  auto& fields = std::get<ObjectLayout>(from).fields;
-  auto& types = std::get<ObjectType>(*from.schema).fields;
-  auto& toFields = std::get<ObjectLayout>(to).fields;
-  auto& toTypes = std::get<ObjectType>(*to.schema).fields;
+  auto& fields = std::get<Object::StructLayout>(from).fields;
+  auto& types = std::get<StructType>(*from.schema).fields;
+  auto& toFields = std::get<Object::StructLayout>(to).fields;
+  auto& toTypes = std::get<StructType>(*to.schema).fields;
   for ( size_t k = 0; k < fields.size(); k++ ) {
     auto& name = types[k].name;
     auto it = std::ranges::find_if(toTypes, [&name](auto& candidate) { return candidate.name == name; });
@@ -436,7 +428,7 @@ using Json = nlohmann::json;
 
 /// Returns the layout of an object of the schema holding the JSON values standing where the schema applies, every
 /// array at an open array having the same size.
-std::shared_ptr<const Layout> determineLayout(const std::shared_ptr<const Schema>& schema, const std::vector<const Json*>& values, const std::string& path) {
+std::shared_ptr<const Object::Layout> determineLayout(const std::shared_ptr<const Schema>& schema, const std::vector<const Json*>& values, const std::string& path) {
   if ( auto array = std::get_if<ArrayType>(schema.get()) ) {
     std::optional<size_t> size;
     std::vector<const Json*> elements;
@@ -461,12 +453,12 @@ std::shared_ptr<const Layout> determineLayout(const std::shared_ptr<const Schema
       }
     }
     auto element = determineLayout(array->type, elements, path);
-    return std::make_shared<const Layout>(schema, element, array->size.value_or( size.value_or(0) ));
+    return std::make_shared<const Object::Layout>(schema, element, array->size.value_or( size.value_or(0) ));
   }
   if ( std::holds_alternative<ValueType>(*schema) ) {
-    return std::make_shared<const Layout>(schema);
+    return std::make_shared<const Object::Layout>(schema);
   }
-  auto& fields = std::get<ObjectType>(*schema).fields;
+  auto& fields = std::get<StructType>(*schema).fields;
   for ( auto value : values ) {
     if ( value->is_null() ) {
       continue;
@@ -480,7 +472,7 @@ std::shared_ptr<const Layout> determineLayout(const std::shared_ptr<const Schema
       }
     }
   }
-  std::vector< std::shared_ptr<const Layout> > layouts;
+  std::vector< std::shared_ptr<const Object::Layout> > layouts;
   layouts.reserve(fields.size());
   for ( auto& field : fields ) {
     std::vector<const Json*> nested;
@@ -493,7 +485,7 @@ std::shared_ptr<const Layout> determineLayout(const std::shared_ptr<const Schema
     }
     layouts.push_back( determineLayout(field.type, nested, path + "." + field.name) );
   }
-  return std::make_shared<const Layout>(schema, layouts);
+  return std::make_shared<const Object::Layout>(schema, layouts);
 }
 
 /// Returns the single value a JSON value states for the given value type.
@@ -527,11 +519,11 @@ Value convert(const Json& value, ValueType type, const std::string& path) {
 }
 
 /// Writes the values a JSON value states into an object of the given layout, beginning at the given offset.
-void fill(const Layout& layout, const Json& value, std::vector<Value>& values, size_t offset, const std::string& path) {
+void fill(const Object::Layout& layout, const Json& value, std::vector<Value>& values, size_t offset, const std::string& path) {
   if ( value.is_null() ) {
     return;
   }
-  if ( auto array = std::get_if<ArrayLayout>(&layout) ) {
+  if ( auto array = std::get_if<Object::ArrayLayout>(&layout) ) {
     size_t i = 0;
     for ( auto& element : value ) {
       fill(*array->layout, element, values, offset + i * array->layout->size, path);
@@ -543,8 +535,8 @@ void fill(const Layout& layout, const Json& value, std::vector<Value>& values, s
     values[offset] = convert(value, std::get<ValueType>(*layout.schema), path);
     return;
   }
-  auto& fields = std::get<ObjectLayout>(layout).fields;
-  auto& types = std::get<ObjectType>(*layout.schema).fields;
+  auto& fields = std::get<Object::StructLayout>(layout).fields;
+  auto& types = std::get<StructType>(*layout.schema).fields;
   for ( size_t k = 0; k < fields.size(); k++ ) {
     if ( auto it = value.find(types[k].name); it != value.end() ) {
       fill(*fields[k].layout, *it, values, offset + fields[k].offset, path + "." + types[k].name);
@@ -568,7 +560,7 @@ Object::Object(const Schema& schema, const nlohmann::json& json)
 }
 
 Object::Object(const Schema& schema, const Object& source) {
-  auto path = to_string(source);
+  auto path = source.stringify();
   layout = determineLayout(std::make_shared<const Schema>(schema), &source.layout, path);
   values.resize( layout->size );
   copy(*source.layout, source.values, 0, *layout, values, 0, path);

@@ -127,12 +127,12 @@ TEST_CASE( "Parse the schema of an attribute", "[model][schema]" ) {
     auto schema = Schema::parse("{ cost: decimal, flags: boolean[2], position: { x: decimal, y: decimal } }[]");
     auto& array = std::get<BPMNOS::ArrayType>(schema);
     REQUIRE( !array.size.has_value() );
-    auto& fields = std::get<BPMNOS::ObjectType>(*array.type).fields;
+    auto& fields = std::get<BPMNOS::StructType>(*array.type).fields;
     REQUIRE( fields.size() == 3 );
     REQUIRE( fields[0].name == "cost" );
     REQUIRE( std::get<ValueType>(*fields[0].type) == DECIMAL );
     REQUIRE( std::get<BPMNOS::ArrayType>(*fields[1].type).size == 2 );
-    REQUIRE( std::get<BPMNOS::ObjectType>(*fields[2].type).fields.size() == 2 );
+    REQUIRE( std::get<BPMNOS::StructType>(*fields[2].type).fields.size() == 2 );
     REQUIRE( schema.stringify() == "{ cost: decimal, flags: boolean[2], position: { x: decimal, y: decimal } }[]" );
   }
 
@@ -148,8 +148,8 @@ TEST_CASE( "Parse the schema of an attribute", "[model][schema]" ) {
     auto declared = schema.declareSizes("[6].flags[3]");
     REQUIRE( declared.stringify() == "{ flags: boolean[3], cost: decimal }[6]" );
     REQUIRE( schema.stringify() == "{ flags: boolean[], cost: decimal }[]" );
-    auto& fields = std::get<BPMNOS::ObjectType>(*std::get<BPMNOS::ArrayType>(schema).type).fields;
-    auto& declaredFields = std::get<BPMNOS::ObjectType>(*std::get<BPMNOS::ArrayType>(declared).type).fields;
+    auto& fields = std::get<BPMNOS::StructType>(*std::get<BPMNOS::ArrayType>(schema).type).fields;
+    auto& declaredFields = std::get<BPMNOS::StructType>(*std::get<BPMNOS::ArrayType>(declared).type).fields;
     REQUIRE( declaredFields[1].type == fields[1].type );
     REQUIRE( declaredFields[0].type != fields[0].type );
     REQUIRE( Schema::parse("integer[2]").declareSizes("[2]") == Schema::parse("integer[2]") );
@@ -192,12 +192,12 @@ TEST_CASE( "Keep or convert objects for a schema", "[model][schema]" ) {
   SECTION( "A fixed array is padded, and cut off where only undefined values are cut" ) {
     auto source = literal("[ 1, 2 ]");
     BPMNOS::Object padded(Schema::parse("integer[3]"), *source);
-    REQUIRE( to_string(padded) == "[ 1, 2, undefined ]" );
+    REQUIRE( padded.stringify() == "[ 1, 2, undefined ]" );
     BPMNOS::Object cut(Schema::parse("integer[2]"), padded);
-    REQUIRE( to_string(cut) == "[ 1, 2 ]" );
+    REQUIRE( cut.stringify() == "[ 1, 2 ]" );
     REQUIRE_THROWS_WITH( BPMNOS::Object(Schema::parse("integer[1]"), *source), Catch::Matchers::ContainsSubstring("2 elements where 1 are declared") );
     // an open array takes the size of the source
-    REQUIRE( to_string(BPMNOS::Object(Schema::parse("integer[]"), *source)) == "[ 1, 2 ]" );
+    REQUIRE( BPMNOS::Object(Schema::parse("integer[]"), *source).stringify() == "[ 1, 2 ]" );
   }
 
   SECTION( "Arrays and objects are not cast" ) {
@@ -222,7 +222,7 @@ TEST_CASE( "Keep or convert objects for a schema", "[model][schema]" ) {
     }
     REQUIRE( defined == 2 );
     auto partial = literal("{ cost := 1.0 }");
-    REQUIRE( to_string(BPMNOS::Object(Schema::parse("{ cost: decimal, flags: boolean[] }"), *partial)) == "{ cost := 1.0, flags := [ ] }" );
+    REQUIRE( BPMNOS::Object(Schema::parse("{ cost: decimal, flags: boolean[] }"), *partial).stringify() == "{ cost := 1.0, flags := [ ] }" );
     REQUIRE_THROWS_WITH( BPMNOS::Object(Schema::parse("{ x: decimal }"), *partial), Catch::Matchers::ContainsSubstring("unknown field 'cost'") );
   }
 
@@ -230,8 +230,8 @@ TEST_CASE( "Keep or convert objects for a schema", "[model][schema]" ) {
     auto source = literal("{ cost := 1.0, route := [ 1, 2 ] }");
     BPMNOS::Object object(Schema::parse("{ cost: decimal, route: integer[], open: boolean }"), *source);
     REQUIRE( object.layout != source->layout );
-    auto& fields = std::get<BPMNOS::ObjectLayout>(*object.layout).fields;
-    auto& sourceFields = std::get<BPMNOS::ObjectLayout>(*source->layout).fields;
+    auto& fields = std::get<BPMNOS::Object::StructLayout>(*object.layout).fields;
+    auto& sourceFields = std::get<BPMNOS::Object::StructLayout>(*source->layout).fields;
     REQUIRE( fields[0].layout == sourceFields[0].layout );
     REQUIRE( fields[1].layout == sourceFields[1].layout );
   }
@@ -240,9 +240,9 @@ TEST_CASE( "Keep or convert objects for a schema", "[model][schema]" ) {
     auto first = std::make_shared<BPMNOS::Object>(Schema::parse("integer[2]"));
     auto second = std::make_shared<BPMNOS::Object>(Schema::parse("integer[2]"));
     second->values[0] = BPMNOS::number(1);
-    auto merged = BPMNOS::merge({ first, second });
+    auto merged = BPMNOS::Object::merge({ first, second });
     REQUIRE( merged->layout == first->layout );
-    REQUIRE( to_string(*merged) == "[ 1, undefined ]" );
+    REQUIRE( merged->stringify() == "[ 1, undefined ]" );
   }
 
   SECTION( "The target schema fixes the arrays fixed in the effective schema at their current sizes" ) {
@@ -259,12 +259,12 @@ TEST_CASE( "Lay out an object", "[model][schema]" ) {
   SECTION( "The layout has the structure of the schema with the actual sizes, each part referring to its schema" ) {
     REQUIRE( object.layout->schema->stringify() == "{ cost: decimal, flags: boolean[3] }[]" );
     REQUIRE( object.layout->size == 12 );
-    auto& array = std::get<BPMNOS::ArrayLayout>(*object.layout);
+    auto& array = std::get<BPMNOS::Object::ArrayLayout>(*object.layout);
     REQUIRE( array.size == 3 );
     auto& element = *array.layout;
     REQUIRE( element.size == 4 );
     REQUIRE( element.schema->stringify() == "{ cost: decimal, flags: boolean[3] }" );
-    auto& fields = std::get<BPMNOS::ObjectLayout>(element).fields;
+    auto& fields = std::get<BPMNOS::Object::StructLayout>(element).fields;
     REQUIRE( fields[0].offset == 0 );
     REQUIRE( fields[0].layout->schema->stringify() == "decimal" );
     REQUIRE( fields[1].offset == 1 );
@@ -276,19 +276,19 @@ TEST_CASE( "Lay out an object", "[model][schema]" ) {
     // facilities[2].flags[2] is at position 6, and the third flag of every element is undefined
     REQUIRE( object.values[6] == BPMNOS::number(0) );
     REQUIRE( !object.values[3].has_value() );
-    REQUIRE( to_string(object) == "[ { cost := 10.0, flags := [ true, false, undefined ] }, { cost := 20.0, flags := [ false, false, undefined ] }, { cost := 30.0, flags := [ true, true, undefined ] } ]" );
+    REQUIRE( object.stringify() == "[ { cost := 10.0, flags := [ true, false, undefined ] }, { cost := 20.0, flags := [ false, false, undefined ] }, { cost := 30.0, flags := [ true, true, undefined ] } ]" );
   }
 
   SECTION( "A resized fixed array stays fixed at its new size in every element" ) {
-    auto resized = BPMNOS::resize(object, { std::nullopt, "flags" }, 2);
+    auto resized = object.resize({ std::nullopt, "flags" }, 2);
     REQUIRE( resized->layout->schema->stringify() == "{ cost: decimal, flags: boolean[2] }[]" );
-    REQUIRE( to_string(*resized) == "[ { cost := 10.0, flags := [ true, false ] }, { cost := 20.0, flags := [ false, false ] }, { cost := 30.0, flags := [ true, true ] } ]" );
+    REQUIRE( resized->stringify() == "[ { cost := 10.0, flags := [ true, false ] }, { cost := 20.0, flags := [ false, false ] }, { cost := 30.0, flags := [ true, true ] } ]" );
   }
 
   SECTION( "An object built from a schema alone has every open array empty" ) {
     BPMNOS::Object empty(Schema::parse("{ cost: decimal, flags: boolean[] }[3]"));
     REQUIRE( empty.layout->stringify() == "{ cost: decimal, flags: boolean[0] }[3]" );
-    REQUIRE( to_string(empty) == "[ { cost := undefined, flags := [ ] }, { cost := undefined, flags := [ ] }, { cost := undefined, flags := [ ] } ]" );
+    REQUIRE( empty.stringify() == "[ { cost := undefined, flags := [ ] }, { cost := undefined, flags := [ ] }, { cost := undefined, flags := [ ] } ]" );
   }
 }
 

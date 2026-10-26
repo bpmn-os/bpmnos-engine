@@ -73,7 +73,7 @@ nlohmann::ordered_json Message::jsonify() const {
   }
 
   // the content object is rendered as JSON, its fields being named as the type of the message names them
-  jsonObject["content"] = BPMNOS::to_json(*content.object);
+  jsonObject["content"] = content.object->jsonify();
 
   return jsonObject;
 }

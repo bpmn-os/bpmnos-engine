@@ -7,7 +7,7 @@ SignalDefinition::SignalDefinition(XML::bpmnos::tSignal* signal)
   : element(signal)
   , name( BPMNOS::to_number(signal->name.value.value,STRING) )
 {
-  // the content is an object, without fields if the signal states no type
+  // the content is a struct, without fields if the signal states no type
   if ( signal->type.has_value() ) {
     schema = Schema::parse(signal->type->get().value.value);
     if ( std::holds_alternative<ValueType>(schema) ) {

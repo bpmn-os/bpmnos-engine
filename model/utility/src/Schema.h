@@ -22,7 +22,7 @@ struct ArrayType {
 };
 
 /**
- * @brief A field of an object type: its name and its type.
+ * @brief A field of a struct type: its name and its type.
  */
 struct Field {
   std::string name;
@@ -30,14 +30,14 @@ struct Field {
 };
 
 /**
- * @brief An object type: its fields in the order of their declaration.
+ * @brief A struct type: its fields in the order of their declaration.
  */
-struct ObjectType {
+struct StructType {
   std::vector<Field> fields;
 };
 
 /**
- * @brief A type: a value type, an array type or an object type.
+ * @brief A type: a value type, an array type or a struct type.
  *
  * A schema is written in the notation `schema := ( valuetype | "{" field ( "," field )* "}" ) dimension*`, with
  * `field := name ":" schema` and `dimension := "[" n "]" | "[]"`, a dimension `[n]` denoting a fixed array of size
@@ -47,7 +47,7 @@ struct ObjectType {
  * A schema never changes once built, and refers to the schemas it contains through `std::shared_ptr<const Schema>`,
  * so that a schema derived from another shares every part it does not change.
  */
-struct Schema : std::variant<ValueType, ArrayType, ObjectType> {
+struct Schema : std::variant<ValueType, ArrayType, StructType> {
   using variant::variant;
   Schema() = default;
 
@@ -59,7 +59,7 @@ struct Schema : std::variant<ValueType, ArrayType, ObjectType> {
    * at the size it has in the current layout, and every open array stays open, so that an assignment keeps the size
    * of a fixed array, which may have been resized during the run, and gives an open array the size of the source.
    */
-  Schema(const Schema& effectiveSchema, const BPMNOS::Layout& currentLayout);
+  Schema(const Schema& effectiveSchema, const BPMNOS::Object::Layout& currentLayout);
 
   /// @brief Parses the notation of a type, throwing an error describing the first violation of the grammar.
   static Schema parse(const std::string& text);

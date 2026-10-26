@@ -134,7 +134,7 @@ struct ObjectRecorder : Execution::Observer {
     auto& recorded = objects[{ token->node->id, Execution::Token::stateName[(int)token->state] }];
     for ( auto name : { "depot", "route", "budget" } ) {
       if ( registry.contains(name) && registry[name]->isObject() ) {
-        recorded[name] = to_string( *registry.getObject(registry[name], token->status, *token->data) );
+        recorded[name] = registry.getObject(registry[name], token->status, *token->data)->stringify();
       }
     }
   }
@@ -156,9 +156,9 @@ TEST_CASE( "Object initializers of the instance data", "[data][initializers]" ) 
       "Instance_1; Process_1; site := { x := depot.x + 1 }\n"
     );
     auto scenario = provider->createScenario();
-    REQUIRE( to_string(*provider->getGlobals(*scenario).objects[0]) == "[ 4, 3 ]" );
-    REQUIRE( to_string(*provider->objectOf(*scenario, instance1(), process, "depot")) == "{ x := 4.5, y := 2 }" );
-    REQUIRE( to_string(*provider->objectOf(*scenario, instance1(), process, "site")) == "{ x := 5.5 }" );
+    REQUIRE( provider->getGlobals(*scenario).objects[0]->stringify() == "[ 4, 3 ]" );
+    REQUIRE( provider->objectOf(*scenario, instance1(), process, "depot")->stringify() == "{ x := 4.5, y := 2 }" );
+    REQUIRE( provider->objectOf(*scenario, instance1(), process, "site")->stringify() == "{ x := 5.5 }" );
   }
 
   SECTION( "An initial value of the model reads an object an initializer gives" ) {
@@ -215,7 +215,7 @@ TEST_CASE( "Object initializers of the instance data", "[data][initializers]" ) 
       "Instance_1; Process_1; depot := { x := uniform(0, 10), y := 2 }\n"
     );
     auto scenario = provider->createScenario();
-    REQUIRE( to_string(*provider->objectOf(*scenario, instance1(), process, "depot")) == "{ x := 5.0, y := 2 }" );
+    REQUIRE( provider->objectOf(*scenario, instance1(), process, "depot")->stringify() == "{ x := 5.0, y := 2 }" );
   }
 
   SECTION( "The dynamic data provider discloses an object with its row" ) {
@@ -236,7 +236,7 @@ TEST_CASE( "Object initializers sampled by the stochastic data provider", "[data
     "Instance_1; Process_1; site := { x := depot.x + uniform(0, 100) }; 10\n";
 
   auto depotAndSite = [&](StochasticProvider& provider, const Execution::Scenario& scenario) {
-    return std::pair{ to_string(*provider.objectOf(scenario, instance1(), process, "depot")), to_string(*provider.objectOf(scenario, instance1(), process, "site")) };
+    return std::pair{ provider.objectOf(scenario, instance1(), process, "depot")->stringify(), provider.objectOf(scenario, instance1(), process, "site")->stringify() };
   };
 
   SECTION( "An initializer is sampled for each scenario and reproducibly for one seed" ) {
@@ -300,7 +300,7 @@ TEST_CASE( "Ready and completion expressions assign objects", "[data][initialize
     REQUIRE( busy.at("route") == "[ undefined, undefined ]" );
     REQUIRE( recorder->objects.at({ "Task_1", "COMPLETED" }).at("route") == "[ 9, undefined ]" );
     // the object the process token holds is copied before the token at the task writes it
-    REQUIRE( to_string(*recorder->processDepot) == "{ x := 1.0, y := 2 }" );
+    REQUIRE( recorder->processDepot->stringify() == "{ x := 1.0, y := 2 }" );
   }
 
   SECTION( "A completion expression assigning an element of a status object is evaluated anew in an installed system state" ) {

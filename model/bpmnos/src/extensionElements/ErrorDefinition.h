@@ -15,7 +15,7 @@ public:
   ErrorDefinition(XML::bpmnos::tError* error);
   XML::bpmnos::tError* element;
   BPMNOS::number name; ///< Error name
-  Schema schema = ObjectType{}; ///< The type of the content, an object, without fields if the error states no type
+  Schema schema = StructType{}; ///< The type of the content, a struct, without fields if the error states no type
 };
 
 } // namespace BPMNOS::Model

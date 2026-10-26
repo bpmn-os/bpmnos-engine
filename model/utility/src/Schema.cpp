@@ -109,8 +109,8 @@ private:
     return size;
   }
 
-  ObjectType parseObject() {
-    ObjectType object;
+  StructType parseObject() {
+    StructType object;
     expect('{');
     skipWhitespace();
     if ( peek() == '}' ) {
@@ -165,7 +165,7 @@ std::string Schema::stringify() const {
     }
   }
   else {
-    auto& fields = std::get<ObjectType>(*current).fields;
+    auto& fields = std::get<StructType>(*current).fields;
     result = "{ ";
     for ( size_t i = 0; i < fields.size(); i++ ) {
       result += ( i ? ", " : "" ) + fields[i].name + ": " + fields[i].type->stringify();
@@ -186,8 +186,8 @@ bool Schema::operator==(const Schema& other) const {
     auto& otherArray = std::get<ArrayType>(other);
     return array->size == otherArray.size && *array->type == *otherArray.type;
   }
-  auto& fields = std::get<ObjectType>(*this).fields;
-  auto& otherFields = std::get<ObjectType>(other).fields;
+  auto& fields = std::get<StructType>(*this).fields;
+  auto& otherFields = std::get<StructType>(other).fields;
   return std::ranges::equal(fields, otherFields, [](auto& field, auto& otherField) {
     return field.name == otherField.name && *field.type == *otherField.type;
   });
@@ -204,8 +204,8 @@ bool Schema::supports(const Schema& source) const {
     auto& sourceArray = std::get<ArrayType>(source);
     return ( !array->size.has_value() || array->size == sourceArray.size ) && array->type->supports(*sourceArray.type);
   }
-  auto& fields = std::get<ObjectType>(*this).fields;
-  auto& sourceFields = std::get<ObjectType>(source).fields;
+  auto& fields = std::get<StructType>(*this).fields;
+  auto& sourceFields = std::get<StructType>(source).fields;
   return std::ranges::equal(fields, sourceFields, [](auto& field, auto& sourceField) {
     return field.name == sourceField.name && field.type->supports(*sourceField.type);
   });
@@ -214,19 +214,19 @@ bool Schema::supports(const Schema& source) const {
 namespace {
 
 /// Returns the target schema for the effective schema and the current layout.
-Schema determineTargetSchema(const Schema& effectiveSchema, const BPMNOS::Layout& currentLayout) {
+Schema determineTargetSchema(const Schema& effectiveSchema, const BPMNOS::Object::Layout& currentLayout) {
   if ( auto array = std::get_if<ArrayType>(&effectiveSchema) ) {
-    auto& current = std::get<BPMNOS::ArrayLayout>(currentLayout);
+    auto& current = std::get<BPMNOS::Object::ArrayLayout>(currentLayout);
     auto size = array->size.has_value() ? std::optional<size_t>(current.size) : std::nullopt;
     return Schema( ArrayType{ std::make_shared<const Schema>( determineTargetSchema(*array->type, *current.layout) ), size } );
   }
   if ( std::holds_alternative<ValueType>(effectiveSchema) ) {
     return effectiveSchema;
   }
-  auto& fields = std::get<ObjectType>(effectiveSchema).fields;
-  auto& current = std::get<BPMNOS::ObjectLayout>(currentLayout).fields;
+  auto& fields = std::get<StructType>(effectiveSchema).fields;
+  auto& current = std::get<BPMNOS::Object::StructLayout>(currentLayout).fields;
   assert( fields.size() == current.size() );
-  ObjectType object;
+  StructType object;
   for ( size_t k = 0; k < fields.size(); k++ ) {
     object.fields.push_back( Field{ fields[k].name, std::make_shared<const Schema>( determineTargetSchema(*fields[k].type, *current[k].layout) ) } );
   }
@@ -235,7 +235,7 @@ Schema determineTargetSchema(const Schema& effectiveSchema, const BPMNOS::Layout
 
 } // namespace
 
-Schema::Schema(const Schema& effectiveSchema, const BPMNOS::Layout& currentLayout)
+Schema::Schema(const Schema& effectiveSchema, const BPMNOS::Object::Layout& currentLayout)
   : Schema( determineTargetSchema(effectiveSchema, currentLayout) )
 {
 }
@@ -315,11 +315,11 @@ Schema Schema::declareSizes(const std::string& declaration) const {
       // a field is reached through the arrays around its object, whose sizes stay as they are
       return Schema( ArrayType{ std::make_shared<const Schema>(apply(*array->type, step)), array->size } );
     }
-    auto object = std::get_if<ObjectType>(&schema);
+    auto object = std::get_if<StructType>(&schema);
     if ( !object ) {
       throw error("unknown field '" + name + "'");
     }
-    ObjectType result = *object;
+    StructType result = *object;
     auto field = std::ranges::find_if(result.fields, [&name](auto& candidate) { return candidate.name == name; });
     if ( field == result.fields.end() ) {
       throw error("unknown field '" + name + "'");

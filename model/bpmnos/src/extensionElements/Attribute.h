@@ -41,7 +41,7 @@ public:
   std::variant<std::monostate, size_t, std::unique_ptr<const Expression>> initialization;
   const std::string name;
 
-  /// Returns true if the attribute is an object attribute, i.e. its type is an array type or an object type, numbered
+  /// Returns true if the attribute is an object attribute, i.e. its type is an array type or a struct type, numbered
   /// separately from the other attributes.
   bool isObject() const { return !std::holds_alternative<ValueType>(type); }
  

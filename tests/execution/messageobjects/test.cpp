@@ -163,13 +163,13 @@ TEST_CASE( "A message carries arrays and objects", "[execution][message][objects
 
     auto& receiver = registryOf(*model, 1);
     auto& [status, data] = capture.states.at({"End_2", "DONE"});
-    REQUIRE( to_string(*receiver.getObject(receiver["stops"], status, data)) == "[ 1, 2, undefined ]" );
-    REQUIRE( to_string(*receiver.getObject(receiver["place"], status, data)) == "{ x := 3.0 }" );
+    REQUIRE( receiver.getObject(receiver["stops"], status, data)->stringify() == "[ 1, 2, undefined ]" );
+    REQUIRE( receiver.getObject(receiver["place"], status, data)->stringify() == "{ x := 3.0 }" );
 
     // the sender wrote its route after sending, which the receiver does not see
     auto& sender = registryOf(*model, 0);
     auto& [senderStatus, senderData] = capture.states.at({"End_1", "DONE"});
-    REQUIRE( to_string(*sender.getObject(sender["route"], senderStatus, senderData)) == "[ 9, 2 ]" );
+    REQUIRE( sender.getObject(sender["route"], senderStatus, senderData)->stringify() == "[ 9, 2 ]" );
   }
 
   SECTION( "An array longer than a fixed dimension is refused" ) {

@@ -106,7 +106,7 @@ std::string pathText(const LIMEX::Path& path) {
 struct Undefined {};
 
 /// Follows the steps of a path through an object, the indices counting from one.
-BPMNOS::Location locate(const BPMNOS::Object& object, const LIMEX::Path& path, const std::vector<double>& indices) {
+BPMNOS::Object::Location locate(const BPMNOS::Object& object, const LIMEX::Path& path, const std::vector<double>& indices) {
   // the buffer is reused by every walk on the thread, so that resolving allocates nothing
   thread_local std::vector<size_t> positions;
   positions.clear();
@@ -120,7 +120,7 @@ BPMNOS::Location locate(const BPMNOS::Object& object, const LIMEX::Path& path, c
     positions.push_back( (size_t)index - 1 );
   }
   try {
-    return BPMNOS::locate(object.layout, path.steps, positions);
+    return object.locate(path.steps, positions);
   }
   catch ( const std::out_of_range& error ) {
     throw std::runtime_error(std::format("Expression: illegal index for '{}'\n{}", pathText(path), error.what()));
@@ -142,12 +142,24 @@ LIMEX::View<double> getSizeView(size_t count) {
 
 /// Returns a copy of the part of an object a location addresses, whose values are contiguous and which shares the
 /// layout of the part.
-std::shared_ptr<const BPMNOS::Object> copyPart(const BPMNOS::Object& object, const BPMNOS::Location& location) {
+std::shared_ptr<const BPMNOS::Object> copyPart(const BPMNOS::Object& object, const BPMNOS::Object::Location& location) {
   auto result = std::make_shared<BPMNOS::Object>();
   result->layout = *location.layout;
   auto begin = object.values.begin() + (long)location.offset;
   result->values.assign(begin, begin + (long)result->layout->size);
   return result;
+}
+
+/// Returns the object the given pointer holds, such that it can be written without changing it for anyone else.
+/// Objects are shared: copying a status or data copies the pointers to its objects rather than the objects, and a
+/// constant object is held by the object registry as well. If the given pointer is not the only holder of its object,
+/// the pointer is first made to hold a copy of the object, which no one else holds.
+BPMNOS::Object& getDedicatedObject(std::shared_ptr<const BPMNOS::Object>& slot) {
+  if ( slot.use_count() != 1 ) {
+    slot = std::make_shared<BPMNOS::Object>(*slot);
+  }
+  // an object held by the pointer alone was created modifiable, a constant object being held by the registry too
+  return const_cast<BPMNOS::Object&>(*slot);
 }
 
 } // namespace
@@ -214,7 +226,7 @@ const BPMNOS::Schema& Expression::walk(size_t path, const Schema& schema) const 
       throw std::runtime_error("Expression: field '" + step.value() + "' of an array in '" + text + "', whose dimensions must be indexed first, in '" + expression +"'");
     }
     const Field* field = nullptr;
-    if ( auto object = std::get_if<ObjectType>(result) ) {
+    if ( auto object = std::get_if<StructType>(result) ) {
       if ( auto it = std::ranges::find_if(object->fields, [&step](auto& candidate) { return candidate.name == step.value(); }); it != object->fields.end() ) {
         field = &*it;
       }
@@ -355,7 +367,7 @@ public:
   PathResolver(const Expression& owner, const std::vector<const BPMNOS::Object*>& objects) : owner(owner), objects(objects) {}
   double value(size_t path, const std::vector<double>& indices) const override {
     try {
-      auto location = ::locate(*objects[path], owner.compiled.getPaths()[path], indices);
+      auto location = locate(*objects[path], owner.compiled.getPaths()[path], indices);
       auto& value = objects[path]->values[location.offset];
       if ( !value.has_value() ) {
         throw Undefined{};
@@ -371,8 +383,8 @@ public:
     }
   }
   LIMEX::View<double> array(size_t path, const std::vector<double>& indices) const override {
-    auto location = ::locate(*objects[path], owner.compiled.getPaths()[path], indices);
-    auto& array = std::get<BPMNOS::ArrayLayout>(**location.layout);
+    auto location = locate(*objects[path], owner.compiled.getPaths()[path], indices);
+    auto& array = std::get<BPMNOS::Object::ArrayLayout>(**location.layout);
     if ( owner.readsLengthOnly[path] ) {
       return getSizeView(array.size);
     }
@@ -573,7 +585,7 @@ void Expression::writeToObject(BPMNOS::Status& status, DataType& data, const Sch
     }
     auto locateTarget = [&]() {
       try {
-        return ::locate(*slot, compiled.getPaths()[targetPath.value()], indices);
+        return locate(*slot, compiled.getPaths()[targetPath.value()], indices);
       }
       catch ( const Undefined& ) {
         throw std::runtime_error("Expression: undefined index");
@@ -589,7 +601,7 @@ void Expression::writeToObject(BPMNOS::Status& status, DataType& data, const Sch
         // the indices of the path are checked, the dimension changing in every element alike
         locateTarget();
       }
-      slot = BPMNOS::resize(*slot, targetSteps, (size_t)length.value());
+      slot = slot->resize(targetSteps, (size_t)length.value());
       return;
     }
 
@@ -598,7 +610,7 @@ void Expression::writeToObject(BPMNOS::Status& status, DataType& data, const Sch
       auto value = evaluate(variableValues, pathObjects);
       auto location = locateTarget();
       auto type = std::get<ValueType>(*(*location.layout)->schema);
-      modifiable(slot).values[location.offset] = value.has_value() ? BPMNOS::Value( BPMNOS::cast(value.value(), type) ) : std::nullopt;
+      getDedicatedObject(slot).values[location.offset] = value.has_value() ? BPMNOS::Value( BPMNOS::cast(value.value(), type) ) : std::nullopt;
       return;
     }
 
@@ -644,7 +656,7 @@ void Expression::writeToObject(BPMNOS::Status& status, DataType& data, const Sch
       SourceResolver capturing(*this, pathObjects, sourcePath.value());
       try {
         compiled.evaluate(variableValues, capturing);
-        source = copyPart(*pathObjects[sourcePath.value()], ::locate(*pathObjects[sourcePath.value()], compiled.getPaths()[sourcePath.value()], capturing.sourceIndices));
+        source = copyPart(*pathObjects[sourcePath.value()], locate(*pathObjects[sourcePath.value()], compiled.getPaths()[sourcePath.value()], capturing.sourceIndices));
       }
       catch ( const Undefined& ) {
         throw std::runtime_error("Expression: undefined index");
@@ -664,20 +676,20 @@ void Expression::writeToObject(BPMNOS::Status& status, DataType& data, const Sch
     auto element = *location.layout;
     Schema targetSchema( walk(targetPath.value(), schemaProvider.getSchema(target.value())), *element );
     auto value = targetSchema.supports(*source->layout->schema) ? source : std::make_shared<const BPMNOS::Object>(targetSchema, *source);
-    std::function<void(const BPMNOS::Layout&, const BPMNOS::Layout&, std::vector< std::optional<std::string> >&)> determine =
-      [&](const BPMNOS::Layout& current, const BPMNOS::Layout& given, std::vector< std::optional<std::string> >& steps) {
-        if ( auto array = std::get_if<BPMNOS::ArrayLayout>(&current) ) {
-          auto& givenArray = std::get<BPMNOS::ArrayLayout>(given);
+    std::function<void(const BPMNOS::Object::Layout&, const BPMNOS::Object::Layout&, std::vector< std::optional<std::string> >&)> determine =
+      [&](const BPMNOS::Object::Layout& current, const BPMNOS::Object::Layout& given, std::vector< std::optional<std::string> >& steps) {
+        if ( auto array = std::get_if<BPMNOS::Object::ArrayLayout>(&current) ) {
+          auto& givenArray = std::get<BPMNOS::Object::ArrayLayout>(given);
           if ( array->size != givenArray.size ) {
-            slot = BPMNOS::resize(*slot, steps, givenArray.size);
+            slot = slot->resize(steps, givenArray.size);
           }
           steps.push_back(std::nullopt);
           determine(*array->layout, *givenArray.layout, steps);
           steps.pop_back();
         }
-        else if ( auto object = std::get_if<BPMNOS::ObjectLayout>(&current) ) {
-          auto& types = std::get<ObjectType>(*current.schema).fields;
-          auto& givenFields = std::get<BPMNOS::ObjectLayout>(given).fields;
+        else if ( auto object = std::get_if<BPMNOS::Object::StructLayout>(&current) ) {
+          auto& types = std::get<StructType>(*current.schema).fields;
+          auto& givenFields = std::get<BPMNOS::Object::StructLayout>(given).fields;
           for ( size_t k = 0; k < object->fields.size(); k++ ) {
             steps.push_back(types[k].name);
             determine(*object->fields[k].layout, *givenFields[k].layout, steps);
@@ -688,7 +700,7 @@ void Expression::writeToObject(BPMNOS::Status& status, DataType& data, const Sch
     auto steps = targetSteps;
     determine(*element, *value->layout, steps);
     location = locateTarget();
-    auto& values = modifiable(slot).values;
+    auto& values = getDedicatedObject(slot).values;
     assert( location.offset + value->values.size() <= values.size() );
     std::ranges::copy(value->values, values.begin() + (long)location.offset);
   }

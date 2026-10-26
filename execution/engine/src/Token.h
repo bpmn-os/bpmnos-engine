@@ -214,7 +214,7 @@ private:
       for ( auto& element : range ) {
         objects.push_back(statusOf(element).objects[k]);
       }
-      result.objects[k] = BPMNOS::merge(objects);
+      result.objects[k] = BPMNOS::Object::merge(objects);
     }
 
     for ( size_t i = 0; i < n; i++ ) {

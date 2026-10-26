@@ -46,7 +46,7 @@ MessageDefinition::MessageDefinition(XML::bpmnos::tMessage* message, const Attri
   : element(message)
   , name( BPMNOS::to_number(message->name.value.value,STRING) )
 {
-  // the content is an object, without fields if the message states no type
+  // the content is a struct, without fields if the message states no type
   if ( message->type.has_value() ) {
     schema = Schema::parse(message->type->get().value.value);
     if ( std::holds_alternative<ValueType>(schema) ) {
