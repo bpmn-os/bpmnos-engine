@@ -1,7 +1,7 @@
 var structBPMNOS_1_1Schema =
 [
     [ "Schema", "structBPMNOS_1_1Schema.html#afb644b4ed23eea882b0675e3cf8a4366", null ],
-    [ "Schema", "structBPMNOS_1_1Schema.html#a552c906d4161db5b558f692d0e7b2b12", null ],
+    [ "Schema", "structBPMNOS_1_1Schema.html#a0cba8aa796f0b9d57fe96c16c40d232d", null ],
     [ "declareSizes", "structBPMNOS_1_1Schema.html#a2a2967fc7b0dde54dbd67053c6b9c1ed", null ],
     [ "operator==", "structBPMNOS_1_1Schema.html#ab6a3ed9f8cb8275709a8f5c4a3eab82d", null ],
     [ "parse", "structBPMNOS_1_1Schema.html#a81e50e87e0abe7119bcb3b262a24409c", null ],

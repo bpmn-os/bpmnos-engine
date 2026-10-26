@@ -51,7 +51,7 @@ var searchData=
   ['applyoperators_48',['applyOperators',['../classBPMNOS_1_1Model_1_1ExtensionElements.html#ae5e1ad6d4d45621a9fea68784a035091',1,'BPMNOS::Model::ExtensionElements']]],
   ['applyreadyvalues_49',['applyReadyValues',['../classBPMNOS_1_1Execution_1_1StaticDataProvider.html#adab688dd39311e18a1dafa81f184f691',1,'BPMNOS::Execution::StaticDataProvider::applyReadyValues()'],['../classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#a58d51df23d1129b465b073bb6afc438b',1,'BPMNOS::Execution::StochasticDataProvider::applyReadyValues()']]],
   ['archive_50',['archive',['../classBPMNOS_1_1Execution_1_1SystemState.html#a925c5188bf305cd7844fd044367d00eb',1,'BPMNOS::Execution::SystemState']]],
-  ['arraylayout_51',['ArrayLayout',['../structBPMNOS_1_1ArrayLayout.html',1,'BPMNOS']]],
+  ['arraylayout_51',['ArrayLayout',['../structBPMNOS_1_1Object_1_1ArrayLayout.html',1,'BPMNOS::Object']]],
   ['arraytype_52',['ArrayType',['../structBPMNOS_1_1ArrayType.html',1,'BPMNOS']]],
   ['arrival_53',['Arrival',['../pickup_delivery_problem.html#name-arrival',1,'&lt;em&gt;Name&lt;/em&gt; Arrival'],['../pickup_delivery_problem.html#name-arrival-1',1,'&lt;em&gt;Name&lt;/em&gt; Arrival'],['../pickup_delivery_problem.html#name-arrival-2',1,'&lt;em&gt;Name&lt;/em&gt; Arrival'],['../pickup_delivery_problem.html#name-arrival-3',1,'&lt;em&gt;Name&lt;/em&gt; Arrival'],['../vehicle_routing_problem.html#name-arrival-4',1,'&lt;em&gt;Name&lt;/em&gt; Arrival'],['../vehicle_routing_problem.html#name-arrival-5',1,'&lt;em&gt;Name&lt;/em&gt; Arrival']]],
   ['arrival_20problem_54',['Earliest arrival problem',['../earliest_arrival_problem.html',1,'models']]],

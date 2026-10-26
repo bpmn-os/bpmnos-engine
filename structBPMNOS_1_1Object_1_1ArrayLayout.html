@@ -16,7 +16,7 @@
 <meta name="twitter:title" content="Doxygen Awesome" />
 <meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
 <!-- END twitter metadata -->
-<title>BPMN-OS: Member List</title>
+<title>BPMN-OS: BPMNOS::Object::ArrayLayout Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -97,7 +97,7 @@ $(function() {
   </div>
 </div>
 <script type="text/javascript">
-$(function(){initNavTree('structBPMNOS_1_1FieldLayout.html','',''); });
+$(function(){initNavTree('structBPMNOS_1_1Object_1_1ArrayLayout.html','','structBPMNOS_1_1Object_1_1ArrayLayout-members'); });
 </script>
 <div id="container">
 <div id="doc-content">
@@ -123,15 +123,69 @@ $(function(){initNavTree('structBPMNOS_1_1FieldLayout.html','',''); });
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">BPMNOS::FieldLayout Member List</div></div>
+  <div class="headertitle"><div class="title">BPMNOS::Object::ArrayLayout Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>This is the complete list of members for <a class="el" href="structBPMNOS_1_1FieldLayout.html">BPMNOS::FieldLayout</a>, including all inherited members.</p>
-<table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="structBPMNOS_1_1FieldLayout.html#a4adf11f33290710992d4348c73a6b8ed">layout</a></td><td class="entry"><a class="el" href="structBPMNOS_1_1FieldLayout.html">BPMNOS::FieldLayout</a></td><td class="entry"></td></tr>
-  <tr class="odd"><td class="entry"><a class="el" href="structBPMNOS_1_1FieldLayout.html#a53e5ba68c28f12afebeaec65cca82a26">offset</a></td><td class="entry"><a class="el" href="structBPMNOS_1_1FieldLayout.html">BPMNOS::FieldLayout</a></td><td class="entry"></td></tr>
-</table></div><!-- contents -->
+<p>The layout of an array: the layout of its elements, which all elements share, and the number of elements.  
+ <a href="#details">More...</a></p>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="Object_8h_source.html#l00030">30</a> of file <a class="el" href="Object_8h_source.html">Object.h</a>.</p>
+</div>
+<p><code>#include &lt;<a class="el" href="Object_8h_source.html">Object.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:ab796bef46bf6ccdfa49345dfb896a7ff" id="r_ab796bef46bf6ccdfa49345dfb896a7ff"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object_1_1Layout.html">Layout</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab796bef46bf6ccdfa49345dfb896a7ff">layout</a></td></tr>
+<tr class="memdesc:ab796bef46bf6ccdfa49345dfb896a7ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">The element layout.  <br /></td></tr>
+<tr class="memitem:a0fc3be165d5d78c95dfe6450fd462684" id="r_a0fc3be165d5d78c95dfe6450fd462684"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0fc3be165d5d78c95dfe6450fd462684">size</a></td></tr>
+<tr class="memdesc:a0fc3be165d5d78c95dfe6450fd462684"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of elements.  <br /></td></tr>
+</table>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="ab796bef46bf6ccdfa49345dfb896a7ff" name="ab796bef46bf6ccdfa49345dfb896a7ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab796bef46bf6ccdfa49345dfb896a7ff">&#9670;&#160;</a></span>layout</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;const <a class="el" href="structBPMNOS_1_1Object_1_1Layout.html">Layout</a>&gt; BPMNOS::Object::ArrayLayout::layout</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Object_8h_source.html#l00031">31</a> of file <a class="el" href="Object_8h_source.html">Object.h</a>.</p>
+
+</div>
+</div>
+<a id="a0fc3be165d5d78c95dfe6450fd462684" name="a0fc3be165d5d78c95dfe6450fd462684"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fc3be165d5d78c95dfe6450fd462684">&#9670;&#160;</a></span>size</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t BPMNOS::Object::ArrayLayout::size</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Object_8h_source.html#l00032">32</a> of file <a class="el" href="Object_8h_source.html">Object.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>model/utility/src/<a class="el" href="Object_8h_source.html">Object.h</a></li>
+</ul>
+</div><!-- contents -->
 </div><!-- doc-content -->
+<div id="page-nav" class="page-nav-panel">
+<div id="page-nav-resize-handle"></div>
+<div id="page-nav-tree">
+<div id="page-nav-contents">
+</div><!-- page-nav-contents -->
+</div><!-- page-nav-tree -->
+</div><!-- page-nav -->
 </div><!-- container -->
 <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"; mermaid.initialize({ startOnLoad: true, theme: "neutral" });</script></body></html>

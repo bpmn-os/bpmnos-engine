@@ -175,7 +175,7 @@ $(function(){initNavTree('Input_8cpp_source.html','',''); });
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  <span class="keyword">auto</span> valueType = std::get_if&lt;BPMNOS::ValueType&gt;(&amp;base);</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>  <span class="keywordtype">size_t</span> columns = table.empty() ? 0 : table.front().size();</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  <span class="comment">// every cell has the layout of the first</span></div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  std::shared_ptr&lt;const BPMNOS::Layout&gt; cellLayout;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  std::shared_ptr&lt;const BPMNOS::Object::Layout&gt; cellLayout;</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>  std::vector&lt; std::shared_ptr&lt;const BPMNOS::Object&gt; &gt; cells;</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  <span class="keywordflow">for</span> ( <span class="keywordtype">size_t</span> i = 0; i &lt; table.size(); i++ ) {</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordflow">if</span> ( table[i].size() != columns ) {</div>
@@ -215,7 +215,7 @@ $(function(){initNavTree('Input_8cpp_source.html','',''); });
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    cellLayout = BPMNOS::Object(base).layout;</div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>  }</div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>  <span class="keyword">auto</span> matrix = std::make_shared&lt;BPMNOS::Object&gt;();</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>  matrix-&gt;layout = std::make_shared&lt;const BPMNOS::Layout&gt;(matrixSchema, std::make_shared&lt;const BPMNOS::Layout&gt;(rowSchema, cellLayout, columns), table.size());</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>  matrix-&gt;layout = std::make_shared&lt;const BPMNOS::Object::Layout&gt;(matrixSchema, std::make_shared&lt;const BPMNOS::Object::Layout&gt;(rowSchema, cellLayout, columns), table.size());</div>
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>  matrix-&gt;values.reserve( matrix-&gt;layout-&gt;size );</div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>  <span class="keywordflow">for</span> ( <span class="keywordtype">size_t</span> i = 0; i &lt; table.size(); i++ ) {</div>
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordflow">for</span> ( <span class="keywordtype">size_t</span> j = 0; j &lt; columns; j++ ) {</div>
@@ -249,7 +249,7 @@ $(function(){initNavTree('Input_8cpp_source.html','',''); });
 <div class="ttc" id="anamespaceBPMNOS_1_1Model_html"><div class="ttname"><a href="namespaceBPMNOS_1_1Model.html">BPMNOS::Model</a></div><div class="ttdef"><b>Definition</b> <a href="DecisionTask_8h_source.html#l00010">DecisionTask.h:10</a></div></div>
 <div class="ttc" id="anamespaceBPMNOS_html_abd0d3034519d54779b4df3e9754cd681a420dd3a823baacf2ff185343271e216a"><div class="ttname"><a href="namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681a420dd3a823baacf2ff185343271e216a">BPMNOS::STRING</a></div><div class="ttdeci">@ STRING</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00016">Value.h:16</a></div></div>
 <div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdoc">STL namespace.</div></div>
-<div class="ttc" id="astructBPMNOS_1_1Schema_html"><div class="ttname"><a href="structBPMNOS_1_1Schema.html">BPMNOS::Schema</a></div><div class="ttdoc">A type: a value type, an array type or an object type.</div><div class="ttdef"><b>Definition</b> <a href="Schema_8h_source.html#l00050">Schema.h:50</a></div></div>
+<div class="ttc" id="astructBPMNOS_1_1Schema_html"><div class="ttname"><a href="structBPMNOS_1_1Schema.html">BPMNOS::Schema</a></div><div class="ttdoc">A type: a value type, an array type or a struct type.</div><div class="ttdef"><b>Definition</b> <a href="Schema_8h_source.html#l00050">Schema.h:50</a></div></div>
 <div class="ttc" id="astructBPMNOS_1_1Schema_html_ae10176137d7493b0a97737a4dafe8c15"><div class="ttname"><a href="structBPMNOS_1_1Schema.html#ae10176137d7493b0a97737a4dafe8c15">BPMNOS::Schema::stringify</a></div><div class="ttdeci">std::string stringify() const</div><div class="ttdoc">Returns the notation of the type in its canonical form.</div><div class="ttdef"><b>Definition</b> <a href="Schema_8cpp_source.html#l00150">Schema.cpp:150</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

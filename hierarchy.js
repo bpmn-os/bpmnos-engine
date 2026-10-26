@@ -1,6 +1,6 @@
 var hierarchy =
 [
-    [ "BPMNOS::ArrayLayout", "structBPMNOS_1_1ArrayLayout.html", null ],
+    [ "BPMNOS::Object::ArrayLayout", "structBPMNOS_1_1Object_1_1ArrayLayout.html", null ],
     [ "BPMNOS::ArrayType", "structBPMNOS_1_1ArrayType.html", null ],
     [ "BPMNOS::Execution::ascending", "structBPMNOS_1_1Execution_1_1ascending.html", null ],
     [ "BPMNOS::Model::Attribute", "classBPMNOS_1_1Model_1_1Attribute.html", null ],
@@ -123,7 +123,7 @@ var hierarchy =
       [ "BPMNOS::is_vector< T >", "structBPMNOS_1_1is__vector.html", null ]
     ] ],
     [ "BPMNOS::Field", "structBPMNOS_1_1Field.html", null ],
-    [ "BPMNOS::FieldLayout", "structBPMNOS_1_1FieldLayout.html", null ],
+    [ "BPMNOS::Object::FieldLayout", "structBPMNOS_1_1Object_1_1FieldLayout.html", null ],
     [ "BPMNOS::Model::Guidance", "classBPMNOS_1_1Model_1_1Guidance.html", null ],
     [ "std::hash&lt; BPMNOS_NUMBER_TYPE &gt;", "structstd_1_1hash_3_01BPMNOS__NUMBER__TYPE_01_4.html", null ],
     [ "std::hash&lt; const BPMNOS_NUMBER_TYPE &gt;", "structstd_1_1hash_3_01const_01BPMNOS__NUMBER__TYPE_01_4.html", null ],
@@ -137,6 +137,7 @@ var hierarchy =
     [ "BPMNOS::Execution::CompetingCandidates::Iterator", "classBPMNOS_1_1Execution_1_1CompetingCandidates_1_1Iterator.html", null ],
     [ "BPMNOS::Execution::auto_list&lt; U &gt;::iterator", "structBPMNOS_1_1Execution_1_1auto__list_1_1iterator.html", null ],
     [ "BPMNOS::Execution::auto_set&lt; V, Compare, U &gt;::iterator", "structBPMNOS_1_1Execution_1_1auto__set_1_1iterator.html", null ],
+    [ "BPMNOS::Object::Location", "structBPMNOS_1_1Object_1_1Location.html", null ],
     [ "BPMNOS::Model::LookupTable", "classBPMNOS_1_1Model_1_1LookupTable.html", null ],
     [ "BPMNOS::ObjectInitializer::Member", "structBPMNOS_1_1ObjectInitializer_1_1Member.html", null ],
     [ "BPMNOS::Model::MessageDefinition", "classBPMNOS_1_1Model_1_1MessageDefinition.html", null ],
@@ -149,9 +150,7 @@ var hierarchy =
     ] ],
     [ "BPMNOS::Object", "structBPMNOS_1_1Object.html", null ],
     [ "BPMNOS::ObjectInitializer", "classBPMNOS_1_1ObjectInitializer.html", null ],
-    [ "BPMNOS::ObjectLayout", "structBPMNOS_1_1ObjectLayout.html", null ],
     [ "BPMNOS::ObjectRegistry", "structBPMNOS_1_1ObjectRegistry.html", null ],
-    [ "BPMNOS::ObjectType", "structBPMNOS_1_1ObjectType.html", null ],
     [ "BPMNOS::Execution::Observable", "structBPMNOS_1_1Execution_1_1Observable.html", [
       [ "BPMNOS::Execution::DataUpdate", "structBPMNOS_1_1Execution_1_1DataUpdate.html", null ],
       [ "BPMNOS::Execution::DecisionRequest", "structBPMNOS_1_1Execution_1_1DecisionRequest.html", null ],
@@ -208,13 +207,15 @@ var hierarchy =
     [ "BPMNOS::Model::SignalDefinition", "classBPMNOS_1_1Model_1_1SignalDefinition.html", null ],
     [ "BPMNOS::Status", "structBPMNOS_1_1Status.html", null ],
     [ "BPMNOS::StringRegistry", "structBPMNOS_1_1StringRegistry.html", null ],
+    [ "BPMNOS::Object::StructLayout", "structBPMNOS_1_1Object_1_1StructLayout.html", null ],
+    [ "BPMNOS::StructType", "structBPMNOS_1_1StructType.html", null ],
     [ "std::true_type", null, [
       [ "BPMNOS::Execution::is_weak_ptr< std::weak_ptr< T > >", "structBPMNOS_1_1Execution_1_1is__weak__ptr_3_01std_1_1weak__ptr_3_01T_01_4_01_4.html", null ],
       [ "BPMNOS::is_vector< std::vector< T, Allocator > >", "structBPMNOS_1_1is__vector_3_01std_1_1vector_3_01T_00_01Allocator_01_4_01_4.html", null ]
     ] ],
     [ "BPMNOS::tuple_map&lt; Key, Value &gt;", "classBPMNOS_1_1tuple__map.html", null ],
     [ "std::variant", null, [
-      [ "BPMNOS::Layout", "structBPMNOS_1_1Layout.html", null ],
+      [ "BPMNOS::Object::Layout", "structBPMNOS_1_1Object_1_1Layout.html", null ],
       [ "BPMNOS::Schema", "structBPMNOS_1_1Schema.html", null ]
     ] ],
     [ "BPMNOS::vector_map&lt; Key, Value &gt;", "classBPMNOS_1_1vector__map.html", null ],

@@ -33,9 +33,11 @@ var searchData=
   ['status_30',['status',['../classXML_1_1bpmnos_1_1status.html',1,'XML::bpmnos']]],
   ['stochasticdataprovider_31',['StochasticDataProvider',['../classBPMNOS_1_1Execution_1_1StochasticDataProvider.html',1,'BPMNOS::Execution']]],
   ['stringregistry_32',['StringRegistry',['../structBPMNOS_1_1StringRegistry.html',1,'BPMNOS']]],
-  ['subchoreography_33',['subChoreography',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1subChoreography.html',1,'XML::bpmn']]],
-  ['subconversation_34',['subConversation',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1subConversation.html',1,'XML::bpmn']]],
-  ['subprocess_35',['SubProcess',['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1SubProcess.html',1,'BPMN']]],
-  ['subprocess_36',['subProcess',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1subProcess.html',1,'XML::bpmn']]],
-  ['systemstate_37',['SystemState',['../classBPMNOS_1_1Execution_1_1SystemState.html',1,'BPMNOS::Execution']]]
+  ['structlayout_33',['StructLayout',['../structBPMNOS_1_1Object_1_1StructLayout.html',1,'BPMNOS::Object']]],
+  ['structtype_34',['StructType',['../structBPMNOS_1_1StructType.html',1,'BPMNOS']]],
+  ['subchoreography_35',['subChoreography',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1subChoreography.html',1,'XML::bpmn']]],
+  ['subconversation_36',['subConversation',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1subConversation.html',1,'XML::bpmn']]],
+  ['subprocess_37',['SubProcess',['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1SubProcess.html',1,'BPMN']]],
+  ['subprocess_38',['subProcess',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1subProcess.html',1,'XML::bpmn']]],
+  ['systemstate_39',['SystemState',['../classBPMNOS_1_1Execution_1_1SystemState.html',1,'BPMNOS::Execution']]]
 ];

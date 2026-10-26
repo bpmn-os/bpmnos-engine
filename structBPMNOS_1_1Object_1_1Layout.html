@@ -16,7 +16,7 @@
 <meta name="twitter:title" content="Doxygen Awesome" />
 <meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
 <!-- END twitter metadata -->
-<title>BPMN-OS: BPMNOS::Layout Struct Reference</title>
+<title>BPMN-OS: BPMNOS::Object::Layout Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -97,7 +97,7 @@ $(function() {
   </div>
 </div>
 <script type="text/javascript">
-$(function(){initNavTree('structBPMNOS_1_1Layout.html','','structBPMNOS_1_1Layout-members'); });
+$(function(){initNavTree('structBPMNOS_1_1Object_1_1Layout.html','','structBPMNOS_1_1Object_1_1Layout-members'); });
 </script>
 <div id="container">
 <div id="doc-content">
@@ -123,47 +123,47 @@ $(function(){initNavTree('structBPMNOS_1_1Layout.html','','structBPMNOS_1_1Layou
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">BPMNOS::Layout Struct Reference</div></div>
+  <div class="headertitle"><div class="title">BPMNOS::Object::Layout Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>The geometry of an object: a single value, an array or an object, the schema it lays out, and the number of positions it occupies in the values of the object.  
+<p>The geometry of an object: a single value, an array or a struct, the schema it lays out, and the number of positions it occupies in the values of the object.  
  <a href="#details">More...</a></p>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A layout and its schema agree: the layout has the structure of the schema, the schema states the value type of every single value and the name of every field, and every array the schema fixes has the size the schema states. The layout of an element or field refers to the corresponding part of the schema. A layout never changes once built, and refers to the layouts it contains through <span class="tt">std::shared_ptr&lt;const Layout&gt;</span>, so that a layout derived from another shares every part it does not change. </p>
 
-<p class="definition">Definition at line <a class="el" href="Object_8h_source.html#l00051">51</a> of file <a class="el" href="Object_8h_source.html">Object.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Object_8h_source.html#l00061">61</a> of file <a class="el" href="Object_8h_source.html">Object.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="Object_8h_source.html">Object.h</a>&gt;</code></p>
 <div class="dynheader">
-Inheritance diagram for BPMNOS::Layout:</div>
+Inheritance diagram for BPMNOS::Object::Layout:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="structBPMNOS_1_1Layout__inherit__graph.svg" width="183" height="350"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="structBPMNOS_1_1Object_1_1Layout__inherit__graph.svg" width="183" height="350"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a535f82958af7b75d4210050c6903a33a" id="r_a535f82958af7b75d4210050c6903a33a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a535f82958af7b75d4210050c6903a33a">Layout</a> (std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Schema.html">Schema</a> &gt; <a class="el" href="#ab8e31817fda4ed2faf6cd1683f8d43d9">schema</a>)</td></tr>
-<tr class="memdesc:a535f82958af7b75d4210050c6903a33a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the layout of a single value of the given schema, a value type.  <br /></td></tr>
-<tr class="memitem:ad9fdc14b82e447e9109b5e8b19c71024" id="r_ad9fdc14b82e447e9109b5e8b19c71024"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad9fdc14b82e447e9109b5e8b19c71024">Layout</a> (std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Schema.html">Schema</a> &gt; <a class="el" href="#ab8e31817fda4ed2faf6cd1683f8d43d9">schema</a>, std::shared_ptr&lt; const Layout &gt; layout, size_t <a class="el" href="#aeb9f9a361944ad8707cab0d8b0678b09">size</a>)</td></tr>
-<tr class="memdesc:ad9fdc14b82e447e9109b5e8b19c71024"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the layout of an array of the given schema, an array type, with the given element layout and number of elements.  <br /></td></tr>
-<tr class="memitem:afdcdefddfd0d7784c3de5dee1eec7a04" id="r_afdcdefddfd0d7784c3de5dee1eec7a04"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afdcdefddfd0d7784c3de5dee1eec7a04">Layout</a> (std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Schema.html">Schema</a> &gt; <a class="el" href="#ab8e31817fda4ed2faf6cd1683f8d43d9">schema</a>, const std::vector&lt; std::shared_ptr&lt; const Layout &gt; &gt; &amp;fields)</td></tr>
-<tr class="memdesc:afdcdefddfd0d7784c3de5dee1eec7a04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the layout of an object of the given schema, an object type, with the given layouts of its fields, the offsets following from their sizes.  <br /></td></tr>
-<tr class="memitem:ac1cc67226ede665bb41d53cf0fc7fe21" id="r_ac1cc67226ede665bb41d53cf0fc7fe21"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac1cc67226ede665bb41d53cf0fc7fe21">stringify</a> () const</td></tr>
-<tr class="memdesc:ac1cc67226ede665bb41d53cf0fc7fe21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the schema in its notation with every array at its actual size.  <br /></td></tr>
-<tr class="memitem:a20f0f430c186d3c1dbe42bfc80f8a33b" id="r_a20f0f430c186d3c1dbe42bfc80f8a33b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a20f0f430c186d3c1dbe42bfc80f8a33b">operator==</a> (const <a class="el" href="#a535f82958af7b75d4210050c6903a33a">Layout</a> &amp;other) const</td></tr>
-<tr class="memdesc:a20f0f430c186d3c1dbe42bfc80f8a33b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the layouts have the same structure, sizes and offsets and their schemas are equal.  <br /></td></tr>
+<tr class="memitem:a39334e3675acf27b36523f708389af28" id="r_a39334e3675acf27b36523f708389af28"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a39334e3675acf27b36523f708389af28">Layout</a> (std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Schema.html">Schema</a> &gt; <a class="el" href="#a36a066502bcd52799b38fea3630894d7">schema</a>)</td></tr>
+<tr class="memdesc:a39334e3675acf27b36523f708389af28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the layout of a single value of the given schema, a value type.  <br /></td></tr>
+<tr class="memitem:a7917625cce179678b927c0a98dba2d99" id="r_a7917625cce179678b927c0a98dba2d99"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7917625cce179678b927c0a98dba2d99">Layout</a> (std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Schema.html">Schema</a> &gt; <a class="el" href="#a36a066502bcd52799b38fea3630894d7">schema</a>, std::shared_ptr&lt; const Layout &gt; <a class="el" href="structBPMNOS_1_1Object.html#a1747a728fc8a11cbaa68f0f274c91cf7">layout</a>, size_t <a class="el" href="#ab6ce892237640c771ccbfdfa2f877f6b">size</a>)</td></tr>
+<tr class="memdesc:a7917625cce179678b927c0a98dba2d99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the layout of an array of the given schema, an array type, with the given element layout and number of elements.  <br /></td></tr>
+<tr class="memitem:afad9c6e52b1e4a446866053a016e4e22" id="r_afad9c6e52b1e4a446866053a016e4e22"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afad9c6e52b1e4a446866053a016e4e22">Layout</a> (std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Schema.html">Schema</a> &gt; <a class="el" href="#a36a066502bcd52799b38fea3630894d7">schema</a>, const std::vector&lt; std::shared_ptr&lt; const Layout &gt; &gt; &amp;fields)</td></tr>
+<tr class="memdesc:afad9c6e52b1e4a446866053a016e4e22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the layout of a struct of the given schema, a struct type, with the given layouts of its fields, the offsets following from their sizes.  <br /></td></tr>
+<tr class="memitem:a9c7cd4d84c21f2c30aaa1a6267533587" id="r_a9c7cd4d84c21f2c30aaa1a6267533587"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9c7cd4d84c21f2c30aaa1a6267533587">stringify</a> () const</td></tr>
+<tr class="memdesc:a9c7cd4d84c21f2c30aaa1a6267533587"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the schema in its notation with every array at its actual size.  <br /></td></tr>
+<tr class="memitem:ab8a31fe91fa681ff40317c7e3f5e5546" id="r_ab8a31fe91fa681ff40317c7e3f5e5546"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab8a31fe91fa681ff40317c7e3f5e5546">operator==</a> (const <a class="el" href="#a39334e3675acf27b36523f708389af28">Layout</a> &amp;other) const</td></tr>
+<tr class="memdesc:ab8a31fe91fa681ff40317c7e3f5e5546"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the layouts have the same structure, sizes and offsets and their schemas are equal.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ab8e31817fda4ed2faf6cd1683f8d43d9" id="r_ab8e31817fda4ed2faf6cd1683f8d43d9"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Schema.html">Schema</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab8e31817fda4ed2faf6cd1683f8d43d9">schema</a></td></tr>
-<tr class="memdesc:ab8e31817fda4ed2faf6cd1683f8d43d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">The schema of the object.  <br /></td></tr>
-<tr class="memitem:aeb9f9a361944ad8707cab0d8b0678b09" id="r_aeb9f9a361944ad8707cab0d8b0678b09"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeb9f9a361944ad8707cab0d8b0678b09">size</a></td></tr>
-<tr class="memdesc:aeb9f9a361944ad8707cab0d8b0678b09"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of positions the layout occupies.  <br /></td></tr>
+<tr class="memitem:a36a066502bcd52799b38fea3630894d7" id="r_a36a066502bcd52799b38fea3630894d7"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Schema.html">Schema</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a36a066502bcd52799b38fea3630894d7">schema</a></td></tr>
+<tr class="memdesc:a36a066502bcd52799b38fea3630894d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">The schema of the object.  <br /></td></tr>
+<tr class="memitem:ab6ce892237640c771ccbfdfa2f877f6b" id="r_ab6ce892237640c771ccbfdfa2f877f6b"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab6ce892237640c771ccbfdfa2f877f6b">size</a></td></tr>
+<tr class="memdesc:ab6ce892237640c771ccbfdfa2f877f6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of positions the layout occupies.  <br /></td></tr>
 </table>
 <a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a535f82958af7b75d4210050c6903a33a" name="a535f82958af7b75d4210050c6903a33a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a535f82958af7b75d4210050c6903a33a">&#9670;&#160;</a></span>Layout() <span class="overload">[1/3]</span></h2>
+<a id="a39334e3675acf27b36523f708389af28" name="a39334e3675acf27b36523f708389af28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39334e3675acf27b36523f708389af28">&#9670;&#160;</a></span>Layout() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -172,7 +172,7 @@ Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">BPMNOS::Layout::Layout </td>
+          <td class="memname">BPMNOS::Object::Layout::Layout </td>
           <td>(</td>
           <td class="paramtype">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Schema.html">Schema</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>schema</em></span></td><td>)</td>
           <td></td>
@@ -189,14 +189,14 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ad9fdc14b82e447e9109b5e8b19c71024" name="ad9fdc14b82e447e9109b5e8b19c71024"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad9fdc14b82e447e9109b5e8b19c71024">&#9670;&#160;</a></span>Layout() <span class="overload">[2/3]</span></h2>
+<a id="a7917625cce179678b927c0a98dba2d99" name="a7917625cce179678b927c0a98dba2d99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7917625cce179678b927c0a98dba2d99">&#9670;&#160;</a></span>Layout() <span class="overload">[2/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">BPMNOS::Layout::Layout </td>
+          <td class="memname">BPMNOS::Object::Layout::Layout </td>
           <td>(</td>
           <td class="paramtype">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Schema.html">Schema</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>schema</em></span>, </td>
         </tr>
@@ -217,14 +217,14 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="afdcdefddfd0d7784c3de5dee1eec7a04" name="afdcdefddfd0d7784c3de5dee1eec7a04"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afdcdefddfd0d7784c3de5dee1eec7a04">&#9670;&#160;</a></span>Layout() <span class="overload">[3/3]</span></h2>
+<a id="afad9c6e52b1e4a446866053a016e4e22" name="afad9c6e52b1e4a446866053a016e4e22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afad9c6e52b1e4a446866053a016e4e22">&#9670;&#160;</a></span>Layout() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">BPMNOS::Layout::Layout </td>
+          <td class="memname">BPMNOS::Object::Layout::Layout </td>
           <td>(</td>
           <td class="paramtype">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Schema.html">Schema</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>schema</em></span>, </td>
         </tr>
@@ -241,16 +241,16 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a20f0f430c186d3c1dbe42bfc80f8a33b" name="a20f0f430c186d3c1dbe42bfc80f8a33b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a20f0f430c186d3c1dbe42bfc80f8a33b">&#9670;&#160;</a></span>operator==()</h2>
+<a id="ab8a31fe91fa681ff40317c7e3f5e5546" name="ab8a31fe91fa681ff40317c7e3f5e5546"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8a31fe91fa681ff40317c7e3f5e5546">&#9670;&#160;</a></span>operator==()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool BPMNOS::Layout::operator== </td>
+          <td class="memname">bool BPMNOS::Object::Layout::operator== </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="#a535f82958af7b75d4210050c6903a33a">Layout</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>other</em></span></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="#a39334e3675acf27b36523f708389af28">Layout</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>other</em></span></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -260,14 +260,14 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ac1cc67226ede665bb41d53cf0fc7fe21" name="ac1cc67226ede665bb41d53cf0fc7fe21"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac1cc67226ede665bb41d53cf0fc7fe21">&#9670;&#160;</a></span>stringify()</h2>
+<a id="a9c7cd4d84c21f2c30aaa1a6267533587" name="a9c7cd4d84c21f2c30aaa1a6267533587"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c7cd4d84c21f2c30aaa1a6267533587">&#9670;&#160;</a></span>stringify()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::string BPMNOS::Layout::stringify </td>
+          <td class="memname">std::string BPMNOS::Object::Layout::stringify </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -280,35 +280,35 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
-<a id="ab8e31817fda4ed2faf6cd1683f8d43d9" name="ab8e31817fda4ed2faf6cd1683f8d43d9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab8e31817fda4ed2faf6cd1683f8d43d9">&#9670;&#160;</a></span>schema</h2>
+<a id="a36a066502bcd52799b38fea3630894d7" name="a36a066502bcd52799b38fea3630894d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36a066502bcd52799b38fea3630894d7">&#9670;&#160;</a></span>schema</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt;const <a class="el" href="structBPMNOS_1_1Schema.html">Schema</a>&gt; BPMNOS::Layout::schema</td>
+          <td class="memname">std::shared_ptr&lt;const <a class="el" href="structBPMNOS_1_1Schema.html">Schema</a>&gt; BPMNOS::Object::Layout::schema</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Object_8h_source.html#l00052">52</a> of file <a class="el" href="Object_8h_source.html">Object.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Object_8h_source.html#l00062">62</a> of file <a class="el" href="Object_8h_source.html">Object.h</a>.</p>
 
 </div>
 </div>
-<a id="aeb9f9a361944ad8707cab0d8b0678b09" name="aeb9f9a361944ad8707cab0d8b0678b09"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeb9f9a361944ad8707cab0d8b0678b09">&#9670;&#160;</a></span>size</h2>
+<a id="ab6ce892237640c771ccbfdfa2f877f6b" name="ab6ce892237640c771ccbfdfa2f877f6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6ce892237640c771ccbfdfa2f877f6b">&#9670;&#160;</a></span>size</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">size_t BPMNOS::Layout::size</td>
+          <td class="memname">size_t BPMNOS::Object::Layout::size</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Object_8h_source.html#l00053">53</a> of file <a class="el" href="Object_8h_source.html">Object.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Object_8h_source.html#l00063">63</a> of file <a class="el" href="Object_8h_source.html">Object.h</a>.</p>
 
 </div>
 </div>

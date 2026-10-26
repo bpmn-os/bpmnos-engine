@@ -16,7 +16,7 @@
 <meta name="twitter:title" content="Doxygen Awesome" />
 <meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
 <!-- END twitter metadata -->
-<title>BPMN-OS: BPMNOS::FieldLayout Struct Reference</title>
+<title>BPMN-OS: BPMNOS::Object::Location Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -97,7 +97,7 @@ $(function() {
   </div>
 </div>
 <script type="text/javascript">
-$(function(){initNavTree('structBPMNOS_1_1FieldLayout.html','','structBPMNOS_1_1FieldLayout-members'); });
+$(function(){initNavTree('structBPMNOS_1_1Object_1_1Location.html','','structBPMNOS_1_1Object_1_1Location-members'); });
 </script>
 <div id="container">
 <div id="doc-content">
@@ -123,53 +123,54 @@ $(function(){initNavTree('structBPMNOS_1_1FieldLayout.html','','structBPMNOS_1_1
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">BPMNOS::FieldLayout Struct Reference</div></div>
+  <div class="headertitle"><div class="title">BPMNOS::Object::Location Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>The layout of a field of an object: the position of its first value relative to the first value of the object, and its layout.  
+<p>The part of an object a path addresses: the pointer holding its layout, and the position of its first value.  
  <a href="#details">More...</a></p>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="Object_8h_source.html#l00029">29</a> of file <a class="el" href="Object_8h_source.html">Object.h</a>.</p>
+<div class="textblock"><p>The values of the part are the <span class="tt">layout-&gt;size</span> values of the object beginning at that position. </p>
+
+<p class="definition">Definition at line <a class="el" href="Object_8h_source.html#l00085">85</a> of file <a class="el" href="Object_8h_source.html">Object.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="Object_8h_source.html">Object.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a53e5ba68c28f12afebeaec65cca82a26" id="r_a53e5ba68c28f12afebeaec65cca82a26"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a53e5ba68c28f12afebeaec65cca82a26">offset</a></td></tr>
-<tr class="memitem:a4adf11f33290710992d4348c73a6b8ed" id="r_a4adf11f33290710992d4348c73a6b8ed"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Layout.html">Layout</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4adf11f33290710992d4348c73a6b8ed">layout</a></td></tr>
+<tr class="memitem:a7f1c5e817428febac7d484fd320b7444" id="r_a7f1c5e817428febac7d484fd320b7444"><td class="memItemLeft" align="right" valign="top">const std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object_1_1Layout.html">Layout</a> &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7f1c5e817428febac7d484fd320b7444">layout</a></td></tr>
+<tr class="memitem:a7a9cbaa414c961bd1fa2debcb5fee7d6" id="r_a7a9cbaa414c961bd1fa2debcb5fee7d6"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7a9cbaa414c961bd1fa2debcb5fee7d6">offset</a></td></tr>
 </table>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
-<a id="a4adf11f33290710992d4348c73a6b8ed" name="a4adf11f33290710992d4348c73a6b8ed"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4adf11f33290710992d4348c73a6b8ed">&#9670;&#160;</a></span>layout</h2>
+<a id="a7f1c5e817428febac7d484fd320b7444" name="a7f1c5e817428febac7d484fd320b7444"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f1c5e817428febac7d484fd320b7444">&#9670;&#160;</a></span>layout</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt;const <a class="el" href="structBPMNOS_1_1Layout.html">Layout</a>&gt; BPMNOS::FieldLayout::layout</td>
+          <td class="memname">const std::shared_ptr&lt;const <a class="el" href="structBPMNOS_1_1Object_1_1Layout.html">Layout</a>&gt;* BPMNOS::Object::Location::layout</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Object_8h_source.html#l00031">31</a> of file <a class="el" href="Object_8h_source.html">Object.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Object_8h_source.html#l00086">86</a> of file <a class="el" href="Object_8h_source.html">Object.h</a>.</p>
 
 </div>
 </div>
-<a id="a53e5ba68c28f12afebeaec65cca82a26" name="a53e5ba68c28f12afebeaec65cca82a26"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a53e5ba68c28f12afebeaec65cca82a26">&#9670;&#160;</a></span>offset</h2>
+<a id="a7a9cbaa414c961bd1fa2debcb5fee7d6" name="a7a9cbaa414c961bd1fa2debcb5fee7d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a9cbaa414c961bd1fa2debcb5fee7d6">&#9670;&#160;</a></span>offset</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">size_t BPMNOS::FieldLayout::offset</td>
+          <td class="memname">size_t BPMNOS::Object::Location::offset</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Object_8h_source.html#l00030">30</a> of file <a class="el" href="Object_8h_source.html">Object.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Object_8h_source.html#l00087">87</a> of file <a class="el" href="Object_8h_source.html">Object.h</a>.</p>
 
 </div>
 </div>

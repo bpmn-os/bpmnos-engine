@@ -4,7 +4,7 @@ var searchData=
   ['activity_1',['Activity',['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Activity.html',1,'BPMN']]],
   ['adhocsubprocess_2',['AdHocSubProcess',['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1AdHocSubProcess.html',1,'BPMN']]],
   ['adhocsubprocess_3',['adHocSubProcess',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1adHocSubProcess.html',1,'XML::bpmn']]],
-  ['arraylayout_4',['ArrayLayout',['../structBPMNOS_1_1ArrayLayout.html',1,'BPMNOS']]],
+  ['arraylayout_4',['ArrayLayout',['../structBPMNOS_1_1Object_1_1ArrayLayout.html',1,'BPMNOS::Object']]],
   ['arraytype_5',['ArrayType',['../structBPMNOS_1_1ArrayType.html',1,'BPMNOS']]],
   ['ascending_6',['ascending',['../structBPMNOS_1_1Execution_1_1ascending.html',1,'BPMNOS::Execution']]],
   ['attribute_7',['Attribute',['../classBPMNOS_1_1Model_1_1Attribute.html',1,'BPMNOS::Model::Attribute'],['https://bpmn-os.github.io/bpmnpp/structXML_1_1Attribute.html',1,'XML::Attribute']]],

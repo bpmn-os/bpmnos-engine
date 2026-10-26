@@ -127,7 +127,7 @@ $(function(){initNavTree('structBPMNOS_1_1Schema.html','','structBPMNOS_1_1Schem
 </div><!--header-->
 <div class="contents">
 
-<p>A type: a value type, an array type or an object type.  
+<p>A type: a value type, an array type or a struct type.  
  <a href="#details">More...</a></p>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A schema is written in the notation <span class="tt">schema := ( valuetype | "{" field ( "," field )* "}" ) dimension*</span>, with <span class="tt">field := name ":" schema</span> and <span class="tt">dimension := "[" n "]" | "[]"</span>, a dimension <span class="tt">[n]</span> denoting a fixed array of size <span class="tt">n</span> and <span class="tt">[]</span> an open array. The dimensions are written outermost first: <span class="tt">boolean[3][4]</span> is the array type of size 3 whose element type is the array type of size 4 whose element type is <span class="tt">boolean</span>.</p>
@@ -139,14 +139,14 @@ $(function(){initNavTree('structBPMNOS_1_1Schema.html','','structBPMNOS_1_1Schem
 <div class="dynheader">
 Inheritance diagram for BPMNOS::Schema:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="structBPMNOS_1_1Schema__inherit__graph.svg" width="186" height="355"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="structBPMNOS_1_1Schema__inherit__graph.svg" width="182" height="355"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:afb644b4ed23eea882b0675e3cf8a4366" id="r_afb644b4ed23eea882b0675e3cf8a4366"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afb644b4ed23eea882b0675e3cf8a4366">Schema</a> ()=default</td></tr>
-<tr class="memitem:a552c906d4161db5b558f692d0e7b2b12" id="r_a552c906d4161db5b558f692d0e7b2b12"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a552c906d4161db5b558f692d0e7b2b12">Schema</a> (const Schema &amp;effectiveSchema, const <a class="el" href="structBPMNOS_1_1Layout.html">BPMNOS::Layout</a> &amp;currentLayout)</td></tr>
-<tr class="memdesc:a552c906d4161db5b558f692d0e7b2b12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the target schema of an assignment to an object of the given current layout, whose effective schema is given.  <br /></td></tr>
+<tr class="memitem:a0cba8aa796f0b9d57fe96c16c40d232d" id="r_a0cba8aa796f0b9d57fe96c16c40d232d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0cba8aa796f0b9d57fe96c16c40d232d">Schema</a> (const Schema &amp;effectiveSchema, const <a class="el" href="structBPMNOS_1_1Object_1_1Layout.html">BPMNOS::Object::Layout</a> &amp;currentLayout)</td></tr>
+<tr class="memdesc:a0cba8aa796f0b9d57fe96c16c40d232d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the target schema of an assignment to an object of the given current layout, whose effective schema is given.  <br /></td></tr>
 <tr class="memitem:ae10176137d7493b0a97737a4dafe8c15" id="r_ae10176137d7493b0a97737a4dafe8c15"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae10176137d7493b0a97737a4dafe8c15">stringify</a> () const</td></tr>
 <tr class="memdesc:ae10176137d7493b0a97737a4dafe8c15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the notation of the type in its canonical form.  <br /></td></tr>
 <tr class="memitem:ab6a3ed9f8cb8275709a8f5c4a3eab82d" id="r_ab6a3ed9f8cb8275709a8f5c4a3eab82d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab6a3ed9f8cb8275709a8f5c4a3eab82d">operator==</a> (const <a class="el" href="#afb644b4ed23eea882b0675e3cf8a4366">Schema</a> &amp;other) const</td></tr>
@@ -187,8 +187,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a552c906d4161db5b558f692d0e7b2b12" name="a552c906d4161db5b558f692d0e7b2b12"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a552c906d4161db5b558f692d0e7b2b12">&#9670;&#160;</a></span>Schema() <span class="overload">[2/2]</span></h2>
+<a id="a0cba8aa796f0b9d57fe96c16c40d232d" name="a0cba8aa796f0b9d57fe96c16c40d232d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cba8aa796f0b9d57fe96c16c40d232d">&#9670;&#160;</a></span>Schema() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -201,7 +201,7 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Layout.html">BPMNOS::Layout</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>currentLayout</em></span>&#160;)</td>
+          <td class="paramtype">const <a class="el" href="structBPMNOS_1_1Object_1_1Layout.html">BPMNOS::Object::Layout</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>currentLayout</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">

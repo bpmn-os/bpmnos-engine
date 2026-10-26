@@ -6,7 +6,7 @@ var searchData=
   ['manualtask_3',['manualTask',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1manualTask.html#abdca91a05289ffbd0ae564f4ccd3546e',1,'XML::bpmn::manualTask']]],
   ['matches_4',['matches',['../classBPMNOS_1_1Execution_1_1Message.html#a0d8d7d1292d7c35d2a61a20b54ccbf40',1,'BPMNOS::Execution::Message']]],
   ['members_5',['members',['../classBPMNOS_1_1ObjectInitializer.html#af345f803e2131fc79bcf459c76425361',1,'BPMNOS::ObjectInitializer']]],
-  ['merge_6',['merge',['../namespaceBPMNOS.html#a83c908033921add3ea28fdb2a7155c7f',1,'BPMNOS']]],
+  ['merge_6',['merge',['../structBPMNOS_1_1Object.html#ae298f7081627680498c098f61a01dff3',1,'BPMNOS::Object']]],
   ['message_7',['Message',['../classBPMNOS_1_1Execution_1_1Message.html#ad35704d4d542ea99530e67caecca6f96',1,'BPMNOS::Execution::Message::Message(Token *token)'],['../classBPMNOS_1_1Execution_1_1Message.html#aea764f03e333c32fab6de0fc69d8741a',1,'BPMNOS::Execution::Message::Message(const Message *other, Token *waitingToken=nullptr)']]],
   ['message_8',['message',['../classXML_1_1bpmnos_1_1message.html#a23affb283e0fb677efb681072842336d',1,'XML::bpmnos::message']]],
   ['messageboundaryevent_9',['MessageBoundaryEvent',['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1MessageBoundaryEvent.html#a5c10cbf41a9d20a9a2f6dfa1ad6a4945',1,'BPMN::MessageBoundaryEvent']]],
@@ -31,9 +31,8 @@ var searchData=
   ['messagestartevent_28',['MessageStartEvent',['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1MessageStartEvent.html#a884703ca5e105c2b862ee4fe35928cb1',1,'BPMN::MessageStartEvent']]],
   ['messagethrowevent_29',['MessageThrowEvent',['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1MessageThrowEvent.html#a60135f4279831e5f0537e799fa460ea2',1,'BPMN::MessageThrowEvent']]],
   ['model_30',['Model',['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#a98de84e61b1e4a6101b3cba93888d841',1,'BPMN::Model::Model(const std::string &amp;filename)'],['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#a2cd669903f528054f1f8b5c37e87337b',1,'BPMN::Model::Model(std::unique_ptr&lt; XML::XMLObject &gt; root)'],['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html#a2a684f87dafb1fc7c33c1b4bf13afe23',1,'BPMN::Model::Model()'],['../classBPMNOS_1_1Model_1_1Model.html#a4f10c4b957116a922580e6793c4c4501',1,'BPMNOS::Model::Model::Model(const std::string filename, const std::vector&lt; std::string &gt; folders={})'],['../classBPMNOS_1_1Model_1_1Model.html#a79e8decfc4a7aa892c2b90f2263ebc9a',1,'BPMNOS::Model::Model::Model(std::unique_ptr&lt; XML::XMLObject &gt; root, std::unordered_map&lt; std::string, std::string &gt; inputContents)']]],
-  ['modifiable_31',['modifiable',['../namespaceBPMNOS.html#a31ded7e82f735fa37b5acd8117b662ff',1,'BPMNOS']]],
-  ['modifier_32',['Modifier',['../classBPMNOS_1_1Execution_1_1Color_1_1Modifier.html#aa9337870966b4cd9739f0face0c7264f',1,'BPMNOS::Execution::Color::Modifier']]],
-  ['multiinstanceloopcharacteristics_33',['multiInstanceLoopCharacteristics',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1multiInstanceLoopCharacteristics.html#aba8b6f1059eb616bd62f42e09e0f917a',1,'XML::bpmn::multiInstanceLoopCharacteristics']]],
-  ['myopicdecisiontaskterminator_34',['MyopicDecisionTaskTerminator',['../classBPMNOS_1_1Execution_1_1MyopicDecisionTaskTerminator.html#a07a89a349188237d15dcf526a5576bea',1,'BPMNOS::Execution::MyopicDecisionTaskTerminator']]],
-  ['myopicmessagetaskterminator_35',['MyopicMessageTaskTerminator',['../classBPMNOS_1_1Execution_1_1MyopicMessageTaskTerminator.html#aa31f6376ef03a8432eca95a1ee9c2eb9',1,'BPMNOS::Execution::MyopicMessageTaskTerminator']]]
+  ['modifier_31',['Modifier',['../classBPMNOS_1_1Execution_1_1Color_1_1Modifier.html#aa9337870966b4cd9739f0face0c7264f',1,'BPMNOS::Execution::Color::Modifier']]],
+  ['multiinstanceloopcharacteristics_32',['multiInstanceLoopCharacteristics',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1multiInstanceLoopCharacteristics.html#aba8b6f1059eb616bd62f42e09e0f917a',1,'XML::bpmn::multiInstanceLoopCharacteristics']]],
+  ['myopicdecisiontaskterminator_33',['MyopicDecisionTaskTerminator',['../classBPMNOS_1_1Execution_1_1MyopicDecisionTaskTerminator.html#a07a89a349188237d15dcf526a5576bea',1,'BPMNOS::Execution::MyopicDecisionTaskTerminator']]],
+  ['myopicmessagetaskterminator_34',['MyopicMessageTaskTerminator',['../classBPMNOS_1_1Execution_1_1MyopicMessageTaskTerminator.html#aa31f6376ef03a8432eca95a1ee9c2eb9',1,'BPMNOS::Execution::MyopicMessageTaskTerminator']]]
 ];
