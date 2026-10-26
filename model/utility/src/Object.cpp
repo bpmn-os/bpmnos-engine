@@ -253,6 +253,32 @@ Object& modifiable(std::shared_ptr<const Object>& slot) {
   return const_cast<Object&>(*slot);
 }
 
+Location locate(const std::shared_ptr<const Layout>& layout, const std::vector< std::optional<std::string> >& steps, std::span<const size_t> indices) {
+  Location location{ &layout, 0 };
+  size_t next = 0;
+  for ( auto& step : steps ) {
+    auto& current = **location.layout;
+    if ( step.has_value() ) {
+      auto& types = std::get<ObjectType>(*current.schema).fields;
+      auto field = (size_t)std::distance(types.begin(), std::ranges::find_if(types, [&step](auto& candidate) { return candidate.name == step.value(); }));
+      if ( field == types.size() ) {
+        throw std::logic_error("Object: unknown field '" + step.value() + "'");
+      }
+      auto& fieldLayout = std::get<ObjectLayout>(current).fields[field];
+      location = Location{ &fieldLayout.layout, location.offset + fieldLayout.offset };
+      continue;
+    }
+    auto index = indices[next++];
+    auto& array = std::get<ArrayLayout>(current);
+    if ( index >= array.size ) {
+      throw std::out_of_range("Object: array of size " + std::to_string(array.size) + " has no element " + std::to_string(index + 1));
+    }
+    location = Location{ &array.layout, location.offset + index * array.layout->size };
+  }
+  assert( next == indices.size() );
+  return location;
+}
+
 std::shared_ptr<Object> resize(const Object& object, const std::vector< std::optional<std::string> >& steps, size_t size) {
   auto result = std::make_shared<Object>();
   result->layout = rebuild(object.layout, steps, 0, size);

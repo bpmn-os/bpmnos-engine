@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <optional>
+#include <span>
 #include <string>
 #include <variant>
 #include <vector>
@@ -128,6 +129,26 @@ nlohmann::ordered_json to_json(const Object& object);
  * written, whereas an object held by the slot alone is modified in place.
  */
 Object& modifiable(std::shared_ptr<const Object>& slot);
+
+/**
+ * @brief The part of an object a path addresses: the pointer holding its layout, and the position of its first value.
+ *
+ * The values of the part are the `layout->size` values of the object beginning at that position.
+ */
+struct Location {
+  const std::shared_ptr<const Layout>* layout;
+  size_t offset;
+};
+
+/**
+ * @brief Returns the part of an object of the given layout that the given steps and indices address.
+ *
+ * Each step is the name of a field or `std::nullopt` for the element of an array, as the steps of @ref resize are,
+ * and each element step takes the next of the indices, which count from 0. The layout holding the part is the given
+ * one if there are no steps, and otherwise one of the layouts it contains. An index beyond the size of its array is
+ * rejected with `std::out_of_range`.
+ */
+Location locate(const std::shared_ptr<const Layout>& layout, const std::vector< std::optional<std::string> >& steps, std::span<const size_t> indices);
 
 /**
  * @brief Returns a copy of an object in which an array has the given size.

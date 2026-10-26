@@ -102,41 +102,29 @@ std::string pathText(const LIMEX::Path& path) {
   return text;
 }
 
-/// The part of an object a path addresses: the pointer holding its layout, and the position of its first value.
-struct Location {
-  const std::shared_ptr<const BPMNOS::Layout>* layout;
-  size_t offset;
-};
-
 /// Thrown when a path reads an undefined value or is indexed by one, which makes the expression undefined.
 struct Undefined {};
 
 /// Follows the steps of a path through an object, the indices counting from one.
-Location locate(const BPMNOS::Object& object, const LIMEX::Path& path, const std::vector<double>& indices) {
-  Location location{ &object.layout, 0 };
-  size_t next = 0;
-  for ( auto& step : path.steps ) {
-    auto& layout = **location.layout;
-    if ( step.has_value() ) {
-      // a field of an object, as the schema guarantees
-      auto& types = std::get<BPMNOS::ObjectType>(*layout.schema).fields;
-      auto field = (size_t)std::distance(types.begin(), std::ranges::find_if(types, [&step](auto& candidate) { return candidate.name == step.value(); }));
-      assert( field < types.size() );
-      auto& fieldLayout = std::get<BPMNOS::ObjectLayout>(layout).fields[field];
-      location = Location{ &fieldLayout.layout, location.offset + fieldLayout.offset };
-      continue;
-    }
-    double index = indices[next++];
+BPMNOS::Location locate(const BPMNOS::Object& object, const LIMEX::Path& path, const std::vector<double>& indices) {
+  // the buffer is reused by every walk on the thread, so that resolving allocates nothing
+  thread_local std::vector<size_t> positions;
+  positions.clear();
+  for ( double index : indices ) {
     if ( std::isnan(index) ) {
       throw Undefined{};
     }
-    auto& array = std::get<BPMNOS::ArrayLayout>(layout);
-    if ( index < 1 || index != std::floor(index) || (size_t)index > array.size ) {
-      throw std::runtime_error(std::format("Expression: illegal index {} for '{}' of size {}", index, pathText(path), array.size));
+    if ( index < 1 || index != std::floor(index) ) {
+      throw std::runtime_error(std::format("Expression: illegal index {} for '{}'", index, pathText(path)));
     }
-    location = Location{ &array.layout, location.offset + ( (size_t)index - 1 ) * array.layout->size };
+    positions.push_back( (size_t)index - 1 );
   }
-  return location;
+  try {
+    return BPMNOS::locate(object.layout, path.steps, positions);
+  }
+  catch ( const std::out_of_range& error ) {
+    throw std::runtime_error(std::format("Expression: illegal index for '{}'\n{}", pathText(path), error.what()));
+  }
 }
 
 /// Returns a view of an array of single values, an undefined value being a quiet NaN.
@@ -154,7 +142,7 @@ LIMEX::View<double> getSizeView(size_t count) {
 
 /// Returns a copy of the part of an object a location addresses, whose values are contiguous and which shares the
 /// layout of the part.
-std::shared_ptr<const BPMNOS::Object> copyPart(const BPMNOS::Object& object, const Location& location) {
+std::shared_ptr<const BPMNOS::Object> copyPart(const BPMNOS::Object& object, const BPMNOS::Location& location) {
   auto result = std::make_shared<BPMNOS::Object>();
   result->layout = *location.layout;
   auto begin = object.values.begin() + (long)location.offset;
@@ -367,7 +355,7 @@ public:
   PathResolver(const Expression& owner, const std::vector<const BPMNOS::Object*>& objects) : owner(owner), objects(objects) {}
   double value(size_t path, const std::vector<double>& indices) const override {
     try {
-      auto location = locate(*objects[path], owner.compiled.getPaths()[path], indices);
+      auto location = ::locate(*objects[path], owner.compiled.getPaths()[path], indices);
       auto& value = objects[path]->values[location.offset];
       if ( !value.has_value() ) {
         throw Undefined{};
@@ -383,7 +371,7 @@ public:
     }
   }
   LIMEX::View<double> array(size_t path, const std::vector<double>& indices) const override {
-    auto location = locate(*objects[path], owner.compiled.getPaths()[path], indices);
+    auto location = ::locate(*objects[path], owner.compiled.getPaths()[path], indices);
     auto& array = std::get<BPMNOS::ArrayLayout>(**location.layout);
     if ( owner.readsLengthOnly[path] ) {
       return getSizeView(array.size);
@@ -585,7 +573,7 @@ void Expression::writeToObject(BPMNOS::Status& status, DataType& data, const Sch
     }
     auto locateTarget = [&]() {
       try {
-        return locate(*slot, compiled.getPaths()[targetPath.value()], indices);
+        return ::locate(*slot, compiled.getPaths()[targetPath.value()], indices);
       }
       catch ( const Undefined& ) {
         throw std::runtime_error("Expression: undefined index");
@@ -656,7 +644,7 @@ void Expression::writeToObject(BPMNOS::Status& status, DataType& data, const Sch
       SourceResolver capturing(*this, pathObjects, sourcePath.value());
       try {
         compiled.evaluate(variableValues, capturing);
-        source = copyPart(*pathObjects[sourcePath.value()], locate(*pathObjects[sourcePath.value()], compiled.getPaths()[sourcePath.value()], capturing.sourceIndices));
+        source = copyPart(*pathObjects[sourcePath.value()], ::locate(*pathObjects[sourcePath.value()], compiled.getPaths()[sourcePath.value()], capturing.sourceIndices));
       }
       catch ( const Undefined& ) {
         throw std::runtime_error("Expression: undefined index");
