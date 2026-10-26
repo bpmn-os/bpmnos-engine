@@ -18,7 +18,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
         auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
         REQUIRE( objectRegistry[index]->layout->stringify() == "string[3]" );
         REQUIRE( objectRegistry[index]->layout->schema->stringify() == "string[]" );
-        REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == R"([ "A", "B", "C" ])" );
+        REQUIRE( objectRegistry[index]->stringify() == R"([ "A", "B", "C" ])" );
       }
     }
 
@@ -29,7 +29,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
         auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
         REQUIRE( objectRegistry[index]->layout->stringify() == "decimal[2]" );
         REQUIRE( objectRegistry[index]->layout->schema->stringify() == "decimal[]" );
-        REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == "[ 1.0, 2.5 ]" );
+        REQUIRE( objectRegistry[index]->stringify() == "[ 1.0, 2.5 ]" );
       }
     }
 
@@ -40,7 +40,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
         auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
         REQUIRE( objectRegistry[index]->layout->stringify() == "integer[2]" );
         REQUIRE( objectRegistry[index]->layout->schema->stringify() == "integer[]" );
-        REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == "[ 1, -2 ]" );
+        REQUIRE( objectRegistry[index]->stringify() == "[ 1, -2 ]" );
       }
     }
 
@@ -49,7 +49,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
       THEN( "It is reported as an array holding truth values" ) {
         auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
         REQUIRE( objectRegistry[index]->layout->stringify() == "boolean[2]" );
-        REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == "[ true, false ]" );
+        REQUIRE( objectRegistry[index]->stringify() == "[ true, false ]" );
       }
     }
 
@@ -62,7 +62,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
         REQUIRE( objectRegistry[index]->layout->schema->stringify() == "string[][]" );
         REQUIRE( objectRegistry[index]->values.size() == 6 );
         REQUIRE( objectRegistry[index]->values[3] == BPMNOS::number(stringRegistry("D")) );
-        REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == R"([ [ "A", "B" ], [ "C", "D" ], [ "E", "F" ] ])" );
+        REQUIRE( objectRegistry[index]->stringify() == R"([ [ "A", "B" ], [ "C", "D" ], [ "E", "F" ] ])" );
       }
     }
 
@@ -74,7 +74,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
         REQUIRE( objectRegistry[index]->layout->stringify() == "{ name: string, position: decimal[2] }" );
         REQUIRE( objectRegistry[index]->layout->schema->stringify() == "{ name: string, position: decimal[] }" );
         REQUIRE( objectRegistry[index]->values.size() == 3 );
-        REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == R"({ name := "Depot", position := [ 0.0, 1.5 ] })" );
+        REQUIRE( objectRegistry[index]->stringify() == R"({ name := "Depot", position := [ 0.0, 1.5 ] })" );
       }
     }
 
@@ -84,9 +84,9 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
         auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
         auto& object = *objectRegistry[index];
         REQUIRE( object.layout->stringify() == "{ cost: decimal, flags: boolean[2] }[2]" );
-        REQUIRE( std::get<BPMNOS::ArrayLayout>(*object.layout).layout->size == 3 );
+        REQUIRE( std::get<BPMNOS::Object::ArrayLayout>(*object.layout).layout->size == 3 );
         REQUIRE( object.values[3] == BPMNOS::number(20) );
-        REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == "[ { cost := 10.0, flags := [ true, false ] }, { cost := 20.0, flags := [ false, false ] } ]" );
+        REQUIRE( objectRegistry[index]->stringify() == "[ { cost := 10.0, flags := [ true, false ] }, { cost := 20.0, flags := [ false, false ] } ]" );
       }
     }
 
@@ -102,7 +102,7 @@ SCENARIO( "Encoding of literals", "[model][encoder]" ) {
       THEN( "The string is text rather than structure" ) {
         auto index = (size_t)BPMNOS::stoi( encoder.getEncodedInput() );
         REQUIRE( objectRegistry[index]->values.size() == 2 );
-        REQUIRE( BPMNOS::to_string(*objectRegistry[index]) == R"([ "A, [B]", "C" ])" );
+        REQUIRE( objectRegistry[index]->stringify() == R"([ "A, [B]", "C" ])" );
       }
     }
 
@@ -222,7 +222,7 @@ SCENARIO( "Object initializers", "[model][encoder]" ) {
     }
     THEN( "It is instantiated with the values of its expression members" ) {
       auto object = initializer.instantiate({ { 2.5, DECIMAL }, { 0, BOOLEAN } });
-      REQUIRE( BPMNOS::to_string(*object) == R"({ x := 2.5, name := "Depot", flags := [ true, false ] })" );
+      REQUIRE( object->stringify() == R"({ x := 2.5, name := "Depot", flags := [ true, false ] })" );
       REQUIRE( object->layout->schema->stringify() == "{ x: decimal, name: string, flags: boolean[] }" );
     }
   }

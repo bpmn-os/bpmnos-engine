@@ -19,7 +19,7 @@ public:
   MessageDefinition(XML::bpmnos::tMessage* message, const AttributeRegistry& attributeRegistry);
   XML::bpmnos::tMessage* element;
   BPMNOS::number name; ///< Message name
-  Schema schema = ObjectType{}; ///< The type of the content, an object, without fields if the message states no type
+  Schema schema = StructType{}; ///< The type of the content, a struct, without fields if the message states no type
   ParameterMap parameterMap; ///< Map allowing to look up parameters by their names.
 
   /**

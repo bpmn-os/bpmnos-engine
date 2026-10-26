@@ -133,11 +133,11 @@ TEST_CASE( "Create objects from the model and the instance data", "[data][object
     auto globals = provider->getGlobals(*scenario);
     REQUIRE( globals.objects.size() == 1 );
     REQUIRE( globals.objects[0]->layout->stringify() == "integer[3]" );
-    REQUIRE( to_string(*globals.objects[0]) == "[ 3, 1, undefined ]" );
+    REQUIRE( globals.objects[0]->stringify() == "[ 3, 1, undefined ]" );
   }
 
   SECTION( "A status object takes its size from a size declaration" ) {
-    REQUIRE( to_string(*provider->objectOf(*scenario, instance1, process, "route")) == "[ undefined, undefined ]" );
+    REQUIRE( provider->objectOf(*scenario, instance1, process, "route")->stringify() == "[ undefined, undefined ]" );
   }
 
   SECTION( "The data provider keeps the effective schemas" ) {
@@ -152,11 +152,11 @@ TEST_CASE( "Create objects from the model and the instance data", "[data][object
   SECTION( "A data object takes the value an instance gives and is padded at fixed dimensions" ) {
     auto facilities = provider->objectOf(*scenario, instance1, process, "facilities");
     REQUIRE( facilities->layout->stringify() == "{ cost: decimal, flags: boolean[2] }[2]" );
-    REQUIRE( to_string(*facilities) == "[ { cost := 10.0, flags := [ true, undefined ] }, { cost := 20.0, flags := [ false, undefined ] } ]" );
+    REQUIRE( facilities->stringify() == "[ { cost := 10.0, flags := [ true, undefined ] }, { cost := 20.0, flags := [ false, undefined ] } ]" );
   }
 
   SECTION( "A data object no instance data gives is undefined in the sizes declared" ) {
-    REQUIRE( to_string(*provider->objectOf(*scenario, instance2, process, "facilities")) == "[ { cost := undefined, flags := [ undefined, undefined ] }, { cost := undefined, flags := [ undefined, undefined ] } ]" );
+    REQUIRE( provider->objectOf(*scenario, instance2, process, "facilities")->stringify() == "[ { cost := undefined, flags := [ undefined, undefined ] }, { cost := undefined, flags := [ undefined, undefined ] } ]" );
   }
 
   SECTION( "A data object of a subprocess has the sizes of its type" ) {
@@ -168,7 +168,7 @@ TEST_CASE( "Create objects from the model and the instance data", "[data][object
   SECTION( "An object the model initialises is shared by every instance" ) {
     auto visit1 = provider->objectOf(*scenario, instance1, nodeOf(*model, "Task_1"), "visit");
     auto visit2 = provider->objectOf(*scenario, instance2, nodeOf(*model, "Task_1"), "visit");
-    REQUIRE( to_string(*visit1) == "{ x := 1.0 }" );
+    REQUIRE( visit1->stringify() == "{ x := 1.0 }" );
     REQUIRE( visit1.get() == visit2.get() );
   }
 }
@@ -197,7 +197,7 @@ TEST_CASE( "An open dimension without a value has no elements", "[data][objects]
   auto model = objectModel();
   auto provider = std::make_shared<ObjectProvider>(model, "INSTANCE_ID; NODE_ID; INITIALIZATION\n; Process_1; route[2]\nInstance_1; Process_1;\n");
   auto scenario = provider->createScenario();
-  REQUIRE( to_string(*provider->objectOf(*scenario, (size_t)stringRegistry("Instance_1"), nodeOf(*model, "Process_1"), "facilities")) == "[ ]" );
+  REQUIRE( provider->objectOf(*scenario, (size_t)stringRegistry("Instance_1"), nodeOf(*model, "Process_1"), "facilities")->stringify() == "[ ]" );
 }
 
 TEST_CASE( "Refuse illegal sizes and values of objects", "[data][objects]" ) {

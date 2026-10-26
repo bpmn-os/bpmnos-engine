@@ -45,7 +45,7 @@ std::shared_ptr<const BPMNOS::Object> Input::readMatrix(const std::string& conte
   auto valueType = std::get_if<BPMNOS::ValueType>(&base);
   size_t columns = table.empty() ? 0 : table.front().size();
   // every cell has the layout of the first
-  std::shared_ptr<const BPMNOS::Layout> cellLayout;
+  std::shared_ptr<const BPMNOS::Object::Layout> cellLayout;
   std::vector< std::shared_ptr<const BPMNOS::Object> > cells;
   for ( size_t i = 0; i < table.size(); i++ ) {
     if ( table[i].size() != columns ) {
@@ -85,7 +85,7 @@ std::shared_ptr<const BPMNOS::Object> Input::readMatrix(const std::string& conte
     cellLayout = BPMNOS::Object(base).layout;
   }
   auto matrix = std::make_shared<BPMNOS::Object>();
-  matrix->layout = std::make_shared<const BPMNOS::Layout>(matrixSchema, std::make_shared<const BPMNOS::Layout>(rowSchema, cellLayout, columns), table.size());
+  matrix->layout = std::make_shared<const BPMNOS::Object::Layout>(matrixSchema, std::make_shared<const BPMNOS::Object::Layout>(rowSchema, cellLayout, columns), table.size());
   matrix->values.reserve( matrix->layout->size );
   for ( size_t i = 0; i < table.size(); i++ ) {
     for ( size_t j = 0; j < columns; j++ ) {

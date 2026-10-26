@@ -260,7 +260,7 @@ std::optional<BPMNOS::ValueType> scalarAt(const BPMNOS::Schema& schema, const BP
       continue;
     }
     // a field of an object
-    auto object = std::get_if<BPMNOS::ObjectType>(current);
+    auto object = std::get_if<BPMNOS::StructType>(current);
     if ( !object ) {
       return std::nullopt;
     }

@@ -7,7 +7,7 @@ EscalationDefinition::EscalationDefinition(XML::bpmnos::tEscalation* escalation)
   : element(escalation)
   , name( BPMNOS::to_number(escalation->name.value.value,STRING) )
 {
-  // the content is an object, without fields if the escalation states no type
+  // the content is a struct, without fields if the escalation states no type
   if ( escalation->type.has_value() ) {
     schema = Schema::parse(escalation->type->get().value.value);
     if ( std::holds_alternative<ValueType>(schema) ) {

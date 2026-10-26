@@ -116,7 +116,7 @@ TEST_CASE( "Write objects, elements and lengths", "[execution][objects][writing]
     return registry.getObject(registry[name], status, data);
   };
   auto render = [&](const std::string& name) {
-    return to_string(*object(name));
+    return object(name)->stringify();
   };
 
   SECTION( "Lengths not yet determined are empty" ) {
@@ -206,7 +206,7 @@ TEST_CASE( "Write objects, elements and lengths", "[execution][objects][writing]
     REQUIRE( copy.objects[0].get() == status.objects[0].get() );
     Model::Expression expression(InputEncoder("route[1] := 8"), registry);
     expression.writeToObject(copy, data, *provider);
-    REQUIRE( to_string(*copy.objects[0]) == "[ 8, 2 ]" );
+    REQUIRE( copy.objects[0]->stringify() == "[ 8, 2 ]" );
     REQUIRE( render("route") == "[ 1, 2 ]" );
     // an object held by no one else is written in place
     auto written = copy.objects[0].get();
@@ -391,7 +391,7 @@ TEST_CASE( "Operators write the locations of the Quadratic Assignment Problem", 
   );
   auto& [status, data] = capture.states.at({"End_1", "DONE"});
   auto& registry = registryOf(*model);
-  REQUIRE( to_string(*registry.getObject(registry["location"], status, data)) == "[ 2, 3, 1 ]" );
+  REQUIRE( registry.getObject(registry["location"], status, data)->stringify() == "[ 2, 3, 1 ]" );
   REQUIRE( registry.getValue(registry["cost"], status, data) == 70 );
   // the update of the task names the global object written
   REQUIRE( std::ranges::any_of(capture.updates, [&registry](auto& attributes) { return std::ranges::contains(attributes, registry["location"]); }) );
@@ -407,7 +407,7 @@ TEST_CASE( "Status objects merge at a join", "[execution][objects][writing]" ) {
     run(model, csv, capture);
     auto& [status, data] = capture.states.at({"End_1", "DONE"});
     auto& registry = registryOf(*model);
-    return to_string(*registry.getObject(registry["route"], status, data));
+    return registry.getObject(registry["route"], status, data)->stringify();
   };
 
   SECTION( "Values that agree are kept" ) {

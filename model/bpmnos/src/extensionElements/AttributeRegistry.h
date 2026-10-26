@@ -26,7 +26,7 @@ public:
   std::vector<Attribute*> statusObjects; ///< The status objects, numbered by their position, separately from scalars
   std::vector<Attribute*> dataObjects; ///< The data objects, the global objects of the model first
   /// The lookup tables the inputs of the model provide, by their names; a lookup whose result column has an array or
-  /// object type returns the index of a constant object, which an expression may only assign to an object attribute
+  /// struct type returns the index of a constant object, which an expression may only assign to an object attribute
   std::unordered_map< std::string, const LookupTable*> lookupTables;
   /// The matrices and objects the inputs of the model provide, by their names, which expressions read as constant
   /// objects and never write

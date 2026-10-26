@@ -114,7 +114,7 @@ TEST_CASE( "Read matrix and object inputs in expressions", "[model][inputs]" ) {
   REQUIRE( evaluate("depots[2].x") == 2 );
   REQUIRE( evaluate(R"(depots[1].name == "A")") == 1 );
   REQUIRE( evaluate("depots[2].name") == std::nullopt );
-  REQUIRE( to_string(*model->inputs.front()->object) == "[ [ 0.0, 1.0, 2.0 ], [ 1.0, 0.0, 3.0 ], [ 2.0, 3.0, 0.0 ] ]" );
+  REQUIRE( model->inputs.front()->object->stringify() == "[ [ 0.0, 1.0, 2.0 ], [ 1.0, 0.0, 3.0 ], [ 2.0, 3.0, 0.0 ] ]" );
 
   SECTION( "An input is assigned to an object" ) {
     auto row = registry["row"];
@@ -122,7 +122,7 @@ TEST_CASE( "Read matrix and object inputs in expressions", "[model][inputs]" ) {
     auto provider = std::make_shared<Execution::StaticDataProvider>(model, "INSTANCE_ID; NODE_ID; INITIALIZATION\nInstance_1; Process_1;\n");
     Model::Expression expression(InputEncoder("row := distance[2]"), registry);
     expression.writeToObject(status, data, *provider);
-    REQUIRE( to_string(*status.objects[row->index]) == "[ 5.0, 0.0, 7.0 ]" );
+    REQUIRE( status.objects[row->index]->stringify() == "[ 5.0, 0.0, 7.0 ]" );
   }
 }
 
@@ -146,13 +146,13 @@ TEST_CASE( "Fit inputs to their schema", "[model][inputs]" ) {
   SECTION( "A matrix is padded at fixed dimensions" ) {
     auto model = modelWith(R"xml(<bpmnos:input id="Input_1" name="flow" type="matrix" source="flow.csv" schema="decimal[3][3]" />
       <bpmnos:input id="Input_2" name="distance" type="matrix" source="distance.csv" schema="decimal[][]" />)xml", "flow.csv", "1;2\n3;4\n");
-    REQUIRE( to_string(*model->inputs.front()->object) == "[ [ 1.0, 2.0, undefined ], [ 3.0, 4.0, undefined ], [ undefined, undefined, undefined ] ]" );
+    REQUIRE( model->inputs.front()->object->stringify() == "[ [ 1.0, 2.0, undefined ], [ 3.0, 4.0, undefined ], [ undefined, undefined, undefined ] ]" );
   }
   SECTION( "An object is padded at fixed dimensions" ) {
     auto model = modelWith(R"xml(<bpmnos:input id="Input_1" name="flow" type="matrix" source="flow.csv" schema="decimal[3][3]" />
       <bpmnos:input id="Input_2" name="distance" type="matrix" source="distance.csv" schema="decimal[][]" />
       <bpmnos:input id="Input_3" name="depots" type="object" source="depots.json" schema="{ x: decimal }[3]" />)xml", "depots.json", R"([ { "x": 1 }, { "x": 2 } ])");
-    REQUIRE( to_string(*model->inputs.back()->object) == "[ { x := 1.0 }, { x := 2.0 }, { x := undefined } ]" );
+    REQUIRE( model->inputs.back()->object->stringify() == "[ { x := 1.0 }, { x := 2.0 }, { x := undefined } ]" );
   }
   SECTION( "A ragged matrix" ) {
     REQUIRE_THROWS_WITH( modelWith(standardInputs, "distance.csv", "0;5\n5\n"), Catch::Matchers::ContainsSubstring("has 1 cells instead of 2") );

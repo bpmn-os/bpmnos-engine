@@ -13,7 +13,7 @@ nlohmann::ordered_json Signal::jsonify() const {
   jsonObject["name"] = BPMNOS::to_string(content.name,BPMNOS::STRING);
 
   // the content object is rendered as JSON, its fields being named as the type of the signal names them
-  jsonObject["content"] = BPMNOS::to_json(*content.object);
+  jsonObject["content"] = content.object->jsonify();
 
   return jsonObject;
 }

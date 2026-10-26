@@ -9,8 +9,8 @@ TEST_CASE( "Check every cell of a lookup table against the type of its column", 
 
   SECTION( "A lookup returning an array of different lengths" ) {
     Model::LookupTable table("destinations", content, "Location: string;Destinations: string[]");
-    REQUIRE( to_string(*objectRegistry[(size_t)table.at({ (double)stringRegistry("A") })]) == R"([ "X", "Y" ])" );
-    REQUIRE( to_string(*objectRegistry[(size_t)table.at({ (double)stringRegistry("B") })]) == R"([ "Z" ])" );
+    REQUIRE( objectRegistry[(size_t)table.at({ (double)stringRegistry("A") })]->stringify() == R"([ "X", "Y" ])" );
+    REQUIRE( objectRegistry[(size_t)table.at({ (double)stringRegistry("B") })]->stringify() == R"([ "Z" ])" );
   }
   SECTION( "A column without a type" ) {
     REQUIRE_THROWS_WITH( Model::LookupTable("destinations", content, "Location;Destinations"), Catch::Matchers::ContainsSubstring("requires a type") );
@@ -126,9 +126,9 @@ TEST_CASE( "Assign arrays a lookup returns", "[model][lookuptable]" ) {
     engine.run(provider->createScenario());
 
     auto destinations = registry["destinations"];
-    REQUIRE( to_string(*capture.statuses.at({"Task_1", "READY"}).objects[destinations->index]) == R"([ "X", "Y" ])" );
+    REQUIRE( capture.statuses.at({"Task_1", "READY"}).objects[destinations->index]->stringify() == R"([ "X", "Y" ])" );
     auto& done = capture.statuses.at({"End_1", "DONE"});
-    REQUIRE( to_string(*done.objects[destinations->index]) == R"([ "Z" ])" );
+    REQUIRE( done.objects[destinations->index]->stringify() == R"([ "Z" ])" );
     REQUIRE( done.attributes[registry["length"]->index] == 1 );
   }
 
