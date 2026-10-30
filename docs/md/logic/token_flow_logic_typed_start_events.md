@@ -1,7 +1,7 @@
 # Typed start events
 @page token_flow_logic_typed_start_events Typed start events
 
-A token at a typed start event is generated when the trigger occurs, and its state advances from @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED" through @ref BPMNOS::Execution::Token::State::BUSY "BUSY" to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" instantaneously.
+A token at a typed start event is generated when the trigger occurs, and its state advances from @ref BPMNOS::Execution::Token::State::CREATED "CREATED" through @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED" and @ref BPMNOS::Execution::Token::State::BUSY "BUSY" to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" instantaneously.
 The content object of the message or signal that triggered it is held by the token until the @ref BPMNOS::Model::ExtensionElements::operators "operators" of the start event read it.
 
 Upon completion, the @ref BPMNOS::Model::ExtensionElements::operators "operators" of the start event are applied. If the scope is an @ref BPMN::EventSubProcess "event-subprocess", its @ref BPMNOS::Model::ExtensionElements::attributes "attributes" and data attributes hold the values the model assigned to them when the event-subprocess was created, while it awaited its trigger, the event-subprocess taking no values from the data; the trigger replaces the values the token holds for the attributes of the enclosing scopes and keeps those of the event-subprocess.
@@ -17,7 +17,8 @@ Otherwise, the token state is changed to @ref BPMNOS::Execution::Token::State::D
 stateDiagram-v2
     state feasibleEntry <<choice>>
     state departure <<choice>>
-    [*] --> ENTERED: trigger
+    [*] --> CREATED: trigger
+    CREATED --> ENTERED
     ENTERED --> BUSY
     BUSY --> COMPLETED
     COMPLETED --> feasibleEntry

@@ -28,16 +28,16 @@ SCENARIO( "Caught error end event", "[execution][eventsubprocess]" ) {
       THEN( "The dump of each entry of the token log is correct" ) {
 
         auto startEventLog = recorder.find(nlohmann::json{{"nodeId","StartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( startEventLog[0]["state"] == "ENTERED" );
-        REQUIRE( startEventLog[1]["state"] == "BUSY" );
-        REQUIRE( startEventLog[2]["state"] == "COMPLETED" );
-        REQUIRE( startEventLog[3]["state"] == "DEPARTED" );
+        REQUIRE( startEventLog[1]["state"] == "ENTERED" );
+        REQUIRE( startEventLog[2]["state"] == "BUSY" );
+        REQUIRE( startEventLog[3]["state"] == "COMPLETED" );
+        REQUIRE( startEventLog[4]["state"] == "DEPARTED" );
         
         auto errorStartEventLog = recorder.find(nlohmann::json{{"nodeId","ErrorStartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( errorStartEventLog[0]["state"] == "ENTERED" );
-        REQUIRE( errorStartEventLog[1]["state"] == "BUSY" );
-        REQUIRE( errorStartEventLog[2]["state"] == "COMPLETED" );
-        REQUIRE( errorStartEventLog[3]["state"] == "DONE" );
+        REQUIRE( errorStartEventLog[1]["state"] == "ENTERED" );
+        REQUIRE( errorStartEventLog[2]["state"] == "BUSY" );
+        REQUIRE( errorStartEventLog[3]["state"] == "COMPLETED" );
+        REQUIRE( errorStartEventLog[4]["state"] == "DONE" );
 
         auto errorEndEventLog = recorder.find(nlohmann::json{{"nodeId","ErrorEndEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( errorEndEventLog[0]["state"] == "ARRIVED" );
@@ -83,18 +83,18 @@ SCENARIO( "Interrupting escalation", "[execution][eventsubprocess]" ) {
       engine.run(std::move(scenario));
       THEN( "The dump of each entry of the recorder log is correct" ) {
         auto startEventLog = recorder.find(nlohmann::json{{"nodeId","StartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( startEventLog[0]["state"] == "ENTERED" );
-        REQUIRE( startEventLog[1]["state"] == "BUSY" );
-        REQUIRE( startEventLog[2]["state"] == "COMPLETED" );
-        REQUIRE( startEventLog[3]["state"] == "DEPARTED" );
+        REQUIRE( startEventLog[1]["state"] == "ENTERED" );
+        REQUIRE( startEventLog[2]["state"] == "BUSY" );
+        REQUIRE( startEventLog[3]["state"] == "COMPLETED" );
+        REQUIRE( startEventLog[4]["state"] == "DEPARTED" );
         
         auto escalationStartEventLog = recorder.find(nlohmann::json{{"nodeId","EscalationStartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( escalationStartEventLog[0]["status"]["timestamp"] == 0.0);
-        REQUIRE( escalationStartEventLog[0]["state"] == "ENTERED" );
-        REQUIRE( escalationStartEventLog[1]["state"] == "BUSY" );
-        REQUIRE( escalationStartEventLog[2]["status"]["timestamp"] == 1.0);
-        REQUIRE( escalationStartEventLog[2]["state"] == "COMPLETED" );
-        REQUIRE( escalationStartEventLog[3]["state"] == "DONE" );
+        REQUIRE( escalationStartEventLog[1]["status"]["timestamp"] == 0.0);
+        REQUIRE( escalationStartEventLog[1]["state"] == "ENTERED" );
+        REQUIRE( escalationStartEventLog[2]["state"] == "BUSY" );
+        REQUIRE( escalationStartEventLog[3]["status"]["timestamp"] == 1.0);
+        REQUIRE( escalationStartEventLog[3]["state"] == "COMPLETED" );
+        REQUIRE( escalationStartEventLog[4]["state"] == "DONE" );
 
         auto escalationEventLog = recorder.find(nlohmann::json{{"nodeId","EscalationEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( escalationEventLog[0]["state"] == "ARRIVED" );
@@ -148,10 +148,10 @@ SCENARIO( "Non-interrupting escalation", "[execution][eventsubprocess]" ) {
       engine.run(std::move(scenario));
       THEN( "The dump of each entry of the token log is correct" ) {
         auto startEventLog = recorder.find(nlohmann::json{{"nodeId","StartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( startEventLog[0]["state"] == "ENTERED" );
-        REQUIRE( startEventLog[1]["state"] == "BUSY" );
-        REQUIRE( startEventLog[2]["state"] == "COMPLETED" );
-        REQUIRE( startEventLog[3]["state"] == "DEPARTED" );
+        REQUIRE( startEventLog[1]["state"] == "ENTERED" );
+        REQUIRE( startEventLog[2]["state"] == "BUSY" );
+        REQUIRE( startEventLog[3]["state"] == "COMPLETED" );
+        REQUIRE( startEventLog[4]["state"] == "DEPARTED" );
         
         auto escalationStartEventLog = recorder.find(nlohmann::json{{"nodeId","EscalationStartEvent_1" },{"state","ENTERED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( escalationStartEventLog[0]["status"]["timestamp"] == 0.0);
@@ -218,16 +218,16 @@ SCENARIO( "Caught and rethrown error", "[execution][eventsubprocess]" ) {
       engine.run(std::move(scenario));
       THEN( "The dump of each entry of the token log is correct" ) {
         auto startEventLog = recorder.find(nlohmann::json{{"nodeId","StartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( startEventLog[0]["state"] == "ENTERED" );
-        REQUIRE( startEventLog[1]["state"] == "BUSY" );
-        REQUIRE( startEventLog[2]["state"] == "COMPLETED" );
-        REQUIRE( startEventLog[3]["state"] == "DEPARTED" );
+        REQUIRE( startEventLog[1]["state"] == "ENTERED" );
+        REQUIRE( startEventLog[2]["state"] == "BUSY" );
+        REQUIRE( startEventLog[3]["state"] == "COMPLETED" );
+        REQUIRE( startEventLog[4]["state"] == "DEPARTED" );
         
         auto errorStartEventLog = recorder.find(nlohmann::json{{"nodeId","ErrorStartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( errorStartEventLog[0]["state"] == "ENTERED" );
-        REQUIRE( errorStartEventLog[1]["state"] == "BUSY" );
-        REQUIRE( errorStartEventLog[2]["state"] == "COMPLETED" );
-        REQUIRE( errorStartEventLog[3]["state"] == "DEPARTED" );
+        REQUIRE( errorStartEventLog[1]["state"] == "ENTERED" );
+        REQUIRE( errorStartEventLog[2]["state"] == "BUSY" );
+        REQUIRE( errorStartEventLog[3]["state"] == "COMPLETED" );
+        REQUIRE( errorStartEventLog[4]["state"] == "DEPARTED" );
 
         auto errorEndEvent1Log = recorder.find(nlohmann::json{{"nodeId","ErrorEndEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( errorEndEvent1Log[0]["state"] == "ARRIVED" );
@@ -278,10 +278,10 @@ SCENARIO( "Non-interrupting escalation throwing error", "[execution][eventsubpro
       engine.run(std::move(scenario));
       THEN( "The dump of each entry of the token log is correct" ) {
         auto startEventLog = recorder.find(nlohmann::json{{"nodeId","StartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( startEventLog[0]["state"] == "ENTERED" );
-        REQUIRE( startEventLog[1]["state"] == "BUSY" );
-        REQUIRE( startEventLog[2]["state"] == "COMPLETED" );
-        REQUIRE( startEventLog[3]["state"] == "DEPARTED" );
+        REQUIRE( startEventLog[1]["state"] == "ENTERED" );
+        REQUIRE( startEventLog[2]["state"] == "BUSY" );
+        REQUIRE( startEventLog[3]["state"] == "COMPLETED" );
+        REQUIRE( startEventLog[4]["state"] == "DEPARTED" );
         
         auto escalationStartEventLog = recorder.find(nlohmann::json{{"nodeId","EscalationStartEvent_1" },{"state","ENTERED"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( escalationStartEventLog[0]["status"]["timestamp"] == 0.0);
@@ -333,18 +333,18 @@ SCENARIO( "Interrupting escalation throwing error", "[execution][eventsubprocess
       engine.run(std::move(scenario));
       THEN( "The dump of each entry of the token log is correct" ) {
         auto startEventLog = recorder.find(nlohmann::json{{"nodeId","StartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( startEventLog[0]["state"] == "ENTERED" );
-        REQUIRE( startEventLog[1]["state"] == "BUSY" );
-        REQUIRE( startEventLog[2]["state"] == "COMPLETED" );
-        REQUIRE( startEventLog[3]["state"] == "DEPARTED" );
+        REQUIRE( startEventLog[1]["state"] == "ENTERED" );
+        REQUIRE( startEventLog[2]["state"] == "BUSY" );
+        REQUIRE( startEventLog[3]["state"] == "COMPLETED" );
+        REQUIRE( startEventLog[4]["state"] == "DEPARTED" );
         
         auto escalationStartEventLog1 = recorder.find(nlohmann::json{{"nodeId","EscalationStartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( escalationStartEventLog1[0]["status"]["timestamp"] == 0.0);
-        REQUIRE( escalationStartEventLog1[0]["state"] == "ENTERED" );
-        REQUIRE( escalationStartEventLog1[1]["state"] == "BUSY" );
-        REQUIRE( escalationStartEventLog1[2]["status"]["timestamp"] == 0.0);
-        REQUIRE( escalationStartEventLog1[2]["state"] == "COMPLETED" );
-        REQUIRE( escalationStartEventLog1[3]["state"] == "DEPARTED" );
+        REQUIRE( escalationStartEventLog1[1]["status"]["timestamp"] == 0.0);
+        REQUIRE( escalationStartEventLog1[1]["state"] == "ENTERED" );
+        REQUIRE( escalationStartEventLog1[2]["state"] == "BUSY" );
+        REQUIRE( escalationStartEventLog1[3]["status"]["timestamp"] == 0.0);
+        REQUIRE( escalationStartEventLog1[3]["state"] == "COMPLETED" );
+        REQUIRE( escalationStartEventLog1[4]["state"] == "DEPARTED" );
 
         auto errorEndEventLog = recorder.find(nlohmann::json{{"nodeId","ErrorEndEvent_2" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( errorEndEventLog[0]["state"] == "ARRIVED" );

@@ -477,7 +477,7 @@ void StateMachine::initiateBoundaryEvent(Token* token, const BPMN::FlowNode* nod
   auto createdToken = tokens.back().get();
   const_cast<SystemState*>(systemState)->tokenAssociatedToBoundaryEventToken[createdToken] = token;
   const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[token].push_back(createdToken);
-  createdToken->advanceToEntered();
+  createdToken->advanceFromCreated();
 }
 
 std::shared_ptr<StateMachine> StateMachine::createPendingEventSubProcess(const BPMN::EventSubProcess* eventSubProcess, const Status& status) {
@@ -896,6 +896,8 @@ void StateMachine::createChild(Token* parent, const BPMN::Scope* scope, Data dat
 
 void StateMachine::createCompensationTokenForBoundaryEvent(const BPMN::BoundaryEvent* compensateBoundaryEvent, BPMNOS::Status status) {
   std::shared_ptr<Token> compensationToken = std::make_shared<Token>(this,compensateBoundaryEvent, status);
+  compensationToken->update(Token::State::CREATED);
+  compensationToken->update(Token::State::ENTERED);
   compensationToken->update(Token::State::BUSY);
   compensationTokens.push_back(std::move(compensationToken));
 }
@@ -910,6 +912,8 @@ void StateMachine::createCompensationEventSubProcess(const BPMN::EventSubProcess
   compensationEventSubProcesses.push_back(std::make_shared<StateMachine>( systemState, eventSubProcess, compensableSubProcess, std::move(values.data) ) );
   // create token at start event of compensation event subprocess
   std::shared_ptr<Token> compensationToken = std::make_shared<Token>(compensationEventSubProcesses.back().get(), eventSubProcess->startEvent, std::move(values.status) );
+  compensationToken->update(Token::State::CREATED);
+  compensationToken->update(Token::State::ENTERED);
   compensationToken->update(Token::State::BUSY);
   compensationTokens.push_back(std::move(compensationToken));
 }

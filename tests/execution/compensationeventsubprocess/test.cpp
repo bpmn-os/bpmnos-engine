@@ -31,8 +31,9 @@ SCENARIO( "Simple compensation event subprocess", "[execution][compensation]" ) 
         REQUIRE( entryLog[2]["nodeId"] == "SubProcess_1" );
         REQUIRE( entryLog[3]["nodeId"] == "StartEvent_2" );
         REQUIRE( entryLog[4]["nodeId"] == "EndEvent_2" );
-        REQUIRE( entryLog[5]["nodeId"] == "CompensateThrowEvent_1" );
-        REQUIRE( entryLog[6]["nodeId"] == "EndEvent_3" );
+        REQUIRE( entryLog[5]["nodeId"] == "CompensateStartEvent_1" );
+        REQUIRE( entryLog[6]["nodeId"] == "CompensateThrowEvent_1" );
+        REQUIRE( entryLog[7]["nodeId"] == "EndEvent_3" );
 
         auto completionLog = recorder.find(nlohmann::json{{"state", "COMPLETED"}}, nlohmann::json{{"nodeId","StartEvent_1"}});
         REQUIRE( completionLog[0]["nodeId"] == "StartEvent_2" );
@@ -76,12 +77,15 @@ SCENARIO( "Recursive compensations", "[execution][compensation]" ) {
         REQUIRE( entryLog[2]["nodeId"] == "SubProcess_1" );
         REQUIRE( entryLog[3]["nodeId"] == "StartEvent_2" );
         REQUIRE( entryLog[4]["nodeId"] == "Activity_1" );
-        REQUIRE( entryLog[5]["nodeId"] == "Activity_2" );
-        REQUIRE( entryLog[6]["nodeId"] == "EndEvent_2" );
-        REQUIRE( entryLog[7]["nodeId"] == "CompensateThrowEvent_1" );
-        REQUIRE( entryLog[8]["nodeId"] == "CompensateThrowEvent_3" );
-        REQUIRE( entryLog[9]["nodeId"] == "CompensationActivity_2" );
-        REQUIRE( entryLog[10]["nodeId"] == "CompensationActivity_1" );
+        REQUIRE( entryLog[5]["nodeId"] == "CompensateBoundaryEvent_1" );
+        REQUIRE( entryLog[6]["nodeId"] == "Activity_2" );
+        REQUIRE( entryLog[7]["nodeId"] == "CompensateBoundaryEvent_2" );
+        REQUIRE( entryLog[8]["nodeId"] == "EndEvent_2" );
+        REQUIRE( entryLog[9]["nodeId"] == "CompensateStartEvent_1" );
+        REQUIRE( entryLog[10]["nodeId"] == "CompensateThrowEvent_1" );
+        REQUIRE( entryLog[11]["nodeId"] == "CompensateThrowEvent_3" );
+        REQUIRE( entryLog[12]["nodeId"] == "CompensationActivity_2" );
+        REQUIRE( entryLog[13]["nodeId"] == "CompensationActivity_1" );
 
         auto completionLog = recorder.find(nlohmann::json{{"state", "COMPLETED"}}, nlohmann::json{{"nodeId","StartEvent_1"}});
         REQUIRE( completionLog[0]["nodeId"] == "StartEvent_2" );
@@ -132,13 +136,16 @@ SCENARIO( "Recursive named compensations", "[execution][compensation]" ) {
         REQUIRE( entryLog[2]["nodeId"] == "SubProcess_1" );
         REQUIRE( entryLog[3]["nodeId"] == "StartEvent_2" );
         REQUIRE( entryLog[4]["nodeId"] == "Activity_1" );
-        REQUIRE( entryLog[5]["nodeId"] == "Activity_2" );
-        REQUIRE( entryLog[6]["nodeId"] == "EndEvent_2" );
-        REQUIRE( entryLog[7]["nodeId"] == "CompensateThrowEvent_1" );
-        REQUIRE( entryLog[8]["nodeId"] == "CompensateThrowEvent_2" );
-        REQUIRE( entryLog[9]["nodeId"] == "CompensationActivity_1" );
-        REQUIRE( entryLog[10]["nodeId"] == "CompensateThrowEvent_3" );
-        REQUIRE( entryLog[11]["nodeId"] == "CompensationActivity_2" );
+        REQUIRE( entryLog[5]["nodeId"] == "CompensateBoundaryEvent_1" );
+        REQUIRE( entryLog[6]["nodeId"] == "Activity_2" );
+        REQUIRE( entryLog[7]["nodeId"] == "CompensateBoundaryEvent_2" );
+        REQUIRE( entryLog[8]["nodeId"] == "EndEvent_2" );
+        REQUIRE( entryLog[9]["nodeId"] == "CompensateStartEvent_1" );
+        REQUIRE( entryLog[10]["nodeId"] == "CompensateThrowEvent_1" );
+        REQUIRE( entryLog[11]["nodeId"] == "CompensateThrowEvent_2" );
+        REQUIRE( entryLog[12]["nodeId"] == "CompensationActivity_1" );
+        REQUIRE( entryLog[13]["nodeId"] == "CompensateThrowEvent_3" );
+        REQUIRE( entryLog[14]["nodeId"] == "CompensationActivity_2" );
 
         auto completionLog = recorder.find(nlohmann::json{{"state", "COMPLETED"}}, nlohmann::json{{"nodeId","StartEvent_1"}});
         REQUIRE( completionLog[0]["nodeId"] == "StartEvent_2" );

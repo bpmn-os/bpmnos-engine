@@ -42,6 +42,11 @@ SCENARIO( "Failed task", "[execution][boundaryevent]" ) {
         REQUIRE( completionLog[1]["nodeId"] == "BoundaryEvent_1" );
         REQUIRE( completionLog[2]["nodeId"] == nullptr );
 
+        auto boundaryEventLog = recorder.find(nlohmann::json{{"nodeId","BoundaryEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( boundaryEventLog[0]["state"] == "CREATED" );
+        REQUIRE( boundaryEventLog[1]["state"] == "ENTERED" );
+        REQUIRE( boundaryEventLog[2]["state"] == "BUSY" );
+
 
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
         REQUIRE( processLog[0]["state"] == "CREATED" );

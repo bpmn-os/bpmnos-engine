@@ -25,8 +25,8 @@ SCENARIO( "Task with linear expression incrementing timestamp", "[execution][tas
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-      THEN( "The token log has exactly 20 entries" ) {
-        REQUIRE( tokenLog.size() == 20 );
+      THEN( "The token log has exactly 21 entries" ) {
+        REQUIRE( tokenLog.size() == 21 );
       }
       THEN( "The dump of each entry of the token log is correct" ) {
         auto activityLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
@@ -71,8 +71,8 @@ SCENARIO( "Task with linear expression incrementing timestamp", "[execution][tas
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-      THEN( "The token log has exactly 20 entries" ) {
-        REQUIRE( tokenLog.size() == 20 );
+      THEN( "The token log has exactly 21 entries" ) {
+        REQUIRE( tokenLog.size() == 21 );
       }
       THEN( "The dump of each entry of the token log is correct" ) {
         auto activityLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
@@ -118,8 +118,8 @@ SCENARIO( "Task with linear expression incrementing timestamp", "[execution][tas
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-      THEN( "The token log has exactly 20 entries" ) {
-        REQUIRE( tokenLog.size() == 20 );
+      THEN( "The token log has exactly 21 entries" ) {
+        REQUIRE( tokenLog.size() == 21 );
       }
       THEN( "The dump of each entry of the token log is correct" ) {
         auto activityLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});

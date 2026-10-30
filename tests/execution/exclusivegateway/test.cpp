@@ -38,7 +38,7 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
         REQUIRE( processLog[3]["state"] == "BUSY" );
         REQUIRE( processLog[4]["state"] == "COMPLETED" );
         REQUIRE( processLog[5]["state"] == "DONE" );
-        REQUIRE( recorder.log[14]["nodeId"] == "Activity_2" );
+        REQUIRE( recorder.log[15]["nodeId"] == "Activity_2" );
     }
    }
   }
@@ -119,7 +119,7 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
         REQUIRE( processLog[5]["state"] == "DONE" );
 
         auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( tokenLog[11]["nodeId"] == "Activity_1" );
+        REQUIRE( tokenLog[12]["nodeId"] == "Activity_1" );
       }
     }
   }

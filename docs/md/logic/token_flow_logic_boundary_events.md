@@ -1,7 +1,7 @@
 # Boundary events
 @page token_flow_logic_boundary_events Boundary events
 
-The state of a token at a boundary event is immediately advanced from @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED" to @ref BPMNOS::Execution::Token::State::BUSY "BUSY" and awaits the trigger.
+A token at a boundary event is created in @ref BPMNOS::Execution::Token::State::CREATED "CREATED" state, and its state is immediately advanced through @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED" to @ref BPMNOS::Execution::Token::State::BUSY "BUSY", where it awaits the trigger.
 If the token is at a @ref BPMN::MessageBoundaryEvent "message boundary event", the content object of the message is held by the token until the @ref BPMNOS::Model::ExtensionElements::operators "operators" of the event read it.
 
 After the boundary event is triggered, the state is advanced @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
@@ -13,7 +13,8 @@ Then, the token state is changed to @ref BPMNOS::Execution::Token::State::DEPART
 <pre class="mermaid">
 stateDiagram-v2
     state departure <<choice>>
-    [*] --> ENTERED
+    [*] --> CREATED
+    CREATED --> ENTERED
     ENTERED --> BUSY
     BUSY --> COMPLETED: trigger
     COMPLETED --> departure

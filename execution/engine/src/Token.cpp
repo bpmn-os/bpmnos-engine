@@ -308,6 +308,7 @@ void Token::advanceFromCreated() {
     awaitReadyEvent();
   }
   else {
+    update(State::CREATED);
     advanceToEntered();
   }
 }

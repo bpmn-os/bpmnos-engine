@@ -1,7 +1,7 @@
 # Untyped start events
 @page token_flow_logic_untyped_start_events Untyped start events
 
-The state of a token at an untyped start event is immediately advanced to @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED".
+A token at an untyped start event is created in @ref BPMNOS::Execution::Token::State::CREATED "CREATED" state, and its state is immediately advanced to @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED".
 After entry, a token is created for the @ref BPMN::TypedStartEvent "start event" of each @ref BPMN::EventSubProcess "event-subprocess" within the same @ref BPMN::Scope "scope".
 The state is then advanced to @ref BPMNOS::Execution::Token::State::BUSY "BUSY", an untyped start event awaiting no trigger, and on to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
 
@@ -15,7 +15,8 @@ Otherwise, the token state is changed to @ref BPMNOS::Execution::Token::State::D
 stateDiagram-v2
     state feasibleEntry <<choice>>
     state departure <<choice>>
-    [*] --> ENTERED
+    [*] --> CREATED
+    CREATED --> ENTERED
     ENTERED --> BUSY
     BUSY --> COMPLETED
     COMPLETED --> feasibleEntry
