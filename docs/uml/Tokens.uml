@@ -824,6 +824,7 @@
         <subvertex xmi:type="uml:Pseudostate" xmi:id="Pseudostate_0pexsx7" kind="choice"/>
         <subvertex xmi:type="uml:FinalState" xmi:id="FinalState_0k3ss1m"/>
         <subvertex xmi:type="uml:FinalState" xmi:id="FinalState_0r31d5x"/>
+        <subvertex xmi:type="uml:FinalState" xmi:id="FinalState_1s7gbcs"/>
         <transition xmi:id="Transition_1yw3anj" source="Pseudostate_0w5q2c3" target="Pseudostate_0wvva3j"/>
         <transition xmi:id="Transition_1yywef8" source="Pseudostate_0wvva3j" target="Pseudostate_0pexsx7" guard="Constraint_0egylg1">
           <ownedRule xmi:id="Constraint_0egylg1">
@@ -875,6 +876,7 @@
         </transition>
         <transition xmi:id="Transition_0rmq1wk" source="State_1jjqg4w" target="FinalState_0k3ss1m"/>
         <transition xmi:id="Transition_1igwv4k" source="State_1wzpeaw" target="FinalState_0r31d5x"/>
+        <transition xmi:id="Transition_0doa2ku" source="State_1wcvkhd" target="FinalState_1s7gbcs"/>
       </region>
       <connectionPoint xmi:id="Pseudostate_0q2n1v6" name="compensated" kind="exitPoint"/>
       <connectionPoint xmi:id="Pseudostate_1r2v83i" name="failed" kind="exitPoint"/>
@@ -1737,6 +1739,13 @@
     <ownedElement xmi:type="umldi:UMLEdge" xmi:id="UMLEdge_1aa4asn" source="UMLStateShape_1wijzyr" target="UMLShape_1g7den2" modelElement="Transition_1igwv4k">
       <waypoint x="680" y="710"/>
       <waypoint x="760" y="710"/>
+    </ownedElement>
+    <ownedElement xmi:type="umldi:UMLShape" xmi:id="UMLShape_0vgdrjr" modelElement="FinalState_1s7gbcs">
+      <bounds x="760" y="525" width="30" height="30"/>
+    </ownedElement>
+    <ownedElement xmi:type="umldi:UMLEdge" xmi:id="UMLEdge_1mwsdz1" source="UMLStateShape_0ksm3mc" target="UMLShape_0vgdrjr" modelElement="Transition_0doa2ku">
+      <waypoint x="680" y="540"/>
+      <waypoint x="760" y="540"/>
     </ownedElement>
   </umldi:UMLStateMachineDiagram>
   <umldi:UMLStateMachineDiagram xmi:id="StateMachine_0b3j3pd_diagram" name="Subprocess token" modelElement="StateMachine_0b3j3pd">
