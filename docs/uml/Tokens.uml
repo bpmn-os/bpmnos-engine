@@ -281,10 +281,10 @@
             </specification>
           </ownedRule>
         </transition>
-        <transition xmi:id="Transition_1me68gs" source="Pseudostate_1o1qzia" target="Pseudostate_16gw7kq" guard="Constraint_0ij1n8h">
-          <ownedRule xmi:id="Constraint_0ij1n8h">
-            <specification xmi:type="uml:OpaqueExpression" xmi:id="OpaqueExpression_189x6h6">
-              <body>compensate event</body>
+        <transition xmi:id="Transition_1me68gs" source="Pseudostate_1o1qzia" target="Pseudostate_16gw7kq" guard="Constraint_1kio4on">
+          <ownedRule xmi:id="Constraint_1kio4on">
+            <specification xmi:type="uml:OpaqueExpression" xmi:id="OpaqueExpression_110ie75">
+              <body>compensate boundary event</body>
             </specification>
           </ownedRule>
         </transition>
@@ -1381,8 +1381,8 @@
       <waypoint x="1080" y="-149"/>
       <waypoint x="1080" y="-50"/>
       <waypoint x="808" y="-50"/>
-      <ownedElement xmi:type="umldi:UMLLabel" xmi:id="UMLLabel_019v1yj" modelElement="Transition_1me68gs" text="[compensate&#10;event]">
-        <bounds x="1085" y="-141" width="69" height="29"/>
+      <ownedElement xmi:type="umldi:UMLLabel" xmi:id="UMLLabel_019v1yj" modelElement="Transition_1me68gs" text="[compensate&#10;boundary event]">
+        <bounds x="1083" y="-141" width="86" height="29"/>
       </ownedElement>
     </ownedElement>
     <ownedElement xmi:type="umldi:UMLStateShape" xmi:id="UMLStateShape_1pcg5sx" modelElement="State_16nxfx5">
@@ -1689,7 +1689,7 @@
   </umldi:UMLStateMachineDiagram>
   <umldi:UMLStateMachineDiagram xmi:id="StateMachine_0b3j3pd_diagram" name="Subprocess token" modelElement="StateMachine_0b3j3pd">
     <ownedElement xmi:type="umldi:UMLShape" xmi:id="UMLShape_0l38pu0" modelElement="Pseudostate_06gjgqd">
-      <bounds x="228" y="188" width="24" height="24"/>
+      <bounds x="168" y="188" width="24" height="24"/>
     </ownedElement>
     <ownedElement xmi:type="umldi:UMLStateShape" xmi:id="UMLStateShape_0c0qdsb" modelElement="State_15ihnk3">
       <bounds x="305" y="165" width="150" height="70"/>
@@ -1793,10 +1793,10 @@
       </ownedElement>
     </ownedElement>
     <ownedElement xmi:type="umldi:UMLEdge" xmi:id="UMLEdge_1uollf0" source="UMLShape_0l38pu0" target="UMLStateShape_0c0qdsb" modelElement="Transition_0k1he2h">
-      <waypoint x="252" y="200"/>
+      <waypoint x="192" y="200"/>
       <waypoint x="305" y="200"/>
       <ownedElement xmi:type="umldi:UMLLabel" xmi:id="UMLLabel_1uollf0" modelElement="Transition_0k1he2h">
-        <bounds x="252" y="180" width="53" height="20"/>
+        <bounds x="213" y="180" width="53" height="20"/>
       </ownedElement>
     </ownedElement>
   </umldi:UMLStateMachineDiagram>
