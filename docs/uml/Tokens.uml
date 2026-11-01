@@ -881,67 +881,6 @@
       <connectionPoint xmi:id="Pseudostate_0q2n1v6" name="compensated" kind="exitPoint"/>
       <connectionPoint xmi:id="Pseudostate_1r2v83i" name="failed" kind="exitPoint"/>
     </packagedElement>
-    <packagedElement xmi:type="uml:StateMachine" xmi:id="StateMachine_1m5k9lx" name="Event token">
-      <region xmi:id="Region_1r83vsd">
-        <subvertex xmi:type="uml:State" xmi:id="State_1lgprnm" name="At catch event" submachine="StateMachine_0ojp7vl">
-          <connection xmi:id="ConnectionPointReference_09535p9" exit="Pseudostate_0genxh8"/>
-        </subvertex>
-        <subvertex xmi:type="uml:State" xmi:id="State_0jnjcbv" name="At throw event" submachine="StateMachine_0guvvke"/>
-        <subvertex xmi:type="uml:Pseudostate" xmi:id="Pseudostate_03d89k2" kind="initial"/>
-        <subvertex xmi:type="uml:Pseudostate" xmi:id="Pseudostate_1w3thlo" kind="choice"/>
-        <subvertex xmi:type="uml:Pseudostate" xmi:id="Pseudostate_1jcfaab" kind="choice"/>
-        <subvertex xmi:type="uml:Pseudostate" xmi:id="Pseudostate_17bbwp2" kind="choice"/>
-        <subvertex xmi:type="uml:FinalState" xmi:id="FinalState_1s9kfml"/>
-        <transition xmi:id="Transition_0gc756m" source="Pseudostate_03d89k2" target="Pseudostate_1w3thlo"/>
-        <transition xmi:id="Transition_0lkzzfu" source="Pseudostate_1w3thlo" target="State_1lgprnm" guard="Constraint_0x86ian">
-          <ownedRule xmi:id="Constraint_0x86ian">
-            <specification xmi:type="uml:OpaqueExpression" xmi:id="OpaqueExpression_1c36841">
-              <body>catch event</body>
-            </specification>
-          </ownedRule>
-        </transition>
-        <transition xmi:id="Transition_10xcfg8" source="Pseudostate_1w3thlo" target="State_0jnjcbv" guard="Constraint_0vtlzlu">
-          <ownedRule xmi:id="Constraint_0vtlzlu">
-            <specification xmi:type="uml:OpaqueExpression" xmi:id="OpaqueExpression_0ott0fp">
-              <body>throw event</body>
-            </specification>
-          </ownedRule>
-        </transition>
-        <transition xmi:id="Transition_1omvudf" source="State_1lgprnm" target="Pseudostate_1jcfaab"/>
-        <transition xmi:id="Transition_0zqv4fs" source="Pseudostate_1jcfaab" target="Pseudostate_1oujd0n" guard="Constraint_18te3ny">
-          <ownedRule xmi:id="Constraint_18te3ny">
-            <specification xmi:type="uml:OpaqueExpression" xmi:id="OpaqueExpression_011xb01">
-              <body>compensate boundary event</body>
-            </specification>
-          </ownedRule>
-        </transition>
-        <transition xmi:id="Transition_0ojzjl9" source="Pseudostate_1jcfaab" target="FinalState_1s9kfml" guard="Constraint_0hlxnzs">
-          <ownedRule xmi:id="Constraint_0hlxnzs">
-            <specification xmi:type="uml:OpaqueExpression" xmi:id="OpaqueExpression_1byg26f">
-              <body>else</body>
-            </specification>
-          </ownedRule>
-        </transition>
-        <transition xmi:id="Transition_00vrg9a" source="ConnectionPointReference_09535p9" target="Pseudostate_1bzrw5p"/>
-        <transition xmi:id="Transition_091fixs" source="State_0jnjcbv" target="Pseudostate_17bbwp2"/>
-        <transition xmi:id="Transition_1y9vtdq" source="Pseudostate_17bbwp2" target="Pseudostate_1bzrw5p" guard="Constraint_1lpcjfq">
-          <ownedRule xmi:id="Constraint_1lpcjfq">
-            <specification xmi:type="uml:OpaqueExpression" xmi:id="OpaqueExpression_0f9t8st">
-              <body>error event</body>
-            </specification>
-          </ownedRule>
-        </transition>
-        <transition xmi:id="Transition_1yt6fqy" source="Pseudostate_17bbwp2" target="FinalState_1s9kfml" guard="Constraint_0d07flg">
-          <ownedRule xmi:id="Constraint_0d07flg">
-            <specification xmi:type="uml:OpaqueExpression" xmi:id="OpaqueExpression_0beime5">
-              <body>else</body>
-            </specification>
-          </ownedRule>
-        </transition>
-      </region>
-      <connectionPoint xmi:id="Pseudostate_1oujd0n" name="compensation" kind="exitPoint"/>
-      <connectionPoint xmi:id="Pseudostate_1bzrw5p" name="failed" kind="exitPoint"/>
-    </packagedElement>
   </uml:Model>
   <umldi:UMLStateMachineDiagram xmi:id="StateMachineDiagram_1" name="Token" modelElement="StateMachine_1">
     <ownedElement xmi:type="umldi:UMLShape" xmi:id="Pseudostate_1_di" modelElement="Pseudostate_1">
