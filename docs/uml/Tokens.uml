@@ -100,14 +100,13 @@
             <body>terminate, compensate</body>
           </entry>
         </subvertex>
-        <subvertex xmi:type="uml:State" xmi:id="State_1gbag7g" name="COMPLETED"/>
-        <subvertex xmi:type="uml:State" xmi:id="State_10ggdoh" name="DONE">
-          <entry xmi:type="uml:OpaqueBehavior" xmi:id="OpaqueBehavior_1p0p0nu">
-            <body>update objective</body>
+        <subvertex xmi:type="uml:State" xmi:id="State_1gbag7g" name="COMPLETED">
+          <entry xmi:type="uml:OpaqueBehavior" xmi:id="OpaqueBehavior_16n15vt">
+            <body>check restrictions</body>
           </entry>
         </subvertex>
+        <subvertex xmi:type="uml:State" xmi:id="State_10ggdoh" name="DONE"/>
         <subvertex xmi:type="uml:FinalState" xmi:id="FinalState_0e55a5p"/>
-        <subvertex xmi:type="uml:Pseudostate" xmi:id="Pseudostate_0z6nlwv" kind="choice"/>
         <transition xmi:id="Transition_0k5ykqj" source="Pseudostate_17p4wlu" target="Pseudostate_0yxkxo3"/>
         <transition xmi:id="Transition_0e0w1p0" source="Pseudostate_0yxkxo3" target="State_1nmjvcu" guard="Constraint_0quzdce">
           <ownedRule xmi:id="Constraint_0quzdce">
@@ -133,7 +132,16 @@
         <transition xmi:id="Transition_1u7rte3" source="State_11jo71a" target="Pseudostate_0cc43xl">
           <trigger xmi:id="Trigger_0wzdwr2" name="compensations done"/>
         </transition>
-        <transition xmi:id="Transition_1vkvh8a" source="State_1gbag7g" target="State_10ggdoh"/>
+        <transition xmi:id="Transition_1vkvh8a" source="State_1gbag7g" target="State_10ggdoh" guard="Constraint_0avipmc">
+          <ownedRule xmi:id="Constraint_0avipmc">
+            <specification xmi:type="uml:OpaqueExpression" xmi:id="OpaqueExpression_1irgp61">
+              <body>feasible</body>
+            </specification>
+          </ownedRule>
+          <effect xmi:type="uml:OpaqueBehavior" xmi:id="OpaqueBehavior_1p0p0nu">
+            <body>update objective</body>
+          </effect>
+        </transition>
         <transition xmi:id="Transition_1wzp6ru" source="State_10ggdoh" target="FinalState_0e55a5p"/>
         <transition xmi:id="Transition_1l4n5i8" source="State_17z8r50" target="State_0cyk0em" guard="Constraint_0liesof">
           <ownedRule xmi:id="Constraint_0liesof">
@@ -149,20 +157,10 @@
             </specification>
           </ownedRule>
         </transition>
-        <transition xmi:id="Transition_1cxf6sv" source="State_0cyk0em" target="Pseudostate_0z6nlwv">
+        <transition xmi:id="Transition_1cxf6sv" source="State_0cyk0em" target="State_1gbag7g">
           <trigger xmi:id="Trigger_0n5iton" name="all children done"/>
-          <effect xmi:type="uml:OpaqueBehavior" xmi:id="OpaqueBehavior_16n15vt">
-            <body>check feasibility</body>
-          </effect>
         </transition>
-        <transition xmi:id="Transition_0szb8k4" source="Pseudostate_0z6nlwv" target="State_1gbag7g" guard="Constraint_0avipmc">
-          <ownedRule xmi:id="Constraint_0avipmc">
-            <specification xmi:type="uml:OpaqueExpression" xmi:id="OpaqueExpression_1irgp61">
-              <body>feasible</body>
-            </specification>
-          </ownedRule>
-        </transition>
-        <transition xmi:id="Transition_09c687v" source="Pseudostate_0z6nlwv" target="Pseudostate_0cc43xl" guard="Constraint_15eyhku">
+        <transition xmi:id="Transition_09c687v" source="State_1gbag7g" target="Pseudostate_0cc43xl" guard="Constraint_15eyhku">
           <ownedRule xmi:id="Constraint_15eyhku">
             <specification xmi:type="uml:OpaqueExpression" xmi:id="OpaqueExpression_18syczw">
               <body>infeasible</body>
@@ -1065,9 +1063,9 @@
   </umldi:UMLStateMachineDiagram>
   <umldi:UMLStateMachineDiagram xmi:id="StateMachine_1ktnn41_diagram" name="Process token" modelElement="StateMachine_1ktnn41">
     <ownedElement xmi:type="umldi:UMLShape" xmi:id="UMLShape_1cc3pjp" modelElement="Pseudostate_0cc43xl">
-      <bounds x="1210" y="290" width="20" height="20"/>
+      <bounds x="1385" y="290" width="20" height="20"/>
       <ownedElement xmi:type="umldi:UMLLabel" xmi:id="UMLLabel_0ftikms" modelElement="Pseudostate_0cc43xl">
-        <bounds x="1205" y="314" width="30" height="15"/>
+        <bounds x="1380" y="314" width="30" height="15"/>
       </ownedElement>
     </ownedElement>
     <ownedElement xmi:type="umldi:UMLShape" xmi:id="UMLShape_1yg219p" modelElement="Pseudostate_17p4wlu">
@@ -1086,19 +1084,19 @@
       <bounds x="690" y="165" width="200" height="70"/>
     </ownedElement>
     <ownedElement xmi:type="umldi:UMLStateShape" xmi:id="UMLStateShape_0e3ghs7" modelElement="State_0cyk0em">
-      <bounds x="960" y="165" width="160" height="70"/>
+      <bounds x="1010" y="165" width="160" height="70"/>
     </ownedElement>
     <ownedElement xmi:type="umldi:UMLStateShape" xmi:id="UMLStateShape_06rbxqo" modelElement="State_11jo71a">
-      <bounds x="970" y="365" width="140" height="70"/>
+      <bounds x="1020" y="365" width="140" height="70"/>
     </ownedElement>
     <ownedElement xmi:type="umldi:UMLStateShape" xmi:id="UMLStateShape_0cxjoj5" modelElement="State_1gbag7g">
-      <bounds x="1325" y="170" width="120" height="60"/>
+      <bounds x="1315" y="165" width="160" height="70"/>
     </ownedElement>
     <ownedElement xmi:type="umldi:UMLStateShape" xmi:id="UMLStateShape_1sa7lcr" modelElement="State_10ggdoh">
-      <bounds x="1530" y="170" width="140" height="60"/>
+      <bounds x="1650" y="170" width="140" height="60"/>
     </ownedElement>
     <ownedElement xmi:type="umldi:UMLShape" xmi:id="UMLShape_0fm8lbn" modelElement="FinalState_0e55a5p">
-      <bounds x="1585" y="285" width="30" height="30"/>
+      <bounds x="1705" y="285" width="30" height="30"/>
     </ownedElement>
     <ownedElement xmi:type="umldi:UMLEdge" xmi:id="UMLEdge_0r8x90o" source="UMLShape_1yg219p" target="UMLShape_1doe238" modelElement="Transition_0k5ykqj">
       <waypoint x="232" y="90"/>
@@ -1131,26 +1129,29 @@
       <waypoint x="690" y="200"/>
     </ownedElement>
     <ownedElement xmi:type="umldi:UMLEdge" xmi:id="UMLEdge_0head86" source="UMLStateShape_0e3ghs7" target="UMLStateShape_06rbxqo" modelElement="Transition_17nqclb">
-      <waypoint x="1040" y="235"/>
-      <waypoint x="1040" y="365"/>
+      <waypoint x="1090" y="235"/>
+      <waypoint x="1090" y="365"/>
       <ownedElement xmi:type="umldi:UMLLabel" xmi:id="UMLLabel_1e0eajy" modelElement="Transition_17nqclb">
-        <bounds x="945" y="280" width="86" height="15"/>
+        <bounds x="995" y="280" width="86" height="15"/>
       </ownedElement>
     </ownedElement>
     <ownedElement xmi:type="umldi:UMLEdge" xmi:id="UMLEdge_03ykqwp" source="UMLStateShape_06rbxqo" target="UMLShape_13d45cg" modelElement="Transition_1u7rte3">
-      <waypoint x="1040" y="435"/>
-      <waypoint x="1040" y="520"/>
+      <waypoint x="1090" y="435"/>
+      <waypoint x="1090" y="520"/>
       <ownedElement xmi:type="umldi:UMLLabel" xmi:id="UMLLabel_10iwxon" modelElement="Transition_1u7rte3">
-        <bounds x="1048" y="460" width="80" height="35"/>
+        <bounds x="1098" y="460" width="80" height="35"/>
       </ownedElement>
     </ownedElement>
     <ownedElement xmi:type="umldi:UMLEdge" xmi:id="UMLEdge_07zr9r7" source="UMLStateShape_0cxjoj5" target="UMLStateShape_1sa7lcr" modelElement="Transition_1vkvh8a">
-      <waypoint x="1445" y="200"/>
-      <waypoint x="1530" y="200"/>
+      <waypoint x="1475" y="200"/>
+      <waypoint x="1650" y="200"/>
+      <ownedElement xmi:type="umldi:UMLLabel" xmi:id="UMLLabel_07zr9r8" modelElement="Transition_1vkvh8a" text="[feasible]&#10;/ update objective">
+        <bounds x="1490" y="160" width="145" height="35"/>
+      </ownedElement>
     </ownedElement>
     <ownedElement xmi:type="umldi:UMLEdge" xmi:id="UMLEdge_0hvegc2" source="UMLStateShape_1sa7lcr" target="UMLShape_0fm8lbn" modelElement="Transition_1wzp6ru">
-      <waypoint x="1600" y="230"/>
-      <waypoint x="1600" y="285"/>
+      <waypoint x="1720" y="230"/>
+      <waypoint x="1720" y="285"/>
     </ownedElement>
     <ownedElement xmi:type="umldi:UMLShape" xmi:id="UMLShape_0e7ucja" modelElement="Pseudostate_0cc43xl">
       <bounds x="780" y="280" width="20" height="20"/>
@@ -1159,16 +1160,16 @@
       </ownedElement>
     </ownedElement>
     <ownedElement xmi:type="umldi:UMLShape" xmi:id="UMLShape_13d45cg" modelElement="Pseudostate_0cc43xl">
-      <bounds x="1030" y="520" width="20" height="20"/>
+      <bounds x="1080" y="520" width="20" height="20"/>
       <ownedElement xmi:type="umldi:UMLLabel" xmi:id="UMLLabel_1tgz49k" modelElement="Pseudostate_0cc43xl">
-        <bounds x="1025" y="544" width="30" height="15"/>
+        <bounds x="1075" y="544" width="30" height="15"/>
       </ownedElement>
     </ownedElement>
     <ownedElement xmi:type="umldi:UMLEdge" xmi:id="UMLEdge_0wcct67" source="UMLStateShape_0c3sisx" target="UMLStateShape_0e3ghs7" modelElement="Transition_1l4n5i8">
       <waypoint x="890" y="200"/>
-      <waypoint x="960" y="200"/>
+      <waypoint x="1010" y="200"/>
       <ownedElement xmi:type="umldi:UMLLabel" xmi:id="UMLLabel_1bb8vxf" modelElement="Transition_1l4n5i8">
-        <bounds x="898" y="180" width="48" height="15"/>
+        <bounds x="926" y="182" width="48" height="15"/>
       </ownedElement>
     </ownedElement>
     <ownedElement xmi:type="umldi:UMLEdge" xmi:id="UMLEdge_06npci0" source="UMLStateShape_0c3sisx" target="UMLShape_0e7ucja" modelElement="Transition_0n6x60h">
@@ -1178,28 +1179,18 @@
         <bounds x="801" y="246" width="58" height="15"/>
       </ownedElement>
     </ownedElement>
-    <ownedElement xmi:type="umldi:UMLShape" xmi:id="UMLShape_1p7v0yu" modelElement="Pseudostate_0z6nlwv">
-      <bounds x="1204" y="184" width="32" height="32"/>
-    </ownedElement>
-    <ownedElement xmi:type="umldi:UMLEdge" xmi:id="UMLEdge_1o7stq3" source="UMLStateShape_0e3ghs7" target="UMLShape_1p7v0yu" modelElement="Transition_1cxf6sv">
-      <waypoint x="1120" y="200"/>
-      <waypoint x="1204" y="200"/>
-      <ownedElement xmi:type="umldi:UMLLabel" xmi:id="UMLLabel_0317vyj" modelElement="Transition_1cxf6sv" text="all children done /&#10;check feasibility">
-        <bounds x="1123" y="163" width="94" height="29"/>
+    <ownedElement xmi:type="umldi:UMLEdge" xmi:id="UMLEdge_1o7stq3" source="UMLStateShape_0e3ghs7" target="UMLStateShape_0cxjoj5" modelElement="Transition_1cxf6sv">
+      <waypoint x="1170" y="200"/>
+      <waypoint x="1315" y="200"/>
+      <ownedElement xmi:type="umldi:UMLLabel" xmi:id="UMLLabel_0317vyj" modelElement="Transition_1cxf6sv">
+        <bounds x="1187" y="182" width="105" height="15"/>
       </ownedElement>
     </ownedElement>
-    <ownedElement xmi:type="umldi:UMLEdge" xmi:id="UMLEdge_1o6vtnv" source="UMLShape_1p7v0yu" target="UMLStateShape_0cxjoj5" modelElement="Transition_0szb8k4">
-      <waypoint x="1236" y="200"/>
-      <waypoint x="1325" y="200"/>
-      <ownedElement xmi:type="umldi:UMLLabel" xmi:id="UMLLabel_19ay9ud" modelElement="Transition_0szb8k4">
-        <bounds x="1245" y="180" width="60" height="20"/>
-      </ownedElement>
-    </ownedElement>
-    <ownedElement xmi:type="umldi:UMLEdge" xmi:id="UMLEdge_0wo40qv" source="UMLShape_1p7v0yu" target="UMLShape_1cc3pjp" modelElement="Transition_09c687v">
-      <waypoint x="1220" y="216"/>
-      <waypoint x="1220" y="290"/>
+    <ownedElement xmi:type="umldi:UMLEdge" xmi:id="UMLEdge_0wo40qv" source="UMLStateShape_0cxjoj5" target="UMLShape_1cc3pjp" modelElement="Transition_09c687v">
+      <waypoint x="1395" y="235"/>
+      <waypoint x="1395" y="290"/>
       <ownedElement xmi:type="umldi:UMLLabel" xmi:id="UMLLabel_08n2ue5" modelElement="Transition_09c687v">
-        <bounds x="1227" y="230" width="65" height="20"/>
+        <bounds x="1402" y="252" width="65" height="20"/>
       </ownedElement>
     </ownedElement>
   </umldi:UMLStateMachineDiagram>
