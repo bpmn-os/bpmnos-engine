@@ -17,16 +17,14 @@ SCENARIO( "Empty executable subprocess", "[execution][subprocess]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-      THEN( "The token log has exactly 21 entries" ) {
-        REQUIRE( tokenLog.size() == 21 );
+      THEN( "The token log has exactly 20 entries" ) {
+        REQUIRE( tokenLog.size() == 20 );
       }
       THEN( "The dump of each entry of the recorder log is correct" ) {
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
@@ -49,8 +47,7 @@ SCENARIO( "Empty executable subprocess", "[execution][subprocess]" ) {
         REQUIRE( activityLog[2]["state"] == "ENTERED" );
         REQUIRE( activityLog[3]["state"] == "BUSY" );
         REQUIRE( activityLog[4]["state"] == "COMPLETED" );
-        REQUIRE( activityLog[5]["state"] == "EXITING" );
-        REQUIRE( activityLog[6]["state"] == "DEPARTED" );
+        REQUIRE( activityLog[5]["state"] == "DEPARTED" );
         
         auto endLog = recorder.find(nlohmann::json{{"nodeId","EndEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( endLog[0]["state"] == "ARRIVED" );
@@ -78,16 +75,14 @@ SCENARIO( "Trivial executable subprocess", "[execution][subprocess]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-      THEN( "The token log has exactly 26 entries" ) {
-        REQUIRE( tokenLog.size() == 26 );
+      THEN( "The token log has exactly 25 entries" ) {
+        REQUIRE( tokenLog.size() == 25 );
       }
       THEN( "The dump of each entry of the token log is correct" ) {
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
@@ -116,8 +111,7 @@ SCENARIO( "Trivial executable subprocess", "[execution][subprocess]" ) {
         REQUIRE( activityLog[2]["state"] == "ENTERED" );
         REQUIRE( activityLog[3]["state"] == "BUSY" );
         REQUIRE( activityLog[4]["state"] == "COMPLETED" );
-        REQUIRE( activityLog[5]["state"] == "EXITING" );
-        REQUIRE( activityLog[6]["state"] == "DEPARTED" );
+        REQUIRE( activityLog[5]["state"] == "DEPARTED" );
         
         auto endLog = recorder.find(nlohmann::json{{"nodeId","EndEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( endLog[0]["state"] == "ARRIVED" );
@@ -144,9 +138,7 @@ SCENARIO( "Constrained executable process", "[execution][subprocess]" ) {
       auto scenario = dataProvider->createScenario();
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -158,8 +150,7 @@ SCENARIO( "Constrained executable process", "[execution][subprocess]" ) {
         REQUIRE( subprocessLog[2]["state"] == "ENTERED" );
         REQUIRE( subprocessLog[3]["state"] == "BUSY" );
         REQUIRE( subprocessLog[4]["state"] == "COMPLETED" );
-        REQUIRE( subprocessLog[5]["state"] == "EXITING" );
-        REQUIRE( subprocessLog[6]["state"] == "DEPARTED" );
+        REQUIRE( subprocessLog[5]["state"] == "DEPARTED" );
       }
     }
 
@@ -174,9 +165,7 @@ SCENARIO( "Constrained executable process", "[execution][subprocess]" ) {
       auto scenario = dataProvider->createScenario();
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -201,14 +190,12 @@ SCENARIO( "Constrained executable process", "[execution][subprocess]" ) {
       auto scenario = dataProvider->createScenario();
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
-      THEN( "The subprocess fails when exiting" ) {
+      THEN( "The subprocess fails" ) {
         auto subprocessLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( subprocessLog[0]["state"] == "ARRIVED" );
         REQUIRE( subprocessLog[1]["state"] == "READY" );
@@ -250,9 +237,7 @@ SCENARIO( "Subprocess with operators", "[execution][subprocess]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);

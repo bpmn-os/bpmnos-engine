@@ -17,16 +17,14 @@ SCENARIO( "Intermediate escalation", "[execution][escalation]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-      THEN( "The token log has exactly 24 entries" ) {
-        REQUIRE( tokenLog.size() == 24 );
+      THEN( "The token log has exactly 23 entries" ) {
+        REQUIRE( tokenLog.size() == 23 );
       }
       THEN( "The dump of each entry of the token log is correct" ) {
         auto escalationEventLog = recorder.find(nlohmann::json{{"nodeId","EscalationEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
@@ -61,9 +59,7 @@ SCENARIO( "Escalations carrying a content object", "[execution][escalation]" ) {
     auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     Execution::Recorder recorder;
     recorder.subscribe(&engine);
     engine.run(dataProvider->createScenario());

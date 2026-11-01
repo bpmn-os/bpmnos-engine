@@ -56,9 +56,7 @@ SCENARIO( "Values of a scope instance built in declaration order", "[execution][
     WHEN( "The engine is started" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       engine.run(dataProvider->createScenario());
@@ -93,9 +91,7 @@ SCENARIO( "Ready values over the initial values", "[execution][initialvalues]" )
     auto dataProvider = std::make_shared<Execution::StochasticDataProvider>(model, csv);
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     Execution::Recorder recorder;
     recorder.subscribe(&engine);
     engine.run(dataProvider->createScenario());
@@ -163,9 +159,7 @@ SCENARIO( "Event subprocess initialised when it is created", "[execution][initia
     WHEN( "The engine is started" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       engine.run(dataProvider->createScenario());
@@ -209,9 +203,7 @@ SCENARIO( "Instance started by a trigger initialised before the content is writt
     WHEN( "The engine is started" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       engine.run(dataProvider->createScenario());
@@ -242,9 +234,7 @@ SCENARIO( "Start event operators per instance of a multi-instance subprocess", "
     WHEN( "The engine is started" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       engine.run(dataProvider->createScenario());

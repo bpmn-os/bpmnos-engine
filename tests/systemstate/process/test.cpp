@@ -17,9 +17,7 @@ SCENARIO( "SystemState copy for simple process", "[systemstate][process]" ) {
 
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
 //    entryHandler.connect(&engine); // disabled to stall process
-    exitHandler.connect(&engine);
     Execution::Recorder recorder;
 //   Execution::Recorder recorder(std::cerr);  // prints for debugging
     recorder.subscribe(&engine);
@@ -82,9 +80,7 @@ SCENARIO( "SystemState copy with token awaiting ready event", "[systemstate][pro
 
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     Execution::Recorder recorder;
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
@@ -112,7 +108,7 @@ SCENARIO( "Engine resume from stopped state", "[systemstate][process][resume]" )
   const std::string modelFile = "tests/systemstate/process/Simple_executable_process.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
-  GIVEN( "An instance that stops waiting for exit event" ) {
+  GIVEN( "An instance that stops waiting for entry event" ) {
     std::string csv =
       "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
       "Instance_1; Process_1; timestamp := 0\n"
@@ -121,34 +117,30 @@ SCENARIO( "Engine resume from stopped state", "[systemstate][process][resume]" )
     auto model = std::make_shared<const Model::Model>(modelFile);
     auto dataProvider = std::make_shared<Execution::StochasticDataProvider>(model, csv);
 
-    // First engine: entry handler but NO exit handler
+    // First engine: NO entry handler
     Execution::Engine engine1(model);
-    Execution::InstantEntry entryHandler1;
-    entryHandler1.connect(&engine1);
     Execution::Recorder recorder1;
     recorder1.subscribe(&engine1);
 
-    // Run with end time - will stop when task is waiting for exit event
+    // Run with end time - will stop when task is waiting for entry event
     dataProvider->setEndTime(10);
     engine1.run(dataProvider->createScenario(), 0);
 
     REQUIRE( engine1.getSystemState()->getTime() == 10 );
 
-    // Token should be at COMPLETED state, waiting for exit event
+    // Token should be at READY state, waiting for entry event
     auto activityLog1 = recorder1.find(nlohmann::json{{"nodeId","Activity_1"}}, nlohmann::json{{"event",nullptr},{"decision",nullptr}});
-    REQUIRE( activityLog1.back()["state"] == "COMPLETED" );
+    REQUIRE( activityLog1.back()["state"] == "READY" );
 
-    WHEN( "A second engine resumes with exit handler and a fork of the scenario" ) {
+    WHEN( "A second engine resumes with entry handler and a fork of the scenario" ) {
       // Fork the scenario of the first engine's run, which differs from it at the next point in time and
       // takes the first realization other than the one that run itself produced
       auto fork = dataProvider->forkScenario(*engine1.getSystemState()->scenario, 0);
 
-      // Second engine: has exit handler
+      // Second engine: has entry handler
       Execution::Engine engine2(model);
       Execution::InstantEntry entryHandler2;
-      Execution::InstantExit exitHandler2;
       entryHandler2.connect(&engine2);
-      exitHandler2.connect(&engine2);
       Execution::Recorder recorder2;
       recorder2.subscribe(&engine2);
 

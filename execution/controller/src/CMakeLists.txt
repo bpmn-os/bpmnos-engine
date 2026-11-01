@@ -3,19 +3,16 @@ list(APPEND controller_SOURCES
   decisions/EntryDecision.cpp
   decisions/ChoiceDecision.cpp
   decisions/MessageDeliveryDecision.cpp
-  decisions/ExitDecision.cpp
   Evaluator.cpp
   evaluators/LocalEvaluator.cpp
   evaluators/GuidedEvaluator.cpp
   CachedCandidates.cpp
-  candidates/FirstFeasibleExit.cpp
   candidates/FirstFeasibleEntry.cpp
   candidates/SequentialEntries.cpp
   candidates/MessageDeliveries.cpp
   candidates/FirstEnumeratedChoice.cpp
   candidates/FirstBisectionalChoice.cpp
   dispatcher/InstantEntry.cpp
-  dispatcher/InstantExit.cpp
   dispatcher/InstantDirectMessage.cpp
   dispatcher/FirstMatchingMessageDelivery.cpp
   dispatcher/RandomChoice.cpp
@@ -31,13 +28,11 @@ list(APPEND controller_HEADERS
   decisions/EntryDecision.h
   decisions/ChoiceDecision.h
   decisions/MessageDeliveryDecision.h
-  decisions/ExitDecision.h
   Evaluator.h
   evaluators/LocalEvaluator.h
   evaluators/GuidedEvaluator.h
   Candidates.h
   CachedCandidates.h
-  candidates/FirstFeasibleExit.h
   candidates/FirstFeasibleEntry.h
   candidates/SequentialEntries.h
   candidates/MessageDeliveries.h
@@ -46,7 +41,6 @@ list(APPEND controller_HEADERS
   candidates/FirstBisectionalChoice.h
   GreedyDispatcher.h
   dispatcher/InstantEntry.h
-  dispatcher/InstantExit.h
   dispatcher/InstantDirectMessage.h
   dispatcher/FirstMatchingMessageDelivery.h
   dispatcher/RandomChoice.h

@@ -17,7 +17,6 @@ SCENARIO( "Parallel fork", "[execution][parallelgateway]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -91,17 +90,15 @@ SCENARIO( "Symmetric parallel gateways", "[execution][parallelgateway]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       dataProvider->setEndTime(0);
       engine.run(std::move(scenario));
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-      THEN( "The dump of each entry of the token log has 38 entries" ) {
-        REQUIRE( tokenLog.size() == 38 );
+      THEN( "The dump of each entry of the token log has 36 entries" ) {
+        REQUIRE( tokenLog.size() == 36 );
       }
       THEN( "The dump of each entry of the token log is correct" ) {
         auto gateway1Log = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});

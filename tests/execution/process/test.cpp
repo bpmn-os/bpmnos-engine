@@ -149,16 +149,14 @@ SCENARIO( "Simple executable process", "[execution][process]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-      THEN( "The token log has exactly 21 entries" ) {
-        REQUIRE( tokenLog.size() == 21 );
+      THEN( "The token log has exactly 20 entries" ) {
+        REQUIRE( tokenLog.size() == 20 );
       }
       THEN( "The dump of each entry of the recorder log is correct" ) {
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
@@ -182,8 +180,7 @@ SCENARIO( "Simple executable process", "[execution][process]" ) {
         REQUIRE( activityLog[2]["state"] == "ENTERED" );
         REQUIRE( activityLog[3]["state"] == "BUSY" );
         REQUIRE( activityLog[4]["state"] == "COMPLETED" );
-        REQUIRE( activityLog[5]["state"] == "EXITING" );
-        REQUIRE( activityLog[6]["state"] == "DEPARTED" );
+        REQUIRE( activityLog[5]["state"] == "DEPARTED" );
         
         auto endLog = recorder.find(nlohmann::json{{"nodeId","EndEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
         REQUIRE( endLog[0]["state"] == "ARRIVED" );
@@ -207,9 +204,7 @@ SCENARIO( "Simple executable process", "[execution][process]" ) {
     WHEN( "The engine is started" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -236,9 +231,7 @@ SCENARIO( "Simple executable process", "[execution][process]" ) {
     WHEN( "The engine is started" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -266,9 +259,7 @@ SCENARIO( "Simple executable process", "[execution][process]" ) {
     WHEN( "The engine is started" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -298,9 +289,7 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
       auto scenario = dataProvider->createScenario();
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -327,9 +316,7 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
       auto scenario = dataProvider->createScenario();
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -354,9 +341,7 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
       auto scenario = dataProvider->createScenario();
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -512,9 +497,7 @@ SCENARIO( "Executable process created when it becomes known", "[execution][proce
     WHEN( "The engine is run until time 5" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       dataProvider->setEndTime(5);
@@ -567,9 +550,7 @@ SCENARIO( "Executable process known before its start", "[execution][process]" ) 
     WHEN( "The engine is run until time 5" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       dataProvider->setEndTime(5);
@@ -581,7 +562,6 @@ SCENARIO( "Executable process known before its start", "[execution][process]" ) 
         REQUIRE( systemState->stateMachine->tokens.front()->state == Execution::Token::State::CREATED );
         REQUIRE( recorder.find(nlohmann::json{{"decision",nullptr}}).empty() );
         REQUIRE( systemState->pendingEntryDecisions.empty() );
-        REQUIRE( systemState->pendingExitDecisions.empty() );
       }
 
       THEN( "The data of the instance is not yet accounted in the objective" ) {
@@ -647,9 +627,7 @@ SCENARIO( "Outcome of a run", "[execution][process][outcome]" ) {
     auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     Execution::OutcomeSentinel sentinel;
     sentinel.subscribe(&engine);
 
@@ -694,9 +672,7 @@ SCENARIO( "Two instances of which one fails", "[execution][process]" ) {
     WHEN( "The engine is started" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);

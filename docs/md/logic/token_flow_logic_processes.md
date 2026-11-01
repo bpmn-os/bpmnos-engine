@@ -66,7 +66,7 @@ A process token remains in @ref BPMNOS::Execution::Token::State::BUSY "BUSY" sta
 While the process token is in @ref BPMNOS::Execution::Token::State::BUSY "BUSY" state,
 an escalation raised downstream by an @ref BPMN::EscalationThrowEvent "escalation event" may pass the token, which hands its content on without its status being changed.
 If the token resides at a process which is the  @ref BPMNOS::Model::SequentialAdHocSubProcess::performer "performer" of a @ref BPMNOS::Model::SequentialAdHocSubProcess "sequential ad-hoc subprocess", 
-the @ref BPMNOS::Execution::Token::status "token status" is also updated whenever a token exits a child activity of the @ref BPMNOS::Model::SequentialAdHocSubProcess "sequential ad-hoc subprocess".
+the @ref BPMNOS::Execution::Token::status "token status" is also updated whenever a token leaves a child activity of the @ref BPMNOS::Model::SequentialAdHocSubProcess "sequential ad-hoc subprocess".
 
 When an uncaught failure is raised within the scope of the process, the @ref BPMNOS::Execution::Token::status "status" of the process token is set to the @ref BPMNOS::Execution::Token::status "status" of the token raising the failure.
 All tokens within the scope of the process (excluding those created for compensation) are disposed before the @ref BPMNOS::Execution::Token::state "state" of the process token is updated to @ref BPMNOS::Execution::Token::State::FAILING "FAILING".

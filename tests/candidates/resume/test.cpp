@@ -30,9 +30,7 @@ SCENARIO( "GreedyController terminates when resumed from an installed system sta
 
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     dataProvider->setEndTime(0);
     engine.run(std::move(scenario), 0);
 
@@ -99,9 +97,7 @@ SCENARIO( "GreedyController terminates when resumed from a minimal one-job state
 
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     dataProvider->setEndTime(0);
     engine.run(std::move(scenario), 0);
 
@@ -152,9 +148,7 @@ SCENARIO( "GreedyController terminates when resumed from a one-machine two-job s
 
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     dataProvider->setEndTime(0);
     engine.run(std::move(scenario), 0);
 
@@ -203,9 +197,7 @@ SCENARIO( "GreedyController terminates when resumed from a one-order two-sequent
 
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     dataProvider->setEndTime(0);
     engine.run(std::move(scenario), 0);
 
@@ -277,9 +269,7 @@ SCENARIO( "The environment completes a task that was BUSY when the state was ins
 
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     Execution::Recorder buildRecorder;
     buildRecorder.subscribe(&engine);
     dataProvider->setEndTime(0);
@@ -295,9 +285,7 @@ SCENARIO( "The environment completes a task that was BUSY when the state was ins
       // when the state is installed.
       Execution::Engine resumed(model);
       Execution::InstantEntry resumedEntry;
-      Execution::InstantExit resumedExit;
       resumedEntry.connect(&resumed);
-      resumedExit.connect(&resumed);
       Execution::Recorder recorder;
       recorder.subscribe(&resumed);
 
@@ -335,9 +323,7 @@ SCENARIO( "InstantDirectMessage delivers a directly-addressed message pending at
     // No message handler: the throw creates the message and the catch event waits (delivery pending).
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     Execution::Recorder buildRecorder;
     buildRecorder.subscribe(&engine);
     dataProvider->setEndTime(0);
@@ -352,10 +338,8 @@ SCENARIO( "InstantDirectMessage delivers a directly-addressed message pending at
     WHEN( "The state is installed into a fresh engine with an InstantDirectMessage handler and resumed" ) {
       Execution::Engine resumed(model);
       Execution::InstantEntry resumedEntry;
-      Execution::InstantExit resumedExit;
       Execution::InstantDirectMessage messageHandler;
       resumedEntry.connect(&resumed);
-      resumedExit.connect(&resumed);
       messageHandler.connect(&resumed);
       Execution::Recorder recorder;
       recorder.subscribe(&resumed);
@@ -398,9 +382,7 @@ SCENARIO( "An instance created but not started when the state was installed is s
     WHEN( "The state is installed into a fresh engine and resumed" ) {
       Execution::Engine resumed(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&resumed);
-      exitHandler.connect(&resumed);
       Execution::Recorder recorder;
       recorder.subscribe(&resumed);
 

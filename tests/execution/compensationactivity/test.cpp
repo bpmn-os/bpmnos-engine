@@ -17,9 +17,7 @@ SCENARIO( "Compensate throw event without compensations", "[execution][compensat
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -56,9 +54,7 @@ SCENARIO( "Task with unused compensation task", "[execution][compensation]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -106,9 +102,7 @@ SCENARIO( "Task with compensation task", "[execution][compensation]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -150,9 +144,7 @@ SCENARIO( "Task with compensation triggered by error", "[execution][compensation
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -196,9 +188,7 @@ SCENARIO( "Task with compensation subprocess", "[execution][compensation]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -241,9 +231,7 @@ SCENARIO( "Named task with compensation task", "[execution][compensation]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -285,9 +273,7 @@ SCENARIO( "Multi instance compensation", "[execution][compensation][multiinstanc
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -305,8 +291,8 @@ SCENARIO( "Multi instance compensation", "[execution][compensation][multiinstanc
         auto failureLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 1 ); // Second exit triggers error
 
-        auto exitLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "EXITING"}});
-        REQUIRE( exitLog.size() == 1 ); // Failure of second completion triggers compensation before exit
+        auto doneLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "DONE"}});
+        REQUIRE( doneLog.size() == 1 ); // Failure of second completion triggers compensation before exit
 
         auto compensationLog = recorder.find(nlohmann::json{{"nodeId","CompensateBoundaryEvent_1"},{"state", "COMPLETED"}});
         REQUIRE( compensationLog.size() == 2 );
@@ -342,9 +328,7 @@ SCENARIO( "Compensation of  multi instance activity", "[execution][compensation]
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -373,9 +357,7 @@ SCENARIO( "Failing compensations of  multi instance activity", "[execution][comp
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -419,9 +401,7 @@ SCENARIO( "Two compensations triggered in reverse order", "[execution][compensat
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -460,9 +440,7 @@ SCENARIO( "Values of a compensation activity", "[execution][compensation]" ) {
   auto run = [&](std::shared_ptr<Execution::DataProvider> dataProvider, const std::string& state = "") {
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     Execution::Recorder recorder;
     recorder.subscribe(&engine);
     engine.run(dataProvider->createScenario());
@@ -556,9 +534,7 @@ SCENARIO( "Named compensation of a multi-instance task", "[execution][compensati
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));

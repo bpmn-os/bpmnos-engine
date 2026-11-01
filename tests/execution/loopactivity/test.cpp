@@ -19,9 +19,7 @@ SCENARIO( "Loop task", "[execution][loopactivity]" ) {
 
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -30,8 +28,8 @@ SCENARIO( "Loop task", "[execution][loopactivity]" ) {
         auto entryLog = recorder.find(nlohmann::json{{"nodeId","LoopActivity_1"},{"state", "ENTERED"}});
         REQUIRE( entryLog.size() == 2 );
  
-        auto exitLog = recorder.find(nlohmann::json{{"nodeId","LoopActivity_1"},{"state", "EXITING"}});
-        REQUIRE( exitLog.size() == 2 );
+        auto readyLog = recorder.find(nlohmann::json{{"nodeId","LoopActivity_1"},{"state", "READY"}});
+        REQUIRE( readyLog.size() == 2 );
       }
     }
 
@@ -48,9 +46,7 @@ SCENARIO( "Loop task", "[execution][loopactivity]" ) {
 
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -59,8 +55,8 @@ SCENARIO( "Loop task", "[execution][loopactivity]" ) {
         auto entryLog = recorder.find(nlohmann::json{{"nodeId","LoopActivity_1"},{"state", "ENTERED"}});
         REQUIRE( entryLog.size() == 3 );
  
-        auto exitLog = recorder.find(nlohmann::json{{"nodeId","LoopActivity_1"},{"state", "EXITING"}});
-        REQUIRE( exitLog.size() == 3 );
+        auto readyLog = recorder.find(nlohmann::json{{"nodeId","LoopActivity_1"},{"state", "READY"}});
+        REQUIRE( readyLog.size() == 3 );
       }
     }
   }
@@ -85,9 +81,7 @@ SCENARIO( "Loop subprocess", "[execution][loopactivity]" ) {
 
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
     Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -96,8 +90,8 @@ SCENARIO( "Loop subprocess", "[execution][loopactivity]" ) {
         auto entryLog = recorder.find(nlohmann::json{{"nodeId","LoopActivity_1"},{"state", "ENTERED"}});
         REQUIRE( entryLog.size() == 2 );
  
-        auto exitLog = recorder.find(nlohmann::json{{"nodeId","LoopActivity_1"},{"state", "EXITING"}});
-        REQUIRE( exitLog.size() == 2 );
+        auto readyLog = recorder.find(nlohmann::json{{"nodeId","LoopActivity_1"},{"state", "READY"}});
+        REQUIRE( readyLog.size() == 2 );
       }
     }
 
@@ -114,9 +108,7 @@ SCENARIO( "Loop subprocess", "[execution][loopactivity]" ) {
 
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -125,8 +117,8 @@ SCENARIO( "Loop subprocess", "[execution][loopactivity]" ) {
         auto entryLog = recorder.find(nlohmann::json{{"nodeId","LoopActivity_1"},{"state", "ENTERED"}});
         REQUIRE( entryLog.size() == 3 );
  
-        auto exitLog = recorder.find(nlohmann::json{{"nodeId","LoopActivity_1"},{"state", "EXITING"}});
-        REQUIRE( exitLog.size() == 3 );
+        auto readyLog = recorder.find(nlohmann::json{{"nodeId","LoopActivity_1"},{"state", "READY"}});
+        REQUIRE( readyLog.size() == 3 );
       }
     }
   }
@@ -152,9 +144,7 @@ SCENARIO( "Loop subprocess with operators", "[execution][loopactivity]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);

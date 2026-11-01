@@ -17,9 +17,7 @@ SCENARIO( "Parallel multi instance task", "[execution][multiinstanceactivity]" )
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -37,10 +35,10 @@ SCENARIO( "Parallel multi instance task", "[execution][multiinstanceactivity]" )
         REQUIRE( entryLog[1]["status"]["counter"] == 2 );
         REQUIRE( entryLog[2]["status"]["counter"] == 3 );
 
-        auto exitLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "EXITING"}});
-        REQUIRE( exitLog[0]["status"]["timestamp"] == 3 );
-        REQUIRE( exitLog[1]["status"]["timestamp"] == 3 );
-        REQUIRE( exitLog[2]["status"]["timestamp"] == 3 );
+        auto doneLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "DONE"}});
+        REQUIRE( doneLog[0]["status"]["timestamp"] == 3 );
+        REQUIRE( doneLog[1]["status"]["timestamp"] == 3 );
+        REQUIRE( doneLog[2]["status"]["timestamp"] == 3 );
 
         // each instance is born (CREATED), gets its own entry decision (READY), and ends at DONE;
         // the main token neither emits READY nor DONE (it departs)
@@ -48,7 +46,6 @@ SCENARIO( "Parallel multi instance task", "[execution][multiinstanceactivity]" )
         REQUIRE( createdLog.size() == 3 );
         auto readyLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "READY"}});
         REQUIRE( readyLog.size() == 3 );
-        auto doneLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "DONE"}});
         REQUIRE( doneLog.size() == 3 );
 
         auto departureLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "DEPARTED"}});
@@ -75,9 +72,7 @@ SCENARIO( "Sequential multi instance task", "[execution][multiinstanceactivity]"
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -95,10 +90,10 @@ SCENARIO( "Sequential multi instance task", "[execution][multiinstanceactivity]"
         REQUIRE( entryLog[1]["status"]["counter"] == 2 );
         REQUIRE( entryLog[2]["status"]["counter"] == 3 );
 
-        auto exitLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "EXITING"}});
-        REQUIRE( exitLog[0]["status"]["timestamp"] == 1 );
-        REQUIRE( exitLog[1]["status"]["timestamp"] == 2 );
-        REQUIRE( exitLog[2]["status"]["timestamp"] == 3 );
+        auto doneLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "DONE"}});
+        REQUIRE( doneLog[0]["status"]["timestamp"] == 1 );
+        REQUIRE( doneLog[1]["status"]["timestamp"] == 2 );
+        REQUIRE( doneLog[2]["status"]["timestamp"] == 3 );
 
         // each instance is born (CREATED), gets its own entry decision (READY), and ends at DONE.
         // Before the fix, sequential instances #2/#3 emitted no READY and the main token emitted a
@@ -110,7 +105,6 @@ SCENARIO( "Sequential multi instance task", "[execution][multiinstanceactivity]"
         REQUIRE( readyLog[0]["status"]["counter"] == 1 );
         REQUIRE( readyLog[1]["status"]["counter"] == 2 );
         REQUIRE( readyLog[2]["status"]["counter"] == 3 );
-        auto doneLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "DONE"}});
         REQUIRE( doneLog.size() == 3 );
 
         auto departureLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "DEPARTED"}});
@@ -138,9 +132,7 @@ SCENARIO( "Parallel multi instance task with timeout", "[execution][multiinstanc
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -169,8 +161,8 @@ SCENARIO( "Parallel multi instance task with timeout", "[execution][multiinstanc
         auto readyLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "READY"}});
         REQUIRE( readyLog.size() == 3 );
 
-        auto exitLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "EXITING"}});
-        REQUIRE( exitLog.size() == 0 );
+        auto doneLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "DONE"}});
+        REQUIRE( doneLog.size() == 0 );
 
         auto timerLog = recorder.find(nlohmann::json{{"nodeId","TimerEvent_1"},{"state", "COMPLETED"}});
         REQUIRE( timerLog.size() == 1 );
@@ -202,9 +194,7 @@ SCENARIO( "Sequential multi instance task with timeout", "[execution][multiinsta
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -232,9 +222,9 @@ SCENARIO( "Sequential multi instance task with timeout", "[execution][multiinsta
         auto readyLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "READY"}});
         REQUIRE( readyLog.size() >= 2 );
 
-        auto exitLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "EXITING"}});
-        REQUIRE( exitLog.size() >= 1 );
-        REQUIRE( exitLog.size() < 3 );
+        auto doneLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "DONE"}});
+        REQUIRE( doneLog.size() >= 1 );
+        REQUIRE( doneLog.size() < 3 );
 
         auto timerLog = recorder.find(nlohmann::json{{"nodeId","TimerEvent_1"},{"state", "COMPLETED"}});
         REQUIRE( timerLog.size() == 1 );
@@ -264,9 +254,7 @@ SCENARIO( "Sequential multi instance subprocess with error", "[execution][multii
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -287,8 +275,8 @@ SCENARIO( "Sequential multi instance subprocess with error", "[execution][multii
         auto createdLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "CREATED"}});
         REQUIRE( createdLog.size() == 3 );
 
-        auto exitLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "EXITING"}});
-        REQUIRE( exitLog.size() == 0 );
+        auto doneLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "DONE"}});
+        REQUIRE( doneLog.size() == 0 );
 
         auto errorLog = recorder.find(nlohmann::json{{"nodeId","ErrorBoundaryEvent_1"},{"state", "COMPLETED"}});
         REQUIRE( errorLog.size() == 1 );
@@ -317,9 +305,7 @@ SCENARIO( "Sequential multi instance subprocess with escalation", "[execution][m
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -334,7 +320,7 @@ SCENARIO( "Sequential multi instance subprocess with escalation", "[execution][m
         auto withdrawnLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "WITHDRAWN"}});
         REQUIRE( withdrawnLog.size() == 0 );
 
-        // all instances are born, become ready, and reach DONE on exit (escalation is non-interrupting)
+        // all instances are born, become ready, and reach DONE (escalation is non-interrupting)
         auto createdLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "CREATED"}});
         REQUIRE( createdLog.size() == 3 );
         auto readyLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "READY"}});
@@ -342,8 +328,6 @@ SCENARIO( "Sequential multi instance subprocess with escalation", "[execution][m
         auto doneLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "DONE"}});
         REQUIRE( doneLog.size() == 3 );
 
-        auto exitLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "EXITING"}});
-        REQUIRE( exitLog.size() == 3 );
 
         auto escalationLog = recorder.find(nlohmann::json{{"nodeId","EscalationBoundaryEvent_1"},{"state", "COMPLETED"}});
         REQUIRE( escalationLog.size() == 3 );
@@ -374,9 +358,7 @@ SCENARIO( "Multi-instance subprocess with operators", "[execution][multiinstance
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);

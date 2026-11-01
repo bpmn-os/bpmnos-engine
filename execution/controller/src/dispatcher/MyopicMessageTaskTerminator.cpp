@@ -13,7 +13,6 @@ void MyopicMessageTaskTerminator::connect(Mediator* mediator) {
   mediator->addSubscriber(this,
     Observable::Type::EntryRequest,
     Observable::Type::ChoiceRequest,
-    Observable::Type::ExitRequest,
     Observable::Type::MessageDeliveryRequest
   );
   EventDispatcher::connect(mediator);

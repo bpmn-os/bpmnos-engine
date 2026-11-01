@@ -118,9 +118,7 @@ TEST_CASE( "Assign arrays a lookup returns", "[model][lookuptable]" ) {
     );
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     StatusCapture capture;
     engine.addSubscriber(&capture, Execution::Observable::Type::Token);
     engine.run(provider->createScenario());

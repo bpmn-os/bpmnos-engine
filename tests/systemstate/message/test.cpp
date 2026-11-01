@@ -17,9 +17,7 @@ SCENARIO( "SystemState copy with undelivered message", "[systemstate][message]" 
 
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     Execution::Recorder recorder;
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
@@ -83,9 +81,7 @@ SCENARIO( "SystemState copy with delivered message in inbox", "[systemstate][mes
 
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     Execution::Recorder recorder;
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
@@ -148,9 +144,7 @@ SCENARIO( "SystemState copy with SendTask message awaiting delivery", "[systemst
 
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     Execution::Recorder recorder;
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
@@ -210,9 +204,7 @@ SCENARIO( "SystemState copy with token awaiting boundary event", "[systemstate][
 
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     Execution::Recorder recorder;
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
@@ -257,10 +249,8 @@ SCENARIO( "SystemState copy with message directed to an instance not yet started
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     Execution::InstantDirectMessage messageHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
     messageHandler.connect(&engine);
-    exitHandler.connect(&engine);
 
     dataProvider->setEndTime(0);
     engine.run(std::move(scenario), 0);
@@ -275,10 +265,8 @@ SCENARIO( "SystemState copy with message directed to an instance not yet started
       Execution::Engine resumed(model);
       Execution::InstantEntry resumedEntryHandler;
       Execution::InstantDirectMessage resumedMessageHandler;
-      Execution::InstantExit resumedExitHandler;
       resumedEntryHandler.connect(&resumed);
       resumedMessageHandler.connect(&resumed);
-      resumedExitHandler.connect(&resumed);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&resumed);

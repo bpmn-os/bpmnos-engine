@@ -32,29 +32,6 @@ bool GuidedEvaluator::updateValues(EntryDecision* decision, Status& status, Data
   return guidance->restrictionsSatisfied(status,data);
 }
 
-bool GuidedEvaluator::updateValues(ExitDecision* decision, Status& status, Data& data) {
-  auto token = decision->token.lock();
-  assert( token );
-  if ( !LocalEvaluator::updateValues(decision,status,data) ) {
-//std::cerr << "GuidedEvaluator: infeasible exit " << token->node->id << std::endl;
-    return false;
-  }
-
-  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  assert(extensionElements);
-  if ( !extensionElements->exitGuidance ) {
-//std::cerr << "GuidedEvaluator: No exit guidance" << std::endl;
-    return true;
-  }
-
-  // apply guidance
-  auto guidance = extensionElements->exitGuidance.value().get();
-  guidance->apply(status, data, *token->owner->systemState->scenario->dataProvider);
-
-  return guidance->restrictionsSatisfied(status,data);
-}
-
-
 bool GuidedEvaluator::updateValues(ChoiceDecision* decision, Status& status, Data& data) {
   auto token = decision->token.lock();
   assert( token );
@@ -99,7 +76,7 @@ bool GuidedEvaluator::updateValues(MessageDeliveryDecision* decision, Status& st
 std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(EntryDecision* decision) {
   auto token = decision->token.lock();
   assert( token );
-  assert( token->ready() || ( token->state == Token::State::EXITING ) ); // loop activities may re-enter
+  assert( token->ready() );
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
   Status status = token->status;
@@ -122,30 +99,6 @@ std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(EntryDecision* decision) {
   // return evaluation of entry
 //std::cerr << "GuidedEvaluator: guided evaluation " << extensionElements->entryGuidance.value()->getObjective(status,data) << std::endl;
   return std::make_shared<Evaluation>(extensionElements->entryGuidance.value()->getObjective(status,data) - evaluation);
-}
-
-std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(ExitDecision* decision) {
-  auto token = decision->token.lock();
-  assert( token );
-  assert( token->completed() );
-  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  assert(extensionElements);
-  Status status = token->status;
-  status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
-  Data data(*token->data);
-  double evaluation = (double)extensionElements->getObjective(status,data);
-
-  bool feasible = updateValues(decision,status,data);
-  if ( !feasible ) {
-//std::cerr << "GuidedEvaluator: Infeasible exit " << token->jsonify() << std::endl;
-    return nullptr;
-  }
-
-  if ( !extensionElements->exitGuidance ) {
-    return std::make_shared<Evaluation>(extensionElements->getObjective(status,data) - evaluation);
-  }
-
-  return std::make_shared<Evaluation>(extensionElements->exitGuidance.value()->getObjective(status,data) - evaluation);
 }
 
 std::shared_ptr<Evaluation> GuidedEvaluator::evaluate(ChoiceDecision* decision) {
@@ -218,21 +171,6 @@ std::set<const BPMNOS::Model::Attribute*> GuidedEvaluator::getDependencies(Entry
   // add guidance dependencies
   if ( extensionElements->entryGuidance.has_value() ) {
     dependencies.insert(extensionElements->entryGuidance.value()->dependencies.begin(), extensionElements->entryGuidance.value()->dependencies.end());
-  }
-
-  return dependencies;
-}
-
-std::set<const BPMNOS::Model::Attribute*> GuidedEvaluator::getDependencies(ExitDecision* decision) {
-  auto token = decision->token.lock();
-  assert( token );
-  auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-  assert(extensionElements);
-
-  std::set<const BPMNOS::Model::Attribute*> dependencies = LocalEvaluator::getDependencies(decision);
-  // add guidance dependencies
-  if ( extensionElements->exitGuidance.has_value() ) {
-    dependencies.insert(extensionElements->exitGuidance.value()->dependencies.begin(), extensionElements->exitGuidance.value()->dependencies.end());
   }
 
   return dependencies;

@@ -47,9 +47,9 @@ public:
   std::shared_ptr<StateMachine> owned; ///< State machine owned by the token
   const BPMN::Node* node; ///< Node where the token resides: a flow node, or the process for a process-level token
   const BPMN::SequenceFlow* sequenceFlow; ///< Sequence flow being traversed (only set in DEPARTED/ARRIVED states)
-  enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, EXITING, DEPARTED, ARRIVED, WAITING, DONE, FAILED, FAILING, WITHDRAWN }; ///< The states that a token can be in
+  enum class State { CREATED, READY, ENTERED, BUSY, COMPLETED, DEPARTED, ARRIVED, WAITING, DONE, FAILED, FAILING, WITHDRAWN }; ///< The states that a token can be in
   const BPMNOS::Model::AttributeRegistry& getAttributeRegistry() const;
-  static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "BUSY", "COMPLETED", "EXITING", "DEPARTED", "ARRIVED", "WAITING", "DONE", "FAILED", "FAILING", "WITHDRAWN" };
+  static inline std::string stateName[] = { "CREATED", "READY", "ENTERED", "BUSY", "COMPLETED", "DEPARTED", "ARRIVED", "WAITING", "DONE", "FAILED", "FAILING", "WITHDRAWN" };
   /**
    * @brief Constructs a new token at a node.
    *
@@ -121,7 +121,6 @@ private:
 
   bool entryIsFeasible() const; ///< Check restrictions within current and ancestor scopes
   bool completionIsFeasible() const; ///< Check restrictions within current and ancestor scopes
-  bool exitIsFeasible() const; ///< Check restrictions within current and ancestor scopes
 //  bool satisfiesInheritedRestrictions() const; ///< Check restrictions within ancestor scopes
 
 
@@ -142,7 +141,7 @@ private:
 
   void advanceToCompleted();
 
-  void advanceToExiting();
+  void advanceFromCompleted();
   void advanceToDone();
   void advanceToDeparting();
   void advanceToDeparted(const BPMN::SequenceFlow* sequenceFlow);
@@ -160,7 +159,6 @@ private:
 
   void awaitChoiceEvent(); ///< Wait for choices to be made for decision tasks
   void awaitTaskCompletionEvent(); ///< Wait for completion event for tasks (except for decision tasks)
-  void awaitExitEvent(); ///< Wait for exit event for activities
 
   void awaitTimer(BPMNOS::number time); ///< Wait for message trigger at catching timer events
   void awaitSignal(BPMNOS::number name); ///< Wait for signal with given name at catching signal events

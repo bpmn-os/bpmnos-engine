@@ -13,7 +13,6 @@ void Controller::connect(Mediator* mediator) {
     Observable::Type::DataUpdate,
     Observable::Type::EntryRequest,
     Observable::Type::ChoiceRequest,
-    Observable::Type::ExitRequest,
     Observable::Type::MessageDeliveryRequest,
     Observable::Type::SystemState
   );

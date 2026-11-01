@@ -73,9 +73,7 @@ TEST_CASE( "The log shows objects as JSON in the order of declaration", "[execut
   );
   Execution::Engine engine(model);
   Execution::InstantEntry entryHandler;
-  Execution::InstantExit exitHandler;
   entryHandler.connect(&engine);
-  exitHandler.connect(&engine);
   Execution::Recorder recorder;
   recorder.subscribe(&engine);
   engine.run(provider->createScenario());

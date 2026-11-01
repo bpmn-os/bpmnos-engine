@@ -18,11 +18,9 @@ SCENARIO( "Decision task with enumeration", "[execution][decisiontask]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       auto evaluator = std::make_shared<Execution::LocalEvaluator>();
       Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(evaluator);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       choiceHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
@@ -52,11 +50,9 @@ SCENARIO( "Decision task with enumeration", "[execution][decisiontask]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       auto evaluator = std::make_shared<Execution::LocalEvaluator>();
       Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(evaluator);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       choiceHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
@@ -89,11 +85,9 @@ SCENARIO( "Decision task with bounds", "[execution][decisiontask]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       auto evaluator = std::make_shared<Execution::LocalEvaluator>();
       Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(evaluator);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       choiceHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
@@ -123,11 +117,9 @@ SCENARIO( "Decision task with bounds", "[execution][decisiontask]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       auto evaluator = std::make_shared<Execution::LocalEvaluator>();
       Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(evaluator);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       choiceHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);

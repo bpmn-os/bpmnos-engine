@@ -19,11 +19,11 @@ Guidance::Guidance(XML::bpmnos::tGuidance* guidance, const AttributeRegistry& at
   else if ( guidance->type.value.value == "entry" ) {
     type = Type::Entry;
   }
-  else if ( guidance->type.value.value == "exit" ) {
-    type = Type::Exit;
-  }
   else if ( guidance->type.value.value == "choice" ) {
     type = Type::Choice;
+  }
+  else {
+    throw std::runtime_error("Guidance: illegal type '" + guidance->type.value.value + "'");
   }
 
   // add all attributes

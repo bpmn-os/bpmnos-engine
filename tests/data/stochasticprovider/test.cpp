@@ -14,9 +14,7 @@ SCENARIO( "Events of the stochastic data provider", "[data][stochastic]" ) {
     WHEN( "The engine runs on a scenario of the data provider" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       engine.run(dataProvider->createScenario());

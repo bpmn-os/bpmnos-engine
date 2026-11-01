@@ -13,7 +13,7 @@ A token at a subprocess or ad-hoc subprocess changes its state as follows:
 <pre class="mermaid">
 stateDiagram-v2
     state feasibleEntry <<choice>>
-    state feasibleExit <<choice>>
+    state feasibleCompletion <<choice>>
     state departure <<choice>>
     [*] --> ARRIVED/CREATED
     note left of ARRIVED/CREATED
@@ -28,15 +28,12 @@ stateDiagram-v2
     BUSY --> COMPLETED
     BUSY --> FAILING: failure
     COMPLETED --> feasibleCompletion
-    feasibleCompletion --> EXITING: [feasible] exit event
-    feasibleCompletion --> FAILING: [infeasible]
-    EXITING --> feasibleExit
-    feasibleExit --> departure: [feasible]
+    feasibleCompletion --> departure: [feasible]
     note left of departure
-      In case of loop activities, the token may return to ENTERED state
-      after receipt of the respective entry event.
+      In case of loop activities, the token may return to READY state
+      and wait for the respective entry event.
     end note
-    feasibleExit --> FAILING: [infeasible]
+    feasibleCompletion --> FAILING: [infeasible]
     departure --> DEPARTED: [outgoing sequence flow]
     departure --> DONE: [no outgoing sequence flow]
     DEPARTED --> [*]
@@ -88,7 +85,7 @@ A token remains in @ref BPMNOS::Execution::Token::State::BUSY "BUSY" state until
 While the token is in @ref BPMNOS::Execution::Token::State::BUSY "BUSY" state,
 an escalation raised downstream by an @ref BPMN::EscalationThrowEvent "escalation event" may pass the token, which hands its content on without its status being changed.
 If the token resides at a (ad-hoc) subprocess which is the  @ref BPMNOS::Model::SequentialAdHocSubProcess::performer "performer" of a @ref BPMNOS::Model::SequentialAdHocSubProcess "sequential ad-hoc subprocess",
-the @ref BPMNOS::Execution::Token::status "token status" is also updated whenever a token exits a child activity of the @ref BPMNOS::Model::SequentialAdHocSubProcess "sequential ad-hoc subprocess".
+the @ref BPMNOS::Execution::Token::status "token status" is also updated whenever a token leaves a child activity of the @ref BPMNOS::Model::SequentialAdHocSubProcess "sequential ad-hoc subprocess".
 
 When an uncaught failure is raised within the scope of the (ad-hoc) subprocess, the @ref BPMNOS::Execution::Token::status "status" of the (ad-hoc) subprocess token is set to the @ref BPMNOS::Execution::Token::status "status" of the token raising the failure.
 All tokens within the scope of the process (excluding those created for compensation) are disposed before the @ref BPMNOS::Execution::Token::state "state" of the process token is updated to @ref BPMNOS::Execution::Token::State::FAILING "FAILING".
@@ -108,20 +105,13 @@ If the (ad-hoc) subprocess has a @ref BPMN::CompensateBoundaryEvent "compensate 
 After completion, feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.
 If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated,  the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILING "FAILING".
 
-Otherwise, the token in  @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state waits for an @ref BPMNOS::Execution::ExitEvent "exit event" indicating that a decision is made to leave the activity.
-When the event occurs, the token state is updated to  @ref BPMNOS::Execution::Token::State::EXITING "EXITING".
-
-## EXITING
-Feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.
-If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated,  the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILING "FAILING".
-
 @note The failure occurring at this stage can no longer be caught by an @ref BPMN::EventSubProcess "event subprocess" with an @ref BPMN::ErrorStartEvent "error start event", but an @ref BPMN::EventSubProcess "event subprocess" with a @ref BPMN::CompensateStartEvent "compensate start event" can be triggered. 
 
-Otherwise, the (ad-hoc) subprocess has been executed successfully and all tokens at boundary events (except @ref BPMN::CompensateBoundaryEvent "compensate boundary events") of the (ad-hoc) subprocess are withdrawn.
+Otherwise, the (ad-hoc) subprocess has been executed successfully. If it is a child of a @ref BPMNOS::Model::SequentialAdHocSubProcess "sequential ad-hoc subprocess", its performer is released, and all tokens at boundary events (except @ref BPMN::CompensateBoundaryEvent "compensate boundary events") of the (ad-hoc) subprocess are withdrawn.
 
 If the (ad-hoc) subprocess has an outgoing sequence flow, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED".
 Otherwise, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DONE "DONE".
-In case of @ref XML::bpmn::tStandardLoopCharacteristics  "loop activities", the token may advance to @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED" state after the respective entry decision has been made for the next loop of the activity.
+In case of @ref XML::bpmn::tStandardLoopCharacteristics  "loop activities", the @ref BPMNOS::Execution::Token::state "token state" is instead updated to @ref BPMNOS::Execution::Token::State::READY "READY" if a further loop of the activity is to be performed, and the token waits for the respective entry event.
 
 ## DEPARTED
 

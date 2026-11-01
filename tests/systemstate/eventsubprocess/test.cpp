@@ -75,7 +75,6 @@ SCENARIO( "SystemState copy with interrupting event subprocess", "[systemstate][
 
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    // No exit handler - Activity_1 in event subprocess stays BUSY
     entryHandler.connect(&engine);
     Execution::Recorder recorder;
     recorder.subscribe(&engine);
@@ -134,7 +133,6 @@ SCENARIO( "SystemState copy with non-interrupting event subprocess", "[systemsta
 
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    // No exit handler - Activity_1 in event subprocess stays BUSY
     entryHandler.connect(&engine);
     Execution::Recorder recorder;
     recorder.subscribe(&engine);

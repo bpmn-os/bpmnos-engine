@@ -17,16 +17,14 @@ SCENARIO( "Task with linear expression incrementing timestamp", "[execution][tas
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-      THEN( "The token log has exactly 21 entries" ) {
-        REQUIRE( tokenLog.size() == 21 );
+      THEN( "The token log has exactly 20 entries" ) {
+        REQUIRE( tokenLog.size() == 20 );
       }
       THEN( "The dump of each entry of the token log is correct" ) {
         auto activityLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
@@ -38,8 +36,7 @@ SCENARIO( "Task with linear expression incrementing timestamp", "[execution][tas
         REQUIRE( activityLog[3]["status"]["timestamp"] == 1.0);
         REQUIRE( activityLog[4]["state"] == "COMPLETED" );
         REQUIRE( activityLog[4]["status"]["timestamp"] == 1.0);
-        REQUIRE( activityLog[5]["state"] == "EXITING" );
-        REQUIRE( activityLog[6]["state"] == "DEPARTED" );
+        REQUIRE( activityLog[5]["state"] == "DEPARTED" );
 
         REQUIRE( activityLog.back()["instanceId"] == "Instance_1");
         REQUIRE( activityLog.back()["processId"] == "Process_1");
@@ -63,16 +60,14 @@ SCENARIO( "Task with linear expression incrementing timestamp", "[execution][tas
     auto scenario = dataProvider->createScenario();
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-      THEN( "The token log has exactly 21 entries" ) {
-        REQUIRE( tokenLog.size() == 21 );
+      THEN( "The token log has exactly 20 entries" ) {
+        REQUIRE( tokenLog.size() == 20 );
       }
       THEN( "The dump of each entry of the token log is correct" ) {
         auto activityLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
@@ -86,8 +81,7 @@ SCENARIO( "Task with linear expression incrementing timestamp", "[execution][tas
         REQUIRE( activityLog[3]["status"]["timestamp"] == 6.0);
         REQUIRE( activityLog[4]["state"] == "COMPLETED" );
         REQUIRE( activityLog[4]["status"]["timestamp"] == 10.0);
-        REQUIRE( activityLog[5]["state"] == "EXITING" );
-        REQUIRE( activityLog[6]["state"] == "DEPARTED" );
+        REQUIRE( activityLog[5]["state"] == "DEPARTED" );
 
         REQUIRE( activityLog.back()["instanceId"] == "Instance_1");
         REQUIRE( activityLog.back()["processId"] == "Process_1");
@@ -110,16 +104,14 @@ SCENARIO( "Task with linear expression incrementing timestamp", "[execution][tas
     auto scenario = dataProvider->createScenario();
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
       auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-      THEN( "The token log has exactly 21 entries" ) {
-        REQUIRE( tokenLog.size() == 21 );
+      THEN( "The token log has exactly 20 entries" ) {
+        REQUIRE( tokenLog.size() == 20 );
       }
       THEN( "The dump of each entry of the token log is correct" ) {
         auto activityLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
@@ -133,8 +125,7 @@ SCENARIO( "Task with linear expression incrementing timestamp", "[execution][tas
         REQUIRE( activityLog[3]["status"]["timestamp"] == 1.0);
         REQUIRE( activityLog[4]["state"] == "COMPLETED" );
         REQUIRE( activityLog[4]["status"]["timestamp"] == 1.0);
-        REQUIRE( activityLog[5]["state"] == "EXITING" );
-        REQUIRE( activityLog[6]["state"] == "DEPARTED" );
+        REQUIRE( activityLog[5]["state"] == "DEPARTED" );
 
         REQUIRE( activityLog.back()["instanceId"] == "Instance_1");
         REQUIRE( activityLog.back()["processId"] == "Process_1");

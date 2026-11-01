@@ -22,10 +22,8 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExit exitHandler;
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
@@ -59,10 +57,8 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExit exitHandler;
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
@@ -137,10 +133,8 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExit exitHandler;
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
@@ -174,10 +168,8 @@ SCENARIO( "Assignment problem", "[examples][assignment_problem]" ) {
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExit exitHandler;
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);

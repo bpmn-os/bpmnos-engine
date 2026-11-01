@@ -75,7 +75,7 @@
   <xsd:simpleType name="tRestrictionScope">
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="entry"/>
-      <xsd:enumeration value="exit"/>
+      <xsd:enumeration value="completion"/>
       <xsd:enumeration value="full"/>
     </xsd:restriction>
   </xsd:simpleType>

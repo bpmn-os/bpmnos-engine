@@ -16,13 +16,12 @@ SCENARIO( "SystemState copy with SequentialAdHocSubProcess", "[systemstate][adho
 
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    // No exit handler to keep activities alive
     entryHandler.connect(&engine);
     Execution::Recorder recorder;
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
-    // Run without exit handler - first activity stays BUSY, second is pending
+    // Run until time 0 - first activity stays BUSY, second is pending
     dataProvider->setEndTime(0);
     engine.run(std::move(scenario), 0);
     const auto* originalState = engine.getSystemState();

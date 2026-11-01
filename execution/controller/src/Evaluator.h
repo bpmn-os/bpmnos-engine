@@ -4,7 +4,6 @@
 #include <bpmn++.h>
 #include "Evaluation.h"
 #include "decisions/EntryDecision.h"
-#include "decisions/ExitDecision.h"
 #include "decisions/ChoiceDecision.h"
 #include "decisions/MessageDeliveryDecision.h"
 
@@ -17,12 +16,10 @@ class Evaluator {
 public:
   virtual ~Evaluator() = default;
   virtual std::shared_ptr<Evaluation> evaluate(EntryDecision* decision) = 0;
-  virtual std::shared_ptr<Evaluation> evaluate(ExitDecision* decision) = 0;
   virtual std::shared_ptr<Evaluation> evaluate(ChoiceDecision* decision) = 0;
   virtual std::shared_ptr<Evaluation> evaluate(MessageDeliveryDecision* decision) = 0;
 
   virtual std::set<const BPMNOS::Model::Attribute*> getDependencies(EntryDecision* decision) = 0;
-  virtual std::set<const BPMNOS::Model::Attribute*> getDependencies(ExitDecision* decision) = 0;
   virtual std::set<const BPMNOS::Model::Attribute*> getDependencies(ChoiceDecision* decision) = 0;
   virtual std::set<const BPMNOS::Model::Attribute*> getDependencies(MessageDeliveryDecision* decision) = 0;
 };

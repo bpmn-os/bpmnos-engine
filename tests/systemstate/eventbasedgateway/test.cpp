@@ -18,9 +18,7 @@ SCENARIO( "SystemState copy with tokens at event-based gateway", "[systemstate][
 
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     Execution::Recorder recorder;
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);

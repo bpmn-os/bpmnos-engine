@@ -15,9 +15,7 @@ SCENARIO( "Clock ticks and termination supplied by the data provider", "[data][p
     auto referenceDataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
     Execution::Engine referenceEngine(model);
     Execution::InstantEntry referenceEntryHandler;
-    Execution::InstantExit referenceExitHandler;
     referenceEntryHandler.connect(&referenceEngine);
-    referenceExitHandler.connect(&referenceEngine);
     Execution::Recorder referenceRecorder;
     referenceRecorder.subscribe(&referenceEngine);
     referenceEngine.run(referenceDataProvider->createScenario());
@@ -35,9 +33,7 @@ SCENARIO( "Clock ticks and termination supplied by the data provider", "[data][p
       auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv, clockTickDuration);
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       auto scenario = dataProvider->createScenario();
@@ -62,9 +58,7 @@ SCENARIO( "Clock ticks and termination supplied by the data provider", "[data][p
       dataProvider->setEndTime(5);
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       engine.run(dataProvider->createScenario());
@@ -115,9 +109,7 @@ SCENARIO( "Time held by the data provider", "[data][provider]" ) {
     WHEN( "The engine advances without a dispatcher supplying clock ticks" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       engine.initialize(dataProvider->createScenario());
@@ -136,10 +128,8 @@ SCENARIO( "Time held by the data provider", "[data][provider]" ) {
     WHEN( "A dispatcher supplies ten clock ticks" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       ClockTicks clockTicks(10);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       clockTicks.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
@@ -186,10 +176,8 @@ SCENARIO( "A caller acting while the engine waits", "[data][provider]" ) {
     auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv, std::chrono::milliseconds::max());
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     QueuedEvents queuedEvents;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     queuedEvents.connect(&engine);
     Execution::Recorder recorder;
     recorder.subscribe(&engine);
@@ -269,9 +257,7 @@ SCENARIO( "No clock tick before the first request to the controller after instal
       auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       engine.initializeSystemState(dataProvider->createScenario(), sourceEngine.getSystemState());
@@ -394,9 +380,7 @@ SCENARIO( "Signal raised by the environment", "[data][provider][signal]" ) {
     WHEN( "The environment raises the signal at time 2" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);

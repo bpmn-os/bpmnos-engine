@@ -17,9 +17,7 @@ SCENARIO( "Error end event", "[execution][error]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -71,9 +69,7 @@ SCENARIO( "Errors carrying a content object", "[execution][error]" ) {
     auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     Execution::Recorder recorder;
     recorder.subscribe(&engine);
     engine.run(dataProvider->createScenario());
@@ -92,9 +88,7 @@ SCENARIO( "Errors carrying a content object", "[execution][error]" ) {
     auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     Execution::Recorder recorder;
     recorder.subscribe(&engine);
     engine.run(dataProvider->createScenario());
@@ -110,9 +104,7 @@ SCENARIO( "Errors carrying a content object", "[execution][error]" ) {
     auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     Execution::Recorder recorder;
     recorder.subscribe(&engine);
     engine.run(dataProvider->createScenario());

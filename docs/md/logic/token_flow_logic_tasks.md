@@ -13,7 +13,7 @@ A token at a task changes its state as follows:
 <pre class="mermaid">
 stateDiagram-v2
     state feasibleEntry <<choice>>
-    state feasibleExit <<choice>>
+    state feasibleCompletion <<choice>>
     state departure <<choice>>
     [*] --> ARRIVED/CREATED
     note left of ARRIVED/CREATED
@@ -29,15 +29,12 @@ stateDiagram-v2
     BUSY --> COMPLETED: completion event
     BUSY --> FAILED: failure
     COMPLETED --> feasibleCompletion
-    feasibleCompletion --> EXITING: [feasible] exit event
-    feasibleCompletion --> FAILED: [infeasible]
-    EXITING --> feasibleExit
-    feasibleExit --> departure: [feasible]
+    feasibleCompletion --> departure: [feasible]
     note left of departure
-      In case of loop activities, the token may return to ENTERED state
-      after receipt of the respective entry event.
+      In case of loop activities, the token may return to READY state
+      and wait for the respective entry event.
     end note
-    feasibleExit --> FAILED: [infeasible]
+    feasibleCompletion --> FAILED: [infeasible]
     departure --> DEPARTED: [outgoing sequence flow]
     departure --> DONE: [no outgoing sequence flow]
     DEPARTED --> [*]
@@ -92,18 +89,11 @@ When a token at a task with a @ref BPMN::CompensateBoundaryEvent "compensate bou
 After completion, feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.
 If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated,  the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILED "FAILED".
 
-Otherwise, the token in  @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state waits for an @ref BPMNOS::Execution::ExitEvent "exit event" indicating that a decision is made to leave the activity. 
-When the event occurs the token state is updated to  @ref BPMNOS::Execution::Token::State::EXITING "EXITING".
-
-## EXITING
-Feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.
-If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated,  the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILED "FAILED".
-
-Otherwise, the task has been executed successfully and all tokens at boundary events (except @ref BPMN::CompensateBoundaryEvent "compensate boundary events") of the task are withdrawn.
+Otherwise, the task has been executed successfully. If the task is a child of a @ref BPMNOS::Model::SequentialAdHocSubProcess "sequential ad-hoc subprocess", its performer is released, and all tokens at boundary events (except @ref BPMN::CompensateBoundaryEvent "compensate boundary events") of the task are withdrawn.
 
 If the task has an outgoing sequence flow, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED".
 Otherwise, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DONE "DONE".
-In case of @ref XML::bpmn::tStandardLoopCharacteristics  "loop activities", the token may advance to @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED" state after the respective entry decision has been made for the next loop of the activity.
+In case of @ref XML::bpmn::tStandardLoopCharacteristics  "loop activities", the @ref BPMNOS::Execution::Token::state "token state" is instead updated to @ref BPMNOS::Execution::Token::State::READY "READY" if a further loop of the activity is to be performed, and the token waits for the respective entry event.
 
 ## DEPARTED
 

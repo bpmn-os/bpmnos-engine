@@ -21,7 +21,7 @@ public:
   XML::bpmnos::tGuidance* element;
   AttributeRegistry attributeRegistry; ///< Registry allowing to look up attributes by their names.
 
-  enum class Type { Entry, Exit, Choice, MessageDelivery };
+  enum class Type { Entry, Choice, MessageDelivery };
   Type type;
   std::vector< std::unique_ptr<Attribute> > attributes;
   std::vector< std::unique_ptr<Restriction> > restrictions;

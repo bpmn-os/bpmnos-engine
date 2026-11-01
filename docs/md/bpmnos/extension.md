@@ -102,7 +102,7 @@ Status attributes are attached to @ref BPMNOS::Execution::Token "tokens" moving 
 Within a `<bpmnos:restrictions>` container any number of `<bpmnos:restriction>` elements can be provided to specify restrictions. 
 For each restriction the following fields can be provided
 - `id`: a unique identifier, 
-- `scope`: the scope indicating when the restriction has to be satisfied which must be one of  `entry`, `exit`, `full`.
+- `scope`: the scope indicating when the restriction has to be satisfied which must be one of `entry`, `completion`, `full`, a missing scope being `full` and any other scope being rejected when the model is read.
 - `expression`: an expression representing the requirements.
  
 
@@ -119,7 +119,7 @@ Restrictions can be added to a @ref XML::bpmn::tProcess "process element" and an
 </bpmn2:extensionElements>
 ```
 
-A restriction of scope `full` of a process or subprocess also applies to every node within it, at the entry, completion and exit of that node, and is evaluated against the status and data of that node. An error or compensate event subprocess and a compensation activity do not inherit the restrictions of the scopes enclosing them, so that a violation within those scopes does not prevent its handling; the nodes within such an event subprocess inherit its own restrictions of scope `full`.
+A restriction of scope `full` of a process or subprocess also applies to every node within it, at the entry and completion of that node, and is evaluated against the status and data of that node. An error or compensate event subprocess and a compensation activity do not inherit the restrictions of the scopes enclosing them, so that a violation within those scopes does not prevent its handling; the nodes within such an event subprocess inherit its own restrictions of scope `full`.
 
 ### Gatekeeper restrictions 
 Gatekeeper restrictions can be added to a @ref XML::bpmn::tSequenceFlow "sequence flow element" as shown in the following example.

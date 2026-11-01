@@ -365,9 +365,7 @@ void run(const std::shared_ptr<const Model::Model>& model, const std::string& cs
   auto provider = std::make_shared<Execution::StaticDataProvider>(model, csv);
   Execution::Engine engine(model);
   Execution::InstantEntry entryHandler;
-  Execution::InstantExit exitHandler;
   entryHandler.connect(&engine);
-  exitHandler.connect(&engine);
   engine.addSubscriber(&capture, Execution::Observable::Type::Token, Execution::Observable::Type::DataUpdate);
   engine.run(provider->createScenario());
 }

@@ -18,9 +18,7 @@ SCENARIO( "SystemState copy with token awaiting condition", "[systemstate][condi
 
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     Execution::Recorder recorder;
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);

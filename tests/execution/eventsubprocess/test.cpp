@@ -17,9 +17,7 @@ SCENARIO( "Caught error end event", "[execution][eventsubprocess]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -74,9 +72,7 @@ SCENARIO( "Interrupting escalation", "[execution][eventsubprocess]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -107,8 +103,7 @@ SCENARIO( "Interrupting escalation", "[execution][eventsubprocess]" ) {
         REQUIRE( activityLog[2]["state"] == "ENTERED" );
         REQUIRE( activityLog[3]["state"] == "BUSY" );
         REQUIRE( activityLog[4]["state"] == "COMPLETED" );
-        REQUIRE( activityLog[5]["state"] == "EXITING" );
-        REQUIRE( activityLog[6]["state"] == "DEPARTED" );
+        REQUIRE( activityLog[5]["state"] == "DEPARTED" );
 
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
         REQUIRE( processLog[0]["state"] == "CREATED" );
@@ -139,9 +134,7 @@ SCENARIO( "Non-interrupting escalation", "[execution][eventsubprocess]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -175,8 +168,7 @@ SCENARIO( "Non-interrupting escalation", "[execution][eventsubprocess]" ) {
         REQUIRE( activityLog[2]["state"] == "ENTERED" );
         REQUIRE( activityLog[3]["state"] == "BUSY" );
         REQUIRE( activityLog[4]["state"] == "COMPLETED" );
-        REQUIRE( activityLog[5]["state"] == "EXITING" );
-        REQUIRE( activityLog[6]["state"] == "DEPARTED" );
+        REQUIRE( activityLog[5]["state"] == "DEPARTED" );
         
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
         REQUIRE( processLog[0]["state"] == "CREATED" );
@@ -208,9 +200,7 @@ SCENARIO( "Caught and rethrown error", "[execution][eventsubprocess]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -268,9 +258,7 @@ SCENARIO( "Non-interrupting escalation throwing error", "[execution][eventsubpro
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -323,9 +311,7 @@ SCENARIO( "Interrupting escalation throwing error", "[execution][eventsubprocess
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -474,9 +460,7 @@ SCENARIO( "Event subprocess with an attribute assigned by the model", "[executio
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
@@ -511,9 +495,7 @@ SCENARIO( "Event subprocess within a subprocess with data", "[execution][eventsu
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -533,17 +515,13 @@ SCENARIO( "Event subprocess within a subprocess with data", "[execution][eventsu
     WHEN( "The system state is copied while the event subprocess is pending and the run is resumed" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       dataProvider->setEndTime(0);
       engine.run(dataProvider->createScenario(), 0);
 
       Execution::Engine resumed(model);
       Execution::InstantEntry resumedEntryHandler;
-      Execution::InstantExit resumedExitHandler;
       resumedEntryHandler.connect(&resumed);
-      resumedExitHandler.connect(&resumed);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&resumed);

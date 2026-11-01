@@ -24,11 +24,9 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
 //      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExit exitHandler;
 //      sequentialEntryHandler.connect(&engine);
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
@@ -53,13 +51,11 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       Execution::GreedyDispatcher<Execution::SequentialEntries> sequentialEntryHandler(evaluator);
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExit exitHandler;
       
       
       sequentialEntryHandler.connect(&engine);
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
 
       messageTaskTerminator.connect(&engine);
 

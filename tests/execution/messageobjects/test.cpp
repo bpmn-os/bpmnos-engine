@@ -140,10 +140,8 @@ void run(const std::shared_ptr<const Model::Model>& model, Capture& capture) {
   Execution::Engine engine(model);
   Execution::InstantEntry entryHandler;
   Execution::FirstMatchingMessageDelivery messageHandler;
-  Execution::InstantExit exitHandler;
   messageHandler.connect(&engine);
   entryHandler.connect(&engine);
-  exitHandler.connect(&engine);
   engine.addSubscriber(&capture, Execution::Observable::Type::Token);
   engine.run(provider->createScenario());
 }
@@ -189,10 +187,8 @@ TEST_CASE( "The log shows the objects of message content as JSON", "[execution][
   Execution::Engine engine(model);
   Execution::InstantEntry entryHandler;
   Execution::FirstMatchingMessageDelivery messageHandler;
-  Execution::InstantExit exitHandler;
   messageHandler.connect(&engine);
   entryHandler.connect(&engine);
-  exitHandler.connect(&engine);
   Execution::Recorder recorder;
   recorder.subscribe(&engine);
   engine.run(provider->createScenario());

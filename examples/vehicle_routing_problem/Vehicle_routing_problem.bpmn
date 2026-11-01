@@ -174,8 +174,8 @@
             <bpmnos:attribute id="LatenessPenalty" type="decimal" name="lateness_penalty := 0" objective="none" />
           </bpmnos:attributes>
           <bpmnos:restrictions>
-            <bpmnos:restriction id="Restriction_1q6ed62" scope="exit" expression="load &#60;= capacity" />
-            <bpmnos:restriction id="Restriction_3o3t8f8" scope="exit" expression="pending == 0" />
+            <bpmnos:restriction id="Restriction_1q6ed62" scope="entry" expression="load &#60;= capacity" />
+            <bpmnos:restriction id="Restriction_3o3t8f8" scope="entry" expression="pending == 1" />
           </bpmnos:restrictions>
         </bpmnos:status>
       </bpmn2:extensionElements>

@@ -419,28 +419,6 @@ void Engine::process(const MessageDeliveryEvent* event) {
   processCommands();
 }
 
-void Engine::process(const ExitEvent* event) {
-//std::cerr << "ExitEvent: " << event->token->jsonify().dump() << std::endl;
-  auto token_ptr = event->token.lock();
-  assert( token_ptr );
-  Token* token = const_cast<Token*>(token_ptr.get());
-  token->decisionRequest.reset();
-
-  if ( token->node->as<BPMN::FlowNode>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-    token->releaseSequentialPerformer();
-  }
-
-  // update token status
-  if ( event->exitStatus.has_value() ) {
-    token->status = event->exitStatus.value();
-  }
-
-  commands.emplace_back(std::bind(&Token::advanceToExiting,token), token);
-
-  token_ptr.reset();
-  processCommands();
-}
-
 void Engine::process(const ErrorEvent* event) {
   auto token_ptr = event->token.lock();
   assert( token_ptr );

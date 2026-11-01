@@ -1,7 +1,6 @@
 #include "GreedyController.h"
 #include "execution/engine/src/Engine.h"
 #include "GreedyDispatcher.h"
-#include "candidates/FirstFeasibleExit.h"
 #include "candidates/FirstFeasibleEntry.h"
 #include "candidates/FirstEnumeratedChoice.h"
 #include "candidates/FirstBisectionalChoice.h"
@@ -15,10 +14,9 @@ GreedyController::GreedyController(std::shared_ptr<Evaluator> evaluator, Config 
   : config(config)
 {
   // Decisions come from Candidates collections, each owned by a generic GreedyDispatcher (templated on the
-  // collection type), tried in priority order. Exit, entry, and direct message delivery are unambiguous;
+  // collection type), tried in priority order. Entry and direct message delivery are unambiguous;
   // the contested sequential-ad-hoc entries and message deliveries are merged into one reward-ordered
   // collection so their best feasible decision competes within the same list.
-  dispatchers.push_back( std::make_unique<GreedyDispatcher<FirstFeasibleExit>>(evaluator) );
   dispatchers.push_back( std::make_unique<GreedyDispatcher<FirstFeasibleEntry>>(evaluator) ); // non-sequential entries only (config.sequential=false)
   dispatchers.push_back( std::make_unique<InstantDirectMessage>() );
   if ( config.bisection ) {

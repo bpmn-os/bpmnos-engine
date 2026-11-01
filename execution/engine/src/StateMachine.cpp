@@ -165,9 +165,6 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
       else if (type == Observable::Type::ChoiceRequest) {
         const_cast<SystemState*>(systemState)->pendingChoiceDecisions.emplace_back(token, token->decisionRequest);
       }
-      else if (type == Observable::Type::ExitRequest) {
-        const_cast<SystemState*>(systemState)->pendingExitDecisions.emplace_back(token, token->decisionRequest);
-      }
       else if (type == Observable::Type::MessageDeliveryRequest) {
         // the kind has just been read, so the request is of that kind and carries the header with it
         const_cast<SystemState*>(systemState)->pendingMessageDeliveryDecisions.emplace_back(
@@ -315,9 +312,9 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
       const_cast<SystemState*>(systemState)->tokensAtActivityInstance[mainToken].push_back(token.get());
     }
 
-    // Populate exitStatusAtActivityInstance (main token)
-    if (other->systemState->exitStatusAtActivityInstance.contains(otherToken.get())) {
-      const_cast<SystemState*>(systemState)->exitStatusAtActivityInstance[token.get()] = other->systemState->exitStatusAtActivityInstance.at(otherToken.get());
+    // Populate completionStatusAtActivityInstance (main token)
+    if (other->systemState->completionStatusAtActivityInstance.contains(otherToken.get())) {
+      const_cast<SystemState*>(systemState)->completionStatusAtActivityInstance[token.get()] = other->systemState->completionStatusAtActivityInstance.at(otherToken.get());
     }
 
     // Populate performing and pendingSequentialEntries for activities in SequentialAdHocSubProcess
@@ -338,8 +335,8 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
     }
   }
 
-  // Populate tokenAwaitingMultiInstanceExit (sequential only) - after all tokens copied
-  for (auto& [otherPrevToken, otherNextToken] : other->systemState->tokenAwaitingMultiInstanceExit) {
+  // Populate tokenAwaitingMultiInstanceCompletion (sequential only) - after all tokens copied
+  for (auto& [otherPrevToken, otherNextToken] : other->systemState->tokenAwaitingMultiInstanceCompletion) {
     if (otherPrevToken->owner != other) continue;  // Only process tokens owned by this StateMachine
 
     // Match by node and instance identity.
@@ -353,7 +350,7 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
     auto nextIt = std::ranges::find_if(tokens, nextMatch);
     assert(prevIt != tokens.end() && nextIt != tokens.end());
 
-    const_cast<SystemState*>(systemState)->tokenAwaitingMultiInstanceExit[prevIt->get()] = nextIt->get();
+    const_cast<SystemState*>(systemState)->tokenAwaitingMultiInstanceCompletion[prevIt->get()] = nextIt->get();
   }
 
   // Copy compensableSubProcesses (tokens owning compensable subprocesses)
@@ -551,7 +548,7 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
 
   // create token copies
   assert ( systemState->tokensAtActivityInstance.find(token) == systemState->tokensAtActivityInstance.end() );
-  assert ( systemState->exitStatusAtActivityInstance.find(token) == systemState->exitStatusAtActivityInstance.end() );
+  assert ( systemState->completionStatusAtActivityInstance.find(token) == systemState->completionStatusAtActivityInstance.end() );
 
   Token* tokenCopy = nullptr;
   size_t counter = 0;
@@ -595,7 +592,7 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
     // handler recognises this as a multi-instance instance token and skips it (the single
     // ready event is consumed by the main token, not re-raised for each instance).
     const_cast<SystemState*>(systemState)->tokensAtActivityInstance[token].push_back(instanceToken);
-    const_cast<SystemState*>(systemState)->exitStatusAtActivityInstance[token] = {};
+    const_cast<SystemState*>(systemState)->completionStatusAtActivityInstance[token] = {};
     const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity[instanceToken] = token;
 
     // Every instance emits its own CREATED state (birth); ARRIVED is skipped (no incoming flow).
@@ -609,8 +606,8 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
         instanceToken->awaitEntryEvent();
       }
       else {
-        // subsequent instances remain in CREATED until their predecessor has exited
-        const_cast<SystemState*>(systemState)->tokenAwaitingMultiInstanceExit[tokenCopy] = instanceToken;
+        // subsequent instances remain in CREATED until their predecessor has completed
+        const_cast<SystemState*>(systemState)->tokenAwaitingMultiInstanceCompletion[tokenCopy] = instanceToken;
       }
     }
     else if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::MultiInstanceParallel ) {
@@ -642,32 +639,32 @@ void StateMachine::deleteMultiInstanceActivityToken(Token* token) {
 
   if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::MultiInstanceSequential ) {
     // advance next token for sequential multi-instance activity
-    auto& tokenAwaitingMultiInstanceExit = const_cast<SystemState*>(systemState)->tokenAwaitingMultiInstanceExit;
-    auto it = tokenAwaitingMultiInstanceExit.find(token);
+    auto& tokenAwaitingMultiInstanceCompletion = const_cast<SystemState*>(systemState)->tokenAwaitingMultiInstanceCompletion;
+    auto it = tokenAwaitingMultiInstanceCompletion.find(token);
   
-    if ( it != tokenAwaitingMultiInstanceExit.end() ) {
+    if ( it != tokenAwaitingMultiInstanceCompletion.end() ) {
       auto waitingToken = it->second;
-      // successor leaves CREATED and becomes ready now that its predecessor has exited
+      // successor leaves CREATED and becomes ready now that its predecessor has completed
       waitingToken->update(Token::State::READY);
       waitingToken->awaitEntryEvent();
-      tokenAwaitingMultiInstanceExit.erase(it);
+      tokenAwaitingMultiInstanceCompletion.erase(it);
     }
   }
 
-  // record exit status
-  const_cast<SystemState*>(systemState)->exitStatusAtActivityInstance[mainToken].push_back(token->status);
+  // record completion status
+  const_cast<SystemState*>(systemState)->completionStatusAtActivityInstance[mainToken].push_back(token->status);
   // remove token
   const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.erase(token);
   erase_ptr<Token>(const_cast<SystemState*>(systemState)->tokensAtActivityInstance[mainToken],token);
   erase_ptr<Token>(tokens,token);
 
-  // advance main token when last multi-instance token exited
+  // advance main token when last multi-instance token completed
   auto& tokensAtActivityInstance = const_cast<SystemState*>(systemState)->tokensAtActivityInstance;
   if ( auto it1 = tokensAtActivityInstance.find(mainToken);
     it1 != tokensAtActivityInstance.end()
   ) {
     if ( it1->second.empty() ) {
-      // last multi-instance token exited
+      // last multi-instance token completed
       tokensAtActivityInstance.erase(it1);
 
       if ( !activity->boundaryEvents.empty() ) {
@@ -675,13 +672,13 @@ void StateMachine::deleteMultiInstanceActivityToken(Token* token) {
         deleteTokensAwaitingBoundaryEvent( mainToken );
       }
 
-      auto& exitStatusAtActivityInstance = const_cast<SystemState*>(systemState)->exitStatusAtActivityInstance;
-      if ( auto it2 = exitStatusAtActivityInstance.find(mainToken);
-         it2 != exitStatusAtActivityInstance.end()
+      auto& completionStatusAtActivityInstance = const_cast<SystemState*>(systemState)->completionStatusAtActivityInstance;
+      if ( auto it2 = completionStatusAtActivityInstance.find(mainToken);
+         it2 != completionStatusAtActivityInstance.end()
       ) {
         // merge status 
         mainToken->status = Token::mergeStatus(it2->second);
-        exitStatusAtActivityInstance.erase(it2);
+        completionStatusAtActivityInstance.erase(it2);
       }
 
       // advance main token
@@ -757,7 +754,7 @@ void StateMachine::interruptActivity(Token* token) {
     for ( auto activeToken : it->second ) {
 //std::cerr << "withdraw token at " << activeToken->node->id << "/" << activeToken << std::endl;
       if ( activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::MultiInstanceSequential ) {
-        const_cast<SystemState*>(systemState)->tokenAwaitingMultiInstanceExit.erase(activeToken);
+        const_cast<SystemState*>(systemState)->tokenAwaitingMultiInstanceCompletion.erase(activeToken);
       }
 
       const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.erase(activeToken);
@@ -770,8 +767,8 @@ void StateMachine::interruptActivity(Token* token) {
     }
     const_cast<SystemState*>(systemState)->tokensAtActivityInstance.erase(it);
 
-    // remove all exit status for multi-instance activity
-    const_cast<SystemState*>(systemState)->exitStatusAtActivityInstance.erase(token);
+    // remove all completion status for multi-instance activity
+    const_cast<SystemState*>(systemState)->completionStatusAtActivityInstance.erase(token);
   }
   deleteTokensAwaitingBoundaryEvent(token);
   token->withdraw();

@@ -53,7 +53,6 @@ public:
 
   std::set<const Attribute*> entryDependencies; ///< Set containing all input attributes influencing the entry feasibility.
   std::set<const Attribute*> completionDependencies; ///< Set containing all input attributes influencing completion feasibility.
-  std::set<const Attribute*> exitDependencies; ///< Set containing all input attributes influencing the exit feasibility.
   std::set<const Attribute*> operatorDependencies; ///< Set containing all input attributes influencing the result of applying all operators.
   std::set<const Attribute*> choiceDependencies; ///< Set containing all input attributes influencing the allowed alternatives when making choices.
 
@@ -105,9 +104,6 @@ public:
   bool feasibleCompletion(const BPMNOS::Status& status, const DataType& data) const;
   
   template <typename DataType>
-  bool feasibleExit(const BPMNOS::Status& status, const DataType& data) const;
-  
-  template <typename DataType>
   bool satisfiesInheritedRestrictions(const BPMNOS::Status& status, const DataType& data) const;
   
   template <typename DataType>
@@ -132,7 +128,6 @@ public:
   
   std::optional< std::unique_ptr<Guidance> > messageDeliveryGuidance;
   std::optional< std::unique_ptr<Guidance> > entryGuidance;
-  std::optional< std::unique_ptr<Guidance> > exitGuidance;
   std::optional< std::unique_ptr<Guidance> > choiceGuidance;
 };
 

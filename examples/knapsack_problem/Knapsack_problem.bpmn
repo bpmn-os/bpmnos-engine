@@ -185,23 +185,23 @@ It has a data object containing the `capacity`as well as the `total_weight` and 
     <bpmn2:endEvent id="EndEventKnapsack">
       <bpmn2:incoming>Flow_1q2xx4t</bpmn2:incoming>
     </bpmn2:endEvent>
-    <bpmn2:task id="WaitActivity" name="Wait for requests">
-      <bpmn2:documentation>@attention Item requests can not be received after this task is completed and the token is forwarded to the end event.</bpmn2:documentation>
+    <bpmn2:intermediateCatchEvent id="ConditionalEvent" name="All requests received">
       <bpmn2:extensionElements>
-        <bpmnos:status>
-          <bpmnos:restrictions>
-            <bpmnos:restriction id="Restriction_Items" scope="exit" expression="items_requested == items" />
-          </bpmnos:restrictions>
-        </bpmnos:status>
+        <bpmnos:restrictions>
+          <bpmnos:restriction id="Condition_0gda5gb" expression="items_requested == items" />
+        </bpmnos:restrictions>
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_1rghjse</bpmn2:incoming>
       <bpmn2:outgoing>Flow_1q2xx4t</bpmn2:outgoing>
-    </bpmn2:task>
+      <bpmn2:conditionalEventDefinition id="ConditionalEventDefinition_0fn7013">
+        <bpmn2:condition xsi:type="bpmn2:tFormalExpression" />
+      </bpmn2:conditionalEventDefinition>
+    </bpmn2:intermediateCatchEvent>
     <bpmn2:startEvent id="StartEventKnapsack">
       <bpmn2:outgoing>Flow_1rghjse</bpmn2:outgoing>
     </bpmn2:startEvent>
-    <bpmn2:sequenceFlow id="Flow_1q2xx4t" sourceRef="WaitActivity" targetRef="EndEventKnapsack" />
-    <bpmn2:sequenceFlow id="Flow_1rghjse" sourceRef="StartEventKnapsack" targetRef="WaitActivity" />
+    <bpmn2:sequenceFlow id="Flow_1q2xx4t" sourceRef="ConditionalEvent" targetRef="EndEventKnapsack" />
+    <bpmn2:sequenceFlow id="Flow_1rghjse" sourceRef="StartEventKnapsack" targetRef="ConditionalEvent" />
     <bpmn2:dataObjectReference id="DataObjectReference_Knapsack" dataObjectRef="DataObject_0vq7lh8" />
     <bpmn2:dataObject id="DataObject_0vq7lh8">
       <bpmn2:extensionElements>
@@ -372,9 +372,11 @@ It has a data object containing the `capacity`as well as the `total_weight` and 
       <bpmndi:BPMNShape id="Event_03ls64p_di" bpmnElement="EndEventKnapsack">
         <dc:Bounds x="902" y="478" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1lpi0t4_di" bpmnElement="WaitActivity">
-        <dc:Bounds x="750" y="456" width="100" height="80" />
-        <bpmndi:BPMNLabel />
+      <bpmndi:BPMNShape id="Event_15c5xqz_di" bpmnElement="ConditionalEvent">
+        <dc:Bounds x="782" y="478" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="770" y="521" width="61" height="27" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_080iwtd_di" bpmnElement="StartEventKnapsack">
         <dc:Bounds x="662" y="478" width="36" height="36" />
@@ -383,12 +385,12 @@ It has a data object containing the `capacity`as well as the `total_weight` and 
         <dc:Bounds x="412" y="471" width="36" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1q2xx4t_di" bpmnElement="Flow_1q2xx4t">
-        <di:waypoint x="850" y="496" />
+        <di:waypoint x="818" y="496" />
         <di:waypoint x="902" y="496" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1rghjse_di" bpmnElement="Flow_1rghjse">
         <di:waypoint x="698" y="496" />
-        <di:waypoint x="750" y="496" />
+        <di:waypoint x="782" y="496" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

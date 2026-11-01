@@ -168,9 +168,7 @@ TEST_CASE( "Object initializers of the instance data", "[data][initializers]" ) 
     );
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     Execution::Recorder recorder;
     recorder.subscribe(&engine);
     engine.run(provider->createScenario());
@@ -280,9 +278,7 @@ TEST_CASE( "Ready and completion expressions assign objects", "[data][initialize
     auto provider = std::make_shared<Execution::StochasticDataProvider>(model, csv, 7);
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     auto recorder = std::make_shared<ObjectRecorder>();
     engine.addSubscriber(recorder.get(), Execution::Observable::Type::Token);
     engine.run(provider->createScenario());
@@ -313,9 +309,7 @@ TEST_CASE( "Ready and completion expressions assign objects", "[data][initialize
     auto completedRoute = [&](std::unique_ptr<Execution::Scenario> scenario, const Execution::SystemState* state) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       ObjectRecorder recorder;
       engine.addSubscriber(&recorder, Execution::Observable::Type::Token);
       if ( state ) {
@@ -331,9 +325,7 @@ TEST_CASE( "Ready and completion expressions assign objects", "[data][initialize
     // the run stops while the task is busy, awaiting its completion
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     provider->setEndTime(5);
     engine.run(provider->createScenario());
     REQUIRE( engine.getSystemState()->getTime() == 5 );

@@ -19,8 +19,8 @@ Restriction::Restriction(XML::bpmnos::tRestriction* restriction, const Attribute
     else if ( restriction->scope->get().value.value == "completion" ) {
       scope = Scope::COMPLETION;
     }
-    else if ( restriction->scope->get().value.value == "exit" ) {
-      scope = Scope::EXIT;
+    else if ( restriction->scope->get().value.value != "full" ) {
+      throw std::runtime_error("Restriction: illegal scope '" + restriction->scope->get().value.value + "'");
     }
   }  
 }

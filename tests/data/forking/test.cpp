@@ -34,9 +34,7 @@ SCENARIO( "Forks of a deterministic run", "[data][forking]" ) {
     auto tokenLog = [&](std::unique_ptr<Execution::Scenario> scenario, const Execution::SystemState* state) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       if ( state ) {
@@ -53,9 +51,7 @@ SCENARIO( "Forks of a deterministic run", "[data][forking]" ) {
       for ( auto& dataProvider : dataProviders ) {
         Execution::Engine engine(model);
         Execution::InstantEntry entryHandler;
-        Execution::InstantExit exitHandler;
         entryHandler.connect(&engine);
-        exitHandler.connect(&engine);
         dataProvider->setEndTime(0);
         engine.run(dataProvider->createScenario());
         dataProvider->setEndTime(std::numeric_limits<BPMNOS::number>::max());
@@ -141,9 +137,7 @@ SCENARIO( "Forks of a stochastic run", "[data][forking]" ) {
         auto dataProvider = std::make_shared<Execution::StochasticDataProvider>(taskModel, csv, seed);
         Execution::Engine engine(taskModel);
         Execution::InstantEntry entryHandler;
-        Execution::InstantExit exitHandler;
         entryHandler.connect(&engine);
-        exitHandler.connect(&engine);
         Execution::Recorder recorder;
         recorder.subscribe(&engine);
         dataProvider->setEndTime(500);
@@ -156,9 +150,7 @@ SCENARIO( "Forks of a stochastic run", "[data][forking]" ) {
         for ( unsigned int index = 0; index < 10; index++ ) {
           Execution::Engine forkEngine(taskModel);
           Execution::InstantEntry forkEntryHandler;
-          Execution::InstantExit forkExitHandler;
           forkEntryHandler.connect(&forkEngine);
-          forkExitHandler.connect(&forkEngine);
           Execution::Recorder forkRecorder;
           forkRecorder.subscribe(&forkEngine);
           forkEngine.initializeSystemState(dataProvider->forkScenario(*engine.getSystemState()->scenario, index), engine.getSystemState());
@@ -197,9 +189,7 @@ SCENARIO( "Forks of a stochastic run", "[data][forking]" ) {
 
       Execution::Engine forkEngine(taskModel);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&forkEngine);
-      exitHandler.connect(&forkEngine);
       Execution::Recorder recorder;
       recorder.subscribe(&forkEngine);
       forkEngine.initializeSystemState(dataProvider->forkScenario(*engine.getSystemState()->scenario, 0), engine.getSystemState());
@@ -227,9 +217,7 @@ SCENARIO( "Forks of a stochastic run", "[data][forking]" ) {
     auto completionTime = [&](std::unique_ptr<Execution::Scenario> scenario, const Execution::SystemState* state) {
       Execution::Engine taskEngine(taskModel);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&taskEngine);
-      exitHandler.connect(&taskEngine);
       Execution::Recorder recorder;
       recorder.subscribe(&taskEngine);
       if ( state ) {
@@ -247,9 +235,7 @@ SCENARIO( "Forks of a stochastic run", "[data][forking]" ) {
     WHEN( "The run stops while the task is busy and is forked" ) {
       Execution::Engine engine(taskModel);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       dataProvider->setEndTime(5);
       engine.run(dataProvider->createScenario());
       REQUIRE( engine.getSystemState()->getTime() == 5 );

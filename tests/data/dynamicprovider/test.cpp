@@ -16,9 +16,7 @@ SCENARIO( "Events of the dynamic data provider", "[data][dynamic]" ) {
     WHEN( "The engine runs on a scenario of the data provider" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       engine.run(dataProvider->createScenario());
@@ -67,9 +65,7 @@ SCENARIO( "Events of the dynamic data provider", "[data][dynamic]" ) {
     WHEN( "The engine runs on a scenario of the data provider" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       engine.run(dataProvider->createScenario());

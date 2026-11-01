@@ -13,9 +13,7 @@ SCENARIO( "Static data provider", "[data][static]" ) {
     WHEN( "The engine runs on a scenario of the data provider without a clock dispatcher" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       engine.run(dataProvider->createScenario());
@@ -39,9 +37,7 @@ SCENARIO( "Static data provider", "[data][static]" ) {
       dataProvider->setEndTime(5);
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       engine.run(dataProvider->createScenario());
@@ -101,9 +97,7 @@ SCENARIO( "Static data provider", "[data][static]" ) {
     WHEN( "The engine runs on a scenario of the data provider" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       engine.run(dataProvider->createScenario());

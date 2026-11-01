@@ -67,22 +67,23 @@ I the stochastic case, where actual item size is only revaled when handling the 
         </bpmnos:attributes>
       </bpmn2:extensionElements>
     </bpmn2:dataObject>
-    <bpmn2:sequenceFlow id="Flow_1q2xx4t" sourceRef="WaitActivity" targetRef="EndEventBin" />
-    <bpmn2:sequenceFlow id="Flow_1rghjse" sourceRef="StartEvent" targetRef="WaitActivity" />
+    <bpmn2:sequenceFlow id="Flow_1q2xx4t" sourceRef="ConditionalEvent" targetRef="EndEventBin" />
+    <bpmn2:sequenceFlow id="Flow_1rghjse" sourceRef="StartEvent" targetRef="ConditionalEvent" />
     <bpmn2:endEvent id="EndEventBin">
       <bpmn2:incoming>Flow_1q2xx4t</bpmn2:incoming>
     </bpmn2:endEvent>
-    <bpmn2:task id="WaitActivity" name="Wait for requests">
+    <bpmn2:intermediateCatchEvent id="ConditionalEvent" name="All items allocated">
       <bpmn2:extensionElements>
-        <bpmnos:status>
-          <bpmnos:restrictions>
-            <bpmnos:restriction id="Restriction_339o4h3" scope="exit" expression="items_allocated == items" />
-          </bpmnos:restrictions>
-        </bpmnos:status>
+        <bpmnos:restrictions>
+          <bpmnos:restriction id="Condition_05dlon8" expression="items_allocated == items" />
+        </bpmnos:restrictions>
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_1rghjse</bpmn2:incoming>
       <bpmn2:outgoing>Flow_1q2xx4t</bpmn2:outgoing>
-    </bpmn2:task>
+      <bpmn2:conditionalEventDefinition id="ConditionalEventDefinition_1jqqvkt">
+        <bpmn2:condition xsi:type="bpmn2:tFormalExpression" />
+      </bpmn2:conditionalEventDefinition>
+    </bpmn2:intermediateCatchEvent>
     <bpmn2:startEvent id="StartEvent">
       <bpmn2:outgoing>Flow_1rghjse</bpmn2:outgoing>
     </bpmn2:startEvent>
@@ -238,9 +239,11 @@ I the stochastic case, where actual item size is only revaled when handling the 
       <bpmndi:BPMNShape id="Event_03ls64p_di" bpmnElement="EndEventBin">
         <dc:Bounds x="784" y="478" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1lpi0t4_di" bpmnElement="WaitActivity">
-        <dc:Bounds x="632" y="456" width="100" height="80" />
-        <bpmndi:BPMNLabel />
+      <bpmndi:BPMNShape id="Event_12od9y5_di" bpmnElement="ConditionalEvent">
+        <dc:Bounds x="664" y="478" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="638" y="521" width="89" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_080iwtd_di" bpmnElement="StartEvent">
         <dc:Bounds x="544" y="478" width="36" height="36" />
@@ -323,12 +326,12 @@ I the stochastic case, where actual item size is only revaled when handling the 
         <dc:Bounds x="422" y="471" width="36" height="50" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1q2xx4t_di" bpmnElement="Flow_1q2xx4t">
-        <di:waypoint x="732" y="496" />
+        <di:waypoint x="700" y="496" />
         <di:waypoint x="784" y="496" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1rghjse_di" bpmnElement="Flow_1rghjse">
         <di:waypoint x="580" y="496" />
-        <di:waypoint x="632" y="496" />
+        <di:waypoint x="664" y="496" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="DataStoreReference_1_di" bpmnElement="DataStoreReference_1">
         <dc:Bounds x="380" y="303" width="50" height="50" />

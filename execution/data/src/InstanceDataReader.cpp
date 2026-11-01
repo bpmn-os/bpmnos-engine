@@ -142,7 +142,7 @@ std::pair<const BPMNOS::Model::Attribute*, std::string> InstanceDataReader::look
   auto extensionElements = node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   if ( !extensionElements->attributeRegistry.contains(attributeName) ) {
     // the attributes a guidance declares take only the values the model assigns to them
-    for ( auto guidance : { &extensionElements->entryGuidance, &extensionElements->exitGuidance, &extensionElements->choiceGuidance, &extensionElements->messageDeliveryGuidance } ) {
+    for ( auto guidance : { &extensionElements->entryGuidance, &extensionElements->choiceGuidance, &extensionElements->messageDeliveryGuidance } ) {
       if ( guidance->has_value() && guidance->value()->attributeRegistry.contains(attributeName) ) {
         throw std::runtime_error("InstanceDataReader: attribute '" + attributeName + "' of node '" + node->id + "' belongs to a guidance and takes no value from the data");
       }

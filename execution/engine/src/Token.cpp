@@ -151,12 +151,12 @@ Token::~Token() {
       ) {
         if ( state == State::WAITING ) {
           systemState->tokensAtActivityInstance.erase(this);
-          systemState->exitStatusAtActivityInstance.erase(this);
+          systemState->completionStatusAtActivityInstance.erase(this);
         }
         else {
           systemState->tokenAtMultiInstanceActivity.erase(this);
           if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::MultiInstanceSequential ) {
-            systemState->tokenAwaitingMultiInstanceExit.erase(this);
+            systemState->tokenAwaitingMultiInstanceCompletion.erase(this);
           }
         }
       }
@@ -286,11 +286,6 @@ bool Token::entryIsFeasible() const {
 bool Token::completionIsFeasible() const {
   assert( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
   return node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleCompletion(status,*data);
-}
-
-bool Token::exitIsFeasible() const {
-  assert( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
-  return node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleExit(status,*data);
 }
 
 void Token::advanceFromCreated() {
@@ -778,7 +773,7 @@ void Token::advanceToCompleted() {
           engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
           return;
         }
-        awaitExitEvent();
+        engine->commands.emplace_back(std::bind(&Token::advanceFromCompleted,this), this);
       }
       return;
     }
@@ -907,20 +902,12 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
   advanceToDeparting();
 }
 
-void Token::advanceToExiting() {
-//std::cerr << "advanceToExiting: " << jsonify().dump() << std::endl;
+void Token::advanceFromCompleted() {
+//std::cerr << "advanceFromCompleted: " << jsonify().dump() << std::endl;
   auto engine = const_cast<Engine*>(owner->systemState->engine);
 
-  if ( status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] > owner->systemState->getTime() ) {
-    throw std::runtime_error("Token: exit timestamp at node '" + node->id + "' is larger than current time");
-  }
-
-  update(State::EXITING);
-
-  // check restrictions
-  if ( !exitIsFeasible() ) {
-    engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
-    return;
+  if ( node->as<BPMN::FlowNode>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+    releaseSequentialPerformer();
   }
 
   auto extensionElements = node->extensionElements->represents<BPMNOS::Model::ExtensionElements>();
@@ -982,6 +969,7 @@ void Token::advanceToExiting() {
     }();
 
     if ( LOOP ) {
+      update(State::READY);
       awaitEntryEvent();
       return;
     }
@@ -1264,14 +1252,6 @@ void Token::awaitTaskCompletionEvent() {
   auto systemState = const_cast<SystemState*>(owner->systemState);
   auto time = status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp].value();
   systemState->tokensAwaitingCompletionEvent.emplace(time,weak_from_this());
-}
-
-void Token::awaitExitEvent() {
-//std::cerr << "awaitExitEvent" << std::endl;
-  auto systemState = const_cast<SystemState*>(owner->systemState);
-  decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::ExitRequest );
-  systemState->pendingExitDecisions.emplace_back( weak_from_this(), decisionRequest );
-  owner->systemState->engine->notify(decisionRequest.get());
 }
 
 void Token::awaitMessageDelivery() {

@@ -32,7 +32,6 @@ protected:
     switch ( type ) {
       case Observable::Type::EntryRequest: return "entry";
       case Observable::Type::ChoiceRequest: return "choice";
-      case Observable::Type::ExitRequest: return "exit";
       case Observable::Type::MessageDeliveryRequest: return "messageDelivery";
       default: break;
     }

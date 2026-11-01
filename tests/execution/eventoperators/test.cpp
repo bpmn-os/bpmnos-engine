@@ -17,9 +17,7 @@ SCENARIO( "Operators of throw events", "[execution][eventoperators]" ) {
     WHEN( "The engine is started" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
@@ -66,9 +64,7 @@ SCENARIO( "Operators of catch events", "[execution][eventoperators]" ) {
     WHEN( "The engine is started" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
@@ -105,9 +101,7 @@ SCENARIO( "Operators of boundary events and of an error end event", "[execution]
     WHEN( "The engine is started" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
@@ -158,10 +152,8 @@ SCENARIO( "Operators of message events", "[execution][eventoperators]" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
-      Execution::InstantExit exitHandler;
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
@@ -206,9 +198,7 @@ SCENARIO( "Operators of signal events", "[execution][eventoperators]" ) {
     WHEN( "The engine is started" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
@@ -245,9 +235,7 @@ SCENARIO( "Operators of start events", "[execution][eventoperators]" ) {
     WHEN( "The engine is started" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));

@@ -16,7 +16,7 @@ SCENARIO( "SystemState copy with parallel multi-instance activity", "[systemstat
 
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    // No exit handler - tasks stay in BUSY state
+    // Tasks stay in BUSY state
     entryHandler.connect(&engine);
     Execution::Recorder recorder;
 //    Execution::Recorder recorder(std::cerr);
@@ -66,7 +66,7 @@ SCENARIO( "SystemState copy with sequential multi-instance activity", "[systemst
 
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    // No exit handler - first task stays in BUSY state, others wait
+    // First task stays in BUSY state, others wait
     entryHandler.connect(&engine);
     Execution::Recorder recorder;
 //    Execution::Recorder recorder(std::cerr);
@@ -80,7 +80,7 @@ SCENARIO( "SystemState copy with sequential multi-instance activity", "[systemst
     REQUIRE( originalState->tokenAtMultiInstanceActivity.size() == 3 );
     REQUIRE( originalState->tokensAtActivityInstance.size() == 1 );
     // Sequential: first token active, others waiting in chain
-    REQUIRE( originalState->tokenAwaitingMultiInstanceExit.size() == 2 );
+    REQUIRE( originalState->tokenAwaitingMultiInstanceCompletion.size() == 2 );
 
     WHEN( "SystemState is copied" ) {
       auto scenarioCopy = dataProvider->createScenario();
@@ -91,8 +91,8 @@ SCENARIO( "SystemState copy with sequential multi-instance activity", "[systemst
                  originalState->tokenAtMultiInstanceActivity.size() );
         REQUIRE( copiedState.tokensAtActivityInstance.size() ==
                  originalState->tokensAtActivityInstance.size() );
-        REQUIRE( copiedState.tokenAwaitingMultiInstanceExit.size() ==
-                 originalState->tokenAwaitingMultiInstanceExit.size() );
+        REQUIRE( copiedState.tokenAwaitingMultiInstanceCompletion.size() ==
+                 originalState->tokenAwaitingMultiInstanceCompletion.size() );
       }
     }
   }

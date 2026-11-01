@@ -71,13 +71,12 @@ public:
    * @brief Returns the value of the objective global attribute maintained by the run.
    *
    * The objective is updated whenever a weighted data or global attribute is written, and when status
-   * attributes are accounted at element exit/completion.
+   * attributes are accounted at element completion.
    */
   BPMNOS::number getObjective() const;
   
   auto_list< std::weak_ptr<Token>, std::weak_ptr<DecisionRequest> > pendingEntryDecisions;
   auto_list< std::weak_ptr<Token>, std::weak_ptr<DecisionRequest> > pendingChoiceDecisions;
-  auto_list< std::weak_ptr<Token>, std::weak_ptr<DecisionRequest> > pendingExitDecisions;
   /// Pending deliveries hold the request of their own kind, which carries the header its token is matched by.
   auto_list< std::weak_ptr<Token>, std::weak_ptr<MessageDeliveryRequest> > pendingMessageDeliveryDecisions;
 
@@ -122,9 +121,9 @@ public:
   std::unordered_map< Token*, std::weak_ptr<Message> > messageAwaitingDelivery; ///< Container holding message awaiting delivery for tokens at send tasks
 
   std::unordered_map< Token*, Token* > tokenAtMultiInstanceActivity; ///< Map holding the main token waiting at a multi-instance (or loop) activity.
-  std::unordered_map< Token*, Token* > tokenAwaitingMultiInstanceExit; ///< Map holding the token waiting for the exit of an instantiation of a multi-instance (or loop) activity.
+  std::unordered_map< Token*, Token* > tokenAwaitingMultiInstanceCompletion; ///< Map holding the token waiting for the completion of an instantiation of a multi-instance (or loop) activity.
   std::unordered_map< Token*, std::vector<Token*> > tokensAtActivityInstance; ///< Map holding all tokens representing an active instance of a multi-instance (or loop) activity for each token waiting at the multi-instance (or loop) activity.
-  std::unordered_map< Token*, std::vector<BPMNOS::Status> > exitStatusAtActivityInstance; ///< Map holding the exit status of all instances of a multi-instance (or loop) activity for each token waiting at the multi-instance (or loop) activity.
+  std::unordered_map< Token*, std::vector<BPMNOS::Status> > completionStatusAtActivityInstance; ///< Map holding the completion status of all instances of a multi-instance (or loop) activity for each token waiting at the multi-instance (or loop) activity.
 
   std::unordered_map< Token*, Token* > tokenAtEventBasedGateway; ///< Map holding the token at the relevant event-based gateway
   std::unordered_map< Token*, std::vector<Token*> > tokensAwaitingEvent; ///< Map holding all tokens at catching events subsequent to an event-based gateway

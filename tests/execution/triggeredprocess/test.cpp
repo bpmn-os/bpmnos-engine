@@ -129,9 +129,7 @@ SCENARIO( "Message triggered process", "[execution][triggeredprocess]" ) {
     WHEN( "The engine is started without any message handler" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -181,9 +179,7 @@ SCENARIO( "Message triggered process", "[execution][triggeredprocess]" ) {
     WHEN( "The engine is started without any message handler" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -230,9 +226,7 @@ SCENARIO( "Message triggered process", "[execution][triggeredprocess]" ) {
     WHEN( "The engine is started without any message handler" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -269,9 +263,7 @@ SCENARIO( "Message triggered process", "[execution][triggeredprocess]" ) {
     WHEN( "The engine is started without any message handler" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -313,9 +305,7 @@ SCENARIO( "Message triggered process", "[execution][triggeredprocess]" ) {
     WHEN( "The engine is started without any message handler" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);

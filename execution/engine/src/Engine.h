@@ -18,7 +18,6 @@
 #include "events/ChoiceEvent.h"
 #include "events/CompletionEvent.h"
 #include "events/MessageDeliveryEvent.h"
-#include "events/ExitEvent.h"
 //#include "Notifier.h"
 #include "Mediator.h"
 #include "EventDispatcher.h"
@@ -150,7 +149,6 @@ public:
   void process(const ChoiceEvent* event);
   void process(const CompletionEvent* event);
   void process(const MessageDeliveryEvent* event);
-  void process(const ExitEvent* event);
   void process(const ErrorEvent* event);
   void process([[maybe_unused]] const ClockTickEvent* event);
   void process([[maybe_unused]] const TerminationEvent* event);

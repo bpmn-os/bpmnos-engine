@@ -144,7 +144,6 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
       for ( auto input : restriction->expression.inputs ) {
         entryDependencies.insert(input);
         completionDependencies.insert(input);
-        exitDependencies.insert(input);
       }
     }
   }
@@ -207,14 +206,10 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
           else if ( restrictions.back()->scope == Restriction::Scope::COMPLETION ) {
             completionDependencies.insert(input);
           }
-          else if ( restrictions.back()->scope == Restriction::Scope::EXIT ) {
-            exitDependencies.insert(input);
-          }
           else {
             // Restriction::Scope::FULL
             entryDependencies.insert(input);
             completionDependencies.insert(input);
-            exitDependencies.insert(input);
           }
         }
       }
@@ -368,9 +363,6 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     if ( guidance->type == Guidance::Type::Entry ) {
       entryGuidance = std::move(guidance);
     }
-    else if ( guidance->type == Guidance::Type::Exit ) {
-      exitGuidance = std::move(guidance);
-    }
     else if ( guidance->type == Guidance::Type::Choice ) {
       choiceGuidance = std::move(guidance);
     }
@@ -432,22 +424,6 @@ bool ExtensionElements::feasibleCompletion(const BPMNOS::Status& status, const D
 template bool ExtensionElements::feasibleCompletion<BPMNOS::Data>(const BPMNOS::Status& status, const BPMNOS::Data& data) const;
 template bool ExtensionElements::feasibleCompletion<BPMNOS::SharedData>(const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;
 
-template <typename DataType>
-bool ExtensionElements::feasibleExit(const BPMNOS::Status& status, const DataType& data) const {
-  for ( auto& restriction : restrictions ) {
-    if (
-      ( restriction->scope == Restriction::Scope::EXIT || restriction->scope == Restriction::Scope::FULL )
-      && !restriction->isSatisfied(status,data)
-    ) {
-      return false;
-    }
-  }
-  
-  return satisfiesInheritedRestrictions(status,data);
-}
-
-template bool ExtensionElements::feasibleExit<BPMNOS::Data>(const BPMNOS::Status& status, const BPMNOS::Data& data) const;
-template bool ExtensionElements::feasibleExit<BPMNOS::SharedData>(const BPMNOS::Status& status, const BPMNOS::SharedData& data) const;
 
 
 template <typename DataType>

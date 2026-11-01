@@ -19,7 +19,7 @@ inline std::string tokenTag(const BPMNOS::Execution::Token* token) {
   return std::to_string((double)token->getInstanceId()) + "@" + node;
 }
 
-// Collect candidates whose tuple carries the token as the second element (entry/exit/choice/message deliveries).
+// Collect candidates whose tuple carries the token as the second element (entry/choice/message deliveries).
 template <typename Candidates>
 std::vector<CandidateInfo> collect(Candidates& candidates) {
   std::vector<CandidateInfo> result;

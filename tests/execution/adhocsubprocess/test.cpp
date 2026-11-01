@@ -18,10 +18,8 @@ SCENARIO( "Sequential adhoc subprocess", "[execution][adhocsubprocess]" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
 //      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
 //      sequentialEntryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -65,10 +63,8 @@ SCENARIO( "Sequential adhoc subprocesses with common performer", "[execution][ad
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
 //      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
 //      sequentialEntryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);

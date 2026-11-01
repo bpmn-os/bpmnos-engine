@@ -28,11 +28,9 @@ SCENARIO( "Knapsack problem", "[examples][knapsack_problem]" ) {
 //      Execution::FirstComeFirstServedSequentialEntry sequentialEntryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExit exitHandler;
       messageHandler.connect(&engine);
       parallelEntryHandler.connect(&engine);
 //      sequentialEntryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);

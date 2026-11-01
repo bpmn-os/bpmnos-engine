@@ -55,7 +55,7 @@
               <bpmnos:attribute id="Attribute_265dljm" type="decimal[]" name="departures" />
             </bpmnos:attributes>
             <bpmnos:restrictions>
-              <bpmnos:restriction id="Restriction_2pi7p4k" scope="exit" expression="departure &#62;= timestamp" />
+              <bpmnos:restriction id="Restriction_2pi7p4k" scope="completion" expression="departure &#62;= timestamp" />
             </bpmnos:restrictions>
             <bpmnos:operators>
               <bpmnos:operator id="Operator_1a0ojnh" expression="next_location := destinations[index]" />

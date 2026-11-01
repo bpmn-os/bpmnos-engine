@@ -132,10 +132,8 @@ std::pair<nlohmann::ordered_json, nlohmann::ordered_json> exchange(const std::st
   Execution::Engine engine(model);
   Execution::InstantEntry entryHandler;
   Execution::FirstMatchingMessageDelivery messageHandler;
-  Execution::InstantExit exitHandler;
   entryHandler.connect(&engine);
   messageHandler.connect(&engine);
-  exitHandler.connect(&engine);
   Execution::Recorder recorder;
   recorder.subscribe(&engine);
   engine.run(provider->createScenario());
@@ -220,10 +218,8 @@ nlohmann::ordered_json routeExchange(const std::string& element, const std::vect
   Execution::Engine engine(model);
   Execution::InstantEntry entryHandler;
   Execution::FirstMatchingMessageDelivery messageHandler;
-  Execution::InstantExit exitHandler;
   entryHandler.connect(&engine);
   messageHandler.connect(&engine);
-  exitHandler.connect(&engine);
   Execution::Recorder recorder;
   recorder.subscribe(&engine);
   engine.run(provider->createScenario());

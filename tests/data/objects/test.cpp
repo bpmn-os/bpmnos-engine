@@ -178,9 +178,7 @@ TEST_CASE( "Create and remove objects during a run", "[data][objects]" ) {
   auto provider = std::make_shared<Execution::StaticDataProvider>(model, declarations);
   Execution::Engine engine(model);
   Execution::InstantEntry entryHandler;
-  Execution::InstantExit exitHandler;
   entryHandler.connect(&engine);
-  exitHandler.connect(&engine);
   ObjectCounter counter;
   engine.addSubscriber(&counter, Execution::Observable::Type::Token);
   engine.run(provider->createScenario());

@@ -202,9 +202,7 @@ TEST_CASE( "A restriction reading an object decides feasibility", "[execution][o
     );
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     Execution::OutcomeSentinel sentinel;
     sentinel.subscribe(&engine);
     engine.run(provider->createScenario());
@@ -301,9 +299,7 @@ TEST_CASE( "Guards reading an object route a token at an exclusive gateway", "[e
     );
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     Execution::Recorder recorder;
     recorder.subscribe(&engine);
     engine.run(provider->createScenario());

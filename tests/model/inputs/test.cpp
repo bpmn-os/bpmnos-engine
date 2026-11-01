@@ -131,9 +131,7 @@ TEST_CASE( "Run the Quadratic Assignment Problem with matrix inputs", "[model][i
   auto provider = std::make_shared<Execution::StaticDataProvider>(model, "INSTANCE_ID; NODE_ID; INITIALIZATION\nInstance_1; Process_1;\n");
   Execution::Engine engine(model);
   Execution::InstantEntry entryHandler;
-  Execution::InstantExit exitHandler;
   entryHandler.connect(&engine);
-  exitHandler.connect(&engine);
   Execution::Recorder recorder;
   recorder.subscribe(&engine);
   engine.run(provider->createScenario());

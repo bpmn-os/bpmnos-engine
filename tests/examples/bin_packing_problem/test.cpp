@@ -41,8 +41,8 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );
       }
-      THEN( "Then all wait activities are completed" ) {
-        auto waitLog = recorder.find(nlohmann::json{{"nodeId","WaitActivity"}, {"state", "COMPLETED"} }, nlohmann::json{{"event",nullptr }, {"decision",nullptr }});
+      THEN( "Then all conditional events are completed" ) {
+        auto waitLog = recorder.find(nlohmann::json{{"nodeId","ConditionalEvent"}, {"state", "COMPLETED"} }, nlohmann::json{{"event",nullptr }, {"decision",nullptr }});
 //std::cerr << log.size() << ": " << log.dump() << std::endl;
         REQUIRE( waitLog.size() == 3 );
       }      
@@ -103,8 +103,8 @@ SCENARIO( "Bin packing problem", "[examples][bin_packing_problem]" ) {
         auto failureLog = recorder.find(nlohmann::json{{"state", "FAILED"}});
         REQUIRE( failureLog.size() == 0 );
       }
-      THEN( "Then all wait activities are completed" ) {
-        auto log = recorder.find(nlohmann::json{{"nodeId","WaitActivity"}, {"state", "COMPLETED"} }, nlohmann::json{{"event",nullptr }, {"decision",nullptr }});
+      THEN( "Then all conditional events are completed" ) {
+        auto log = recorder.find(nlohmann::json{{"nodeId","ConditionalEvent"}, {"state", "COMPLETED"} }, nlohmann::json{{"event",nullptr }, {"decision",nullptr }});
 //std::cerr << log.size() << ": " << log.dump() << std::endl;
         REQUIRE( log.size() == 4 );
       }      

@@ -20,10 +20,8 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
-      Execution::InstantExit exitHandler;
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -60,10 +58,8 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
-      Execution::InstantExit exitHandler;
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -93,10 +89,8 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
-      Execution::InstantExit exitHandler;
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -127,12 +121,10 @@ SCENARIO( "Simple messaging", "[execution][message]" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
-      Execution::InstantExit exitHandler;
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       recorder.subscribe(&engine);
       dataProvider->setEndTime(0);
       engine.run(std::move(scenario));
@@ -168,10 +160,8 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExit exitHandler;
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
@@ -200,10 +190,8 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExit exitHandler;
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
@@ -231,10 +219,8 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExit exitHandler;
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
@@ -264,10 +250,8 @@ SCENARIO( "Message tasks", "[execution][message]" ) {
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExit exitHandler;
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
@@ -307,10 +291,8 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExit exitHandler;
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
@@ -339,10 +321,8 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExit exitHandler;
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
@@ -370,10 +350,8 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExit exitHandler;
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
@@ -402,10 +380,8 @@ SCENARIO( "Message tasks with timer", "[execution][message]" ) {
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
-      Execution::InstantExit exitHandler;
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       messageTaskTerminator.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
@@ -445,16 +421,14 @@ SCENARIO( "Multi-instance send task", "[execution][message]" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
-      Execution::InstantExit exitHandler;
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
       THEN( "Then both messages are delivered" ) {
-        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "EXITING"}}).size() == 2 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "DONE"}}).size() == 2 );
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "DEPARTED"}}).size() == 1 );
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "CatchEvent_2"},{"state", "COMPLETED"}}).size() == 2 );
       }
@@ -477,17 +451,15 @@ SCENARIO( "Multi-instance send task", "[execution][message]" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
-      Execution::InstantExit exitHandler;
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       dataProvider->setEndTime(1);
       engine.run(std::move(scenario));
       THEN( "Then one message is delivered, but send task is not completed" ) {
-        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "EXITING"}}).size() == 1 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "DONE"}}).size() == 1 );
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "DEPARTED"}}).size() == 0 );
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "CatchEvent_2"},{"state", "COMPLETED"}}).size() == 1 );
       }
@@ -517,16 +489,14 @@ SCENARIO( "Multi-instance receive task", "[execution][message]" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
-      Execution::InstantExit exitHandler;
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
       THEN( "Then both messages are delivered and the receive task is completed" ) {
-        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "EXITING"}}).size() == 2 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "DONE"}}).size() == 2 );
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "DEPARTED"}}).size() == 1 );
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "ThrowEvent_2"},{"state", "DEPARTED"}}).size() == 2 );
       }
@@ -549,17 +519,15 @@ SCENARIO( "Multi-instance receive task", "[execution][message]" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       Execution::FirstMatchingMessageDelivery messageHandler;
-      Execution::InstantExit exitHandler;
       messageHandler.connect(&engine);
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       dataProvider->setEndTime(1);
       engine.run(std::move(scenario));
       THEN( "Then one message is delivered and the receive task is not completed" ) {
-        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "EXITING"}}).size() == 1 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "DONE"}}).size() == 1 );
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "Activity_1"},{"state", "DEPARTED"}}).size() == 0 );
         REQUIRE( recorder.find(nlohmann::json{{"nodeId", "ThrowEvent_2"},{"state", "DEPARTED"}}).size() == 1 );
       }
@@ -603,9 +571,7 @@ SCENARIO( "Message directed to an instance that ends without receiving it", "[ex
     WHEN( "The engine is started" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -641,9 +607,7 @@ SCENARIO( "Message directed to an instance that ends without receiving it", "[ex
     WHEN( "The engine is started" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);

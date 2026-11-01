@@ -34,15 +34,13 @@ SCENARIO( "MessageDeliveries rebuilds its candidates from a SystemState notice",
     auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
     auto scenario = dataProvider->createScenario();
 
-    // Drive the state to t=0 with instant entry/exit and no message handler, so the requests are created and
+    // Drive the state to t=0 with instant entry and no message handler, so the requests are created and
     // their deliveries stay pending. A MessageDeliveries collection observes incrementally during this run.
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     auto evaluator = std::make_shared<Execution::LocalEvaluator>();
     Execution::MessageDeliveries incremental(evaluator);
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     incremental.connect(&engine);
     dataProvider->setEndTime(0);
     engine.run(std::move(scenario), 0);
@@ -95,11 +93,9 @@ SCENARIO( "CompetingCandidates rebuilds its merged candidates from a SystemState
 
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     auto evaluator = std::make_shared<Execution::LocalEvaluator>();
     Execution::CompetingCandidates incremental(evaluator);
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     incremental.connect(&engine);
     dataProvider->setEndTime(0);
     engine.run(std::move(scenario), 0);
@@ -219,52 +215,6 @@ SCENARIO( "FirstFeasibleEntry rebuilds its candidate from a SystemState notice",
   }
 }
 
-SCENARIO( "FirstFeasibleExit rebuilds its candidate from a SystemState notice", "[candidates][rebuild][exit]" ) {
-  const std::string modelFile = "tests/execution/decisiontask/DecisionTask_with_enumeration.bpmn";
-  REQUIRE_NOTHROW( Model::Model(modelFile) );
-
-  GIVEN( "A state at t=0 with a completed activity awaiting an exit decision (no exit handler)" ) {
-    std::string csv =
-      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
-      "Instance_1; Process_1;\n"
-      "Instance_1; Activity_1; x := 4\n"
-    ;
-    auto model = std::make_shared<const Model::Model>(modelFile);
-    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
-    auto scenario = dataProvider->createScenario();
-
-    // Enter and make the choice instantly, but withhold the exit handler so the exit decision stays pending.
-    Execution::Engine engine(model);
-    Execution::InstantEntry entryHandler;
-    auto evaluator = std::make_shared<Execution::LocalEvaluator>();
-    Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(evaluator);
-    Execution::FirstFeasibleExit incremental(evaluator);
-    entryHandler.connect(&engine);
-    choiceHandler.connect(&engine);
-    incremental.connect(&engine);
-    dataProvider->setEndTime(0);
-    engine.run(std::move(scenario), 0);
-
-    const auto* systemState = engine.getSystemState();
-    REQUIRE( systemState->pendingExitDecisions.count() == 1 );
-
-    WHEN( "A fresh FirstFeasibleExit collection is rebuilt from the SystemState notice" ) {
-      Execution::Notifier notifier;
-      Execution::FirstFeasibleExit rebuilt(evaluator);
-      rebuilt.connect(&notifier);
-      notifier.notify(systemState);
-
-      auto rebuiltCandidates = collect(rebuilt);
-      auto incrementalCandidates = collect(incremental);
-
-      THEN( "It offers the single feasible exit, matching the incremental build" ) {
-        REQUIRE( feasibleCount(rebuiltCandidates) == 1 );
-        REQUIRE( signatures(rebuiltCandidates) == signatures(incrementalCandidates) );
-      }
-    }
-  }
-}
-
 SCENARIO( "FirstEnumeratedChoice rebuilds its candidates from a SystemState notice", "[candidates][rebuild][choice]" ) {
   const std::string modelFile = "tests/execution/decisiontask/DecisionTask_with_enumeration.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
@@ -281,11 +231,9 @@ SCENARIO( "FirstEnumeratedChoice rebuilds its candidates from a SystemState noti
 
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     auto evaluator = std::make_shared<Execution::LocalEvaluator>();
     Execution::FirstEnumeratedChoice incremental(evaluator);
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     incremental.connect(&engine);
     dataProvider->setEndTime(0);
     engine.run(std::move(scenario), 0);
@@ -327,11 +275,9 @@ SCENARIO( "FirstBisectionalChoice rebuilds its candidates from a SystemState not
 
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantExit exitHandler;
     auto evaluator = std::make_shared<Execution::LocalEvaluator>();
     Execution::FirstBisectionalChoice incremental(evaluator);
     entryHandler.connect(&engine);
-    exitHandler.connect(&engine);
     incremental.connect(&engine);
     dataProvider->setEndTime(0);
     engine.run(std::move(scenario), 0);

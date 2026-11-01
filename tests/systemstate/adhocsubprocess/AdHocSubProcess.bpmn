@@ -20,6 +20,7 @@
           <bpmnos:status>
             <bpmnos:operators>
               <bpmnos:operator id="Operator_0c2jbu1" expression="x += 1" />
+              <bpmnos:operator id="Operator_0c2jbu2" expression="timestamp += 1" />
             </bpmnos:operators>
           </bpmnos:status>
         </bpmn2:extensionElements>
@@ -29,6 +30,7 @@
           <bpmnos:status>
             <bpmnos:operators>
               <bpmnos:operator id="Operator_0m3ruea" expression="x += 1" />
+              <bpmnos:operator id="Operator_0m3rueb" expression="timestamp += 1" />
             </bpmnos:operators>
           </bpmnos:status>
         </bpmn2:extensionElements>

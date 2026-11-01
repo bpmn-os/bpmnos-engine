@@ -17,9 +17,7 @@ SCENARIO( "Task with expression operator", "[status][nestedactivities]" ) {
     WHEN( "The engine is started with a recorder" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
-      Execution::InstantExit exitHandler;
       entryHandler.connect(&engine);
-      exitHandler.connect(&engine);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
@@ -29,7 +27,7 @@ SCENARIO( "Task with expression operator", "[status][nestedactivities]" ) {
         REQUIRE( subProcessLog[0]["state"] == "ARRIVED" );
         REQUIRE( subProcessLog[1]["state"] == "READY" );
         REQUIRE( subProcessLog[1]["status"].size() == subProcessLog[0]["status"].size()+1 );
-        REQUIRE( subProcessLog[subProcessLog.size()-2]["state"] == "EXITING" );
+        REQUIRE( subProcessLog[subProcessLog.size()-2]["state"] == "COMPLETED" );
         REQUIRE( subProcessLog[subProcessLog.size()-1]["state"] == "DEPARTED" );
         REQUIRE( subProcessLog[1]["status"].size() == subProcessLog[subProcessLog.size()-2]["status"].size() );
         REQUIRE( subProcessLog[subProcessLog.size()-1]["status"].size() == subProcessLog[subProcessLog.size()-2]["status"].size()-1 );
@@ -39,7 +37,7 @@ SCENARIO( "Task with expression operator", "[status][nestedactivities]" ) {
         REQUIRE( taskLog[1]["state"] == "READY" );
         REQUIRE( taskLog[0]["status"].size() == subProcessLog[1]["status"].size() );
         REQUIRE( taskLog[1]["status"].size() == taskLog[0]["status"].size()+1 );
-        REQUIRE( taskLog[taskLog.size()-2]["state"] == "EXITING" );
+        REQUIRE( taskLog[taskLog.size()-2]["state"] == "COMPLETED" );
         REQUIRE( taskLog[taskLog.size()-1]["state"] == "DEPARTED" );
         REQUIRE( taskLog[1]["status"].size() == taskLog[taskLog.size()-2]["status"].size() );
         REQUIRE( taskLog[taskLog.size()-1]["status"].size() == taskLog[taskLog.size()-2]["status"].size()-1 );
