@@ -524,12 +524,8 @@ void Token::advanceToEntered() {
       return;
     }
 
-    // tokens entering any other gateway automatically advance to done or
-    // departed state
-    if ( node->as<BPMN::FlowNode>()->outgoing.empty() ) {
-      engine->commands.emplace_back(std::bind(&Token::advanceToDone,this), this);
-      return;
-    }
+    // tokens entering any other gateway automatically advance to departed state
+    assert( !node->as<BPMN::FlowNode>()->outgoing.empty() );
     advanceToDeparting();
   }
 }
@@ -590,24 +586,18 @@ void Token::advanceToBusy() {
   }
   else if ( node->represents<BPMN::SubProcess>() ) {
     auto scope = node->as<BPMN::Scope>();
-    if ( scope->startNodes.empty() ) {
-//std::cerr << "skip child statemachine at node " << node->id << std::endl;
+    assert( !scope->startNodes.empty() );
+    if ( scope->startNodes.size() == 1 ) {
+//std::cerr << "create child statemachine at node " << node->id << std::endl;
+      // create child statemachine
       auto engine = const_cast<Engine*>(owner->systemState->engine);
-      engine->commands.emplace_back(std::bind(&Token::advanceToCompleted,this), this);
+      assert( owned );
+      engine->commands.emplace_back(std::bind(&StateMachine::run,owned.get(),status), owned.get());
     }
     else {
-      if ( scope->startNodes.size() == 1 ) {
-//std::cerr << "create child statemachine at node " << node->id << std::endl;
-        // create child statemachine
-        auto engine = const_cast<Engine*>(owner->systemState->engine);
-        assert( owned );
-        engine->commands.emplace_back(std::bind(&StateMachine::run,owned.get(),status), owned.get());
-      }
-      else {
-        throw std::runtime_error("Token: subprocess '" + scope->id + "' has multiple start nodes");
-      }
-      return;
+      throw std::runtime_error("Token: subprocess '" + scope->id + "' has multiple start nodes");
     }
+    return;
   }
   else if ( node->represents<BPMN::EventBasedGateway>() ) {
     // token will automatically be copied and forwarded along each sequence flow

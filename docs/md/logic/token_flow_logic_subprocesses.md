@@ -67,7 +67,7 @@ These tokens inherit the @ref BPMNOS::Execution::Token::status "status attribute
 Furthermore,
 the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::BUSY "BUSY".
 
-@note @ref BPMN::SubProcess "Subprocesses" must have a unique @ref BPMN::UntypedStartEvent "blank start event".
+@note @ref BPMN::SubProcess "Subprocesses" must have a unique @ref BPMN::UntypedStartEvent "blank start event", and a model containing a subprocess without one is rejected when it is read.
 @par
 @note @ref BPMNOS::Model::SequentialAdHocSubProcess "Ad-hoc subprocesses" must not contain any start event and any flow node without incoming sequence flows must be a an @ref BPMN::Activity "activity".
 @par

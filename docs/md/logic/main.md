@@ -24,6 +24,8 @@ The token flow logic depends on the node type and is described in below sections
 
   @par
   @note @ref BPMN::InclusiveGateway "Inclusive gateways" and @ref BPMN::ComplexGateway "complex gateways" are **not** supported. 
+  @par
+  @attention A @ref BPMN::Gateway "gateway" must have at least one incoming and one outgoing sequence flow.
 
 - Events
   - @subpage token_flow_logic_untyped_start_events

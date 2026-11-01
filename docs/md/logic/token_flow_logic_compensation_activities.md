@@ -23,3 +23,5 @@ stateDiagram-v2
 
 
 @note A compensation activity can not be compensated.
+@par
+@attention A compensation activity must not be a @ref BPMN::SendTask "send task", a @ref BPMN::ReceiveTask "receive task" or a @ref BPMNOS::Model::DecisionTask "decision task". A failing scope waits until its compensations are done, so that a delivery that never occurs would prevent the failure from being concluded, and a compensation activity is performed without any decision, compensation having been triggered. A compensation activity may be a @ref BPMN::SubProcess "subprocess" containing such tasks or events awaiting a trigger, in which case it is the responsibility of the modeller to ensure that the subprocess concludes.

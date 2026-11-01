@@ -249,6 +249,20 @@ std::unique_ptr<BPMN::EventSubProcess> Model::createEventSubProcess(XML::bpmn::t
 
 std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* activity, BPMN::Scope* parent) {
   auto baseElement = BPMN::Model::createActivity(activity,parent);
+
+  if ( baseElement->as<BPMN::Activity>()->isForCompensation && (
+      baseElement->represents<BPMN::SendTask>() ||
+      baseElement->represents<BPMN::ReceiveTask>() ||
+      baseElement->represents<DecisionTask>()
+    )
+  ) {
+    throw std::runtime_error("Model: compensation activity '" + baseElement->id + "' must not be a send, receive or decision task");
+  }
+
+  if ( baseElement->represents<BPMN::SubProcess>() && activity->getChildren<XML::bpmn::tStartEvent>().empty() ) {
+    throw std::runtime_error("Model: subprocess '" + baseElement->id + "' has no start event");
+  }
+
   auto extensionElements = std::make_unique<BPMNOS::Model::ExtensionElements>(activity, parent->extensionElements->as<ExtensionElements>()->attributeRegistry, parent, getData(activity));
 
   if ( baseElement->represents<BPMN::SendTask>() && !extensionElements->messageDefinition ) {
@@ -268,6 +282,17 @@ std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* acti
 
   // bind attributes, restrictions, and operators to all activities
   return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );;
+}
+
+std::unique_ptr<BPMN::FlowNode> Model::createGateway(XML::bpmn::tGateway* gateway, BPMN::Scope* parent) {
+  auto baseElement = BPMN::Model::createGateway(gateway,parent);
+  if ( gateway->incoming.empty() ) {
+    throw std::runtime_error("Model: gateway '" + baseElement->id + "' has no incoming sequence flow");
+  }
+  if ( gateway->outgoing.empty() ) {
+    throw std::runtime_error("Model: gateway '" + baseElement->id + "' has no outgoing sequence flow");
+  }
+  return baseElement;
 }
 
 std::unique_ptr<BPMN::SequenceFlow> Model::createSequenceFlow(XML::bpmn::tSequenceFlow* sequenceFlow, BPMN::Scope* scope) {

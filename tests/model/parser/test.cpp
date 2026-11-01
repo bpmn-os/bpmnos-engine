@@ -67,6 +67,34 @@ TEST_CASE( "Refuse a message thrown within the process it instantiates", "[model
   );
 }
 
+TEST_CASE( "Refuse a typed compensation activity", "[model][parser]" ) {
+  REQUIRE_THROWS_WITH(
+    Model::Model(std::string("tests/model/parser/Typed_compensation_activity.bpmn")),
+    "Model: compensation activity 'CompensationActivity_1' must not be a send, receive or decision task"
+  );
+}
+
+TEST_CASE( "Refuse a gateway without incoming sequence flow", "[model][parser]" ) {
+  REQUIRE_THROWS_WITH(
+    Model::Model(std::string("tests/model/parser/Gateway_without_incoming_flow.bpmn")),
+    "Model: gateway 'Gateway_1' has no incoming sequence flow"
+  );
+}
+
+TEST_CASE( "Refuse a gateway without outgoing sequence flow", "[model][parser]" ) {
+  REQUIRE_THROWS_WITH(
+    Model::Model(std::string("tests/model/parser/Gateway_without_outgoing_flow.bpmn")),
+    "Model: gateway 'Gateway_1' has no outgoing sequence flow"
+  );
+}
+
+TEST_CASE( "Refuse an ad-hoc subprocess with a start event", "[model][parser]" ) {
+  REQUIRE_THROWS_WITH(
+    Model::Model(std::string("tests/model/parser/Adhoc_subprocess_with_start_event.bpmn")),
+    "Model: start event provided for adhoc subprocess 'AdHocSubProcess_1'"
+  );
+}
+
 TEST_CASE( "Refuse a signal event without a signal definition", "[model][parser]" ) {
   REQUIRE_THROWS_WITH(
     Model::Model(std::string("tests/model/parser/Signal_without_definition.bpmn")),

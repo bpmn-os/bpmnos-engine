@@ -1,61 +1,10 @@
 #include "prelude.h"
 
-SCENARIO( "Empty executable subprocess", "[execution][subprocess]" ) {
-  const std::string modelFile = "tests/execution/subprocess/Empty_executable_subprocess.bpmn";
-  REQUIRE_NOTHROW( Model::Model(modelFile) );
-  GIVEN( "A single instance with no input values" ) {
-
-    std::string csv =
-      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
-      "Instance_1; Process_1;\n"
-    ;
-
-    auto model = std::make_shared<const Model::Model>(modelFile);
-    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
-    auto scenario = dataProvider->createScenario();
-
-    WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine(model);
-      Execution::InstantEntry entryHandler;
-      entryHandler.connect(&engine);
-      Execution::Recorder recorder;
-//      Execution::Recorder recorder(std::cerr);
-      recorder.subscribe(&engine);
-      engine.run(std::move(scenario));
-      auto tokenLog = recorder.find(nlohmann::json{}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-      THEN( "The token log has exactly 20 entries" ) {
-        REQUIRE( tokenLog.size() == 20 );
-      }
-      THEN( "The dump of each entry of the recorder log is correct" ) {
-        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( processLog[0]["state"] == "CREATED" );
-        REQUIRE( processLog[1]["state"] == "READY" );
-        REQUIRE( processLog[2]["state"] == "ENTERED" );
-        REQUIRE( processLog[3]["state"] == "BUSY" );
-        REQUIRE( processLog[4]["state"] == "COMPLETED" );
-        REQUIRE( processLog[5]["state"] == "DONE" );
-
-        auto startLog = recorder.find(nlohmann::json{{"nodeId","StartEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( startLog[1]["state"] == "ENTERED" );
-        REQUIRE( startLog[2]["state"] == "BUSY" );
-        REQUIRE( startLog[3]["state"] == "COMPLETED" );
-        REQUIRE( startLog[4]["state"] == "DEPARTED" );
-
-        auto activityLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( activityLog[0]["state"] == "ARRIVED" );
-        REQUIRE( activityLog[1]["state"] == "READY" );
-        REQUIRE( activityLog[2]["state"] == "ENTERED" );
-        REQUIRE( activityLog[3]["state"] == "BUSY" );
-        REQUIRE( activityLog[4]["state"] == "COMPLETED" );
-        REQUIRE( activityLog[5]["state"] == "DEPARTED" );
-        
-        auto endLog = recorder.find(nlohmann::json{{"nodeId","EndEvent_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( endLog[0]["state"] == "ARRIVED" );
-        REQUIRE( endLog[1]["state"] == "ENTERED" );
-        REQUIRE( endLog[2]["state"] == "DONE" );
-      }
-    }
-  }
+TEST_CASE( "Refuse a subprocess without start event", "[execution][subprocess]" ) {
+  REQUIRE_THROWS_WITH(
+    Model::Model(std::string("tests/execution/subprocess/Empty_executable_subprocess.bpmn")),
+    "Model: subprocess 'Activity_1' has no start event"
+  );
 }
 
 SCENARIO( "Trivial executable subprocess", "[execution][subprocess]" ) {
