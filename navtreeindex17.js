@@ -1,5 +1,7 @@
 var NAVTREEINDEX17 =
 {
+"token_flow_logic_subprocesses.html#entered-1":[1,1,0,2],
+"token_flow_logic_subprocesses.html#failed-2":[1,1,0,8],
 "token_flow_logic_subprocesses.html#failing-1":[1,1,0,7],
 "token_flow_logic_subprocesses.html#ready-1":[1,1,0,1],
 "token_flow_logic_subprocesses.html#subprocesses-and-ad-hoc-subprocesses-excluding-multi-instance-and-compensation-activities":[1,1,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX17 =
 "vehicle_routing_problem.html#datastorereference-datastorereference_1-3":[6,5,0,11],
 "vehicle_routing_problem.html#diagram-10":[6,5,0,0],
 "vehicle_routing_problem.html#endevent-endeventcustomer-1":[6,5,0,8],
-"vehicle_routing_problem.html#endevent-endeventrequest-1":[6,5,0,27],
-"vehicle_routing_problem.html#endevent-endeventvehicle-1":[6,5,0,13],
-"vehicle_routing_problem.html#endevent-endeventvisit":[6,5,0,26]
+"vehicle_routing_problem.html#endevent-endeventrequest-1":[6,5,0,27]
 };

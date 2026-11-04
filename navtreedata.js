@@ -68,9 +68,9 @@ var NAVTREEINDEX =
 "namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681afa4467d81943477ed17abb224b8b8af4",
 "pickup_delivery_problem.html#status-106",
 "structBPMNOS_1_1Execution_1_1MessageDeliveryDecision.html#a4d9f4758796222838f0f3a6ca9132d22",
-"structBPMNOS_1_1Object.html#ae298f7081627680498c098f61a01dff3",
-"token_flow_logic_subprocesses.html#failing-1",
-"vehicle_routing_problem.html#entry-restrictions-17"
+"structBPMNOS_1_1Object.html#ade50b68f499087bc742a1c38381d3b46",
+"token_flow_logic_subprocesses.html#entered-1",
+"vehicle_routing_problem.html#endevent-endeventvehicle-1"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

@@ -1,5 +1,7 @@
 var NAVTREEINDEX16 =
 {
+"structBPMNOS_1_1Object.html#ade50b68f499087bc742a1c38381d3b46":[7,2,1,6,13],
+"structBPMNOS_1_1Object.html#ae298f7081627680498c098f61a01dff3":[7,0,0,5,11],
 "structBPMNOS_1_1Object.html#ae298f7081627680498c098f61a01dff3":[7,2,1,6,11],
 "structBPMNOS_1_1Object.html#af1625be37b9e0904d7d0835c4dc588a8":[7,0,0,5,5],
 "structBPMNOS_1_1Object.html#af1625be37b9e0904d7d0835c4dc588a8":[7,2,1,6,5],
@@ -247,7 +249,5 @@ var NAVTREEINDEX16 =
 "token_flow_logic_subprocesses.html#busy-1":[1,1,0,3],
 "token_flow_logic_subprocesses.html#completed-1":[1,1,0,4],
 "token_flow_logic_subprocesses.html#departed-1":[1,1,0,5],
-"token_flow_logic_subprocesses.html#done-2":[1,1,0,6],
-"token_flow_logic_subprocesses.html#entered-1":[1,1,0,2],
-"token_flow_logic_subprocesses.html#failed-2":[1,1,0,8]
+"token_flow_logic_subprocesses.html#done-2":[1,1,0,6]
 };

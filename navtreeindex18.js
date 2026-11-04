@@ -1,5 +1,7 @@
 var NAVTREEINDEX18 =
 {
+"vehicle_routing_problem.html#endevent-endeventvehicle-1":[6,5,0,13],
+"vehicle_routing_problem.html#endevent-endeventvisit":[6,5,0,26],
 "vehicle_routing_problem.html#entry-restrictions-17":[6,5,0,17,3],
 "vehicle_routing_problem.html#entry-restrictions-18":[6,5,0,18,3],
 "vehicle_routing_problem.html#globals-100":[6,5,0,23,2],
