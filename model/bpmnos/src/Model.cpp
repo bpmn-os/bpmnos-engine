@@ -259,6 +259,11 @@ std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* acti
     throw std::runtime_error("Model: compensation activity '" + baseElement->id + "' must not be a send, receive or decision task");
   }
 
+  if ( baseElement->as<BPMN::Activity>()->isForCompensation && baseElement->represents<BPMN::AdHocSubProcess>() ) {
+    // a compensation activity is a task or a subprocess with a start event, at which its entry restrictions are checked
+    throw std::runtime_error("Model: compensation activity '" + baseElement->id + "' must not be an ad-hoc subprocess");
+  }
+
   if ( baseElement->represents<BPMN::SubProcess>() && activity->getChildren<XML::bpmn::tStartEvent>().empty() ) {
     throw std::runtime_error("Model: subprocess '" + baseElement->id + "' has no start event");
   }
@@ -339,6 +344,10 @@ std::unique_ptr<BPMN::FlowNode> Model::createEvent(XML::bpmn::tEvent* event, BPM
       activity && activity->loopCharacteristics.has_value()
     ) {
       throw std::runtime_error("Model: compensation event subprocess '" + eventSubProcess->id + "' must not belong to subprocess '" + activity->id + "' with a loop or multi-instance marker");
+    }
+    if ( !eventSubProcess->extensionElements->as<ExtensionElements>()->restrictions.empty() ) {
+      // the compensation of a completed subprocess is performed whatever the status it completed with
+      throw std::runtime_error("Model: compensation event subprocess '" + eventSubProcess->id + "' must not have restrictions");
     }
   }
 

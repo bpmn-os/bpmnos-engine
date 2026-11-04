@@ -321,12 +321,15 @@ SCENARIO( "Constrained executable process", "[execution][process]" ) {
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
-      THEN( "The process fails after entry" ) {
+      THEN( "The process fails at its start event" ) {
         auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr }, {"event",nullptr },{"decision",nullptr }});
+        REQUIRE( processLog.size() == 6 );
         REQUIRE( processLog[0]["state"] == "CREATED" );
         REQUIRE( processLog[1]["state"] == "READY" );
         REQUIRE( processLog[2]["state"] == "ENTERED" );
-        REQUIRE( processLog[3]["state"] == "FAILED" );
+        REQUIRE( processLog[3]["state"] == "BUSY" );
+        REQUIRE( processLog[4]["state"] == "FAILING" );
+        REQUIRE( processLog[5]["state"] == "FAILED" );
       }
     }
 
@@ -724,6 +727,40 @@ SCENARIO( "Two instances of which one fails", "[execution][process]" ) {
       }
       THEN( "The outcome of the run is a failure" ) {
         REQUIRE( sentinel.getOutcome() == Execution::Outcome::FAILED );
+      }
+    }
+  }
+}
+
+SCENARIO( "Process failing its completion check", "[execution][process]" ) {
+  const std::string modelFile = "tests/execution/process/Process_failing_completion_check.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "A single instance with no input values" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+    ;
+
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine(model);
+      Execution::InstantEntry entryHandler;
+      entryHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(std::move(scenario));
+      THEN( "The process passes through FAILING although it has nothing to compensate" ) {
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( processLog.size() >= 3 );
+        REQUIRE( processLog[processLog.size()-3]["state"] == "COMPLETED" );
+        REQUIRE( processLog[processLog.size()-2]["state"] == "FAILING" );
+        REQUIRE( processLog.back()["state"] == "FAILED" );
       }
     }
   }

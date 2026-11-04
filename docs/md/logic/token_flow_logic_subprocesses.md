@@ -23,8 +23,8 @@ stateDiagram-v2
     ARRIVED/CREATED --> READY: ready event
     READY --> ENTERED: entry event
     ENTERED --> feasibleEntry
-    feasibleEntry --> BUSY: [feasible]
-    feasibleEntry --> FAILING: [infeasible]
+    feasibleEntry --> BUSY: [not ad-hoc subprocess or feasible]
+    feasibleEntry --> FAILED: [ad-hoc subprocess and infeasible]
     BUSY --> COMPLETED
     BUSY --> FAILING: failure
     COMPLETED --> feasibleCompletion
@@ -57,8 +57,7 @@ When the event occurs the token state is updated to  @ref BPMNOS::Execution::Tok
 
 ## ENTERED
 Upon entry, the initial assignment of @ref BPMNOS::Model::Attribute "attributes" are conducted in the order of attribute definitions.
-Then, feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.
-If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated,  the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILED "FAILED".
+Then, for an ad-hoc subprocess, which has no start event, feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated, and if any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILED "FAILED". The entry restrictions of a subprocess with a start event are not checked upon entry but against the status with which its start event completes, that is, after the operators of the start event have been applied; if any of them is violated, the token at the start event fails, and the failure is handled as any failure within the subprocess.
 Otherwise,
 a token is created at the unique @ref BPMN::SubProcess::startEvent "start event" of the subprocess or each @ref BPMN::Process::startNodes "start node" of the ad-hoc subprocess,
 at the @ref BPMN::EventSubProcess::startEvent "start event" of each @ref BPMN::EventSubProcess "event subprocess" (excluding those having a @ref BPMN::CompensateStartEvent "compensate start event"), and
@@ -106,7 +105,7 @@ If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions"
 
 Otherwise, the (ad-hoc) subprocess has been executed successfully. If it is a child of a @ref BPMNOS::Model::SequentialAdHocSubProcess "sequential ad-hoc subprocess", its performer is released, and all tokens at boundary events (except @ref BPMN::CompensateBoundaryEvent "compensate boundary events") of the (ad-hoc) subprocess are withdrawn.
 
-If the (ad-hoc) subprocess has an @ref BPMN::EventSubProcess "event subprocess" with a @ref BPMN::CompensateStartEvent "compensate start event", the event subprocess comes into being once the objective has been updated and a token is created at this start event, whose state advances from @ref BPMNOS::Execution::Token::State::CREATED "CREATED" through @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED" to @ref BPMNOS::Execution::Token::State::BUSY "BUSY". The event subprocess inherits the status the subprocess completed with and the data of the subprocess at its completion, which remain as they were when the subprocess completed, and its own attributes take the values the model assigns to them. When compensation is triggered, the start event completes and the event subprocess proceeds. A token at the start event whose compensation can no longer be triggered is withdrawn, as a token at a compensate boundary event is (see @ref token_flow_logic_compensation_activities). A subprocess with a loop or multi-instance marker must not have such an event subprocess.
+If the (ad-hoc) subprocess has an @ref BPMN::EventSubProcess "event subprocess" with a @ref BPMN::CompensateStartEvent "compensate start event", the event subprocess comes into being once the objective has been updated and a token is created at this start event, whose state advances from @ref BPMNOS::Execution::Token::State::CREATED "CREATED" through @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED" to @ref BPMNOS::Execution::Token::State::BUSY "BUSY". The event subprocess inherits the status the subprocess completed with and the data of the subprocess at its completion, which remain as they were when the subprocess completed, and its own attributes take the values the model assigns to them. When compensation is triggered, the start event completes and the event subprocess proceeds. A token at the start event whose compensation can no longer be triggered is withdrawn, as a token at a compensate boundary event is (see @ref token_flow_logic_compensation_activities). A subprocess with a loop or multi-instance marker must not have such an event subprocess, and such an event subprocess must not have restrictions, the compensation of a completed subprocess being performed whatever the status it completed with.
 If the (ad-hoc) subprocess has a @ref BPMN::CompensateBoundaryEvent "compensate boundary event", a token is created at this boundary event. Such a token is created only for a subprocess that has completed feasibly.
 
 If the (ad-hoc) subprocess has an outgoing sequence flow, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED".

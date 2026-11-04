@@ -442,16 +442,10 @@ void Token::advanceToEntered() {
   }
 
 
-  // only check feasibility for processes and activities
-  // feasibility of all other tokens must have been validated before
-  // (also for newly created or merged tokens)
+  // only check feasibility for tasks and ad-hoc subprocesses; the entry restrictions of a scope with a start
+  // event are checked against the status with which its start event completes, and the feasibility of all
+  // other tokens must have been validated before (also for newly created or merged tokens)
   if ( node->represents<BPMN::Process>() ) {
-    // check restrictions
-    if ( !entryIsFeasible() ) {
-      engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
-      return;
-    }
-
     // tokens entering a process advance to busy state
     engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), this);
   }
@@ -466,8 +460,8 @@ void Token::advanceToEntered() {
     }
 
 //std::cerr << "check restrictions: " << entryIsFeasible() << std::endl;
-    // check restrictions
-    if ( !entryIsFeasible() ) {
+    // check restrictions of a task or ad-hoc subprocess, which has no start event
+    if ( ( !activity->represents<BPMN::SubProcess>() || activity->represents<BPMN::AdHocSubProcess>() ) && !entryIsFeasible() ) {
       engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
       return;
     }
@@ -777,6 +771,12 @@ void Token::advanceToCompleted() {
     else if ( auto compensateBoundaryEvent = node->represents<BPMN::CompensateBoundaryEvent>(); compensateBoundaryEvent ) {
 //assert( owner->parentToken->node->represents<BPMN::Scope>() );    
 //std::cerr << "token is compensateBoundaryEvent: " << node->id << "/" << stateName[(int)state] << "/" << owner->parentToken->node->id << "/" << this  << "/" << owner <<std::endl;
+      // the status the operators have produced must satisfy the restrictions, a violation failing the
+      // compensation as a failing compensation activity does
+      if ( !completionIsFeasible() ) {
+        engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
+        return;
+      }
       engine->commands.emplace_back(std::bind(&StateMachine::compensateActivity,const_cast<StateMachine*>(owner),this), this);
       return;
     }
@@ -1174,9 +1174,9 @@ void Token::advanceToFailed() {
     ) {
       owned.reset(); 
     }
-    else if ( owned->tokens.size() || owned->interruptingEventSubProcess || owned->compensationTokens.size() ) {
-    // owned state machine may require compensation, also after a failed completion check, when the shutdown has
-    // removed its tokens
+    else if ( owned->tokens.size() || owned->interruptingEventSubProcess || state == State::COMPLETED ) {
+    // owned state machine may require compensation; a scope failing its completion check passes through FAILING
+    // although the shutdown has removed its tokens
 //std::cerr << "Failing " << owned->scope->id << std::endl;
       update(State::FAILING);
       engine->commands.emplace_back(std::bind(&Token::terminate,this), this);

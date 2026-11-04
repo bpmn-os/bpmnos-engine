@@ -119,12 +119,15 @@ SCENARIO( "Constrained executable process", "[execution][subprocess]" ) {
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
-      THEN( "The subprocess fails after entry" ) {
+      THEN( "The subprocess fails at its start event" ) {
         auto subprocessLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( subprocessLog.size() == 6 );
         REQUIRE( subprocessLog[0]["state"] == "ARRIVED" );
         REQUIRE( subprocessLog[1]["state"] == "READY" );
         REQUIRE( subprocessLog[2]["state"] == "ENTERED" );
-        REQUIRE( subprocessLog[3]["state"] == "FAILED" );
+        REQUIRE( subprocessLog[3]["state"] == "BUSY" );
+        REQUIRE( subprocessLog[4]["state"] == "FAILING" );
+        REQUIRE( subprocessLog[5]["state"] == "FAILED" );
       }
     }
 
@@ -208,6 +211,42 @@ SCENARIO( "Subprocess with operators", "[execution][subprocess]" ) {
         auto log = recorder.find(nlohmann::json{{"nodeId","StartEvent_1"},{"state","COMPLETED"}});
         REQUIRE( log.size() == 2 );
         REQUIRE( log.front()["status"]["value"] == 1 );
+      }
+    }
+  }
+}
+
+SCENARIO( "Subprocess failing its completion check", "[execution][subprocess]" ) {
+  const std::string modelFile = "tests/execution/subprocess/Subprocess_failing_completion_check.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "A single instance with no input values" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+    ;
+
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine(model);
+      Execution::InstantEntry entryHandler;
+      entryHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(std::move(scenario));
+      THEN( "The subprocess passes through FAILING although it has nothing to compensate" ) {
+        auto subProcessLog = recorder.find(nlohmann::json{{"nodeId","SubProcess_1"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( subProcessLog.size() >= 3 );
+        REQUIRE( subProcessLog[subProcessLog.size()-3]["state"] == "COMPLETED" );
+        REQUIRE( subProcessLog[subProcessLog.size()-2]["state"] == "FAILING" );
+        REQUIRE( subProcessLog.back()["state"] == "FAILED" );
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( processLog.back()["state"] == "FAILED" );
       }
     }
   }

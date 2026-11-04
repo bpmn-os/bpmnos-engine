@@ -11,15 +11,12 @@ A token at a process element changes its state as follows:
 
 <pre class="mermaid">
 stateDiagram-v2
-    state feasibleEntry <<choice>>
     state feasibleExit <<choice>>
     [*] --> CREATED: [instantiated]
     [*] --> READY: [triggered]
     CREATED --> READY
     READY --> ENTERED
-    ENTERED --> feasibleEntry
-    feasibleEntry --> BUSY: [feasible]
-    feasibleEntry --> FAILED: [infeasible]
+    ENTERED --> BUSY
     BUSY --> COMPLETED
     BUSY --> FAILING: failure
     COMPLETED --> feasibleExit
@@ -44,10 +41,7 @@ The token of an instance created by a trigger receives no ready event: the trigg
 ## ENTERED
 Upon entry, the instance becomes addressable by messages, and messages sent to it before are received.
 The initial assignment of @ref BPMNOS::Model::Attribute "attributes" are conducted in the order of attribute definitions.
-Feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.
-If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILED "FAILED".
-Otherwise,
-a token is created at the @ref BPMN::Process::startNodes "start node" of the process
+A token is created at the @ref BPMN::Process::startNodes "start node" of the process
 and at the @ref BPMN::EventSubProcess::startEvent "start event" of each @ref BPMN::EventSubProcess "event subprocess" (excluding those having a @ref BPMN::CompensateStartEvent "compensate start event").
 These tokens inherit the @ref BPMNOS::Execution::Token::status "status attributes" of the process token.
 Furthermore,
@@ -56,7 +50,7 @@ the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS
 @par
 @note @ref BPMN::EventSubProcess "Event-subprocesses" must have a unique @ref BPMN::TypedStartEvent "typed start event".
 @par
-@note A failure occurring at this stage can not yet be caught by an @ref BPMN::EventSubProcess "event subprocess" with an @ref BPMN::ErrorStartEvent "error start event".
+The entry restrictions of the process are not checked upon entry but against the status with which its start event completes, that is, after the operators of the start event have been applied. If any of them is violated, the token at the start event fails, and the failure is handled as any failure within the process.
 
 ## BUSY
 A process token remains in @ref BPMNOS::Execution::Token::State::BUSY "BUSY" state until the process

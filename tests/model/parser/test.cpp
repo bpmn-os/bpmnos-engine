@@ -129,3 +129,17 @@ TEST_CASE( "Refuse a compensation event subprocess of a subprocess with a multi-
     "Model: compensation event subprocess 'EventSubProcess_1' must not belong to subprocess 'Activity_1' with a loop or multi-instance marker"
   );
 }
+
+TEST_CASE( "Refuse an ad-hoc compensation activity", "[model][parser]" ) {
+  REQUIRE_THROWS_WITH(
+    Model::Model(std::string("tests/model/parser/Adhoc_compensation_activity.bpmn")),
+    "Model: compensation activity 'CompensationActivity_1' must not be an ad-hoc subprocess"
+  );
+}
+
+TEST_CASE( "Refuse a compensation event subprocess with a restriction", "[model][parser]" ) {
+  REQUIRE_THROWS_WITH(
+    Model::Model(std::string("tests/model/parser/Compensation_event_subprocess_with_restriction.bpmn")),
+    "Model: compensation event subprocess 'EventSubProcess_1' must not have restrictions"
+  );
+}

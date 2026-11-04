@@ -1166,6 +1166,10 @@ void StateMachine::handleFailure(Token* token) {
         return;
       }
     }
+    else if ( token->node->represents<BPMN::CompensateBoundaryEvent>() ) {
+      // compensation failed at the compensate boundary event, withdraw all other compensations
+      withdrawCompensationTokens();
+    }
   }
 
   // the failure carries the content of the error thrown, none if the error is unnamed or the failure is not raised
