@@ -53,6 +53,6 @@ When the token reaches @ref BPMNOS::Execution::Token::State::DONE "DONE" state, 
 
 ## FAILED
 
-Upon failure, the state of a token at an @ref BPMN::ErrorBoundaryEvent "error boundary event" is changed to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED". If no such @ref BPMN::ErrorBoundaryEvent "error boundary event" exists, the error is bubbled up to its parent scope.
+When a token copy fails, the failure is the failure of the activity, and the token changes to @ref BPMNOS::Execution::Token::State::FAILED "FAILED" state; the token copy keeps its own @ref BPMNOS::Execution::Token::State::FAILED "FAILED" state. Upon failure, the state of a token at an @ref BPMN::ErrorBoundaryEvent "error boundary event" is changed to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED". If no such @ref BPMN::ErrorBoundaryEvent "error boundary event" exists, the error is bubbled up to its parent scope.
 
 

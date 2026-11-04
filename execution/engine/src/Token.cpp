@@ -141,7 +141,8 @@ Token::~Token() {
         activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard &&
         !activity->isForCompensation
       ) {
-        if ( state == State::WAITING ) {
+        if ( systemState->tokensAtActivityInstance.contains(this) ) {
+          // the main token, which may have failed
           systemState->tokensAtActivityInstance.erase(this);
           systemState->completionStatusAtActivityInstance.erase(this);
         }

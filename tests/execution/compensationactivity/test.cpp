@@ -289,7 +289,7 @@ SCENARIO( "Multi instance compensation", "[execution][compensation][multiinstanc
         REQUIRE( completionLog.size() == 2 );
 
         auto failureLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "FAILED"}});
-        REQUIRE( failureLog.size() == 1 ); // Second exit triggers error
+        REQUIRE( failureLog.size() == 2 ); // The failed completion of the second instance is the failure of the main token
 
         auto doneLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "DONE"}});
         REQUIRE( doneLog.size() == 1 ); // Failure of second completion triggers compensation before exit
@@ -301,7 +301,7 @@ SCENARIO( "Multi instance compensation", "[execution][compensation][multiinstanc
         REQUIRE( compensationActivityLog.size() == 2 );
 
         auto withdrawnLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "WITHDRAWN"}});
-        REQUIRE( withdrawnLog.size() == 2 ); // Tokens for failed and pending instance are withdrwn
+        REQUIRE( withdrawnLog.size() == 1 ); // The token of the pending instance is withdrawn
 
         auto departureLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "DEPARTED"}});
         REQUIRE( departureLog.size() == 0 );

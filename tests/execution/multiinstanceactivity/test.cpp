@@ -268,8 +268,13 @@ SCENARIO( "Sequential multi instance subprocess with error", "[execution][multii
 
         REQUIRE( entryLog[0]["status"]["counter"] == 1 );
 
+        // the failure of the instance is the failure of the main token
+        auto failureLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "FAILED"}});
+        REQUIRE( failureLog.size() == 2 );
+
+        // the instances that have not entered are withdrawn
         auto withdrawnLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "WITHDRAWN"}});
-        REQUIRE( withdrawnLog.size() == 3 );
+        REQUIRE( withdrawnLog.size() == 2 );
 
         // all instances are born even though only the first enters before the error aborts the rest
         auto createdLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "CREATED"}});

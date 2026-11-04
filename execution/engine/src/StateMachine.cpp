@@ -1107,15 +1107,12 @@ void StateMachine::handleFailure(Token* token) {
         // compensation activity failed, clear all other compensations
         compensationTokens.clear();
       }
-      else if ( token->state != Token::State::WAITING &&
-        activity->loopCharacteristics.has_value() &&
-        activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard
-      ) {
-        // handle failure at main token waiting for all instances       
+      else if ( const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.contains(token) ) {
+        // the failure of an instance is the failure of the multi-instance activity, so that the main token
+        // waiting for all instances fails and its failure is handled
         auto mainToken = const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.at(token);
-//std::cerr << "handle failure at main token waiting for all instances "  << std::endl;
         mainToken->content = std::exchange(token->content, std::nullopt);
-        handleFailure(mainToken);
+        mainToken->advanceToFailed();
         return;
       }
     }
