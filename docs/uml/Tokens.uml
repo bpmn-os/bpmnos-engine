@@ -82,12 +82,12 @@
         <subvertex xmi:type="uml:State" xmi:id="State_1nmjvcu" name="CREATED"/>
         <subvertex xmi:type="uml:State" xmi:id="State_1fmk2du" name="READY">
           <entry xmi:type="uml:OpaqueBehavior" xmi:id="OpaqueBehavior_0fsxnet">
-            <body>initialize</body>
+            <body>initialize and update objective</body>
           </entry>
         </subvertex>
         <subvertex xmi:type="uml:State" xmi:id="State_17z8r50" name="ENTERED">
           <entry xmi:type="uml:OpaqueBehavior" xmi:id="OpaqueBehavior_1c4lp0d">
-            <body>update objective, check restrictions</body>
+            <body>check restrictions</body>
           </entry>
         </subvertex>
         <subvertex xmi:type="uml:State" xmi:id="State_0cyk0em" name="BUSY">
@@ -583,7 +583,7 @@
         <subvertex xmi:type="uml:State" xmi:id="State_15ihnk3" name="READY"/>
         <subvertex xmi:type="uml:State" xmi:id="State_0h6qkt2" name="ENTERED">
           <entry xmi:type="uml:OpaqueBehavior" xmi:id="OpaqueBehavior_1d3rku2">
-            <body>update objective, ensure boundary event tokens exist, check restrictions</body>
+            <body>ensure boundary event tokens exist, check restrictions</body>
           </entry>
         </subvertex>
         <subvertex xmi:type="uml:State" xmi:id="State_1xa0mxz" name="BUSY">
@@ -657,7 +657,7 @@
         </transition>
         <transition xmi:id="Transition_0k1he2h" source="Pseudostate_06gjgqd" target="State_15ihnk3">
           <effect xmi:type="uml:OpaqueBehavior" xmi:id="OpaqueBehavior_1kb49o2">
-            <body>initialize</body>
+            <body>initialize and update objective</body>
           </effect>
         </transition>
       </region>
@@ -1800,8 +1800,8 @@
     <ownedElement xmi:type="umldi:UMLEdge" xmi:id="UMLEdge_1uollf0" source="UMLShape_0l38pu0" target="UMLStateShape_0c0qdsb" modelElement="Transition_0k1he2h">
       <waypoint x="192" y="200"/>
       <waypoint x="305" y="200"/>
-      <ownedElement xmi:type="umldi:UMLLabel" xmi:id="UMLLabel_1uollf0" modelElement="Transition_0k1he2h">
-        <bounds x="213" y="180" width="53" height="20"/>
+      <ownedElement xmi:type="umldi:UMLLabel" xmi:id="UMLLabel_1uollf0" modelElement="Transition_0k1he2h" text="/ initialize and&#10;update objective">
+        <bounds x="196" y="166" width="105" height="29"/>
       </ownedElement>
     </ownedElement>
   </umldi:UMLStateMachineDiagram>

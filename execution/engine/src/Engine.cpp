@@ -319,6 +319,15 @@ void Engine::process(const ReadyEvent* event) {
   else if ( auto scope = token->node->represents<BPMN::Scope>() ) {
     auto& data = const_cast<ReadyEvent*>(event)->dataAttributes;
     const_cast<StateMachine*>(token->owner)->createChild(token, scope, std::move(data));
+    // the data counts as soon as it is set, except for the main token of a multi-instance activity, whose
+    // instances hold and count copies of the data
+    auto activity = token->node->as<BPMN::Activity>();
+    if ( activity->isForCompensation ||
+      !activity->loopCharacteristics.has_value() ||
+      activity->loopCharacteristics.value() == BPMN::Activity::LoopCharacteristics::Standard
+    ) {
+      token->owned->updateObjective();
+    }
   }
   commands.emplace_back(std::bind(&Token::advanceToReady,token), token);
   

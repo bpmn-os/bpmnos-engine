@@ -122,7 +122,7 @@ private:
   /// machine of the process instance it owns, which holds the data of the instance.
   Token* createInstance(const BPMN::Process* process, Data data, Status status);
 
-  void updateObjective(); ///< Updates the objective by the values the data attributes of the scope are created with, these never passing through @ref BPMNOS::Model::AttributeRegistry::setValue
+  void updateObjective(); ///< Updates the objective by the values the data attributes of the scope are created with, called where the data is set; these never passing through @ref BPMNOS::Model::AttributeRegistry::setValue
   void createChild(Token* parent, const BPMN::Scope* scope, Data data, std::optional<BPMNOS::number> instance = std::nullopt); ///< Method creating the state machine for a (sub)process
   /// @brief Method creating a pending instance of an event subprocess of the scope, which listens for its trigger,
   /// with its initial values built from the given status of the scope, and its start token.

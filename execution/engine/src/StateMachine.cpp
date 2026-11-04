@@ -113,13 +113,6 @@ std::cerr << (int)attribute.get().value() << ", ";
 std::cerr << std::endl;
 */
   assert( this->instance.has_value() && this->instance.value() >= 0 );
-
-  if ( scope && !scope->represents<BPMN::Process>() ) {
-    // the state machine of a scope instance is created with its initial values, an event subprocess's while it
-    // listens for its trigger, so that its data is accounted whether it is triggered or not. The data of a process
-    // instance is accounted when the instance is started, since its data are given when its process becomes ready
-    updateObjective();
-  }
 }
 
 StateMachine::StateMachine(const StateMachine* other)
@@ -495,6 +488,8 @@ std::shared_ptr<StateMachine> StateMachine::createPendingEventSubProcess(const B
   // scope the engine creates itself
   Execution::InstanceValues values(*systemState->scenario->dataProvider, eventSubProcess, systemState->getTime(), status, data, identity, {}, {});
   auto pendingEventSubProcess = std::make_shared<StateMachine>( systemState, eventSubProcess, parentToken, std::move(values.data), identity );
+  // its data counts as soon as it is set, whether the event subprocess is triggered or not
+  pendingEventSubProcess->updateObjective();
   pendingEventSubProcess->run( std::move(values.status) );
   return pendingEventSubProcess;
 }
@@ -574,6 +569,8 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
 
       // create child state machine with disambiguated instance identifier
       createChild( tokens.back().get(), scope, std::move(data), BPMNOS::to_number(instanceId,BPMNOS::ValueType::STRING) );
+      // every instance holds and counts a copy of the data
+      tokens.back()->owned->updateObjective();
       // ensure that data is set appropriately
       tokens.back()->data = &tokens.back()->owned->data;
 //std::cerr << "MI:" << instanceId << "/" << tokens.back()->jsonify() << std::endl;      
@@ -908,6 +905,7 @@ void StateMachine::createCompensationEventSubProcess(const BPMN::EventSubProcess
   assert( compensableSubProcess->owned && compensableSubProcess->owned->scope == eventSubProcess->parent );
   Execution::InstanceValues values(*systemState->scenario->dataProvider, eventSubProcess, systemState->getTime(), std::move(status), compensableSubProcess->owned->data, std::nullopt, {}, {});
   compensationEventSubProcesses.push_back(std::make_shared<StateMachine>( systemState, eventSubProcess, compensableSubProcess, std::move(values.data) ) );
+  compensationEventSubProcesses.back()->updateObjective();
   // create token at start event of compensation event subprocess
   std::shared_ptr<Token> compensationToken = std::make_shared<Token>(compensationEventSubProcesses.back().get(), eventSubProcess->startEvent, std::move(values.status) );
   compensationToken->update(Token::State::CREATED);

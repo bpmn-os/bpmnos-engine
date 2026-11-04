@@ -372,3 +372,31 @@ SCENARIO( "Multi-instance subprocess with operators", "[execution][multiinstance
     }
   }
 }
+
+SCENARIO( "Multi-instance subprocess with weighted data", "[execution][multiinstanceactivity]" ) {
+  const std::string modelFile = "tests/execution/multiinstanceactivity/Multi-instance_subprocess_with_data.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "A single instance with a cardinality of 3" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+    ;
+
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
+
+    WHEN( "The engine is started" ) {
+      Execution::Engine engine(model);
+      Execution::InstantEntry entryHandler;
+      entryHandler.connect(&engine);
+      engine.run(std::move(scenario));
+
+      THEN( "The data counts once for each instance and not for the main token" ) {
+        REQUIRE( engine.getSystemState()->getObjective() == 3 * 2 );
+      }
+    }
+  }
+}
