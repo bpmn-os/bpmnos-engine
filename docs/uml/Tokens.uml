@@ -431,8 +431,13 @@
             <body>create token copies</body>
           </effect>
         </transition>
-        <transition xmi:id="Transition_0vahofs" source="State_1ozhjzz" target="State_0x24a2u">
-          <trigger xmi:id="Trigger_1d3q9ht" name="released"/>
+        <transition xmi:id="Transition_0vahofs" source="State_1ozhjzz" target="State_0x24a2u" guard="Constraint_0zxztad">
+          <ownedRule xmi:id="Constraint_0zxztad">
+            <specification xmi:type="uml:OpaqueExpression" xmi:id="OpaqueExpression_0lgkx70">
+              <body>inclusive gateway</body>
+            </specification>
+          </ownedRule>
+          <trigger xmi:id="Trigger_0n22ylf" name="unmerged release"/>
         </transition>
       </region>
       <connectionPoint xmi:id="Pseudostate_17hnk02" name="removed" kind="exitPoint"/>
@@ -2316,8 +2321,8 @@
     <ownedElement xmi:type="umldi:UMLEdge" xmi:id="UMLEdge_0b9cqsx" source="UMLStateShape_1ep0xlb" target="UMLStateShape_0uqs9ad" modelElement="Transition_0vahofs">
       <waypoint x="380" y="170"/>
       <waypoint x="380" y="270"/>
-      <ownedElement xmi:type="umldi:UMLLabel" xmi:id="UMLLabel_13lhc9w" modelElement="Transition_0vahofs">
-        <bounds x="385" y="213" width="46" height="15"/>
+      <ownedElement xmi:type="umldi:UMLLabel" xmi:id="UMLLabel_13lhc9w" modelElement="Transition_0vahofs" text="unmerged release&#10; [inclusive gateway]">
+        <bounds x="388" y="205" width="104" height="29"/>
       </ownedElement>
     </ownedElement>
   </umldi:UMLStateMachineDiagram>
