@@ -476,12 +476,6 @@ void Token::advanceToEntered() {
     // the operators of a throw event are applied before it throws
     applyOperators( *node->extensionElements->as<BPMNOS::Model::ExtensionElements>() );
 
-    // the status the operators have produced must satisfy the restrictions
-    if ( !entryIsFeasible() ) {
-      engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
-      return;
-    }
-
     if ( node->represents<BPMN::ErrorEndEvent>() ) {
       engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
       return;
