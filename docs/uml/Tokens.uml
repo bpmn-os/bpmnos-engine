@@ -82,12 +82,12 @@
         <subvertex xmi:type="uml:State" xmi:id="State_1nmjvcu" name="CREATED"/>
         <subvertex xmi:type="uml:State" xmi:id="State_1fmk2du" name="READY">
           <entry xmi:type="uml:OpaqueBehavior" xmi:id="OpaqueBehavior_0fsxnet">
-            <body>initialize and update objective</body>
+            <body>initialize</body>
           </entry>
         </subvertex>
         <subvertex xmi:type="uml:State" xmi:id="State_17z8r50" name="ENTERED">
           <entry xmi:type="uml:OpaqueBehavior" xmi:id="OpaqueBehavior_1c4lp0d">
-            <body>check restrictions</body>
+            <body>update objective, check restrictions</body>
           </entry>
         </subvertex>
         <subvertex xmi:type="uml:State" xmi:id="State_0cyk0em" name="BUSY">
@@ -583,7 +583,7 @@
         <subvertex xmi:type="uml:State" xmi:id="State_15ihnk3" name="READY"/>
         <subvertex xmi:type="uml:State" xmi:id="State_0h6qkt2" name="ENTERED">
           <entry xmi:type="uml:OpaqueBehavior" xmi:id="OpaqueBehavior_1d3rku2">
-            <body>ensure boundary event tokens exist, check restrictions</body>
+            <body>update objective, ensure boundary event tokens exist, check restrictions</body>
           </entry>
         </subvertex>
         <subvertex xmi:type="uml:State" xmi:id="State_1xa0mxz" name="BUSY">
