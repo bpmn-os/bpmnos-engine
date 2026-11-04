@@ -35,5 +35,5 @@ The token flow logic depends on the node type and is described in below sections
   - @subpage token_flow_logic_intermediate_catching_events
   - @subpage token_flow_logic_throwing_events
 
-@note All tokens can be @ref  BPMNOS::Execution::Token::State::WITHDRAWN "withdrawn" at any time, e.g., when the respective state machine terminates.
+@note All tokens can be @ref  BPMNOS::Execution::Token::State::WITHDRAWN "withdrawn" at any time, e.g., when the respective state machine terminates. A token that has not reached @ref BPMNOS::Execution::Token::State::DONE "DONE" or @ref BPMNOS::Execution::Token::State::FAILED "FAILED" state when its scope ends is withdrawn, so that the last state of every token is a final state unless the run itself stops. When the token at a subprocess is withdrawn, the tokens within the subprocess and its event subprocesses are withdrawn before it, and when a scope fails, the tokens within it and its event subprocesses are withdrawn after it has entered @ref BPMNOS::Execution::Token::State::FAILING "FAILING" state.
 

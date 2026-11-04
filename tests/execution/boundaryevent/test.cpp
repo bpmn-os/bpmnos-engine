@@ -108,3 +108,42 @@ SCENARIO( "Failed subprocess", "[execution][boundaryevent]" ) {
   }
 }
 
+SCENARIO( "Interrupted nested subprocess", "[execution][boundaryevent]" ) {
+  const std::string modelFile = "tests/execution/boundaryevent/Interrupted_nested_subprocess.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "A single instance with no input values" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+    ;
+
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine(model);
+      Execution::InstantEntry entryHandler;
+      entryHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(std::move(scenario));
+      THEN( "The tokens within the interrupted subprocess are withdrawn before the token owning their scope" ) {
+        auto withdrawnLog = recorder.find(nlohmann::json{{"state", "WITHDRAWN"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( withdrawnLog.size() == 3 );
+        REQUIRE( withdrawnLog[0]["nodeId"] == "Task_1" );
+        REQUIRE( withdrawnLog[1]["nodeId"] == "SubProcess_2" );
+        REQUIRE( withdrawnLog[2]["nodeId"] == "SubProcess_1" );
+
+        auto taskLog = recorder.find(nlohmann::json{{"nodeId","Task_1"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( taskLog.back()["state"] == "WITHDRAWN" );
+
+        auto timerLog = recorder.find(nlohmann::json{{"nodeId","TimerEvent_1"},{"state", "COMPLETED"}});
+        REQUIRE( timerLog.size() == 1 );
+      }
+    }
+  }
+}

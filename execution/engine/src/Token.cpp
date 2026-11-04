@@ -1148,6 +1148,11 @@ void Token::advanceToFailed() {
       engine->commands.emplace_back(std::bind(&Token::terminate,this), this);
       return;
     }
+    else {
+      // the event subprocesses of a scope without tokens have been withdrawn when its tokens were removed
+      assert( owned->pendingEventSubProcesses.empty() );
+      assert( owned->nonInterruptingEventSubProcesses.empty() );
+    }
   }
   update(State::FAILED);
   engine->commands.emplace_back(std::bind(&StateMachine::handleFailure,const_cast<StateMachine*>(owner),this), this);
@@ -1159,6 +1164,20 @@ void Token::terminate() {
 
   assert(owned);
 
+  // no event subprocess can be triggered any more, and the tokens of the event subprocesses are withdrawn
+  // together with the tokens of the scope
+  for ( auto& eventSubProcess : owned->pendingEventSubProcesses ) {
+    eventSubProcess->clearObsoleteTokens();
+  }
+  owned->pendingEventSubProcesses.clear();
+  for ( auto& eventSubProcess : owned->nonInterruptingEventSubProcesses ) {
+    eventSubProcess->clearObsoleteTokens();
+  }
+  owned->nonInterruptingEventSubProcesses.clear();
+  if ( owned->interruptingEventSubProcess ) {
+    owned->interruptingEventSubProcess->clearObsoleteTokens();
+    owned->interruptingEventSubProcess.reset();
+  }
   owned->clearObsoleteTokens();
   
   if ( owned->compensationTokens.size() ) {
@@ -1321,6 +1340,19 @@ void Token::withdraw() {
       getSequentialPerformerToken()->performing == this
     ) {
       releaseSequentialPerformer();
+    }
+    if ( owned && owned->scope ) {
+      // the tokens within the scope are withdrawn before the token owning it
+      for ( auto& eventSubProcess : owned->pendingEventSubProcesses ) {
+        eventSubProcess->clearObsoleteTokens();
+      }
+      for ( auto& eventSubProcess : owned->nonInterruptingEventSubProcesses ) {
+        eventSubProcess->clearObsoleteTokens();
+      }
+      if ( owned->interruptingEventSubProcess ) {
+        owned->interruptingEventSubProcess->clearObsoleteTokens();
+      }
+      owned->clearObsoleteTokens();
     }
     update(State::WITHDRAWN);
   }

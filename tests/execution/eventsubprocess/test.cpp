@@ -545,3 +545,38 @@ SCENARIO( "Event subprocess within a subprocess with data", "[execution][eventsu
     }
   }
 }
+
+SCENARIO( "Failing process with a pending event subprocess", "[execution][eventsubprocess]" ) {
+  const std::string modelFile = "tests/execution/eventsubprocess/Failing_process_with_pending_event_subprocess.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "A single instance with no input values" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+    ;
+
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine(model);
+      Execution::InstantEntry entryHandler;
+      entryHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(std::move(scenario));
+      THEN( "The token at the start event of the event subprocess is withdrawn before the process fails" ) {
+        auto startLog = recorder.find(nlohmann::json{{"nodeId","EscalationStartEvent_1"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( startLog.back()["state"] == "WITHDRAWN" );
+
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( processLog[processLog.size()-2]["state"] == "FAILING" );
+        REQUIRE( processLog.back()["state"] == "FAILED" );
+      }
+    }
+  }
+}
