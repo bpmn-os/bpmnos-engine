@@ -845,6 +845,7 @@ std::cerr << "Context: " << context << " at " << context->scope->id << " has " <
         // terminate all running non-interrupting event subprocesses
         for ( auto eventSubProcess : context->nonInterruptingEventSubProcesses ) {
           eventSubProcess->clearObsoleteTokens();
+          eventSubProcess->withdrawCompensationTokens();
         }
         context->nonInterruptingEventSubProcesses.clear();
 
@@ -993,6 +994,12 @@ void Token::advanceFromCompleted() {
 
   // clear state machine owned by token
   if ( owned ) {
+    if ( auto subProcess = node->represents<BPMN::SubProcess>();
+      !( subProcess && subProcess->compensatedBy && subProcess->compensatedBy->represents<BPMN::EventSubProcess>() )
+    ) {
+      // the compensations within a scope that cannot be compensated can no longer be triggered
+      owned->withdrawCompensationTokens();
+    }
     owned->tokens.clear();
     owned->interruptingEventSubProcess.reset();
     owned->nonInterruptingEventSubProcesses.clear();
@@ -1009,6 +1016,10 @@ void Token::advanceFromCompleted() {
 
 void Token::advanceToDone() {
 //std::cerr << "advanceToDone: " << jsonify().dump() << std::endl;
+  if ( node->represents<BPMN::Process>() ) {
+    // the compensations within a completed instance can no longer be triggered
+    owned->withdrawCompensationTokens();
+  }
   update(State::DONE);
 
   if ( auto flowNode = node->represents<BPMN::FlowNode>();
@@ -1152,6 +1163,8 @@ void Token::advanceToFailed() {
       // the event subprocesses of a scope without tokens have been withdrawn when its tokens were removed
       assert( owned->pendingEventSubProcesses.empty() );
       assert( owned->nonInterruptingEventSubProcesses.empty() );
+      // the compensations within the scope are not performed and can no longer be triggered
+      owned->withdrawCompensationTokens();
     }
   }
   update(State::FAILED);
@@ -1172,10 +1185,12 @@ void Token::terminate() {
   owned->pendingEventSubProcesses.clear();
   for ( auto& eventSubProcess : owned->nonInterruptingEventSubProcesses ) {
     eventSubProcess->clearObsoleteTokens();
+    eventSubProcess->withdrawCompensationTokens();
   }
   owned->nonInterruptingEventSubProcesses.clear();
   if ( owned->interruptingEventSubProcess ) {
     owned->interruptingEventSubProcess->clearObsoleteTokens();
+    owned->interruptingEventSubProcess->withdrawCompensationTokens();
     owned->interruptingEventSubProcess.reset();
   }
   owned->clearObsoleteTokens();
@@ -1348,11 +1363,14 @@ void Token::withdraw() {
       }
       for ( auto& eventSubProcess : owned->nonInterruptingEventSubProcesses ) {
         eventSubProcess->clearObsoleteTokens();
+        eventSubProcess->withdrawCompensationTokens();
       }
       if ( owned->interruptingEventSubProcess ) {
         owned->interruptingEventSubProcess->clearObsoleteTokens();
+        owned->interruptingEventSubProcess->withdrawCompensationTokens();
       }
       owned->clearObsoleteTokens();
+      owned->withdrawCompensationTokens();
     }
     update(State::WITHDRAWN);
   }

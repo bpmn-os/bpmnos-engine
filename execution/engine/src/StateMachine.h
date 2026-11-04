@@ -153,6 +153,7 @@ private:
   void shutdown(); ///< Shutdown state machine after successful execution
   void interruptActivity(Token* token);
   void clearObsoleteTokens();
+  void withdrawCompensationTokens(); ///< Withdraws the tokens at compensate boundary events and compensate start events that can no longer be triggered, including those within the completed subprocesses that can still be compensated.
 
   void handleDivergingGateway(Token* token);
   void handleEventBasedGatewayActivation(Token* token);

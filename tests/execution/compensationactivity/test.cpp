@@ -76,6 +76,9 @@ SCENARIO( "Task with unused compensation task", "[execution][compensation]" ) {
         REQUIRE( compensateBoundaryEventLog[0]["state"] == "CREATED" );
         REQUIRE( compensateBoundaryEventLog[1]["state"] == "ENTERED" );
         REQUIRE( compensateBoundaryEventLog[2]["state"] == "BUSY" );
+        // the compensation can no longer be triggered when the instance completes
+        REQUIRE( compensateBoundaryEventLog[3]["state"] == "WITHDRAWN" );
+        REQUIRE( compensateBoundaryEventLog.size() == 4 );
 
         auto completionLog = recorder.find(nlohmann::json{{"state", "COMPLETED"}}, nlohmann::json{{"nodeId","StartEvent_1"}});
         REQUIRE( completionLog[0]["nodeId"] == "Activity_1" );

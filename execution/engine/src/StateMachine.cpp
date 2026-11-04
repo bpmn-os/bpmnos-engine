@@ -635,6 +635,14 @@ void StateMachine::deleteMultiInstanceActivityToken(Token* token) {
   auto activity = token->node->represents<BPMN::Activity>();
   assert( activity );
 
+  if ( auto subProcess = activity->represents<BPMN::SubProcess>();
+    token->owned &&
+    !( subProcess && subProcess->compensatedBy && subProcess->compensatedBy->represents<BPMN::EventSubProcess>() )
+  ) {
+    // the compensations within an instance that cannot be compensated can no longer be triggered
+    token->owned->withdrawCompensationTokens();
+  }
+
   // Instance has no outgoing flow: emit DONE as its terminal state before removal.
   // Aggregation into the main token is handled below, not via the generic scope shutdown.
   token->update(Token::State::DONE);
@@ -740,6 +748,18 @@ void StateMachine::clearObsoleteTokens() {
     token->withdraw();
   }
   tokens.clear();
+}
+
+void StateMachine::withdrawCompensationTokens() {
+  // the tokens within a completed subprocess are withdrawn before the token at the compensate start event of its
+  // compensation event subprocess
+  for ( auto& compensableSubProcess : compensableSubProcesses ) {
+    compensableSubProcess->owned->withdrawCompensationTokens();
+  }
+  for ( auto& token : compensationTokens ) {
+    token->withdraw();
+  }
+  compensationTokens.clear();
 }
 
 void StateMachine::interruptActivity(Token* token) {
@@ -1104,8 +1124,8 @@ void StateMachine::handleFailure(Token* token) {
   if ( token->node->represents<BPMN::FlowNode>() ) {
     if ( auto activity = token->node->represents<BPMN::Activity>() ) {
       if ( activity->isForCompensation ) {
-        // compensation activity failed, clear all other compensations
-        compensationTokens.clear();
+        // compensation activity failed, withdraw all other compensations
+        withdrawCompensationTokens();
       }
       else if ( const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.contains(token) ) {
         // the failure of an instance is the failure of the multi-instance activity, so that the main token
@@ -1184,6 +1204,9 @@ void StateMachine::shutdown() {
   BPMNOS::Status mergedStatus = Token::mergeStatus(tokens);
   
   if ( auto eventSubProcess = scope->represents<BPMN::EventSubProcess>() ) {
+    // the compensations within a completed event subprocess can no longer be triggered
+    withdrawCompensationTokens();
+
     // the status attributes declared for the event subprocess are accounted where it shuts down
     auto extensionElements = scope->extensionElements->as<BPMNOS::Model::ExtensionElements>();
     assert( extensionElements );
@@ -1369,6 +1392,8 @@ void StateMachine::completeCompensationActivity(Token* token) {
 }
 
 void StateMachine::completeCompensationEventSubProcess() {
+  // the compensations within the compensated subprocess that have not been triggered can no longer be triggered
+  parentToken->owned->withdrawCompensationTokens();
   auto& tokenAwaitingCompensationEventSubProcess = const_cast<SystemState*>(systemState)->tokenAwaitingCompensationEventSubProcess;
   auto waitingToken = tokenAwaitingCompensationEventSubProcess.at(this);
   const_cast<StateMachine*>(waitingToken->owner)->advanceTokenWaitingForCompensation( waitingToken );
