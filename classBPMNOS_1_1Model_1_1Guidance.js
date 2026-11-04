@@ -2,7 +2,6 @@ var classBPMNOS_1_1Model_1_1Guidance =
 [
     [ "Type", "classBPMNOS_1_1Model_1_1Guidance.html#a746c1f40d7d6fcaecbb4becfcb27c16c", [
       [ "Entry", "classBPMNOS_1_1Model_1_1Guidance.html#a746c1f40d7d6fcaecbb4becfcb27c16cab948e8a02a7f8dc9f098c89e8df9892c", null ],
-      [ "Exit", "classBPMNOS_1_1Model_1_1Guidance.html#a746c1f40d7d6fcaecbb4becfcb27c16cafef46e5063ce3dc78b8ae64fa474241d", null ],
       [ "Choice", "classBPMNOS_1_1Model_1_1Guidance.html#a746c1f40d7d6fcaecbb4becfcb27c16ca458b9dcc0921f46b1192427426d59c10", null ],
       [ "MessageDelivery", "classBPMNOS_1_1Model_1_1Guidance.html#a746c1f40d7d6fcaecbb4becfcb27c16ca54513e02f6d93b88e68f6b8fe8f531f6", null ]
     ] ],

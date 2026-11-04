@@ -199,7 +199,7 @@ Status attributes</h2>
 Restrictions</h1>
 <p><a class="el" href="classBPMNOS_1_1Model_1_1Restriction.html">Restrictions</a> allow to constrain the domain of attributes and to determine the sequence flows out of diverging gateways. Within a <span class="tt">&lt;bpmnos:restrictions&gt;</span> container any number of <span class="tt">&lt;bpmnos:restriction&gt;</span> elements can be provided to specify restrictions. For each restriction the following fields can be provided</p><ul>
 <li><span class="tt">id</span>: a unique identifier,</li>
-<li><span class="tt">scope</span>: the scope indicating when the restriction has to be satisfied which must be one of <span class="tt">entry</span>, <span class="tt">exit</span>, <span class="tt">full</span>.</li>
+<li><span class="tt">scope</span>: the scope indicating when the restriction has to be satisfied which must be one of <span class="tt">entry</span>, <span class="tt">completion</span>, <span class="tt">full</span>, a missing scope being <span class="tt">full</span> and any other scope being rejected when the model is read.</li>
 <li><span class="tt">expression</span>: an expression representing the requirements.</li>
 </ul>
 <h2 class="doxsection"><a class="anchor" id="node-restrictions"></a>
@@ -212,7 +212,7 @@ Node restrictions</h2>
 <div class="line">    &lt;/<span class="keywordtype">bpmnos:restrictions</span>&gt;</div>
 <div class="line">  &lt;/<span class="keywordtype">bpmnos:status</span>&gt;</div>
 <div class="line">&lt;/<span class="keywordtype">bpmn2:extensionElements</span>&gt;</div>
-</div><!-- fragment --><p>A restriction of scope <span class="tt">full</span> of a process or subprocess also applies to every node within it, at the entry, completion and exit of that node, and is evaluated against the status and data of that node. An error or compensate event subprocess and a compensation activity do not inherit the restrictions of the scopes enclosing them, so that a violation within those scopes does not prevent its handling; the nodes within such an event subprocess inherit its own restrictions of scope <span class="tt">full</span>.</p>
+</div><!-- fragment --><p>A restriction of scope <span class="tt">full</span> of a process or subprocess also applies to every node within it, at the entry and completion of that node, and is evaluated against the status and data of that node. An error or compensate event subprocess and a compensation activity do not inherit the restrictions of the scopes enclosing them, so that a violation within those scopes does not prevent its handling; the nodes within such an event subprocess inherit its own restrictions of scope <span class="tt">full</span>.</p>
 <h2 class="doxsection"><a class="anchor" id="gatekeeper-restrictions"></a>
 Gatekeeper restrictions</h2>
 <p>Gatekeeper restrictions can be added to a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tSequenceFlow.html">sequence flow element</a> as shown in the following example.</p>

@@ -24,19 +24,19 @@
 <text xml:space="preserve" text-anchor="start" x="4" y="-237.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text xml:space="preserve" text-anchor="start" x="16.25" y="-237.75" font-family="Helvetica,sans-Serif" font-size="10.00">pendingChoiceDecisions</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-221" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-221" font-family="Helvetica,sans-Serif" font-size="10.00">pendingExitDecisions</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-221" font-family="Helvetica,sans-Serif" font-size="10.00">pendingMessageDeliveryDecisions</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-204.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-204.25" font-family="Helvetica,sans-Serif" font-size="10.00">pendingMessageDeliveryDecisions</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-204.25" font-family="Helvetica,sans-Serif" font-size="10.00">tokensAwaitingReadyEvent</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-187.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-187.5" font-family="Helvetica,sans-Serif" font-size="10.00">tokensAwaitingReadyEvent</text>
-<text xml:space="preserve" text-anchor="start" x="4" y="-170.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-170.75" font-family="Helvetica,sans-Serif" font-size="10.00">tokensAwaitingCompletion</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-158" font-family="Helvetica,sans-Serif" font-size="10.00">Event</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-187.5" font-family="Helvetica,sans-Serif" font-size="10.00">tokensAwaitingCompletion</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-174.75" font-family="Helvetica,sans-Serif" font-size="10.00">Event</text>
+<text xml:space="preserve" text-anchor="start" x="4" y="-158" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-158" font-family="Helvetica,sans-Serif" font-size="10.00">archive</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-141.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-141.25" font-family="Helvetica,sans-Serif" font-size="10.00">archive</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-141.25" font-family="Helvetica,sans-Serif" font-size="10.00">unsent</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-124.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-124.5" font-family="Helvetica,sans-Serif" font-size="10.00">unsent</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-107.75" font-family="Helvetica,sans-Serif" font-size="10.00">and 20 more...</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-124.5" font-family="Helvetica,sans-Serif" font-size="10.00">inbox</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-107.75" font-family="Helvetica,sans-Serif" font-size="10.00">and 19 more...</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-91" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
 <text xml:space="preserve" text-anchor="start" x="16.25" y="-91" font-family="Helvetica,sans-Serif" font-size="10.00">getObservableType()</text>
 <text xml:space="preserve" text-anchor="start" x="4" y="-74.25" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>

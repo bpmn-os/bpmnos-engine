@@ -8,6 +8,7 @@ var classBPMNOS_1_1Model_1_1Model =
     [ "createDataStores", "classBPMNOS_1_1Model_1_1Model.html#a7fb9b407c4d0b6a30d0890ad9dafb08e", null ],
     [ "createEvent", "classBPMNOS_1_1Model_1_1Model.html#a62d556fe85a27f1399d37537a6b75460", null ],
     [ "createEventSubProcess", "classBPMNOS_1_1Model_1_1Model.html#af0bae7a01c067a467eeaa0e1e28004f0", null ],
+    [ "createGateway", "classBPMNOS_1_1Model_1_1Model.html#a63b0eaf097c508ab1f4b1247ea671563", null ],
     [ "createGlobals", "classBPMNOS_1_1Model_1_1Model.html#a6e58e9016b9b461675006df44691f571", null ],
     [ "createInputs", "classBPMNOS_1_1Model_1_1Model.html#ab83c85ca6a86a55bd61d5346f8825abc", null ],
     [ "createMessageCandidates", "classBPMNOS_1_1Model_1_1Model.html#a1b13d1e260dddb088a56e4ad892088ba", null ],
@@ -37,6 +38,7 @@ var classBPMNOS_1_1Model_1_1Model =
     [ "limexHandle", "classBPMNOS_1_1Model_1_1Model.html#ac5a2d0417e8fa42267f2a560b732ead3", null ],
     [ "lookupTables", "classBPMNOS_1_1Model_1_1Model.html#acb7f29c2ddfcf71341bc6ac2f8b38dd0", null ],
     [ "objects", "classBPMNOS_1_1Model_1_1Model.html#a47f2fa47f7db2670c2aadd97b1c19543", null ],
+    [ "predecessors", "classBPMNOS_1_1Model_1_1Model.html#af6d4e11f5fa082262becd4f57d46be90", null ],
     [ "processesTriggeredByMessage", "classBPMNOS_1_1Model_1_1Model.html#a0aec837f5e4df0f4ae05a6e39a5bba12", null ],
     [ "processesTriggeredBySignal", "classBPMNOS_1_1Model_1_1Model.html#a830b287dadfc43a375479cf198afa3d0", null ]
 ];

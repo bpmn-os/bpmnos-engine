@@ -10,7 +10,6 @@ var structBPMNOS_1_1Execution_1_1Observable =
       [ "Objective", "structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea40b796b77b40775e1361ce398a9a783c", null ],
       [ "EntryRequest", "structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea20caab0862152251985214cd6ea92dcd", null ],
       [ "ChoiceRequest", "structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea4419a9c7ead36d76c68e50064751d332", null ],
-      [ "ExitRequest", "structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea57e7d74fed97e297242e2d5482b06a06", null ],
       [ "MessageDeliveryRequest", "structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea485a7c47fbf964a65e5c916a2b10661e", null ],
       [ "SystemState", "structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355eab2683254cdd6ca3c9aaf908baf7523b1", null ],
       [ "Count", "structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355eae93f994f01c537c4e2f7d8528c3eb5e9", null ]

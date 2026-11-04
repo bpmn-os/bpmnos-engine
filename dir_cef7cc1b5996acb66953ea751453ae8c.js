@@ -10,8 +10,6 @@ var dir_cef7cc1b5996acb66953ea751453ae8c =
     [ "EntryEvent.h", "EntryEvent_8h.html", "EntryEvent_8h" ],
     [ "ErrorEvent.cpp", "ErrorEvent_8cpp.html", null ],
     [ "ErrorEvent.h", "ErrorEvent_8h.html", "ErrorEvent_8h" ],
-    [ "ExitEvent.cpp", "ExitEvent_8cpp.html", null ],
-    [ "ExitEvent.h", "ExitEvent_8h.html", "ExitEvent_8h" ],
     [ "InstantiationEvent.cpp", "InstantiationEvent_8cpp.html", null ],
     [ "InstantiationEvent.h", "InstantiationEvent_8h.html", "InstantiationEvent_8h" ],
     [ "MessageDeliveryEvent.cpp", "MessageDeliveryEvent_8cpp.html", null ],

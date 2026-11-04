@@ -17,7 +17,6 @@ var execution_logic =
         [ "ENTERED", "token_flow_logic_subprocesses.html#entered-1", null ],
         [ "BUSY", "token_flow_logic_subprocesses.html#busy-1", null ],
         [ "COMPLETED", "token_flow_logic_subprocesses.html#completed-1", null ],
-        [ "EXITING", "token_flow_logic_subprocesses.html#exiting", null ],
         [ "DEPARTED", "token_flow_logic_subprocesses.html#departed-1", null ],
         [ "DONE", "token_flow_logic_subprocesses.html#done-2", null ],
         [ "FAILING", "token_flow_logic_subprocesses.html#failing-1", null ],
@@ -31,7 +30,6 @@ var execution_logic =
         [ "ENTERED", "token_flow_logic_tasks.html#entered-2", null ],
         [ "BUSY", "token_flow_logic_tasks.html#busy-2", null ],
         [ "COMPLETED", "token_flow_logic_tasks.html#completed-2", null ],
-        [ "EXITING", "token_flow_logic_tasks.html#exiting-1", null ],
         [ "DEPARTED", "token_flow_logic_tasks.html#departed-2", null ],
         [ "DONE", "token_flow_logic_tasks.html#done-3", null ],
         [ "FAILED", "token_flow_logic_tasks.html#failed-3", null ]
@@ -41,6 +39,7 @@ var execution_logic =
     [ "Compensation activities", "token_flow_logic_compensation_activities.html", null ],
     [ "Exclusive gateways", "token_flow_logic_exclusive_gateways.html", null ],
     [ "Parallel gateways", "token_flow_logic_parallel_gateways.html", null ],
+    [ "Inclusive gateways", "token_flow_logic_inclusive_gateways.html", null ],
     [ "Event-based gateways", "token_flow_logic_eventbased_gateways.html", [
       [ "States", "token_flow_logic_eventbased_gateways.html#states", null ]
     ] ],

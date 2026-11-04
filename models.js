@@ -29,7 +29,7 @@ var models =
           [ "Data", "earliest_arrival_problem.html#data-34", null ],
           [ "Choices", "earliest_arrival_problem.html#choices-1", null ],
           [ "Operators", "earliest_arrival_problem.html#operators-8", null ],
-          [ "Exit restrictions", "earliest_arrival_problem.html#exit-restrictions-15", null ],
+          [ "Completion restrictions", "earliest_arrival_problem.html#completion-restrictions-15", null ],
           [ "Choice guidance", "earliest_arrival_problem.html#choice-guidance", [
             [ "Attributes", "earliest_arrival_problem.html#attributes-2", null ],
             [ "Operators", "earliest_arrival_problem.html#operators-9", null ]
@@ -225,10 +225,10 @@ var models =
           [ "Status", "knapsack_problem.html#status-78", null ],
           [ "Data", "knapsack_problem.html#data-78", null ]
         ] ],
-        [ "Task (WaitActivity)", "knapsack_problem.html#task-waitactivity-1", [
+        [ "IntermediateCatchEvent (ConditionalEvent)", "knapsack_problem.html#intermediatecatchevent-conditionalevent-2", [
           [ "Status", "knapsack_problem.html#status-79", null ],
           [ "Data", "knapsack_problem.html#data-79", null ],
-          [ "Exit restrictions", "knapsack_problem.html#exit-restrictions-16", null ]
+          [ "Conditions", "knapsack_problem.html#conditions-3", null ]
         ] ],
         [ "StartEvent (StartEventKnapsack)", "knapsack_problem.html#startevent-starteventknapsack", [
           [ "Status", "knapsack_problem.html#status-80", null ],
@@ -297,10 +297,11 @@ var models =
           [ "Completion restrictions", "bin_packing_problem.html#completion-restrictions-1", null ],
           [ "Exit restrictions", "bin_packing_problem.html#exit-restrictions-1", null ]
         ] ],
-        [ "Task (WaitActivity)", "bin_packing_problem.html#task-waitactivity", [
+        [ "IntermediateCatchEvent (ConditionalEvent)", "bin_packing_problem.html#intermediatecatchevent-conditionalevent", [
           [ "Status", "bin_packing_problem.html#status-16", null ],
           [ "Data", "bin_packing_problem.html#data-16", null ],
           [ "Globals", "bin_packing_problem.html#globals-8", null ],
+          [ "Conditions", "bin_packing_problem.html#conditions-1", null ],
           [ "Entry restrictions", "bin_packing_problem.html#entry-restrictions-2", null ],
           [ "Completion restrictions", "bin_packing_problem.html#completion-restrictions-2", null ],
           [ "Exit restrictions", "bin_packing_problem.html#exit-restrictions-2", null ]
@@ -545,11 +546,11 @@ var models =
           [ "Data", "job_shop_scheduling_problem.html#data-57", null ],
           [ "Globals", "job_shop_scheduling_problem.html#globals-40", null ]
         ] ],
-        [ "IntermediateCatchEvent (ConditionalEvent)", "job_shop_scheduling_problem.html#intermediatecatchevent-conditionalevent", [
+        [ "IntermediateCatchEvent (ConditionalEvent)", "job_shop_scheduling_problem.html#intermediatecatchevent-conditionalevent-1", [
           [ "Status", "job_shop_scheduling_problem.html#status-58", null ],
           [ "Data", "job_shop_scheduling_problem.html#data-58", null ],
           [ "Globals", "job_shop_scheduling_problem.html#globals-41", null ],
-          [ "Conditions", "job_shop_scheduling_problem.html#conditions-1", null ]
+          [ "Conditions", "job_shop_scheduling_problem.html#conditions-2", null ]
         ] ]
       ] ]
     ] ],
@@ -657,7 +658,7 @@ var models =
           [ "Status", "vehicle_routing_problem.html#status-178", null ],
           [ "Data", "vehicle_routing_problem.html#data-178", null ],
           [ "Globals", "vehicle_routing_problem.html#globals-95", null ],
-          [ "Exit restrictions", "vehicle_routing_problem.html#exit-restrictions-17", null ]
+          [ "Entry restrictions", "vehicle_routing_problem.html#entry-restrictions-18", null ]
         ] ],
         [ "StartEvent (StartEventRequest)", "vehicle_routing_problem.html#startevent-starteventrequest-1", [
           [ "Status", "vehicle_routing_problem.html#status-179", null ],
@@ -1117,7 +1118,7 @@ var models =
           [ "Status", "truck_driver_scheduling_problem.html#status-145", null ],
           [ "Data", "truck_driver_scheduling_problem.html#data-145", null ],
           [ "Choices", "truck_driver_scheduling_problem.html#choices-2", null ],
-          [ "Completion restrictions", "truck_driver_scheduling_problem.html#completion-restrictions-15", null ]
+          [ "Completion restrictions", "truck_driver_scheduling_problem.html#completion-restrictions-16", null ]
         ] ],
         [ "ExclusiveGateway (TripGateway)", "truck_driver_scheduling_problem.html#exclusivegateway-tripgateway", [
           [ "Status", "truck_driver_scheduling_problem.html#status-146", null ],
@@ -1145,7 +1146,7 @@ var models =
           [ "Status", "truck_driver_scheduling_problem.html#status-151", null ],
           [ "Data", "truck_driver_scheduling_problem.html#data-151", null ],
           [ "Choices", "truck_driver_scheduling_problem.html#choices-3", null ],
-          [ "Completion restrictions", "truck_driver_scheduling_problem.html#completion-restrictions-16", null ],
+          [ "Completion restrictions", "truck_driver_scheduling_problem.html#completion-restrictions-17", null ],
           [ "Choice guidance", "truck_driver_scheduling_problem.html#choice-guidance-1", [
             [ "Attributes", "truck_driver_scheduling_problem.html#attributes-3", null ]
           ] ]
@@ -1182,7 +1183,7 @@ var models =
           [ "Status", "truck_driver_scheduling_problem.html#status-156", null ],
           [ "Data", "truck_driver_scheduling_problem.html#data-156", null ],
           [ "Choices", "truck_driver_scheduling_problem.html#choices-5", null ],
-          [ "Completion restrictions", "truck_driver_scheduling_problem.html#completion-restrictions-17", null ]
+          [ "Completion restrictions", "truck_driver_scheduling_problem.html#completion-restrictions-18", null ]
         ] ],
         [ "ExclusiveGateway (WaitGateway_1)", "truck_driver_scheduling_problem.html#exclusivegateway-waitgateway_1", [
           [ "Status", "truck_driver_scheduling_problem.html#status-157", null ],
@@ -1201,7 +1202,7 @@ var models =
           [ "Status", "truck_driver_scheduling_problem.html#status-160", null ],
           [ "Data", "truck_driver_scheduling_problem.html#data-160", null ],
           [ "Choices", "truck_driver_scheduling_problem.html#choices-6", null ],
-          [ "Completion restrictions", "truck_driver_scheduling_problem.html#completion-restrictions-18", null ],
+          [ "Completion restrictions", "truck_driver_scheduling_problem.html#completion-restrictions-19", null ],
           [ "Choice guidance", "truck_driver_scheduling_problem.html#choice-guidance-3", [
             [ "Attributes", "truck_driver_scheduling_problem.html#attributes-5", null ]
           ] ]

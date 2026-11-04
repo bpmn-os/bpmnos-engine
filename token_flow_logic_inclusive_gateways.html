@@ -16,7 +16,7 @@
 <meta name="twitter:title" content="Doxygen Awesome" />
 <meta name="twitter:description" content="Custom CSS theme for doxygen html-documentation with lots of customization parameters." />
 <!-- END twitter metadata -->
-<title>BPMN-OS: execution/engine/src/events/ExitEvent.cpp File Reference</title>
+<title>BPMN-OS: Inclusive gateways</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link rel="icon" type="image/svg+xml" href="logo.drawio.svg"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -97,7 +97,7 @@ $(function() {
   </div>
 </div>
 <script type="text/javascript">
-$(function(){initNavTree('ExitEvent_8cpp.html','',''); });
+$(function(){initNavTree('token_flow_logic_inclusive_gateways.html','',''); });
 </script>
 <div id="container">
 <div id="doc-content">
@@ -122,15 +122,26 @@ $(function(){initNavTree('ExitEvent_8cpp.html','',''); });
 </div>
 </div>
 
-<div class="header">
-  <div class="headertitle"><div class="title">ExitEvent.cpp File Reference</div></div>
+<div><div class="header">
+  <div class="headertitle"><div class="title">Inclusive gateways </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="ExitEvent_8h_source.html">ExitEvent.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="Engine_8h_source.html">execution/engine/src/Engine.h</a>&quot;</code><br />
-</div>
-<p><a href="ExitEvent_8cpp_source.html">Go to the source code of this file.</a></p>
-</div><!-- contents -->
+<div class="textblock"><p>A token arriving at an inclusive gateway receives <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92daecf81265919ceb1222992d59f5e66300">ARRIVED</a> state. If multiple sequence flows enter the gateway, the state is updated to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da1869d56535e8b1449a6da54ff5e11f50">WAITING</a>, indicating that the token may have to be merged with other tokens. Otherwise, the state is immediately advanced to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da7ea8694c832315449be4318681c872f2">ENTERED</a>.</p>
+<pre class="mermaid">
+stateDiagram-v2
+    state merge &lt;&lt;choice&gt;&gt;
+    [*] --&gt; ARRIVED
+    ARRIVED --&gt; merge
+    merge --&gt; ENTERED: [one incoming sequence flow]
+    merge --&gt; WAITING: [multiple incoming sequence flows]
+    WAITING --&gt; ENTERED: unmerged release
+    WAITING --&gt; [*]: merging
+    ENTERED --&gt; [*]
+</pre><p>A converging inclusive gateway is activated when at least one token waits at it and no other token of the same scope is at a predecessor of the gateway, a predecessor being a flow node from which an incoming sequence flow of the gateway can be reached along sequence flows without visiting the gateway (<a class="el" href="classBPMNOS_1_1Model_1_1Model.html#af6d4e11f5fa082262becd4f57d46be90">BPMNOS::Model::Model::predecessors</a>). Tokens that have reached <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da2ba22e58ca17bb728d522bba36cf8350">DONE</a> state and tokens at boundary events are on no sequence flow and are disregarded, and a subprocess is represented by the token at it. Whether the gateway is activated is determined whenever all tokens have been advanced as far as possible. Upon activation, a token is consumed from each incoming sequence flow on which a token waits, further tokens on the same sequence flow waiting for the next activation. If a single token is consumed, it is released without being merged and its state is advanced to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da7ea8694c832315449be4318681c872f2">ENTERED</a>. Otherwise, a new token receives the merged status of the consumed tokens, as at a <a class="el" href="token_flow_logic_parallel_gateways.html">parallel gateway</a>, the consumed tokens are disposed, and the state of the merged token is advanced to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da7ea8694c832315449be4318681c872f2">ENTERED</a>.</p>
+<dl class="section attention"><dt>Attention</dt><dd>The rule coincides with the activation rule of the BPMN specification for acyclic models in which a path carries at most one token at a time. If a further token can travel a path that has already delivered a token to the gateway, the gateway also waits for that token, whereas the specification activates it at once and once more when the token arrives.</dd></dl>
+<p>If the gateway has more than one outgoing sequence flow, a copy of the token that has entered the gateway is created for each outgoing sequence flow whose condition is satisfied, and for the default flow if no condition is satisfied, and the state of each copy is advanced to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92daf648cfdf0a03c4aaad51d6d837613ec7">DEPARTED</a>. The token that has entered the gateway is disposed. If no condition is satisfied and the gateway has no default flow, the model is in error, and the run is aborted with an exception. If the gateway has one outgoing sequence flow, the state of the token is advanced to <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92daf648cfdf0a03c4aaad51d6d837613ec7">DEPARTED</a>. </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
 </div><!-- doc-content -->
 <div id="page-nav" class="page-nav-panel">
 <div id="page-nav-resize-handle"></div>

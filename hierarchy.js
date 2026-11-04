@@ -64,16 +64,12 @@ var hierarchy =
         [ "BPMNOS::Execution::Decision", "classBPMNOS_1_1Execution_1_1Decision.html", [
           [ "BPMNOS::Execution::ChoiceDecision", "structBPMNOS_1_1Execution_1_1ChoiceDecision.html", null ],
           [ "BPMNOS::Execution::EntryDecision", "structBPMNOS_1_1Execution_1_1EntryDecision.html", null ],
-          [ "BPMNOS::Execution::ExitDecision", "structBPMNOS_1_1Execution_1_1ExitDecision.html", null ],
           [ "BPMNOS::Execution::MessageDeliveryDecision", "structBPMNOS_1_1Execution_1_1MessageDeliveryDecision.html", null ]
         ] ],
         [ "BPMNOS::Execution::EntryEvent", "structBPMNOS_1_1Execution_1_1EntryEvent.html", [
           [ "BPMNOS::Execution::EntryDecision", "structBPMNOS_1_1Execution_1_1EntryDecision.html", null ]
         ] ],
         [ "BPMNOS::Execution::ErrorEvent", "structBPMNOS_1_1Execution_1_1ErrorEvent.html", null ],
-        [ "BPMNOS::Execution::ExitEvent", "structBPMNOS_1_1Execution_1_1ExitEvent.html", [
-          [ "BPMNOS::Execution::ExitDecision", "structBPMNOS_1_1Execution_1_1ExitDecision.html", null ]
-        ] ],
         [ "BPMNOS::Execution::InstantiationEvent", "structBPMNOS_1_1Execution_1_1InstantiationEvent.html", null ],
         [ "BPMNOS::Execution::MessageDeliveryEvent", "structBPMNOS_1_1Execution_1_1MessageDeliveryEvent.html", [
           [ "BPMNOS::Execution::MessageDeliveryDecision", "structBPMNOS_1_1Execution_1_1MessageDeliveryDecision.html", null ]
@@ -103,7 +99,6 @@ var hierarchy =
       [ "BPMNOS::Execution::GreedyDispatcher< Candidates >", "classBPMNOS_1_1Execution_1_1GreedyDispatcher.html", null ],
       [ "BPMNOS::Execution::InstantDirectMessage", "classBPMNOS_1_1Execution_1_1InstantDirectMessage.html", null ],
       [ "BPMNOS::Execution::InstantEntry", "classBPMNOS_1_1Execution_1_1InstantEntry.html", null ],
-      [ "BPMNOS::Execution::InstantExit", "classBPMNOS_1_1Execution_1_1InstantExit.html", null ],
       [ "BPMNOS::Execution::MyopicDecisionTaskTerminator", "classBPMNOS_1_1Execution_1_1MyopicDecisionTaskTerminator.html", null ],
       [ "BPMNOS::Execution::MyopicMessageTaskTerminator", "classBPMNOS_1_1Execution_1_1MyopicMessageTaskTerminator.html", null ],
       [ "BPMNOS::Execution::RandomChoice", "classBPMNOS_1_1Execution_1_1RandomChoice.html", null ]
@@ -166,7 +161,6 @@ var hierarchy =
       [ "BPMNOS::Execution::Candidates< WeakPtrs... >", "classBPMNOS_1_1Execution_1_1Candidates.html", [
         [ "BPMNOS::Execution::CachedCandidates< std::weak_ptr< const Token >, std::weak_ptr< const DecisionRequest > >", "classBPMNOS_1_1Execution_1_1CachedCandidates.html", [
           [ "BPMNOS::Execution::FirstFeasibleEntry", "classBPMNOS_1_1Execution_1_1FirstFeasibleEntry.html", null ],
-          [ "BPMNOS::Execution::FirstFeasibleExit", "classBPMNOS_1_1Execution_1_1FirstFeasibleExit.html", null ],
           [ "BPMNOS::Execution::SequentialEntries", "classBPMNOS_1_1Execution_1_1SequentialEntries.html", null ]
         ] ],
         [ "BPMNOS::Execution::CachedCandidates< std::weak_ptr< const Token >, std::weak_ptr< const DecisionRequest >, std::weak_ptr< const Message > >", "classBPMNOS_1_1Execution_1_1CachedCandidates.html", [

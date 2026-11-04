@@ -6,7 +6,6 @@ var classBPMNOS_1_1Execution_1_1Token =
       [ "ENTERED", "classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da7ea8694c832315449be4318681c872f2", null ],
       [ "BUSY", "classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da802706a9238e2928077f97736854bad4", null ],
       [ "COMPLETED", "classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da8f7afecbc8fbc4cd0f50a57d1172482e", null ],
-      [ "EXITING", "classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da835d592fc110ac5d9471b44151d96d40", null ],
       [ "DEPARTED", "classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92daf648cfdf0a03c4aaad51d6d837613ec7", null ],
       [ "ARRIVED", "classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92daecf81265919ceb1222992d59f5e66300", null ],
       [ "WAITING", "classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da1869d56535e8b1449a6da54ff5e11f50", null ],

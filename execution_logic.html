@@ -142,10 +142,13 @@ $(function(){initNavTree('execution_logic.html','',''); });
 <li><p class="startli">Gateways</p><ul>
 <li><a class="el" href="token_flow_logic_exclusive_gateways.html">Exclusive gateways</a></li>
 <li><a class="el" href="token_flow_logic_parallel_gateways.html">Parallel gateways</a></li>
+<li><a class="el" href="token_flow_logic_inclusive_gateways.html">Inclusive gateways</a></li>
 <li><a class="el" href="token_flow_logic_eventbased_gateways.html">Event-based gateways</a></li>
 </ul>
 <dl class="section user"><dt></dt><dd></dd></dl>
-<dl class="section note"><dt>Note</dt><dd><a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1InclusiveGateway.html">Inclusive gateways</a> and <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1ComplexGateway.html">complex gateways</a> are <b>not</b> supported.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd><a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1ComplexGateway.html">Complex gateways</a> are <b>not</b> supported. </dd></dl>
+<dl class="section user"><dt></dt><dd></dd></dl>
+<dl class="section attention"><dt>Attention</dt><dd>A <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Gateway.html">gateway</a> must have at least one incoming and one outgoing sequence flow.</dd></dl>
 </li>
 <li>Events<ul>
 <li><a class="el" href="token_flow_logic_untyped_start_events.html">Untyped start events</a></li>
@@ -156,7 +159,8 @@ $(function(){initNavTree('execution_logic.html','',''); });
 </ul>
 </li>
 </ul>
-<dl class="section note"><dt>Note</dt><dd>All tokens can be <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da15f20da2a811c696726c7187065cd6d2">withdrawn</a> at any time, e.g., when the respective state machine terminates. </dd></dl>
+<dl class="section attention"><dt>Attention</dt><dd>The sequence flows within a process or subprocess must not form a cycle, repetition being modelled by an activity with a loop marker. The engine assumes this without checking it. Within a cycle a node may be reached more than once in the same instance, and the instances of a multi-instance activity reached more than once would receive the same identifiers, these being formed from the identifier of the enclosing instance, the identifier of the activity and a counter starting anew at each arrival.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>All tokens can be <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da15f20da2a811c696726c7187065cd6d2">withdrawn</a> at any time, e.g., when the respective state machine terminates. A token that has not reached <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da2ba22e58ca17bb728d522bba36cf8350">DONE</a> or <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92dab9e14d9b2886bcff408b85aefa780419">FAILED</a> state when its scope ends is withdrawn, so that the last state of every token is a final state unless the run itself stops; a token at a compensate boundary event or compensate start event is withdrawn when its compensation can no longer be triggered. When the token at a subprocess is withdrawn, the tokens within the subprocess and its event subprocesses are withdrawn before it, and when a scope fails, the tokens within it and its event subprocesses are withdrawn after it has entered <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da04a6fafe393ceb9f5b6ce96aae00c8cb">FAILING</a> state. </dd></dl>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->

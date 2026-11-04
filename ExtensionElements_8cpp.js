@@ -8,8 +8,6 @@ var ExtensionElements_8cpp =
     [ "ExtensionElements::feasibleCompletion< BPMNOS::SharedData >", "ExtensionElements_8cpp.html#ad9ae7469daa111e86cf308de75bfed22", null ],
     [ "ExtensionElements::feasibleEntry< BPMNOS::Data >", "ExtensionElements_8cpp.html#a13bf39c64a09d12e841ba6273c38a638", null ],
     [ "ExtensionElements::feasibleEntry< BPMNOS::SharedData >", "ExtensionElements_8cpp.html#afe411c8ca9cfd0d858e02704abd4d299", null ],
-    [ "ExtensionElements::feasibleExit< BPMNOS::Data >", "ExtensionElements_8cpp.html#a0998207377972dfb0150ec88544d74e4", null ],
-    [ "ExtensionElements::feasibleExit< BPMNOS::SharedData >", "ExtensionElements_8cpp.html#ab1035efe34f11ac637fca8a53d04a02f", null ],
     [ "ExtensionElements::fullScopeRestrictionsSatisfied< BPMNOS::Data >", "ExtensionElements_8cpp.html#ae224627c73afdc8e34e81812f2e01d66", null ],
     [ "ExtensionElements::fullScopeRestrictionsSatisfied< BPMNOS::SharedData >", "ExtensionElements_8cpp.html#a24df52f7dc4a8bc2831f55cc2d3c4a1b", null ],
     [ "ExtensionElements::getContributionsToObjective< BPMNOS::Data >", "ExtensionElements_8cpp.html#abf976809925db2f7b8e8b49c382267e3", null ],

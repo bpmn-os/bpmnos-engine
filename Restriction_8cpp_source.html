@@ -148,8 +148,8 @@ $(function(){initNavTree('Restriction_8cpp_source.html','',''); });
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">else</span> if ( restriction-&gt;<a class="code hl_variable" href="classXML_1_1bpmnos_1_1tRestriction.html#a6042eb8e8bc7b3b0bdcc1d724603ecb9">scope</a>-&gt;get().value.value == <span class="stringliteral">&quot;completion&quot;</span> ) {</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>      scope = Scope::COMPLETION;</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    }</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">else</span> if ( restriction-&gt;<a class="code hl_variable" href="classXML_1_1bpmnos_1_1tRestriction.html#a6042eb8e8bc7b3b0bdcc1d724603ecb9">scope</a>-&gt;get().value.value == <span class="stringliteral">&quot;exit&quot;</span> ) {</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>      scope = Scope::EXIT;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">else</span> if ( restriction-&gt;<a class="code hl_variable" href="classXML_1_1bpmnos_1_1tRestriction.html#a6042eb8e8bc7b3b0bdcc1d724603ecb9">scope</a>-&gt;get().value.value != <span class="stringliteral">&quot;full&quot;</span> ) {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>      throw std::runtime_error(<span class="stringliteral">&quot;Restriction: illegal scope &#39;&quot;</span> + restriction-&gt;scope-&gt;get().value.value + <span class="stringliteral">&quot;&#39;&quot;</span>);</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    }</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>  }  </div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>}</div>

@@ -21,7 +21,7 @@ var searchData=
   ['tokenatmultiinstanceactivity_18',['tokenAtMultiInstanceActivity',['../classBPMNOS_1_1Execution_1_1SystemState.html#a029480336d97a7fbb9064be2f2f5dcf0',1,'BPMNOS::Execution::SystemState']]],
   ['tokenawaitingcompensationactivity_19',['tokenAwaitingCompensationActivity',['../classBPMNOS_1_1Execution_1_1SystemState.html#a7249748c6bdd0f3b08c6ca510def9705',1,'BPMNOS::Execution::SystemState']]],
   ['tokenawaitingcompensationeventsubprocess_20',['tokenAwaitingCompensationEventSubProcess',['../classBPMNOS_1_1Execution_1_1SystemState.html#ad5f60530bef0954392c582d4c3c28ec0',1,'BPMNOS::Execution::SystemState']]],
-  ['tokenawaitingmultiinstanceexit_21',['tokenAwaitingMultiInstanceExit',['../classBPMNOS_1_1Execution_1_1SystemState.html#abd427ef822150d0ee61cc38679e4781d',1,'BPMNOS::Execution::SystemState']]],
+  ['tokenawaitingmultiinstancecompletion_21',['tokenAwaitingMultiInstanceCompletion',['../classBPMNOS_1_1Execution_1_1SystemState.html#a2c35c0dd3631e749ae092fce9e31d364',1,'BPMNOS::Execution::SystemState']]],
   ['tokens_22',['tokens',['../classBPMNOS_1_1Execution_1_1StateMachine.html#ac08ac60a96874b93b6d763e44697485c',1,'BPMNOS::Execution::StateMachine']]],
   ['tokensatactivityinstance_23',['tokensAtActivityInstance',['../classBPMNOS_1_1Execution_1_1SystemState.html#a03f2f20b5543a8d9313e5fb8bd06e209',1,'BPMNOS::Execution::SystemState']]],
   ['tokensawaitingboundaryevent_24',['tokensAwaitingBoundaryEvent',['../classBPMNOS_1_1Execution_1_1SystemState.html#a71557ada638121d8d6b12d5e8de9a00e',1,'BPMNOS::Execution::SystemState']]],

@@ -164,7 +164,6 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:a139c50b3da551a3a44f1905fcda097eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timestamp holding the point in time that the engine is in (this is usually representing now).  <br /></td></tr>
 <tr class="memitem:a1c64846417825cd6f6964739142343a7" id="r_a1c64846417825cd6f6964739142343a7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1Execution_1_1auto__list.html">auto_list</a>&lt; std::weak_ptr&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> &gt;, std::weak_ptr&lt; <a class="el" href="structBPMNOS_1_1Execution_1_1DecisionRequest.html">DecisionRequest</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1c64846417825cd6f6964739142343a7">pendingEntryDecisions</a></td></tr>
 <tr class="memitem:aa7242aae7456af850597e13789c1ec83" id="r_aa7242aae7456af850597e13789c1ec83"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1Execution_1_1auto__list.html">auto_list</a>&lt; std::weak_ptr&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> &gt;, std::weak_ptr&lt; <a class="el" href="structBPMNOS_1_1Execution_1_1DecisionRequest.html">DecisionRequest</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa7242aae7456af850597e13789c1ec83">pendingChoiceDecisions</a></td></tr>
-<tr class="memitem:a238e99d8db7fa260a73a13e8f94267d7" id="r_a238e99d8db7fa260a73a13e8f94267d7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1Execution_1_1auto__list.html">auto_list</a>&lt; std::weak_ptr&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> &gt;, std::weak_ptr&lt; <a class="el" href="structBPMNOS_1_1Execution_1_1DecisionRequest.html">DecisionRequest</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a238e99d8db7fa260a73a13e8f94267d7">pendingExitDecisions</a></td></tr>
 <tr class="memitem:a70b39b062d13814ea1ffb588767e8e0a" id="r_a70b39b062d13814ea1ffb588767e8e0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1Execution_1_1auto__list.html">auto_list</a>&lt; std::weak_ptr&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> &gt;, std::weak_ptr&lt; <a class="el" href="structBPMNOS_1_1Execution_1_1MessageDeliveryRequest.html">MessageDeliveryRequest</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a70b39b062d13814ea1ffb588767e8e0a">pendingMessageDeliveryDecisions</a></td></tr>
 <tr class="memdesc:a70b39b062d13814ea1ffb588767e8e0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pending deliveries hold the request of their own kind, which carries the header its token is matched by.  <br /></td></tr>
 <tr class="memitem:a96855141e7a80b056337252cc9b77714" id="r_a96855141e7a80b056337252cc9b77714"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1Execution_1_1auto__list.html">auto_list</a>&lt; std::weak_ptr&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a96855141e7a80b056337252cc9b77714">tokensAwaitingReadyEvent</a></td></tr>
@@ -193,12 +192,12 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:ade9c9bade1009bfa05bbe613fd9ff1f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Container holding message awaiting delivery for tokens at send tasks.  <br /></td></tr>
 <tr class="memitem:a029480336d97a7fbb9064be2f2f5dcf0" id="r_a029480336d97a7fbb9064be2f2f5dcf0"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> *, <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a029480336d97a7fbb9064be2f2f5dcf0">tokenAtMultiInstanceActivity</a></td></tr>
 <tr class="memdesc:a029480336d97a7fbb9064be2f2f5dcf0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map holding the main token waiting at a multi-instance (or loop) activity.  <br /></td></tr>
-<tr class="memitem:abd427ef822150d0ee61cc38679e4781d" id="r_abd427ef822150d0ee61cc38679e4781d"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> *, <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abd427ef822150d0ee61cc38679e4781d">tokenAwaitingMultiInstanceExit</a></td></tr>
-<tr class="memdesc:abd427ef822150d0ee61cc38679e4781d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map holding the token waiting for the exit of an instantiation of a multi-instance (or loop) activity.  <br /></td></tr>
+<tr class="memitem:a2c35c0dd3631e749ae092fce9e31d364" id="r_a2c35c0dd3631e749ae092fce9e31d364"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> *, <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2c35c0dd3631e749ae092fce9e31d364">tokenAwaitingMultiInstanceCompletion</a></td></tr>
+<tr class="memdesc:a2c35c0dd3631e749ae092fce9e31d364"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map holding the token waiting for the completion of an instantiation of a multi-instance (or loop) activity.  <br /></td></tr>
 <tr class="memitem:a03f2f20b5543a8d9313e5fb8bd06e209" id="r_a03f2f20b5543a8d9313e5fb8bd06e209"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> *, std::vector&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> * &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a03f2f20b5543a8d9313e5fb8bd06e209">tokensAtActivityInstance</a></td></tr>
 <tr class="memdesc:a03f2f20b5543a8d9313e5fb8bd06e209"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map holding all tokens representing an active instance of a multi-instance (or loop) activity for each token waiting at the multi-instance (or loop) activity.  <br /></td></tr>
-<tr class="memitem:ac6b94afca7da246094b5fe7a30b89a69" id="r_ac6b94afca7da246094b5fe7a30b89a69"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> *, std::vector&lt; <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac6b94afca7da246094b5fe7a30b89a69">exitStatusAtActivityInstance</a></td></tr>
-<tr class="memdesc:ac6b94afca7da246094b5fe7a30b89a69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map holding the exit status of all instances of a multi-instance (or loop) activity for each token waiting at the multi-instance (or loop) activity.  <br /></td></tr>
+<tr class="memitem:a5d7b5cc8694a0488f38f84e5765320b3" id="r_a5d7b5cc8694a0488f38f84e5765320b3"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> *, std::vector&lt; <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5d7b5cc8694a0488f38f84e5765320b3">completionStatusAtActivityInstance</a></td></tr>
+<tr class="memdesc:a5d7b5cc8694a0488f38f84e5765320b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map holding the completion status of all instances of a multi-instance (or loop) activity for each token waiting at the multi-instance (or loop) activity.  <br /></td></tr>
 <tr class="memitem:ab007fd862323cd5b635dc99ab2a5110b" id="r_ab007fd862323cd5b635dc99ab2a5110b"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> *, <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab007fd862323cd5b635dc99ab2a5110b">tokenAtEventBasedGateway</a></td></tr>
 <tr class="memdesc:ab007fd862323cd5b635dc99ab2a5110b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map holding the token at the relevant event-based gateway.  <br /></td></tr>
 <tr class="memitem:aacfe96143421595d6f175451b82b0860" id="r_aacfe96143421595d6f175451b82b0860"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> *, std::vector&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a> * &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aacfe96143421595d6f175451b82b0860">tokensAwaitingEvent</a></td></tr>
@@ -238,11 +237,9 @@ Additional Inherited Members</h2></td></tr>
 , <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea20caab0862152251985214cd6ea92dcd">EntryRequest</a>
 , <br />
 &#160;&#160;<a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea4419a9c7ead36d76c68e50064751d332">ChoiceRequest</a>
-, <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea57e7d74fed97e297242e2d5482b06a06">ExitRequest</a>
 , <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea485a7c47fbf964a65e5c916a2b10661e">MessageDeliveryRequest</a>
 , <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355eab2683254cdd6ca3c9aaf908baf7523b1">SystemState</a>
-, <br />
-&#160;&#160;<a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355eae93f994f01c537c4e2f7d8528c3eb5e9">Count</a>
+, <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355eae93f994f01c537c4e2f7d8528c3eb5e9">Count</a>
 <br />
  }</td></tr>
 </table>
@@ -354,7 +351,7 @@ Additional Inherited Members</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>The objective is updated whenever a weighted data or global attribute is written, and when status attributes are accounted at element exit/completion. </p>
+<p>The objective is updated whenever a weighted data or global attribute is written, and when status attributes are accounted at element completion. </p>
 
 <p class="definition">Definition at line <a class="el" href="SystemState_8cpp_source.html#l00127">127</a> of file <a class="el" href="SystemState_8cpp_source.html">SystemState.cpp</a>.</p>
 
@@ -429,7 +426,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00160">160</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00159">159</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -453,7 +450,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00157">157</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00156">156</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -477,7 +474,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00158">158</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00157">157</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -501,7 +498,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00159">159</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00158">158</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -519,7 +516,23 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>Used to look up recipient state machines when delivering directed messages. Contains: state machines of process instances, multi-instance activity state machines, and non-interrupting event subprocess state machines. </p>
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00094">94</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00093">93</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+
+</div>
+</div>
+<a id="a5d7b5cc8694a0488f38f84e5765320b3" name="a5d7b5cc8694a0488f38f84e5765320b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d7b5cc8694a0488f38f84e5765320b3">&#9670;&#160;</a></span>completionStatusAtActivityInstance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a>*, std::vector&lt;<a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a>&gt; &gt; BPMNOS::Execution::SystemState::completionStatusAtActivityInstance</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00126">126</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -539,22 +552,6 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="ac6b94afca7da246094b5fe7a30b89a69" name="ac6b94afca7da246094b5fe7a30b89a69"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac6b94afca7da246094b5fe7a30b89a69">&#9670;&#160;</a></span>exitStatusAtActivityInstance</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::unordered_map&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a>*, std::vector&lt;<a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a>&gt; &gt; BPMNOS::Execution::SystemState::exitStatusAtActivityInstance</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00127">127</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
-
-</div>
-</div>
 <a id="a670a78a31e0a66e4fc66f1a8ffd7e96c" name="a670a78a31e0a66e4fc66f1a8ffd7e96c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a670a78a31e0a66e4fc66f1a8ffd7e96c">&#9670;&#160;</a></span>inbox</h2>
 
@@ -567,7 +564,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00104">104</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00103">103</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -583,7 +580,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00122">122</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00121">121</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -599,7 +596,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00154">154</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00153">153</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -615,7 +612,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00144">144</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00143">143</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -631,7 +628,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00109">109</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00108">108</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -667,22 +664,6 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="a238e99d8db7fa260a73a13e8f94267d7" name="a238e99d8db7fa260a73a13e8f94267d7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a238e99d8db7fa260a73a13e8f94267d7">&#9670;&#160;</a></span>pendingExitDecisions</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classBPMNOS_1_1Execution_1_1auto__list.html">auto_list</a>&lt; std::weak_ptr&lt;<a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a>&gt;, std::weak_ptr&lt;<a class="el" href="structBPMNOS_1_1Execution_1_1DecisionRequest.html">DecisionRequest</a>&gt; &gt; BPMNOS::Execution::SystemState::pendingExitDecisions</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00080">80</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
-
-</div>
-</div>
 <a id="a70b39b062d13814ea1ffb588767e8e0a" name="a70b39b062d13814ea1ffb588767e8e0a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a70b39b062d13814ea1ffb588767e8e0a">&#9670;&#160;</a></span>pendingMessageDeliveryDecisions</h2>
 
@@ -695,7 +676,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00082">82</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00081">81</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -727,7 +708,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00149">149</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00148">148</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -743,7 +724,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00114">114</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00113">113</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -759,7 +740,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00129">129</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00128">128</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -775,7 +756,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00124">124</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00123">123</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -791,7 +772,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00136">136</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00135">135</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -807,23 +788,23 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00137">137</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00136">136</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
-<a id="abd427ef822150d0ee61cc38679e4781d" name="abd427ef822150d0ee61cc38679e4781d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abd427ef822150d0ee61cc38679e4781d">&#9670;&#160;</a></span>tokenAwaitingMultiInstanceExit</h2>
+<a id="a2c35c0dd3631e749ae092fce9e31d364" name="a2c35c0dd3631e749ae092fce9e31d364"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c35c0dd3631e749ae092fce9e31d364">&#9670;&#160;</a></span>tokenAwaitingMultiInstanceCompletion</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::unordered_map&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a>*, <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a>* &gt; BPMNOS::Execution::SystemState::tokenAwaitingMultiInstanceExit</td>
+          <td class="memname">std::unordered_map&lt; <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a>*, <a class="el" href="#a48f5c1ca47af8dc65eca7e0274de96e2">Token</a>* &gt; BPMNOS::Execution::SystemState::tokenAwaitingMultiInstanceCompletion</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00125">125</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00124">124</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -839,7 +820,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00126">126</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00125">125</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -855,7 +836,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00113">113</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00112">112</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -871,7 +852,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00085">85</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00084">84</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -887,7 +868,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00120">120</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00119">119</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -903,7 +884,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00130">130</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00129">129</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -919,7 +900,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00132">132</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00131">131</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -935,7 +916,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00084">84</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00083">83</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -951,7 +932,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00118">118</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00117">117</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -967,7 +948,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00116">116</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00115">115</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>
@@ -983,7 +964,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00099">99</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SystemState_8h_source.html#l00098">98</a> of file <a class="el" href="SystemState_8h_source.html">SystemState.h</a>.</p>
 
 </div>
 </div>

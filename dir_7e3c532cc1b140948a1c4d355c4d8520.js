@@ -6,8 +6,6 @@ var dir_7e3c532cc1b140948a1c4d355c4d8520 =
     [ "InstantDirectMessage.h", "InstantDirectMessage_8h.html", "InstantDirectMessage_8h" ],
     [ "InstantEntry.cpp", "InstantEntry_8cpp.html", null ],
     [ "InstantEntry.h", "InstantEntry_8h.html", "InstantEntry_8h" ],
-    [ "InstantExit.cpp", "InstantExit_8cpp.html", null ],
-    [ "InstantExit.h", "InstantExit_8h.html", "InstantExit_8h" ],
     [ "MyopicDecisionTaskTerminator.cpp", "MyopicDecisionTaskTerminator_8cpp.html", null ],
     [ "MyopicDecisionTaskTerminator.h", "MyopicDecisionTaskTerminator_8h.html", "MyopicDecisionTaskTerminator_8h" ],
     [ "MyopicMessageTaskTerminator.cpp", "MyopicMessageTaskTerminator_8cpp.html", null ],

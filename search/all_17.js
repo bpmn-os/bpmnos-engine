@@ -1,7 +1,7 @@
 var searchData=
 [
   ['wait_0',['wait',['../classBPMNOS_1_1Execution_1_1Engine.html#a79b8cd0bdfc1830435a7d8885681a42b',1,'BPMNOS::Execution::Engine']]],
-  ['waitactivity_1',['WaitActivity',['../truck_driver_scheduling_problem.html#subprocess-waitactivity',1,'SubProcess (WaitActivity)'],['../bin_packing_problem.html#task-waitactivity',1,'Task (WaitActivity)'],['../knapsack_problem.html#task-waitactivity-1',1,'Task (WaitActivity)']]],
+  ['waitactivity_1',['SubProcess (WaitActivity)',['../truck_driver_scheduling_problem.html#subprocess-waitactivity',1,'']]],
   ['waitbeforevisitgateway_2',['ExclusiveGateway (WaitBeforeVisitGateway)',['../truck_driver_scheduling_problem.html#exclusivegateway-waitbeforevisitgateway',1,'']]],
   ['waitendevent_3',['EndEvent (WaitEndEvent)',['../truck_driver_scheduling_problem.html#endevent-waitendevent',1,'']]],
   ['waitevent_4',['IntermediateCatchEvent (WaitEvent)',['../vehicle_routing_problem.html#intermediatecatchevent-waitevent',1,'']]],

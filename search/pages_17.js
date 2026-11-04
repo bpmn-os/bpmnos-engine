@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['waitactivity_0',['WaitActivity',['../truck_driver_scheduling_problem.html#subprocess-waitactivity',1,'SubProcess (WaitActivity)'],['../bin_packing_problem.html#task-waitactivity',1,'Task (WaitActivity)'],['../knapsack_problem.html#task-waitactivity-1',1,'Task (WaitActivity)']]],
+  ['waitactivity_0',['SubProcess (WaitActivity)',['../truck_driver_scheduling_problem.html#subprocess-waitactivity',1,'']]],
   ['waitbeforevisitgateway_1',['ExclusiveGateway (WaitBeforeVisitGateway)',['../truck_driver_scheduling_problem.html#exclusivegateway-waitbeforevisitgateway',1,'']]],
   ['waitendevent_2',['EndEvent (WaitEndEvent)',['../truck_driver_scheduling_problem.html#endevent-waitendevent',1,'']]],
   ['waitevent_3',['IntermediateCatchEvent (WaitEvent)',['../vehicle_routing_problem.html#intermediatecatchevent-waitevent',1,'']]],

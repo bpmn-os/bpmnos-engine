@@ -128,7 +128,6 @@ $(function(){initNavTree('controller.html','',''); });
 <div class="contents">
 <div class="textblock"><p>A <a class="el" href="classBPMNOS_1_1Execution_1_1Controller.html">controller</a> is responsible for making <a class="el" href="classBPMNOS_1_1Execution_1_1Decision.html">decisions</a>, i.e.,</p><ul>
 <li><a class="el" href="structBPMNOS_1_1Execution_1_1EntryDecision.html">entry decisions</a>,</li>
-<li><a class="el" href="structBPMNOS_1_1Execution_1_1ExitDecision.html">exit decisions</a>,</li>
 <li><a class="el" href="structBPMNOS_1_1Execution_1_1ChoiceDecision.html">choice decisions</a>, and</li>
 <li><a class="el" href="structBPMNOS_1_1Execution_1_1MessageDeliveryDecision.html">message delivery decisions</a></li>
 </ul>
@@ -136,7 +135,6 @@ $(function(){initNavTree('controller.html','',''); });
 <p>A controller has to <a class="el" href="classBPMNOS_1_1Execution_1_1Controller.html#adc20fead37df218262d0c0c857fa0913">connect</a> to an <a class="el" href="classBPMNOS_1_1Execution_1_1Engine.html">execution engine</a> to be informed about relevant changes in the <a class="el" href="classBPMNOS_1_1Execution_1_1SystemState.html">system state</a>, i.e., about</p><ul>
 <li><a class="el" href="structBPMNOS_1_1Execution_1_1DecisionRequest.html">requests for a decision</a> to<ul>
 <li><a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea20caab0862152251985214cd6ea92dcd">enter a node</a>,</li>
-<li><a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea57e7d74fed97e297242e2d5482b06a06">exit a node</a>,</li>
 <li><a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea4419a9c7ead36d76c68e50064751d332">make a choice</a>, or to</li>
 <li><a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea485a7c47fbf964a65e5c916a2b10661e">deliver a message</a>,</li>
 </ul>
@@ -150,7 +148,6 @@ $(function(){initNavTree('controller.html','',''); });
 Greedy controller</h1>
 <p>The <a class="el" href="classBPMNOS_1_1Execution_1_1GreedyController.html">greedy controller</a> is a <a class="el" href="classBPMNOS_1_1Execution_1_1Controller.html">controller</a> that holds a list of dispatchers that are consulted in the given order:</p>
 <ul>
-<li>the <a class="el" href="classBPMNOS_1_1Execution_1_1FirstFeasibleExit.html">exit dispatcher</a> evaluates the pending exit decisions and dispatches the first feasible exit,</li>
 <li>the <a class="el" href="classBPMNOS_1_1Execution_1_1FirstFeasibleEntry.html">entry dispatcher</a> evaluates the pending entry decisions (excluding those in a sequential ad-hoc subprocess) and dispatches the first feasible entry,</li>
 <li>the <a class="el" href="classBPMNOS_1_1Execution_1_1InstantDirectMessage.html">direct message dispatcher</a> dispatches a message delivery without evaluation whenever the sender explicitly addresses its recipient or the recipient explicitly refers to the sender,</li>
 <li>the <a class="el" href="classBPMNOS_1_1Execution_1_1FirstEnumeratedChoice.html">enumerated choice dispatcher</a> (, )or the <a class="el" href="classBPMNOS_1_1Execution_1_1FirstBisectionalChoice.html">bisectional choice dispatcher</a> when <span class="tt">config.bisection</span> is set) evaluates choices for decision tasks and as soon as feasible choices are found for a decision task, it dispatches the best evaluated choices for that task,</li>
