@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <optional>
 #include <bpmn++.h>
 #include <limex.h>
@@ -129,6 +130,13 @@ public:
   /// name alone. The name is therefore declared by no catching element other than the start event, which
   /// @ref createMessageFlows enforces once every process has been read.
   std::unordered_map< BPMNOS::number, const BPMN::Process* > processesTriggeredByMessage;
+
+  /// @brief Map holding the predecessors of each converging inclusive gateway.
+  ///
+  /// The predecessors of a converging inclusive gateway are the flow nodes from which one of its incoming
+  /// sequence flows can be reached without visiting the gateway. The gateway is activated once no other
+  /// token of its scope is at a predecessor, the model being assumed acyclic. Other nodes have no entry.
+  std::unordered_map< const BPMN::FlowNode*, std::unordered_set<const BPMN::FlowNode*> > predecessors;
 };
 
 } // namespace BPMNOS::Model

@@ -449,6 +449,28 @@ void Model::createMessageFlows() {
   validateSignals();
   validateErrors();
   validateEscalations();
+
+  // the predecessors of a converging inclusive gateway are the flow nodes from which one of its incoming
+  // sequence flows can be reached without visiting the gateway, the model being acyclic
+  for ( auto& process : processes ) {
+    auto gateways = process->find_all(
+      [](const BPMN::Node* node) { return node->represents<BPMN::InclusiveGateway>() && node->as<BPMN::FlowNode>()->incoming.size() > 1; }
+    );
+    for ( auto node : gateways ) {
+      auto gateway = node->as<BPMN::FlowNode>();
+      auto& nodes = predecessors[gateway];
+      std::vector<const BPMN::FlowNode*> pending = { gateway };
+      while ( !pending.empty() ) {
+        auto current = pending.back();
+        pending.pop_back();
+        for ( auto sequenceFlow : current->incoming ) {
+          if ( sequenceFlow->source != gateway && nodes.insert(sequenceFlow->source).second ) {
+            pending.push_back(sequenceFlow->source);
+          }
+        }
+      }
+    }
+  }
 }
 
 void Model::validateErrors() {

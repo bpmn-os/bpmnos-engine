@@ -82,6 +82,7 @@ list(APPEND tests_SOURCES
   systemstate/message/test.cpp
   systemstate/eventbasedgateway/test.cpp
   systemstate/parallelgateway/test.cpp
+  systemstate/inclusivegateway/test.cpp
   systemstate/multiinstanceactivity/test.cpp
   systemstate/compensationactivity/test.cpp
   systemstate/adhocsubprocess/test.cpp

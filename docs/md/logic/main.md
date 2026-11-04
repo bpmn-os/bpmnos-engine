@@ -24,7 +24,7 @@ The token flow logic depends on the node type and is described in below sections
   - @subpage token_flow_logic_eventbased_gateways
 
   @par
-  @note @ref BPMN::ComplexGateway "Complex gateways" and converging @ref BPMN::InclusiveGateway "inclusive gateways" are **not** supported. 
+  @note @ref BPMN::ComplexGateway "Complex gateways" are **not** supported. 
   @par
   @attention A @ref BPMN::Gateway "gateway" must have at least one incoming and one outgoing sequence flow.
 
@@ -34,6 +34,8 @@ The token flow logic depends on the node type and is described in below sections
   - @subpage token_flow_logic_boundary_events
   - @subpage token_flow_logic_intermediate_catching_events
   - @subpage token_flow_logic_throwing_events
+
+@attention The sequence flows within a process or subprocess must not form a cycle, repetition being modelled by an activity with a loop marker. The engine assumes this without checking it. Within a cycle a node may be reached more than once in the same instance, and the instances of a multi-instance activity reached more than once would receive the same identifiers, these being formed from the identifier of the enclosing instance, the identifier of the activity and a counter starting anew at each arrival.
 
 @note All tokens can be @ref  BPMNOS::Execution::Token::State::WITHDRAWN "withdrawn" at any time, e.g., when the respective state machine terminates. A token that has not reached @ref BPMNOS::Execution::Token::State::DONE "DONE" or @ref BPMNOS::Execution::Token::State::FAILED "FAILED" state when its scope ends is withdrawn, so that the last state of every token is a final state unless the run itself stops; a token at a compensate boundary event or compensate start event is withdrawn when its compensation can no longer be triggered. When the token at a subprocess is withdrawn, the tokens within the subprocess and its event subprocesses are withdrawn before it, and when a scope fails, the tokens within it and its event subprocesses are withdrawn after it has entered @ref BPMNOS::Execution::Token::State::FAILING "FAILING" state.
 

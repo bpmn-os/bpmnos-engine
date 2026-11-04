@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:bpmnos="https://bpmnos.telematique.eu" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+  <bpmn2:process id="Process_1" isExecutable="true">
+    <bpmn2:extensionElements>
+      <bpmnos:status>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Timestamp" type="decimal" name="timestamp" />
+        </bpmnos:attributes>
+      </bpmnos:status>
+    </bpmn2:extensionElements>
+    <bpmn2:startEvent id="StartEvent_1">
+      <bpmn2:outgoing>Flow_1</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Gateway_1" />
+    <bpmn2:parallelGateway id="Gateway_1">
+      <bpmn2:incoming>Flow_1</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_A1</bpmn2:outgoing>
+      <bpmn2:outgoing>Flow_B1</bpmn2:outgoing>
+      <bpmn2:outgoing>Flow_C1</bpmn2:outgoing>
+    </bpmn2:parallelGateway>
+    <bpmn2:inclusiveGateway id="Gateway_2">
+      <bpmn2:incoming>Flow_A2</bpmn2:incoming>
+      <bpmn2:incoming>Flow_B2</bpmn2:incoming>
+      <bpmn2:incoming>Flow_C2</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_2</bpmn2:outgoing>
+    </bpmn2:inclusiveGateway>
+    <bpmn2:task id="Task_A">
+      <bpmn2:incoming>Flow_A1</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_A2</bpmn2:outgoing>
+    </bpmn2:task>
+    <bpmn2:sequenceFlow id="Flow_A1" sourceRef="Gateway_1" targetRef="Task_A" />
+    <bpmn2:sequenceFlow id="Flow_A2" sourceRef="Task_A" targetRef="Gateway_2" />
+    <bpmn2:task id="Task_B">
+      <bpmn2:incoming>Flow_B1</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_B2</bpmn2:outgoing>
+    </bpmn2:task>
+    <bpmn2:sequenceFlow id="Flow_B1" sourceRef="Gateway_1" targetRef="Task_B" />
+    <bpmn2:sequenceFlow id="Flow_B2" sourceRef="Task_B" targetRef="Gateway_2" />
+    <bpmn2:task id="Task_C">
+      <bpmn2:extensionElements>
+        <bpmnos:status>
+          <bpmnos:operators>
+            <bpmnos:operator id="Operator_C" expression="timestamp += 3" />
+          </bpmnos:operators>
+        </bpmnos:status>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>Flow_C1</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_C2</bpmn2:outgoing>
+    </bpmn2:task>
+    <bpmn2:sequenceFlow id="Flow_C1" sourceRef="Gateway_1" targetRef="Task_C" />
+    <bpmn2:sequenceFlow id="Flow_C2" sourceRef="Task_C" targetRef="Gateway_2" />
+    <bpmn2:boundaryEvent id="TimerEvent_1" attachedToRef="Task_C">
+      <bpmn2:extensionElements>
+        <bpmnos:timer>
+          <bpmnos:parameter name="trigger" value="2" />
+        </bpmnos:timer>
+      </bpmn2:extensionElements>
+      <bpmn2:outgoing>Flow_3</bpmn2:outgoing>
+      <bpmn2:timerEventDefinition id="TimerEventDefinition_1" />
+    </bpmn2:boundaryEvent>
+    <bpmn2:sequenceFlow id="Flow_3" sourceRef="TimerEvent_1" targetRef="EndEvent_2" />
+    <bpmn2:endEvent id="EndEvent_2">
+      <bpmn2:incoming>Flow_3</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:sequenceFlow id="Flow_2" sourceRef="Gateway_2" targetRef="EndEvent_1" />
+    <bpmn2:endEvent id="EndEvent_1">
+      <bpmn2:incoming>Flow_2</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:dataObject id="DataObject_1">
+      <bpmn2:extensionElements>
+        <bpmnos:attributes>
+          <bpmnos:attribute id="Instance" type="string" name="instance" />
+        </bpmnos:attributes>
+      </bpmn2:extensionElements>
+    </bpmn2:dataObject>
+  </bpmn2:process>
+</bpmn2:definitions>

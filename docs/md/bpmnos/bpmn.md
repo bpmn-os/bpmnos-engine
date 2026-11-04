@@ -93,11 +93,10 @@ Event-subprocesses are assumed to have exactly one @ref BPMN::TypedStartEvent "t
 ![InclusiveGateway](BPMN/InclusiveGateway.svg)
 ![EventBasedGateway](BPMN/EventBasedGateway.svg)
 @par
-Supported gateways are @ref BPMN::ExclusiveGateway "exclusive gateways", @ref BPMN::ParallelGateway "parallel gateways", @ref BPMN::InclusiveGateway "inclusive gateways", and @ref BPMN::EventBasedGateway "event-based gateways". Inclusive gateways are assumed to be diverging.
+Supported gateways are @ref BPMN::ExclusiveGateway "exclusive gateways", @ref BPMN::ParallelGateway "parallel gateways", @ref BPMN::InclusiveGateway "inclusive gateways", and @ref BPMN::EventBasedGateway "event-based gateways".
 
 @par
 @attention
-- Converging @ref BPMN::InclusiveGateway "inclusive gateways" are **not** supported.
 - @ref BPMN::ComplexGateway "Complex gateways" are **not** supported.
 
 ## @ref BPMN::CatchEvent "Catch events"

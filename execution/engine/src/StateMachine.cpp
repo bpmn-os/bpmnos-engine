@@ -14,6 +14,7 @@
 #include "execution/data/src/DataProvider.h"
 #include "execution/data/src/Scenario.h"
 #include "bpmn++.h"
+#include <algorithm>
 #include <cassert>
 #include <ranges>
 #include <utility>
@@ -970,24 +971,53 @@ std::vector<Token*> StateMachine::createTokenCopies(Token* token, const std::vec
 }
 
 void StateMachine::createMergedToken(const BPMN::FlowNode* gateway) {
-  auto gatewayIt = const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation[this].find(gateway);
+  auto& tokensAwaitingGatewayActivation = const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation;
+  auto& gateways = tokensAwaitingGatewayActivation.at(this);
+  auto gatewayIt = gateways.find(gateway);
   auto& [key,arrivedTokens] = *gatewayIt;
 
+  // a token is consumed from each incoming sequence flow that has a token, further tokens on the same sequence
+  // flow awaiting the next activation
+  std::vector<Token*> consumedTokens;
+  for ( auto sequenceFlow : gateway->incoming ) {
+    if ( auto it = std::ranges::find_if(arrivedTokens, [sequenceFlow](Token* token) { return token->sequenceFlow == sequenceFlow; });
+      it != arrivedTokens.end()
+    ) {
+      consumedTokens.push_back(*it);
+      arrivedTokens.erase(it);
+    }
+  }
+  assert( !consumedTokens.empty() );
+  if ( arrivedTokens.empty() ) {
+    gateways.erase(gatewayIt);
+    if ( gateways.empty() ) {
+      tokensAwaitingGatewayActivation.erase(this);
+    }
+  }
+
+  auto engine = const_cast<Engine*>(systemState->engine);
+
+  if ( consumedTokens.size() == 1 ) {
+    // a single token is released without being merged
+    auto token = consumedTokens.front();
+    token->sequenceFlow = nullptr;
+    engine->commands.emplace_back(std::bind(&Token::advanceToEntered,token), token);
+    return;
+  }
+
   // create merged token
-  std::shared_ptr<Token> mergedToken = std::make_shared<Token>(arrivedTokens);
+  std::shared_ptr<Token> mergedToken = std::make_shared<Token>(consumedTokens);
 
   // remove tokens
-  for ( auto arrivedToken : arrivedTokens ) {
-    erase_ptr<Token>(tokens,arrivedToken);
+  for ( auto consumedToken : consumedTokens ) {
+    erase_ptr<Token>(tokens,consumedToken);
   }
-  const_cast<SystemState*>(systemState)->tokensAwaitingGatewayActivation[this].erase(gatewayIt);
 
   // add merged token
   tokens.push_back(std::move(mergedToken));
 
   // advance merged token
   auto token = tokens.back().get();
-  auto engine = const_cast<Engine*>(systemState->engine);
   engine->commands.emplace_back(std::bind(&Token::advanceToEntered,token), token);
 }
 
@@ -1191,6 +1221,22 @@ void StateMachine::attemptGatewayActivation(const BPMN::FlowNode* node) {
       auto engine = const_cast<Engine*>(systemState->engine);
       engine->commands.emplace_back(std::bind(&StateMachine::createMergedToken,this,node), this);
     }
+  }
+  else if ( node->represents<BPMN::InclusiveGateway>() ) {
+    // the gateway is activated once no other token of the state machine is at one of its predecessors; tokens
+    // that are done and tokens at boundary events are on no sequence flow and are disregarded
+    auto& predecessors = systemState->engine->getModel()->predecessors.at(node);
+    for ( auto& token : tokens ) {
+      if ( token->node == node || token->state == Token::State::DONE || token->node->represents<BPMN::BoundaryEvent>() ) {
+        continue;
+      }
+      auto position = token->state == Token::State::DEPARTED ? token->sequenceFlow->target : token->node->as<BPMN::FlowNode>();
+      if ( predecessors.contains(position) ) {
+        return;
+      }
+    }
+    auto engine = const_cast<Engine*>(systemState->engine);
+    engine->commands.emplace_back(std::bind(&StateMachine::createMergedToken,this,node), this);
   }
   else {
     throw std::runtime_error("StateMachine: converging gateway type of node '" + node->id + "' not yet supported");

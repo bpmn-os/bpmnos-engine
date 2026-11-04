@@ -1,6 +1,7 @@
 #include "Token.h"
 #include <algorithm>
 #include <tuple>
+#include <vector>
 #include "model/bpmnos/src/Model.h"
 #include "StateMachine.h"
 #include "Engine.h"
@@ -105,6 +106,22 @@ Token::~Token() {
 
     if ( node->represents<BPMN::BoundaryEvent>() ) {
       systemState->tokenAssociatedToBoundaryEventToken.erase(this);
+    }
+
+    if ( node->represents<BPMN::Gateway>() && node->as<BPMN::FlowNode>()->incoming.size() > 1 ) {
+      // a token deleted while awaiting the activation of a converging gateway no longer awaits it
+      auto& tokensAwaitingGatewayActivation = systemState->tokensAwaitingGatewayActivation;
+      if ( auto it = tokensAwaitingGatewayActivation.find(const_cast<StateMachine*>(owner)); it != tokensAwaitingGatewayActivation.end() ) {
+        if ( auto gatewayIt = it->second.find(node->as<BPMN::FlowNode>()); gatewayIt != it->second.end() ) {
+          std::erase(gatewayIt->second, this);
+          if ( gatewayIt->second.empty() ) {
+            it->second.erase(gatewayIt);
+          }
+        }
+        if ( it->second.empty() ) {
+          tokensAwaitingGatewayActivation.erase(it);
+        }
+      }
     }
 
     if ( node->represents<BPMN::CompensateThrowEvent>() ||
@@ -1111,7 +1128,10 @@ void Token::advanceToArrived() {
 
     awaitGatewayActivation();
 
-    const_cast<StateMachine*>(owner)->attemptGatewayActivation(node->as<BPMN::FlowNode>());
+    if ( !node->represents<BPMN::InclusiveGateway>() ) {
+      // a converging inclusive gateway is activated once the commands have settled (Engine::processCommands)
+      const_cast<StateMachine*>(owner)->attemptGatewayActivation(node->as<BPMN::FlowNode>());
+    }
 
     return;
   }

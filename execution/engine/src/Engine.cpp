@@ -49,14 +49,28 @@ void Engine::Command::execute() {
 }
 
 void Engine::processCommands() {
-  while ( commands.size() ) {
+  do {
+    while ( commands.size() ) {
 //std::cerr << "execute" << std::endl;
-    // pop before executing, so that a command enqueueing further commands does not extend the list
-    // behind the one being executed
-    auto command = std::move(commands.front());
-    commands.pop_front();
-    command.execute();
-  }
+      // pop before executing, so that a command enqueueing further commands does not extend the list
+      // behind the one being executed
+      auto command = std::move(commands.front());
+      commands.pop_front();
+      command.execute();
+    }
+
+    // a converging inclusive gateway is activated once the commands have settled, as the tokens of a split may
+    // not exist before, and its activation is checked again after every activation
+    if ( systemState ) {
+      for ( auto& [stateMachine, gateways] : systemState->tokensAwaitingGatewayActivation ) {
+        for ( auto& [gateway, waitingTokens] : gateways ) {
+          if ( gateway->represents<BPMN::InclusiveGateway>() ) {
+            stateMachine->attemptGatewayActivation(gateway);
+          }
+        }
+      }
+    }
+  } while ( commands.size() );
 }
 
 
