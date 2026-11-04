@@ -159,7 +159,7 @@ int main(int argc, char* argv[]) {
       std::cerr << "Error: unable to open JSON output file: " << args.jsonFile << "\n";
       return 1;
     }
-    recorder = std::make_unique<BPMNOS::Execution::Recorder>(BPMNOS::Execution::Recorder::Config{ .stream = jsonStream, .tagged = true });
+    recorder = std::make_unique<BPMNOS::Execution::Recorder>(BPMNOS::Execution::Recorder::Config{ .stream = jsonStream, .request = true, .tagged = true });
     recorder->subscribe(&engine);
   }
 

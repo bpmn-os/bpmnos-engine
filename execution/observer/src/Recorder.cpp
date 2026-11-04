@@ -3,6 +3,9 @@
 #include "execution/engine/src/SystemState.h"
 #include "execution/engine/src/Signal.h"
 #include "execution/engine/src/Objective.h"
+#include "execution/engine/src/DecisionRequest.h"
+#include "execution/engine/src/MessageDeliveryRequest.h"
+#include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 
 using namespace BPMNOS::Execution;
 
@@ -79,6 +82,11 @@ void Recorder::subscribe(Engine* engine) {
   if ( config.objective ) {
     engine->addSubscriber(this, Execution::Observable::Type::Objective);
   }
+  if ( config.request ) {
+    engine->addSubscriber(this, Execution::Observable::Type::EntryRequest);
+    engine->addSubscriber(this, Execution::Observable::Type::ChoiceRequest);
+    engine->addSubscriber(this, Execution::Observable::Type::MessageDeliveryRequest);
+  }
 }
 
 void Recorder::notice(const Observable* observable) {
@@ -101,6 +109,28 @@ void Recorder::notice(const Observable* observable) {
   else if ( observable->getObservableType() ==  Execution::Observable::Type::Objective ) {
     auto objective = static_cast<const Objective*>(observable);
     record( objective->jsonify(), "objective", Color::FG_LIGHT_GREEN );
+  }
+  else if ( observable->getObservableType() ==  Execution::Observable::Type::EntryRequest ) {
+    auto request = static_cast<const DecisionRequest*>(observable);
+    record( request->token->jsonify(), "entryRequest", Color::FG_LIGHT_MAGENTA );
+  }
+  else if ( observable->getObservableType() ==  Execution::Observable::Type::ChoiceRequest ) {
+    auto request = static_cast<const DecisionRequest*>(observable);
+    record( request->token->jsonify(), "choiceRequest", Color::FG_LIGHT_MAGENTA );
+  }
+  else if ( observable->getObservableType() ==  Execution::Observable::Type::MessageDeliveryRequest ) {
+    // the token awaiting a delivery, with the senders it accepts and the header it expects, so that a reader
+    // of the log matches a message against them as the engine does
+    auto request = static_cast<const MessageDeliveryRequest*>(observable);
+    auto jsonObject = request->token->jsonify();
+    jsonObject["senders"] = nlohmann::ordered_json::array();
+    auto extensionElements = request->token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    for ( auto sender : extensionElements->messageCandidates ) {
+      jsonObject["senders"].push_back(sender->id);
+    }
+    auto requestObject = request->jsonify();
+    jsonObject["recipientHeader"] = requestObject.contains("header") ? requestObject["header"] : nlohmann::ordered_json::object();
+    record( jsonObject, "messageDeliveryRequest", Color::FG_LIGHT_MAGENTA );
   }
 
 };
