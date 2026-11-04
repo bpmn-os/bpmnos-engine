@@ -1368,7 +1368,8 @@ void StateMachine::advanceTokenWaitingForCompensation(Token* waitingToken) {
   else if ( waitingToken->state == Token::State::FAILING ) {
 //std::cerr << "Continue with terminate: " << waitingToken->owner->scope->id << std::endl;
     assert( waitingToken->owner == this);
-//    engine->commands.emplace_back(std::bind(&StateMachine::terminate,this), this);
+    // the compensations of the failing scope are done, so that the token fails and its failure is handled
+    engine->commands.emplace_back(std::bind(&Token::update,waitingToken,Token::State::FAILED), waitingToken);
     engine->commands.emplace_back(std::bind(&StateMachine::handleFailure,this,waitingToken), waitingToken);
   }
   else {

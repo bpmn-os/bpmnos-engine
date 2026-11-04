@@ -101,3 +101,31 @@ TEST_CASE( "Refuse a signal event without a signal definition", "[model][parser]
     "Model: No signal defined for signal throw event 'ThrowEvent_1'"
   );
 }
+
+TEST_CASE( "Refuse a compensate boundary event at an activity with a loop marker", "[model][parser]" ) {
+  REQUIRE_THROWS_WITH(
+    Model::Model(std::string("tests/model/parser/Loop_task_with_compensate_boundary_event.bpmn")),
+    "Model: compensate boundary event 'CompensateBoundaryEvent_1' must not be attached to activity 'Activity_1' with a loop or multi-instance marker"
+  );
+}
+
+TEST_CASE( "Refuse a compensate boundary event at an activity with a multi-instance marker", "[model][parser]" ) {
+  REQUIRE_THROWS_WITH(
+    Model::Model(std::string("tests/model/parser/Multi-instance_task_with_compensate_boundary_event.bpmn")),
+    "Model: compensate boundary event 'CompensateBoundaryEvent_1' must not be attached to activity 'Activity_1' with a loop or multi-instance marker"
+  );
+}
+
+TEST_CASE( "Refuse a compensation event subprocess of a subprocess with a loop marker", "[model][parser]" ) {
+  REQUIRE_THROWS_WITH(
+    Model::Model(std::string("tests/model/parser/Loop_subprocess_with_compensation_event_subprocess.bpmn")),
+    "Model: compensation event subprocess 'EventSubProcess_1' must not belong to subprocess 'Activity_1' with a loop or multi-instance marker"
+  );
+}
+
+TEST_CASE( "Refuse a compensation event subprocess of a subprocess with a multi-instance marker", "[model][parser]" ) {
+  REQUIRE_THROWS_WITH(
+    Model::Model(std::string("tests/model/parser/Multi-instance_subprocess_with_compensation_event_subprocess.bpmn")),
+    "Model: compensation event subprocess 'EventSubProcess_1' must not belong to subprocess 'Activity_1' with a loop or multi-instance marker"
+  );
+}

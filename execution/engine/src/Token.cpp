@@ -720,11 +720,8 @@ void Token::advanceToCompleted() {
   }
   else {
     if ( auto activity = node->represents<BPMN::Activity>() ) {
-      if ( activity->compensatedBy ) {
-        if ( activity->isForCompensation ) {
-          throw std::runtime_error("Token: compensation activity '" + activity->id + "' must not be compensated"); 
-        }
-        awaitCompensation();
+      if ( activity->compensatedBy && activity->isForCompensation ) {
+        throw std::runtime_error("Token: compensation activity '" + activity->id + "' must not be compensated"); 
       }
 
 //std::cerr << activity->id << " is for compensation: " << activity->isForCompensation << std::endl;
@@ -918,6 +915,11 @@ void Token::advanceFromCompleted() {
     }
     const_cast<Engine*>(owner->systemState->engine)->addToObjective(DELTA);
 //std::cerr << "objective updated" << std::endl;
+  }
+
+  if ( auto activity = node->represents<BPMN::Activity>(); activity && activity->compensatedBy ) {
+    // only an activity that has completed feasibly can be compensated
+    awaitCompensation();
   }
     
   auto activity = node->represents<BPMN::Activity>();
@@ -1152,8 +1154,9 @@ void Token::advanceToFailed() {
     ) {
       owned.reset(); 
     }
-    else if ( owned->tokens.size() || owned->interruptingEventSubProcess ) {
-    // owned state machine may require compensation
+    else if ( owned->tokens.size() || owned->interruptingEventSubProcess || owned->compensationTokens.size() ) {
+    // owned state machine may require compensation, also after a failed completion check, when the shutdown has
+    // removed its tokens
 //std::cerr << "Failing " << owned->scope->id << std::endl;
       update(State::FAILING);
       engine->commands.emplace_back(std::bind(&Token::terminate,this), this);
@@ -1163,8 +1166,7 @@ void Token::advanceToFailed() {
       // the event subprocesses of a scope without tokens have been withdrawn when its tokens were removed
       assert( owned->pendingEventSubProcesses.empty() );
       assert( owned->nonInterruptingEventSubProcesses.empty() );
-      // the compensations within the scope are not performed and can no longer be triggered
-      owned->withdrawCompensationTokens();
+      assert( owned->compensationTokens.empty() );
     }
   }
   update(State::FAILED);

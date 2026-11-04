@@ -259,134 +259,6 @@ SCENARIO( "Named task with compensation task", "[execution][compensation]" ) {
   }
 }
 
-SCENARIO( "Multi instance compensation", "[execution][compensation][multiinstanceactivity]" ) {
-  const std::string modelFile = "tests/execution/compensationactivity/Multi-instance_compensation.bpmn";
-  REQUIRE_NOTHROW( Model::Model(modelFile) );
-  GIVEN( "A single instance with no input values" ) {
-
-    std::string csv =
-      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
-      "Instance_1; Process_1;\n"
-    ;
-
-    auto model = std::make_shared<const Model::Model>(modelFile);
-    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
-    auto scenario = dataProvider->createScenario();
-
-    WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine(model);
-      Execution::InstantEntry entryHandler;
-      entryHandler.connect(&engine);
-      Execution::Recorder recorder;
-//      Execution::Recorder recorder(std::cerr);
-      recorder.subscribe(&engine);
-      engine.run(std::move(scenario));
-      THEN( "The dump of each entry of the recorder log is correct" ) {
-        auto waitingLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "WAITING"}});
-        REQUIRE( waitingLog.size() == 1 );
-
-        auto entryLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "ENTERED"}});
-        REQUIRE( entryLog.size() == 2 );
-
-        auto completionLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "COMPLETED"}});
-        REQUIRE( completionLog.size() == 2 );
-
-        auto failureLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "FAILED"}});
-        REQUIRE( failureLog.size() == 2 ); // The failed completion of the second instance is the failure of the main token
-
-        auto doneLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "DONE"}});
-        REQUIRE( doneLog.size() == 1 ); // Failure of second completion triggers compensation before exit
-
-        auto compensationLog = recorder.find(nlohmann::json{{"nodeId","CompensateBoundaryEvent_1"},{"state", "COMPLETED"}});
-        REQUIRE( compensationLog.size() == 2 );
-
-        auto compensationActivityLog = recorder.find(nlohmann::json{{"nodeId","CompensationActivity_1"},{"state", "COMPLETED"}});
-        REQUIRE( compensationActivityLog.size() == 2 );
-
-        auto withdrawnLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "WITHDRAWN"}});
-        REQUIRE( withdrawnLog.size() == 1 ); // The token of the pending instance is withdrawn
-
-        auto departureLog = recorder.find(nlohmann::json{{"nodeId","MultiInstanceActivity_1"},{"state", "DEPARTED"}});
-        REQUIRE( departureLog.size() == 0 );
-      }
-    }
-  }
-}
-
-
-SCENARIO( "Compensation of  multi instance activity", "[execution][compensation][multiinstanceactivity]" ) {
-  const std::string modelFile = "tests/execution/compensationactivity/Compensation_multi-instance_activity.bpmn";
-  REQUIRE_NOTHROW( Model::Model(modelFile) );
-  GIVEN( "A single instance with no input values" ) {
-
-    std::string csv =
-      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
-      "Instance_1; Process_1;\n"
-    ;
-
-    auto model = std::make_shared<const Model::Model>(modelFile);
-    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
-    auto scenario = dataProvider->createScenario();
-
-    WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine(model);
-      Execution::InstantEntry entryHandler;
-      entryHandler.connect(&engine);
-      Execution::Recorder recorder;
-//      Execution::Recorder recorder(std::cerr);
-      recorder.subscribe(&engine);
-//      engine.run(std::move(scenario));
-      THEN( "The engine throws an error" ) {
-        REQUIRE_THROWS( engine.run(std::move(scenario)) );
-      }
-    }
-  }
-}
-
-SCENARIO( "Failing compensations of  multi instance activity", "[execution][compensation][multiinstanceactivity]" ) {
-  const std::string modelFile = "tests/execution/compensationactivity/Failing_compensations_multi-instance_activity.bpmn";
-  REQUIRE_NOTHROW( Model::Model(modelFile) );
-  GIVEN( "A single instance with no input values" ) {
-
-    std::string csv =
-      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
-      "Instance_1; Process_1;\n"
-    ;
-
-    auto model = std::make_shared<const Model::Model>(modelFile);
-    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
-    auto scenario = dataProvider->createScenario();
-
-    WHEN( "The engine is started with a recorder" ) {
-      Execution::Engine engine(model);
-      Execution::InstantEntry entryHandler;
-      entryHandler.connect(&engine);
-      Execution::Recorder recorder;
-//      Execution::Recorder recorder(std::cerr);
-      recorder.subscribe(&engine);
-      engine.run(std::move(scenario));
-      THEN( "The dump of each entry of the recorder log is correct" ) {
-//        REQUIRE_THROWS( engine.run(scenario.get()) );
-        auto compensationLog = recorder.find(nlohmann::json{{"nodeId","CompensationActivity_1"},{"state",nullptr}});
-        REQUIRE( compensationLog[0]["state"] == "ARRIVED" );
-        REQUIRE( compensationLog[1]["state"] == "READY" );
-        REQUIRE( compensationLog[2]["state"] == "ENTERED" );
-        REQUIRE( compensationLog[3]["state"] == "BUSY" );
-        REQUIRE( compensationLog[4]["state"] == "FAILED" );
-
-        REQUIRE( compensationLog.size() == 5 );
-
-        auto failureLog = recorder.find(nlohmann::json{{"state","FAILED"}});
-        REQUIRE( failureLog[0]["nodeId"] == "ErrorEvent_1" );
-        REQUIRE( failureLog[1]["nodeId"] == "ErrorEvent_2" );
-        REQUIRE( failureLog[2]["nodeId"] == "CompensationActivity_1" );
-        REQUIRE( failureLog[3]["nodeId"] == nullptr );
-
-      }
-    }
-  }
-}
-
 SCENARIO( "Two compensations triggered in reverse order", "[execution][compensation]" ) {
   const std::string modelFile = "tests/execution/compensationactivity/Two_compensations_triggered.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
@@ -519,10 +391,10 @@ SCENARIO( "Values of a compensation activity", "[execution][compensation]" ) {
   }
 }
 
-
-SCENARIO( "Named compensation of a multi-instance task", "[execution][compensation]" ) {
-  const std::string modelFile = "tests/execution/compensationactivity/Named_compensation_multi-instance_task.bpmn";
+SCENARIO( "Compensation after a failed completion check", "[execution][compensation]" ) {
+  const std::string modelFile = "tests/execution/compensationactivity/Compensation_after_failed_completion.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
+
   GIVEN( "A single instance with no input values" ) {
 
     std::string csv =
@@ -539,14 +411,26 @@ SCENARIO( "Named compensation of a multi-instance task", "[execution][compensati
       Execution::InstantEntry entryHandler;
       entryHandler.connect(&engine);
       Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       engine.run(std::move(scenario));
-      THEN( "Every completed instance of the named activity is compensated" ) {
-        auto compensationLog = recorder.find(nlohmann::json{{"nodeId","CompensationActivity_1"},{"state", "COMPLETED"}});
-        REQUIRE( compensationLog.size() == 3 );
-        auto throwLog = recorder.find(nlohmann::json{{"nodeId","CompensateThrowEvent_1"},{"state", "COMPLETED"}});
-        REQUIRE( throwLog.size() == 1 );
+      THEN( "The subprocess failing its completion check compensates the activity completed within it" ) {
+        auto subProcessLog = recorder.find(nlohmann::json{{"nodeId","SubProcess_1"}}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( subProcessLog.size() >= 3 );
+        REQUIRE( subProcessLog[subProcessLog.size()-3]["state"] == "COMPLETED" );
+        REQUIRE( subProcessLog[subProcessLog.size()-2]["state"] == "FAILING" );
+        REQUIRE( subProcessLog.back()["state"] == "FAILED" );
+
+        auto compensationLog = recorder.find(nlohmann::json{{"nodeId","CompensationActivity_1"},{"state","COMPLETED"}});
+        REQUIRE( compensationLog.size() == 1 );
+
+        auto boundaryLog = recorder.find(nlohmann::json{{"nodeId","CompensateBoundaryEvent_1"},{"state","WITHDRAWN"}});
+        REQUIRE( boundaryLog.empty() );
+
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( processLog.back()["state"] == "FAILED" );
       }
     }
   }
 }
+

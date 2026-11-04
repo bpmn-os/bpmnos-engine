@@ -325,6 +325,23 @@ std::unique_ptr<BPMN::FlowNode> Model::createTask(XML::bpmn::tTask* task, BPMN::
 
 std::unique_ptr<BPMN::FlowNode> Model::createEvent(XML::bpmn::tEvent* event, BPMN::Scope* parent) {
   auto baseElement = BPMN::Model::createEvent(event,parent);
+
+  // an activity with a loop or multi-instance marker is compensated neither by a compensation activity nor by a
+  // compensation event subprocess
+  if ( auto compensateBoundaryEvent = baseElement->represents<BPMN::CompensateBoundaryEvent>();
+    compensateBoundaryEvent && compensateBoundaryEvent->attachedTo->loopCharacteristics.has_value()
+  ) {
+    throw std::runtime_error("Model: compensate boundary event '" + baseElement->id + "' must not be attached to activity '" + compensateBoundaryEvent->attachedTo->id + "' with a loop or multi-instance marker");
+  }
+  if ( baseElement->represents<BPMN::CompensateStartEvent>() ) {
+    auto eventSubProcess = parent->as<BPMN::EventSubProcess>();
+    if ( auto activity = eventSubProcess->parent->represents<BPMN::Activity>();
+      activity && activity->loopCharacteristics.has_value()
+    ) {
+      throw std::runtime_error("Model: compensation event subprocess '" + eventSubProcess->id + "' must not belong to subprocess '" + activity->id + "' with a loop or multi-instance marker");
+    }
+  }
+
   auto extensionElements = std::make_unique<ExtensionElements>(event,parent->extensionElements->as<ExtensionElements>()->attributeRegistry,parent);
 
   if ( baseElement->represents<BPMN::CatchEvent>() ) {
