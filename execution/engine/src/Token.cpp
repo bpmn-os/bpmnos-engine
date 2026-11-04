@@ -1178,7 +1178,11 @@ void Token::advanceToFailed() {
     // owned state machine may require compensation; a scope failing its completion check passes through FAILING
     // although the shutdown has removed its tokens
 //std::cerr << "Failing " << owned->scope->id << std::endl;
-      update(State::FAILING);
+      if ( state != State::FAILING ) {
+        update(State::FAILING);
+      }
+      // a token failing again while in FAILING, because one of its compensations failed, continues its
+      // termination, the other compensations having been withdrawn
       engine->commands.emplace_back(std::bind(&Token::terminate,this), this);
       return;
     }
