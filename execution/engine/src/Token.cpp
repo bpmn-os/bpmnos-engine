@@ -137,14 +137,6 @@ Token::~Token() {
         }
       }
 
-      // release performer when activity fails
-      if ( state == State::READY && activity->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-        auto tokenAtSequentialPerformer = getSequentialPerformerToken();
-        if ( tokenAtSequentialPerformer && tokenAtSequentialPerformer->performing == this ) {
-          releaseSequentialPerformer();
-        }
-      }
-
       if ( activity->loopCharacteristics.has_value() &&
         activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::Standard &&
         !activity->isForCompensation
@@ -1123,6 +1115,14 @@ void Token::advanceToArrived() {
 void Token::advanceToFailed() {
 //std::cerr << " advanceToFailed: " << jsonify().dump() << std::endl;
   auto engine = const_cast<Engine*>(owner->systemState->engine);
+
+  // a token that fails no longer performs
+  if ( node->represents<BPMN::FlowNode>() &&
+    node->as<BPMN::FlowNode>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() &&
+    getSequentialPerformerToken()->performing == this
+  ) {
+    releaseSequentialPerformer();
+  }
  
   if ( owned ) {
 //std::cerr << "Use data of scope " << owner->scope->id << std::endl;
@@ -1314,6 +1314,13 @@ std::shared_ptr<DecisionType> Token::createDecisionRequest(Args&&... args) {
 void Token::withdraw() {
   if ( state != State::DONE && state != State::FAILED 
   ) {
+    // a token that is withdrawn no longer performs
+    if ( node->represents<BPMN::FlowNode>() &&
+      node->as<BPMN::FlowNode>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() &&
+      getSequentialPerformerToken()->performing == this
+    ) {
+      releaseSequentialPerformer();
+    }
     update(State::WITHDRAWN);
   }
 }
@@ -1453,9 +1460,10 @@ void Token::releaseSequentialPerformer() {
   systemState->engine->notify(SequentialPerformerUpdate(tokenAtSequentialPerformer));
 
   for ( auto& [ token_ptr ]  : tokenAtSequentialPerformer->pendingSequentialEntries ) {
-    if ( auto activityToken = token_ptr.lock() ) {
+    // a child activity withdrawn together with the token releasing the performer awaits entry no longer
+    if ( auto activityToken = token_ptr.lock(); activityToken && activityToken->state == State::READY ) {
       // create entry decision requests for each child activity awaiting entry
-      assert( activityToken->node->represents<BPMN::Activity>() && activityToken->state == State::READY );
+      assert( activityToken->node->represents<BPMN::Activity>() );
       assert( !activityToken->decisionRequest );
 //std::cerr << "Token: Renew decision request" << activityToken->jsonify() << std::endl;
       activityToken->decisionRequest = std::make_shared<DecisionRequest>( activityToken.get(), Observable::Type::EntryRequest );

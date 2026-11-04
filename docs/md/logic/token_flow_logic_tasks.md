@@ -107,6 +107,8 @@ When the token reaches @ref BPMNOS::Execution::Token::State::DONE "DONE" state, 
 
 ## FAILED
 
+If the token resides at a child of a @ref BPMNOS::Model::SequentialAdHocSubProcess "sequential ad-hoc subprocess" and holds its performer, the performer is released when the token fails, so that another child may be entered. The same applies when the token is withdrawn.
+
 Upon failure, the state of a token at an @ref BPMN::ErrorBoundaryEvent "error boundary event" is changed to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED". If no such @ref BPMN::ErrorBoundaryEvent "error boundary event" exists, the error is bubbled up to its parent scope.
 
 

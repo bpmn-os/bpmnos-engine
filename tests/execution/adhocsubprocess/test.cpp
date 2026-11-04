@@ -91,3 +91,35 @@ SCENARIO( "Sequential adhoc subprocesses with common performer", "[execution][ad
   }
 }
 
+SCENARIO( "Sequential adhoc subprocess with a failing activity", "[execution][adhocsubprocess]" ) {
+  const std::string modelFile = "tests/execution/adhocsubprocess/Failed_activity_releasing_performer.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "A single instance with no input values" ) {
+
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+    ;
+
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
+
+    WHEN( "The engine is started with a recorder" ) {
+      Execution::Engine engine(model);
+      Execution::InstantEntry entryHandler;
+      entryHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(std::move(scenario));
+      THEN( "The failed activity releases the performer, so that the other activity is performed" ) {
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state","FAILED"}}).size() == 1 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId","BoundaryEvent_1"},{"state","COMPLETED"}}).size() == 1 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId","Activity_2"},{"state","COMPLETED"}}).size() == 1 );
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( processLog.back()["state"] == "DONE" );
+      }
+    }
+  }
+}
