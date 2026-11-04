@@ -98,3 +98,64 @@ SCENARIO( "Restrictions not inherited by a compensation activity", "[execution][
     }
   }
 }
+
+SCENARIO( "Catch event violating a restriction", "[execution][restriction]" ) {
+  const std::string modelFile = "tests/execution/restriction/Catch_event_violating_restriction.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "A single instance" ) {
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+    ;
+
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
+
+    WHEN( "The engine is started" ) {
+      Execution::Engine engine(model);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(std::move(scenario));
+      THEN( "The token at the event fails once its operators violate an inherited restriction" ) {
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId","Event_1"},{"state","FAILED"}}).size() == 1 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId","EndEvent_1"}}).empty() );
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( processLog.back()["state"] == "FAILED" );
+      }
+    }
+  }
+}
+
+SCENARIO( "Throw event violating a restriction", "[execution][restriction]" ) {
+  const std::string modelFile = "tests/execution/restriction/Throw_event_violating_restriction.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+
+  GIVEN( "A single instance" ) {
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+    ;
+
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
+
+    WHEN( "The engine is started" ) {
+      Execution::Engine engine(model);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(std::move(scenario));
+      THEN( "The token at the event fails once its operators violate an inherited restriction" ) {
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId","Event_1"},{"state","FAILED"}}).size() == 1 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId","EndEvent_1"}}).empty() );
+        REQUIRE( recorder.find(nlohmann::json{{"name","Signal"}}).empty() );
+        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
+        REQUIRE( processLog.back()["state"] == "FAILED" );
+      }
+    }
+  }
+}

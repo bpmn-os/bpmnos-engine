@@ -60,20 +60,11 @@ SCENARIO( "Symmetric exclusive gateways", "[execution][exclusivegateway]" ) {
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
       dataProvider->setEndTime(10);
-      engine.run(std::move(scenario));
-      THEN( "The dump of each entry of the token log is correct" ) {
-        auto gatewayLog = recorder.find(nlohmann::json{{"nodeId","Gateway_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( gatewayLog[0]["state"] == "ARRIVED" );
-        REQUIRE( gatewayLog[1]["state"] == "ENTERED" );
-        REQUIRE( gatewayLog[2]["state"] == "FAILED" );
-
-        auto processLog = recorder.find(nlohmann::json{}, nlohmann::json{{"nodeId",nullptr },{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( processLog[0]["state"] == "CREATED" );
-        REQUIRE( processLog[1]["state"] == "READY" );
-        REQUIRE( processLog[2]["state"] == "ENTERED" );
-        REQUIRE( processLog[3]["state"] == "BUSY" );
-        REQUIRE( processLog[4]["state"] == "FAILING" );
-        REQUIRE( processLog[5]["state"] == "FAILED" );
+      THEN( "The run is aborted, as no condition of a sequence flow out of the gateway is satisfied" ) {
+        REQUIRE_THROWS_WITH(
+          engine.run(std::move(scenario)),
+          "Token: no condition of a sequence flow out of exclusive gateway 'Gateway_1' is satisfied, and it has no default flow"
+        );
       }
     }
   }

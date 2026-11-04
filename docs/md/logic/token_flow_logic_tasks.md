@@ -59,7 +59,7 @@ When the event occurs the token state is updated to  @ref BPMNOS::Execution::Tok
 
 Upon entry, the initial assignment of @ref BPMNOS::Model::Attribute "attributes" are conducted in the order of attribute definitions.
 Then, a token is created at each @ref BPMN::BoundaryEvent "boundary event" (excluding @ref BPMN::CompensateBoundaryEvent "compensate boundary events").
-These tokens inherit the @ref BPMNOS::Execution::Token::status "status attributes" of the task token.
+These tokens inherit the @ref BPMNOS::Execution::Token::status "status attributes" of the task token. The tokens at boundary events are created only if they do not exist yet, so that the re-entries of a @ref XML::bpmn::tStandardLoopCharacteristics "standard loop" keep the tokens created on the first entry, and for a multi-instance activity, whose tokens at boundary events belong to the main token, only the first instance to enter creates them.
 Then, feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated.
 If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILED "FAILED".
 Otherwise, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::BUSY "BUSY".

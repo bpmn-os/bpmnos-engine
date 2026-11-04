@@ -63,7 +63,7 @@ Otherwise,
 a token is created at the unique @ref BPMN::SubProcess::startEvent "start event" of the subprocess or each @ref BPMN::Process::startNodes "start node" of the ad-hoc subprocess,
 at the @ref BPMN::EventSubProcess::startEvent "start event" of each @ref BPMN::EventSubProcess "event subprocess" (excluding those having a @ref BPMN::CompensateStartEvent "compensate start event"), and
 at each @ref BPMN::BoundaryEvent "boundary event" (excluding @ref BPMN::CompensateBoundaryEvent "compensate boundary events").
-These tokens inherit the @ref BPMNOS::Execution::Token::status "status attributes" of the (ad-hoc) subprocess  token.
+These tokens inherit the @ref BPMNOS::Execution::Token::status "status attributes" of the (ad-hoc) subprocess  token. The tokens at boundary events are created only if they do not exist yet, so that the re-entries of a @ref XML::bpmn::tStandardLoopCharacteristics "standard loop" keep the tokens created on the first entry, and for a multi-instance activity, whose tokens at boundary events belong to the main token, only the first instance to enter creates them.
 Furthermore,
 the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::BUSY "BUSY".
 

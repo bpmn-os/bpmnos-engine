@@ -62,6 +62,37 @@ SCENARIO( "Loop task", "[execution][loopactivity]" ) {
   }
 }
 
+SCENARIO( "Loop task with boundary event", "[execution][loopactivity]" ) {
+  const std::string modelFile = "tests/execution/loopactivity/Loop_task_with_boundary_event.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "A single instance with a maximum of 2 loops" ) {
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+      "Instance_1; LoopActivity_1; maximum := 2\n"
+    ;
+
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+    auto scenario = dataProvider->createScenario();
+
+    WHEN( "The engine is started" ) {
+      Execution::Engine engine(model);
+      Execution::InstantEntry entryHandler;
+      entryHandler.connect(&engine);
+      Execution::Recorder recorder;
+//      Execution::Recorder recorder(std::cerr);
+      recorder.subscribe(&engine);
+      engine.run(std::move(scenario));
+      THEN( "The token at the boundary event is created once for both loops and withdrawn when the activity is left" ) {
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId","LoopActivity_1"},{"state", "ENTERED"}}).size() == 2 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId","BoundaryEvent_1"},{"state", "CREATED"}}).size() == 1 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId","BoundaryEvent_1"},{"state", "WITHDRAWN"}}).size() == 1 );
+      }
+    }
+  }
+}
+
 SCENARIO( "Loop subprocess", "[execution][loopactivity]" ) {
   const std::string modelFile = "tests/execution/loopactivity/Loop_subprocess.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );

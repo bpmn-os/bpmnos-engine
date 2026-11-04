@@ -12,5 +12,7 @@ stateDiagram-v2
     DEPARTED --> [*]
 </pre>
 
+If the gateway has more than one outgoing sequence flow, the token departs along the first one whose condition is satisfied, and along the default flow if none is. If no condition is satisfied and the gateway has no default flow, the model is in error, and the run is aborted with an exception.
+
 
 

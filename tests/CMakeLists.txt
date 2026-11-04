@@ -52,6 +52,7 @@ list(APPEND tests_SOURCES
   execution/objectlog/test.cpp
   execution/parallelgateway/test.cpp
   execution/exclusivegateway/test.cpp
+  execution/inclusivegateway/test.cpp
   execution/eventbasedgateway/test.cpp
   execution/timer/test.cpp
   execution/signal/test.cpp

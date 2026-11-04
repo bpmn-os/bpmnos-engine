@@ -7,6 +7,7 @@
 #include "Event.h"
 #include "execution/utility/src/erase.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
+#include "model/bpmnos/src/extensionElements/Gatekeeper.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "execution/data/src/InstanceValues.h"
@@ -457,9 +458,13 @@ void StateMachine::initiateBoundaryEvents(Token* token) {
       token = mainToken; 
     }
     else {
-      // tokens at boundary events have already been created 
+      // tokens at boundary events have already been created
       return;
     }
+  }
+  else if ( !const_cast<SystemState*>(systemState)->tokensAwaitingBoundaryEvent[token].empty() ) {
+    // a standard loop re-enters the activity, whose tokens at boundary events remain
+    return;
   }
 
   for ( auto node : activity->boundaryEvents ) {
@@ -758,11 +763,7 @@ void StateMachine::interruptActivity(Token* token) {
       }
 
       const_cast<SystemState*>(systemState)->tokenAtMultiInstanceActivity.erase(activeToken);
-      if ( activity->loopCharacteristics.value() != BPMN::Activity::LoopCharacteristics::MultiInstanceParallel
-        || activeToken->state != Token::State::READY
-      ) {
-        activeToken->withdraw();
-      }
+      activeToken->withdraw();
       erase_ptr<Token>(tokens, activeToken);
     }
     const_cast<SystemState*>(systemState)->tokensAtActivityInstance.erase(it);
@@ -990,6 +991,35 @@ void StateMachine::handleDivergingGateway(Token* token) {
       tokenAtEventBasedGateway[tokenCopy] = token;
       tokensAwaitingEvent[token].push_back(tokenCopy);
     }
+  }
+  else if ( auto inclusiveGateway = token->node->represents<BPMN::InclusiveGateway>() ) {
+    // the token departs along every sequence flow whose conditions are satisfied, and along the default flow if
+    // there is none
+    std::vector<BPMN::SequenceFlow*> sequenceFlows;
+    for ( auto sequenceFlow : token->node->as<BPMN::FlowNode>()->outgoing ) {
+      if ( sequenceFlow != inclusiveGateway->defaultFlow ) {
+        auto gatekeeper = sequenceFlow->extensionElements->as<BPMNOS::Model::Gatekeeper>();
+        if ( !gatekeeper ) {
+          throw std::logic_error("StateMachine: no gatekeeper provided for sequence flow '" + sequenceFlow->id + "'");
+        }
+        if ( gatekeeper->conditionsSatisfied(token->status,*token->data) ) {
+          sequenceFlows.push_back(sequenceFlow);
+        }
+      }
+    }
+
+    if ( sequenceFlows.empty() ) {
+      if ( !inclusiveGateway->defaultFlow ) {
+        // an error in the model, not a failure the model can handle
+        throw std::runtime_error("StateMachine: no condition of a sequence flow out of inclusive gateway '" + token->node->id + "' is satisfied, and it has no default flow");
+      }
+      sequenceFlows.push_back(inclusiveGateway->defaultFlow);
+    }
+
+    // create token copies and advance them
+    createTokenCopies(token, sequenceFlows);
+    // remove original token
+    erase_ptr<Token>(tokens,token);
   }
   else {
     throw std::runtime_error("StateMachine: diverging gateway type of node '" + token->node->id + "' not yet supported");

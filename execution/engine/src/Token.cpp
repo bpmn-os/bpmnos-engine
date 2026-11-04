@@ -476,6 +476,12 @@ void Token::advanceToEntered() {
     // the operators of a throw event are applied before it throws
     applyOperators( *node->extensionElements->as<BPMNOS::Model::ExtensionElements>() );
 
+    // the status the operators have produced must satisfy the restrictions
+    if ( !entryIsFeasible() ) {
+      engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
+      return;
+    }
+
     if ( node->represents<BPMN::ErrorEndEvent>() ) {
       engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
       return;
@@ -773,6 +779,16 @@ void Token::advanceToCompleted() {
       engine->commands.emplace_back(std::bind(&StateMachine::compensateActivity,const_cast<StateMachine*>(owner),this), this);
       return;
     }
+    else if ( node->represents<BPMN::CatchEvent>() &&
+      !node->represents<BPMN::UntypedStartEvent>() &&
+      !node->represents<BPMN::TypedStartEvent>() &&
+      !completionIsFeasible()
+    ) {
+      // the status the operators have produced must satisfy the restrictions; a start event checks the entry
+      // restrictions of its scope instead
+      engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
+      return;
+    }
     else if ( auto boundaryEvent = node->represents<BPMN::BoundaryEvent>() ) {
       auto stateMachine = const_cast<StateMachine*>(owner);
       auto tokenAtActivity = const_cast<SystemState*>(owner->systemState)->tokenAssociatedToBoundaryEventToken[this];
@@ -1063,8 +1079,8 @@ void Token::advanceToDeparting() {
       engine->commands.emplace_back(std::bind(&Token::advanceToDeparted,this,exclusiveGateway->defaultFlow), this);
     }
     else {
-      auto engine = const_cast<Engine*>(owner->systemState->engine);
-      engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
+      // an error in the model, not a failure the model can handle
+      throw std::runtime_error("Token: no condition of a sequence flow out of exclusive gateway '" + node->id + "' is satisfied, and it has no default flow");
     }
   }
   else if ( node->as<BPMN::FlowNode>()->outgoing.size() > 1 ) {

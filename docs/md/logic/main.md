@@ -20,10 +20,11 @@ The token flow logic depends on the node type and is described in below sections
 - Gateways
   - @subpage token_flow_logic_exclusive_gateways
   - @subpage token_flow_logic_parallel_gateways
+  - @subpage token_flow_logic_inclusive_gateways
   - @subpage token_flow_logic_eventbased_gateways
 
   @par
-  @note @ref BPMN::InclusiveGateway "Inclusive gateways" and @ref BPMN::ComplexGateway "complex gateways" are **not** supported. 
+  @note @ref BPMN::ComplexGateway "Complex gateways" and converging @ref BPMN::InclusiveGateway "inclusive gateways" are **not** supported. 
   @par
   @attention A @ref BPMN::Gateway "gateway" must have at least one incoming and one outgoing sequence flow.
 
