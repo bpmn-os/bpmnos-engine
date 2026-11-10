@@ -23,7 +23,21 @@ target_link_libraries(bpmnos-greedy
 
 bpmnos_compile_options(bpmnos-greedy)
 
+# The playback of the decisions of a log, which reproduces a run recorded by the engine or the run a log of
+# decisions states, for instance the solution of a formulation of the model as a mixed-integer program.
+add_executable(bpmnos-playback playback.cpp)
+
+target_link_libraries(bpmnos-playback
+  PRIVATE
+  bpmnos-execution
+  bpmnos-model
+  bpmnpp::bpmn++
+  pthread
+)
+
+bpmnos_compile_options(bpmnos-playback)
+
 # The greedy solver is installed with the engine, so that a consumer resolving an installed engine has the
 # baseline binary rather than having to build it.
 include(GNUInstallDirs)
-install(TARGETS bpmnos-greedy RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS bpmnos-greedy bpmnos-playback RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

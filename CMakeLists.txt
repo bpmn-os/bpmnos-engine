@@ -35,7 +35,7 @@ option(BPMNOS_DOCS "Build bpmnos documentation" ${PROJECT_IS_TOP_LEVEL})
 
 # The greedy solver is the engine's own application. It is governed by the same rule, but a consumer may
 # want it: rollout, deep-processes and sea measure their controllers against it and turn it on.
-option(BPMNOS_APP "Build the bpmnos-greedy application" ${PROJECT_IS_TOP_LEVEL})
+option(BPMNOS_APP "Build the bpmnos-greedy and bpmnos-playback applications" ${PROJECT_IS_TOP_LEVEL})
 
 # Docs-only: configure just the documentation, without building the engine (no cnl/limex/json fetch, no
 # model/execution/app compilation, hence no bpmn++). The `docs` target runs Doxygen over the source and

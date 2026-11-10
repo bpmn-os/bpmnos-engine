@@ -19,6 +19,7 @@ list(APPEND controller_SOURCES
   dispatcher/MyopicMessageTaskTerminator.cpp
   Controller.cpp
   GreedyController.cpp
+  PlaybackController.cpp
 )
 
 list(APPEND controller_HEADERS
@@ -46,4 +47,5 @@ list(APPEND controller_HEADERS
   dispatcher/MyopicMessageTaskTerminator.h
   Controller.h
   GreedyController.h
+  PlaybackController.h
 )

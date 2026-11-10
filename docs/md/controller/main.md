@@ -30,6 +30,22 @@ The @ref BPMNOS::Execution::GreedyController "greedy controller" is a @ref BPMNO
 
 All evaluations are conducted by an @ref BPMNOS::Execution::Evaluator "evaluator".
 
+## Playback controller
+
+The @ref BPMNOS::Execution::PlaybackController "playback controller" plays back the decisions of a log. The log is the JSON output of the engine, an array of records each tagged by its kind, as `bpmnos-greedy` writes it with `--json`, of which the controller reads the clock ticks and the decisions and ignores every other record. A decision is a record tagged `event` whose object states its kind by the key `decision`:
+
+- `{"event": {"decision": "entry", "processId", "instanceId", "nodeId"}}` is the entry of a child of a sequential ad-hoc subprocess by the token of the instance at the node,
+- `{"event": {"decision": "choice", "processId", "instanceId", "nodeId", "choices"}}` states the values chosen at a decision task by attribute name, and
+- `{"event": {"decision": "messagedelivery", "processId", "instanceId", "nodeId", "message"}}` is the delivery of the message whose origin and, if stated in its header, sender are given.
+
+The reward a recorded decision carries is not read. A decision belongs to the time of the last clock tick `{"event": {"event": "clocktick", "time"}}` before it, and a decision before the first clock tick to the time the run starts. Since the engine carries out everything that is not a decision itself, a log recorded by the engine and a log stating its decisions alone are played back alike.
+
+A decision is due at the first time the run reaches that is not earlier than its own time. The engine advances time one clock tick at a time, so that a decision whose time lies between two clock ticks is dispatched at the first clock tick after it; this deviation is reported. At every fetch, the controller dispatches the first due decision, in the order of time and within it of the log, whose request is pending. A request is matched by the process, the instance and the node of its token, and a message delivery additionally by a message among the candidates of the request whose origin, header and content agree with those the log states, a value the log leaves undefined agreeing with any. An entry waits while an entry listed before it for the same performer, the performer node of its sequential ad-hoc subprocess within the same instance, has not been dispatched, so that the entries of every performer keep the order of the log; every other decision is dispatched as soon as its request is pending. Before it is dispatched, a decision is evaluated by the evaluator given to the controller, a @ref BPMNOS::Execution::LocalEvaluator "local evaluator" by default, which records its reward in the log of the playback.
+
+The playback stops at the first mismatch, by a termination event, since the objective of a run deviating from the log validates nothing. A mismatch is a due decision not dispatched before time advances, a decision the evaluator finds infeasible, a choice lacking the value of one of the attributes of the decision task, or the entry of an activity outside a sequential ad-hoc subprocess, which is not a decision. The controller reports the number of decisions read and dispatched, the deviations and the mismatch, which `bpmnos-playback` appends to its JSON output as a record tagged `playback`.
+
+A log can be played back exactly for a model whose executions are determined by the times of their decisions, the order of the entries of every performer, the values chosen and the messages delivered, that is for a model with deterministic data, a static or expected-value data provider, whose decisions are identified by process, instance and node, and whose times lie on the clock grid of the engine. Assignment, scheduling and routing problems belong to this class. For such a model, a formulation of its decisions as a mixed-integer program can be checked by playing back a solution: the objective of the playback must equal the objective of the solution, and the first decision that cannot be played back shows where formulation and model disagree.
+
 ## Evaluator
 
 The @ref BPMNOS::Execution::Evaluator "evaluator" is responsible for determining whether a decision can be taken without violating any restrictions and to quantify the value of taking the decision.

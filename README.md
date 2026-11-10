@@ -22,7 +22,7 @@ This project has three preset configurations for different purposes that are cre
 | `debug` | `build/debug` | unoptimised, assertions live, address/undefined/leak sanitizers | development, tests |
 | `profile` | `build/profile` | `-O3` with `-pg` | profiles |
 
-You can build the libraries and `bpmnos-greedy` by
+You can build the libraries, `bpmnos-greedy` and `bpmnos-playback` by
 
 ```sh
 make # (release)
@@ -34,6 +34,8 @@ make dev # (debug)
 with the preset indicated in parentheses.
 
 The [examples folder](examples) holds a BPMN-OS model and its instance data for selected models, together with the commands for running a simulation using a greedy controller.
+
+`bpmnos-playback` plays back the decisions of a log, which is the JSON output `bpmnos-greedy` writes with `--json` or an array stating the clock ticks and the decisions alone. It takes the options of `bpmnos-greedy` together with `--decisions <log file>`, reproduces the run the log states, and reports whether every decision has been dispatched, which decisions could not be dispatched at their time, and the first decision it could not play back, at which it stops. Running it on the log of `bpmnos-greedy` with the same data provider reproduces the objective of that run. The log is described in the documentation of the playback controller.
 
 ## Tests
 
@@ -79,6 +81,7 @@ sudo make install
 to copy
 ```
 bin/bpmnos-greedy
+bin/bpmnos-playback
 include/bpmnos-model.h
 include/bpmnos-execution.h
 include/limex.h
@@ -117,7 +120,7 @@ later `0.1.x` and refuses `0.2.0`.
 Remove the installed files, where `<target>` is `/usr/local` or the folder given when installing.
 
 ```sh
-rm <target>/bin/bpmnos-greedy
+rm <target>/bin/bpmnos-greedy <target>/bin/bpmnos-playback
 rm <target>/include/bpmnos-model.h <target>/include/bpmnos-execution.h
 rm <target>/include/limex.h
 rm -rf <target>/include/cnl <target>/include/nlohmann
