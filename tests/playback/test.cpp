@@ -331,17 +331,13 @@ SCENARIO( "Playback of logs recorded by the greedy controller", "[playback]" ) {
       unknown["event"]["instanceId"] = "Instance_2";
       altered.push_back( unknown );
       Execution::PlaybackController controller(altered);
-      Execution::Engine engine(model);
-      controller.connect(&engine);
-      Execution::OutcomeSentinel sentinel;
-      sentinel.subscribe(&engine);
-      engine.run(dataProvider->createScenario());
-      THEN( "The playback stops at the decision not dispatched at its time" ) {
+      // the choice of the existing instance is never made, so that the run continues until its end time
+      dataProvider->setEndTime(5);
+      runPlayback(model, dataProvider, controller);
+      THEN( "The decision is never dispatched and the playback is incomplete" ) {
+        REQUIRE( controller.getDispatched() == 0 );
+        REQUIRE_FALSE( controller.getMismatch().has_value() );
         REQUIRE_FALSE( controller.isComplete() );
-        REQUIRE( controller.getMismatch().has_value() );
-        REQUIRE( controller.getMismatch()->decision->instanceId == "Instance_2" );
-        REQUIRE( controller.getMismatch()->reason.starts_with("not dispatched at time") );
-        REQUIRE( sentinel.getOutcome() == Execution::Outcome::TERMINATED );
       }
     }
 

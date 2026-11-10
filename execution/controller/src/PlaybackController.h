@@ -28,18 +28,20 @@ namespace BPMNOS::Execution {
  * the first clock tick to the time the run starts. The engine carries out everything that is not a decision
  * itself, so that a log recorded by the engine and a log stating its decisions alone are played back alike.
  *
- * A decision is due at the first time the run reaches that is not earlier than its own time; a later time is a
- * deviation, which is reported. At every fetch, the controller dispatches the first due decision, in the order of
+ * A decision is due once the run has reached its time, and a decision without a time, before the first clock
+ * tick, from the start of the run. At every fetch, the controller dispatches the first due decision, in the order of
  * the log, whose request is pending, matched by process, instance and node, and for a message delivery by a
  * message among the candidates of the request agreeing with the origin, the header and the content the log
  * states. An entry waits while an entry listed before it for the same performer, the performer node of the
- * sequential ad-hoc subprocess within the same instance, has not been dispatched, so that the order of the entries
- * of every performer is kept. Every other decision is dispatched as soon as its request is pending. A decision is
- * evaluated by the evaluator given before it is dispatched, which records its reward.
+ * sequential ad-hoc subprocess within the instance of the entry without the event subprocesses and multi-instance
+ * activities within the performer, has not been dispatched, so that the order of the entries of every performer is
+ * kept. Every other decision is dispatched as soon as its request is pending. A decision is evaluated by the
+ * evaluator given before it is dispatched, which records its reward, and waits while it is infeasible. A decision dispatched later
+ * than its time is reported as a deviation. A decision whose request never becomes pending is not dispatched, so
+ * that the run continues until it ends otherwise and the playback is incomplete.
  *
- * The playback stops at the first mismatch, by a termination event: a due decision not dispatched before time
- * advances, a decision found infeasible by the evaluator, a choice lacking the value of a choice attribute, or an
- * entry of an activity whose entry is not decided.
+ * The playback stops at the first mismatch, by a termination event: a choice lacking the value of a choice
+ * attribute, or an entry of an activity whose entry is not decided.
  */
 class PlaybackController : public Controller {
 public:
@@ -106,12 +108,13 @@ protected:
   std::map< BPMNOS::number, std::vector<LoggedDecision> > decisions;
   std::vector<const LoggedDecision*> sequence; ///< The decisions ordered by their time, and within it by the log
   std::vector<bool> dispatched; ///< Whether the decision at the same position of the sequence has been dispatched
-  std::vector< std::optional<BPMNOS::number> > due; ///< The time at which the decision at the same position of the sequence became due
+  std::vector< std::optional<BPMNOS::number> > due; ///< The time at which the decision at the same position of the sequence became due, its time having been reached
   size_t dispatchedCount = 0;
   std::vector<Deviation> deviations;
   std::optional<Mismatch> mismatch;
   std::unordered_map<std::string, const BPMN::Node*> nodes; ///< The nodes looked up by their identifiers
   const BPMN::Node* findNode(const SystemState* systemState, const std::string& nodeId);
+  std::string performerKey(const SystemState* systemState, const LoggedDecision& decision, const BPMN::Node* node); ///< Returns the instance and the node of the performer of an entry
   std::shared_ptr<Event> stop(const LoggedDecision* decision, BPMNOS::number time, std::string reason);
   std::shared_ptr<Decision> createDecision(const SystemState* systemState, const LoggedDecision& decision);
 };

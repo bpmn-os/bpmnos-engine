@@ -191,6 +191,33 @@ const BPMN::Node* PlaybackController::findNode(const SystemState* systemState, c
   return found;
 }
 
+std::string PlaybackController::performerKey(const SystemState* systemState, const LoggedDecision& decision, const BPMN::Node* node) {
+  auto performer = node->as<BPMN::FlowNode>()->parent->as<BPMNOS::Model::SequentialAdHocSubProcess>()->performer;
+
+  // returns true if the scope lies within the performer
+  auto isWithinPerformer = [performer](const BPMN::Node* scope) {
+    for ( auto flowNode = scope->represents<BPMN::FlowNode>(); flowNode; flowNode = flowNode->parent->represents<BPMN::FlowNode>() ) {
+      if ( flowNode->parent == performer ) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  // the instance of the decision is the instance of the performer, followed by the disambiguations of the event
+  // subprocesses and multi-instance activities within the performer, which are removed
+  std::string instance = decision.instanceId;
+  for ( auto position = instance.rfind(StateMachine::delimiters[0]); position != std::string::npos; position = instance.rfind(StateMachine::delimiters[0]) ) {
+    auto disambiguation = instance.substr(position + 1);
+    auto scope = findNode(systemState, disambiguation.substr(0, disambiguation.rfind(StateMachine::delimiters[1])));
+    if ( !scope || !isWithinPerformer(scope) ) {
+      break;
+    }
+    instance = instance.substr(0, position);
+  }
+  return instance + "/" + performer->id;
+}
+
 std::shared_ptr<Event> PlaybackController::stop(const LoggedDecision* decision, BPMNOS::number time, std::string reason) {
   mismatch = Mismatch{ decision, time, std::move(reason) };
   // the objective of a run deviating from the log validates nothing, so that the run ends
@@ -290,13 +317,6 @@ std::shared_ptr<Event> PlaybackController::dispatchEvent(const SystemState* syst
   }
   auto now = systemState->getTime();
 
-  // a decision due at an earlier time that has not been dispatched cannot be dispatched any more
-  for ( size_t i = 0; i < sequence.size(); i++ ) {
-    if ( !dispatched[i] && due[i].has_value() && due[i].value() < now ) {
-      return stop(sequence[i], now, "not dispatched at time " + BPMNOS::to_string(due[i].value(),DECIMAL));
-    }
-  }
-
   // a decision becomes due at the first time reached that is not earlier than its own time
   for ( size_t i = 0; i < sequence.size() && sequence[i]->time <= now; i++ ) {
     if ( !dispatched[i] && !due[i].has_value() ) {
@@ -318,8 +338,7 @@ std::shared_ptr<Event> PlaybackController::dispatchEvent(const SystemState* syst
         return stop(&decision, now, "entry of an activity whose entry is not decided");
       }
       // the entries of a performer keep the order of the log
-      auto performer = node->as<BPMN::FlowNode>()->parent->as<BPMNOS::Model::SequentialAdHocSubProcess>()->performer;
-      if ( !busyPerformers.insert(decision.instanceId + "/" + performer->id).second ) {
+      if ( !busyPerformers.insert(performerKey(systemState, decision, node)).second ) {
         continue;
       }
     }
@@ -342,7 +361,8 @@ std::shared_ptr<Event> PlaybackController::dispatchEvent(const SystemState* syst
 
     event->evaluate();
     if ( !event->reward().has_value() ) {
-      return stop(&decision, now, "infeasible");
+      // a decision that is infeasible now waits until it becomes feasible, as any controller has to
+      continue;
     }
 
     dispatched[i] = true;
