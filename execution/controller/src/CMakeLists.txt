@@ -10,8 +10,7 @@ list(APPEND controller_SOURCES
   candidates/FirstFeasibleEntry.cpp
   candidates/SequentialEntries.cpp
   candidates/MessageDeliveries.cpp
-  candidates/FirstEnumeratedChoice.cpp
-  candidates/FirstBisectionalChoice.cpp
+  candidates/FirstChoice.cpp
   dispatcher/InstantEntry.cpp
   dispatcher/FirstMatchingMessageDelivery.cpp
   dispatcher/RandomChoice.cpp
@@ -37,8 +36,7 @@ list(APPEND controller_HEADERS
   candidates/SequentialEntries.h
   candidates/MessageDeliveries.h
   candidates/CompetingCandidates.h
-  candidates/FirstEnumeratedChoice.h
-  candidates/FirstBisectionalChoice.h
+  candidates/FirstChoice.h
   GreedyDispatcher.h
   dispatcher/InstantEntry.h
   dispatcher/FirstMatchingMessageDelivery.h

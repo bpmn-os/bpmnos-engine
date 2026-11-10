@@ -1,8 +1,7 @@
 #include "GreedyController.h"
 #include "execution/engine/src/Engine.h"
 #include "GreedyDispatcher.h"
-#include "candidates/FirstEnumeratedChoice.h"
-#include "candidates/FirstBisectionalChoice.h"
+#include "candidates/FirstChoice.h"
 #include "candidates/CompetingCandidates.h"
 #include <iostream>
 
@@ -16,12 +15,7 @@ GreedyController::GreedyController(std::shared_ptr<Evaluator> evaluator, Config 
   // decided and delivers the directly addressed messages; choices, which compete with nothing, are made first,
   // and the contested sequential-ad-hoc entries and message deliveries are merged into one reward-ordered
   // collection so their best feasible decision competes within the same list.
-  if ( config.bisection ) {
-    dispatchers.push_back( std::make_unique<GreedyDispatcher<FirstBisectionalChoice>>(evaluator) );
-  }
-  else {
-    dispatchers.push_back( std::make_unique<GreedyDispatcher<FirstEnumeratedChoice>>(evaluator) );
-  }
+  dispatchers.push_back( std::make_unique<GreedyDispatcher<FirstChoice>>(evaluator, config.bisect) );
   dispatchers.push_back( std::make_unique<GreedyDispatcher<CompetingCandidates>>(evaluator) ); // sequential ad-hoc entries and message deliveries
 }
 

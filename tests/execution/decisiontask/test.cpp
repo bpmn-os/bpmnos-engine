@@ -19,7 +19,7 @@ SCENARIO( "Decision task with enumeration", "[execution][decisiontask]" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       auto evaluator = std::make_shared<Execution::LocalEvaluator>();
-      Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(evaluator);
+      Execution::GreedyDispatcher<Execution::FirstChoice> choiceHandler(evaluator);
       entryHandler.connect(&engine);
       choiceHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -51,7 +51,7 @@ SCENARIO( "Decision task with enumeration", "[execution][decisiontask]" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       auto evaluator = std::make_shared<Execution::LocalEvaluator>();
-      Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(evaluator);
+      Execution::GreedyDispatcher<Execution::FirstChoice> choiceHandler(evaluator);
       entryHandler.connect(&engine);
       choiceHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -86,7 +86,7 @@ SCENARIO( "Decision task with bounds", "[execution][decisiontask]" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       auto evaluator = std::make_shared<Execution::LocalEvaluator>();
-      Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(evaluator);
+      Execution::GreedyDispatcher<Execution::FirstChoice> choiceHandler(evaluator);
       entryHandler.connect(&engine);
       choiceHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -118,7 +118,7 @@ SCENARIO( "Decision task with bounds", "[execution][decisiontask]" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       auto evaluator = std::make_shared<Execution::LocalEvaluator>();
-      Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(evaluator);
+      Execution::GreedyDispatcher<Execution::FirstChoice> choiceHandler(evaluator);
       entryHandler.connect(&engine);
       choiceHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -168,14 +168,21 @@ SCENARIO( "Decision task with continuous bounds", "[execution][decisiontask]" ) 
     auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
     auto scenario = dataProvider->createScenario();
 
-    WHEN( "The engine is started with a dispatcher enumerating the alternatives" ) {
+    WHEN( "The engine is started with the first choice dispatcher without a threshold" ) {
       Execution::Engine engine(model);
       auto evaluator = std::make_shared<Execution::LocalEvaluator>();
-      Execution::GreedyDispatcher<Execution::FirstEnumeratedChoice> choiceHandler(evaluator);
+      Execution::GreedyDispatcher<Execution::FirstChoice> choiceHandler(evaluator);
       choiceHandler.connect(&engine);
+      Execution::Recorder recorder;
+      recorder.subscribe(&engine);
+      engine.run(std::move(scenario));
 
-      THEN( "The values the choice allows cannot be enumerated" ) {
-        REQUIRE_THROWS_WITH( engine.run(std::move(scenario)), Catch::Matchers::ContainsSubstring("cannot be enumerated") );
+      THEN( "The choice is bisected over the multiples of the precision of numbers and minimizes the square" ) {
+        auto activityLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" },{"state","COMPLETED"}});
+        REQUIRE( activityLog.size() == 1 );
+        REQUIRE( activityLog[0]["status"]["choice"] > -2 );
+        REQUIRE( activityLog[0]["status"]["choice"] <= 5 );
+        REQUIRE( activityLog[0]["status"]["square"] == 0 );
       }
     }
 

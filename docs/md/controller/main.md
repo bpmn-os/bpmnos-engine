@@ -25,7 +25,7 @@ A controller takes only decisions: the entries of children of sequential ad-hoc 
 
 The @ref BPMNOS::Execution::GreedyController "greedy controller" is a @ref BPMNOS::Execution::Controller "controller" that holds a list of dispatchers that are consulted in the given order:
 
-- the @ref BPMNOS::Execution::FirstEnumeratedChoice "enumerated choice dispatcher" (, )or the @ref BPMNOS::Execution::FirstBisectionalChoice "bisectional choice dispatcher" when `config.bisection` is set) evaluates choices for decision tasks and as soon as feasible choices are found for a decision task, it dispatches the best evaluated choices for that task,
+- the @ref BPMNOS::Execution::FirstChoice "first choice dispatcher" evaluates choices for decision tasks and as soon as feasible choices are found for a decision task, it dispatches the best evaluated choices for that task. A choice allowing at least `config.bisect` values is searched by bisection and every other choice is enumerated; if `config.bisect` is not set, every choice with a step is enumerated and a choice of a decimal attribute without a step is searched by bisection,
 - the @ref BPMNOS::Execution::CompetingCandidates "competing candidates dispatcher" evaluates message delivery decisions and entry decisions for activities within sequential ad-hoc subprocesses. It dispatches the best evaluated decision among all.
 
 All evaluations are conducted by an @ref BPMNOS::Execution::Evaluator "evaluator".

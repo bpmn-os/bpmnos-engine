@@ -2,6 +2,7 @@
 #define BPMNOS_Execution_GreedyController_H
 
 #include <bpmn++.h>
+#include <optional>
 #include "Controller.h"
 #include "Evaluator.h"
 #include "execution/engine/src/Mediator.h"
@@ -21,7 +22,7 @@ namespace BPMNOS::Execution {
 class GreedyController : public Controller {
 public:
   struct Config {
-    bool bisection = false; ///< If true, use FirstBisectionalChoice, otherwise use FirstEnumeratedChoice.
+    std::optional<size_t> bisect = std::nullopt; ///< The least number of values of a choice searched by bisection, none if only the choices of a decimal attribute without a step are (see FirstChoice).
   };
   static Config default_config() { return {}; }  // Work around for compiler bug see: https://stackoverflow.com/questions/53408962/try-to-understand-compiler-error-message-default-member-initializer-required-be/75691051#75691051
   /// The evaluator is handed to the candidates the dispatchers own, which keep it; the controller does not.

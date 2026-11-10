@@ -11,8 +11,8 @@
 
 void print_usage() {
   std::cout << "Usage:" << std::endl;
-  std::cout << "\tbpmnos-greedy --model <model file> --data <data file> [--json <json file>] [--provider {static|expected|dynamic|stochastic}] [--seed <number>] [--evaluator {local|guided}] [--folders <folder1> <folder2> ...] [--bisection] [--starttime <number>] [--endtime <number>] [--verbose]" << std::endl;
-  std::cout << "\tbpmnos-greedy -m <model file> -d <data file> [-j <json file>] [-p <provider>]  [-s <number>] [-e <evaluator>] [-f <folder1> <folder2> ...] [--b] [-tmin <number>] [-tmax <number>] [-v]" << std::endl;
+  std::cout << "\tbpmnos-greedy --model <model file> --data <data file> [--json <json file>] [--provider {static|expected|dynamic|stochastic}] [--seed <number>] [--evaluator {local|guided}] [--folders <folder1> <folder2> ...] [--bisect <number>] [--starttime <number>] [--endtime <number>] [--verbose]" << std::endl;
+  std::cout << "\tbpmnos-greedy -m <model file> -d <data file> [-j <json file>] [-p <provider>]  [-s <number>] [-e <evaluator>] [-f <folder1> <folder2> ...] [-b <number>] [-tmin <number>] [-tmax <number>] [-v]" << std::endl;
   std::cout << std::endl;
   std::cout << "\t-m, --model <model file>:             name of the BPMN model file" << std::endl;
   std::cout << "\t-d, --data <data file>:               name of the CSV file containing the instance data" << std::endl;
@@ -21,7 +21,7 @@ void print_usage() {
   std::cout << "\t-s, --seed <number>:                  seed for stochastic scenarios (default: random)" << std::endl;
   std::cout << "\t-e, --evaluator {local|guided}:       evaluator for decisions (default: guided)" << std::endl;
   std::cout << "\t-f, --folders <folder1> <folder2> ...: folders in which lookup tables can be found" << std::endl;
-  std::cout << "\t-b, --bisection:                      use bisection for choices" << std::endl;
+  std::cout << "\t-b, --bisect <number>:                bisect choices allowing at least this number of values (default: only decimal choices without a step)" << std::endl;
   std::cout << "\t-tmin, --starttime <number>:          simulation time at which execution begins (default: earliest instantiation)" << std::endl;
   std::cout << "\t-tmax, --endtime <number>:            simulation time when execution is terminated" << std::endl;
   std::cout << "\t-v, --verbose:                        display the execution log" << std::endl;
@@ -37,7 +37,7 @@ struct Arguments {
   unsigned int seed = std::random_device{}();
   std::string evaluatorName = "guided";
   std::vector<std::string> folders;
-  bool bisection = false;
+  std::optional<size_t> bisect;
   std::optional<BPMNOS::number> tmin;
   std::optional<BPMNOS::number> tmax;
   bool verbose = false;
@@ -72,8 +72,8 @@ Arguments parse_arguments(int argc, char* argv[]) {
         args.folders.push_back(argv[++i]);
       }
     }
-    else if ((arg == "--bisection" || arg == "-b")) {
-      args.bisection = true;
+    else if ((arg == "--bisect" || arg == "-b") && i + 1 < argc) {
+      args.bisect = (size_t)std::stoul(argv[++i]);
     }
     else if ((arg == "--starttime" || arg == "-tmin") && i + 1 < argc) {
       args.tmin = BPMNOS::to_number(std::string(argv[++i]),BPMNOS::STRING);
@@ -147,7 +147,7 @@ int main(int argc, char* argv[]) {
   BPMNOS::Execution::Engine engine(model);
 
   auto evaluator = createEvaluator();
-  BPMNOS::Execution::GreedyController controller(evaluator, { .bisection = args.bisection });
+  BPMNOS::Execution::GreedyController controller(evaluator, { .bisect = args.bisect });
   controller.connect(&engine);
 
 

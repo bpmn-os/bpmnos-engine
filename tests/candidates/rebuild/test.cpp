@@ -215,7 +215,7 @@ SCENARIO( "FirstFeasibleEntry rebuilds its candidate from a SystemState notice",
   }
 }
 
-SCENARIO( "FirstEnumeratedChoice rebuilds its candidates from a SystemState notice", "[candidates][rebuild][choice]" ) {
+SCENARIO( "FirstChoice rebuilds its enumerated candidates from a SystemState notice", "[candidates][rebuild][choice]" ) {
   const std::string modelFile = "tests/execution/decisiontask/DecisionTask_with_enumeration.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
@@ -232,7 +232,7 @@ SCENARIO( "FirstEnumeratedChoice rebuilds its candidates from a SystemState noti
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     auto evaluator = std::make_shared<Execution::LocalEvaluator>();
-    Execution::FirstEnumeratedChoice incremental(evaluator);
+    Execution::FirstChoice incremental(evaluator);
     entryHandler.connect(&engine);
     incremental.connect(&engine);
     dataProvider->setEndTime(0);
@@ -241,9 +241,9 @@ SCENARIO( "FirstEnumeratedChoice rebuilds its candidates from a SystemState noti
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->pendingChoiceDecisions.count() == 1 );
 
-    WHEN( "A fresh FirstEnumeratedChoice collection is rebuilt from the SystemState notice" ) {
+    WHEN( "A fresh FirstChoice collection is rebuilt from the SystemState notice" ) {
       Execution::Notifier notifier;
-      Execution::FirstEnumeratedChoice rebuilt(evaluator);
+      Execution::FirstChoice rebuilt(evaluator);
       rebuilt.connect(&notifier);
       notifier.notify(systemState);
 
@@ -259,7 +259,7 @@ SCENARIO( "FirstEnumeratedChoice rebuilds its candidates from a SystemState noti
   }
 }
 
-SCENARIO( "FirstBisectionalChoice rebuilds its candidates from a SystemState notice", "[candidates][rebuild][choice][bisection]" ) {
+SCENARIO( "FirstChoice rebuilds its bisected candidates from a SystemState notice", "[candidates][rebuild][choice][bisection]" ) {
   const std::string modelFile = "tests/execution/decisiontask/DecisionTask_with_bounds.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
@@ -276,7 +276,7 @@ SCENARIO( "FirstBisectionalChoice rebuilds its candidates from a SystemState not
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     auto evaluator = std::make_shared<Execution::LocalEvaluator>();
-    Execution::FirstBisectionalChoice incremental(evaluator);
+    Execution::FirstChoice incremental(evaluator, 2);
     entryHandler.connect(&engine);
     incremental.connect(&engine);
     dataProvider->setEndTime(0);
@@ -285,9 +285,9 @@ SCENARIO( "FirstBisectionalChoice rebuilds its candidates from a SystemState not
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->pendingChoiceDecisions.count() == 1 );
 
-    WHEN( "A fresh FirstBisectionalChoice collection is rebuilt from the SystemState notice" ) {
+    WHEN( "A fresh FirstChoice collection with the same threshold is rebuilt from the SystemState notice" ) {
       Execution::Notifier notifier;
-      Execution::FirstBisectionalChoice rebuilt(evaluator);
+      Execution::FirstChoice rebuilt(evaluator, 2);
       rebuilt.connect(&notifier);
       notifier.notify(systemState);
 
@@ -298,6 +298,22 @@ SCENARIO( "FirstBisectionalChoice rebuilds its candidates from a SystemState not
         REQUIRE( feasibleCount(rebuiltCandidates) >= 1 );
         REQUIRE( signatures(rebuiltCandidates) == signatures(incrementalCandidates) );
         REQUIRE( rewardDescending(rebuiltCandidates) );
+      }
+    }
+
+    WHEN( "FirstChoice collections with thresholds above and up to the number of values are rebuilt" ) {
+      // the choice -2 < choice <= 5 of an integer attribute allows the seven values from -1 to 5
+      Execution::Notifier notifier;
+      Execution::FirstChoice enumerating(evaluator, 10);
+      Execution::FirstChoice bisecting(evaluator, 7);
+      enumerating.connect(&notifier);
+      bisecting.connect(&notifier);
+      notifier.notify(systemState);
+
+      THEN( "The choice is enumerated below the threshold and bisected from it on" ) {
+        REQUIRE( collect(enumerating).size() == 7 );
+        REQUIRE( collect(bisecting).size() < 7 );
+        REQUIRE( feasibleCount(collect(bisecting)) >= 1 );
       }
     }
   }
