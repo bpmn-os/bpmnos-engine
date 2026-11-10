@@ -60,13 +60,9 @@ std::shared_ptr<Decision> FirstBisectionalChoice::determineBestChoices(std::shar
     throw std::runtime_error("FirstBisectionalChoice: choice requires bounds");
   }
 
-  // Single choice with bounds (no enumeration) → use bisection
-  if ( choice->multipleOf ) {
-    return discreteBisection(request, choice.get());
-  }
-  else {
-    return bestEnumeratedChoice(request);
-  }
+  // Single choice with bounds (no enumeration) → use bisection over the multiples of its step, which cannot be
+  // enumerated for a decimal attribute without a step
+  return discreteBisection(request, choice.get());
 }
 
 std::shared_ptr<Decision> FirstBisectionalChoice::bestEnumeratedChoice(std::shared_ptr<const DecisionRequest> request) {

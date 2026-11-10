@@ -53,6 +53,15 @@ Choice::Choice(XML::bpmnos::tDecision* decision, const AttributeRegistry& attrib
   if ( attribute->isObject() ) {
     throw std::runtime_error("Choice: attribute '" + attribute->id + "' is an object, whereas a choice chooses a scalar value");
   }
+
+  if ( enumeration.empty() && !multipleOf && (
+    std::get<BPMNOS::ValueType>(attribute->type) == INTEGER || std::get<BPMNOS::ValueType>(attribute->type) == BOOLEAN
+  ) ) {
+    // the step of an integer or boolean attribute is implied by its type, so that a bounded choice allows every
+    // value between its bounds; a decimal attribute implies no step, so that a bounded choice without a step
+    // allows every value of the interval
+    multipleOf = std::make_unique<Expression>(InputEncoder::fragment("1"), attributeRegistry);
+  }
   if ( std::get<BPMNOS::ValueType>(attribute->type) == STRING && enumeration.empty() ) {
     throw std::runtime_error("Choice: no enumeration provided for string");
   }
@@ -193,7 +202,10 @@ template std::pair<BPMNOS::number,BPMNOS::number>  Choice::getBounds<BPMNOS::Sha
 
 template <typename DataType>
 std::vector<BPMNOS::number> Choice::getEnumeration(const BPMNOS::Status& status, const DataType& data) const {
-  assert( !enumeration.empty() || multipleOf );  
+  if ( enumeration.empty() && !multipleOf ) {
+    // a decimal attribute chosen between bounds without a step may take every value of the interval
+    throw std::runtime_error("Choice: the values of decimal attribute '" + attribute->name + "' between bounds without a step cannot be enumerated; a step may be stated as in '<bounds>, <step> | " + attribute->name + "'");
+  }
   std::vector<BPMNOS::number> allowedValues;
   if ( !enumeration.empty() ) {
     // at most one value per alternative

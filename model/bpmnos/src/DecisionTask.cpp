@@ -53,20 +53,9 @@ void DecisionTask::determineAlternatives(
     }
   };
 
-  if ( !choice->enumeration.empty() || choice->multipleOf ) {
-    // iterate through all given alternatives
-    for (auto value : choice->getEnumeration(status, data) ) {
-      choose(value);
-    }
-  }
-  else if ( choice->lowerBound.has_value() && choice->upperBound.has_value() ) {
-    auto [min, max] = choice->getBounds(status, data);
-    if ( min == max ) {
-      choose(min);
-    }
-    else if ( min < max ) {
-      choose(min);
-      choose(max);
-    }
+  // the alternatives are the values the choice allows, which cannot be enumerated for a decimal attribute chosen
+  // between bounds without a step
+  for (auto value : choice->getEnumeration(status, data) ) {
+    choose(value);
   }
 }

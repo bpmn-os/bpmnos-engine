@@ -28,7 +28,7 @@ std::shared_ptr<Event> RandomChoice::dispatchEvent( const SystemState* systemSta
       auto status = token->status;
       auto data = BPMNOS::Data(*token->data);
       for ( auto& choice : extensionElements->choices ) {
-        // make random choice
+        // make random choice among the values the choice allows
         if ( !choice->enumeration.empty() || choice->multipleOf ) {
           auto values = choice->getEnumeration(status,data);
           if ( values.size() ) {
@@ -41,26 +41,16 @@ std::shared_ptr<Event> RandomChoice::dispatchEvent( const SystemState* systemSta
             break;
           }
         }
-        else if ( choice->lowerBound.has_value() && choice->upperBound.has_value() ) {
+        else {
+          // a decimal attribute chosen between bounds without a step may take every value of the interval
           auto [min,max] = choice->getBounds(status,data);
           if ( min > max ) {
             choices.clear();
             break;
           }
-          if ( std::get<BPMNOS::ValueType>(choice->attribute->type) == DECIMAL ) {
-            std::uniform_real_distribution<> random_distribution((double)min,(double)max);
-            choices.push_back( BPMNOS::number( random_distribution(randomGenerator) ) );
-            choice->attributeRegistry.setValue(choice->attribute, status, data, choices.back());
-          }
-          else {
-            std::uniform_int_distribution<> random_distribution((int)min,(int)max);
-            choices.push_back( BPMNOS::number( random_distribution(randomGenerator) ) );
-            choice->attributeRegistry.setValue(choice->attribute, status, data, choices.back());
-          }
-        }
-        else {
-          choices.clear();
-          break;
+          std::uniform_real_distribution<> random_distribution((double)min,(double)max);
+          choices.push_back( BPMNOS::number( random_distribution(randomGenerator) ) );
+          choice->attributeRegistry.setValue(choice->attribute, status, data, choices.back());
         }
       }
       if ( !choices.empty() ) {

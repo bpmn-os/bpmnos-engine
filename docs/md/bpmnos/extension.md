@@ -198,7 +198,9 @@ Within a `<bpmnos:decisions>` container any number of `<bpmnos:decision>` elemen
 </bpmn2:extensionElements>
 ```
 
-Each condition constrains the values that may be chosen for the specified attribute.
+Each condition constrains the values that may be chosen for the specified attribute. A condition is either an enumeration, `x in [a, b, ...]`, allowing the values listed, or bounds, `lb <= x <= ub`, either of which may be strict, followed optionally by a step, `lb <= x <= ub, step | x`. Bounds allow the multiples of the step between them. The step of an integer or boolean attribute is implied by its type and is one, so that `1 <= index <= count(destinations)` allows every index from one to the number of destinations. A decimal attribute implies no step, so that bounds without a step allow every value of the interval. A model meaning only the two bounds states them as an enumeration.
+
+How a controller finds a value the choice allows is its policy and not part of the model: the @ref BPMNOS::Execution::FirstEnumeratedChoice "enumerated choice dispatcher" evaluates all of them, which suits a small set such as the indices of a list, the @ref BPMNOS::Execution::FirstBisectionalChoice "bisectional choice dispatcher" searches the multiples of the step by bisection, which suits a large range, and a dispatcher may as well compute the value, such as an economic order quantity. The values of a decimal attribute between bounds without a step cannot be enumerated, so that a dispatcher enumerating or bisecting them raises an error naming the attribute, whereas the @ref BPMNOS::Execution::RandomChoice "random choice dispatcher" draws a value of the interval.
 
 ## Messages
 @ref BPMNOS::Model::MessageDefinition "Messages" can be used to exchange information by delivering a content object from one process to another. 
