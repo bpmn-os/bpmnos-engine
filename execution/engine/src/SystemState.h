@@ -118,6 +118,8 @@ public:
 
   std::unordered_map< BPMNOS::number, auto_list< std::weak_ptr<Token> > > tokensAwaitingCondition; ///< Map holding a container of all tokens at a conditional event belonging to a process instance
 
+  std::unordered_map< BPMNOS::number, auto_list< std::weak_ptr<Token> > > tokensAwaitingEntry; ///< Map holding a container of all ready tokens at activities outside sequential ad-hoc subprocesses belonging to a process instance, which are entered as soon as their entry restrictions hold
+
   std::unordered_map< Token*, std::weak_ptr<Message> > messageAwaitingDelivery; ///< Container holding message awaiting delivery for tokens at send tasks
 
   std::unordered_map< Token*, Token* > tokenAtMultiInstanceActivity; ///< Map holding the main token waiting at a multi-instance (or loop) activity.

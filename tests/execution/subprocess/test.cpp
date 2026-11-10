@@ -118,16 +118,15 @@ SCENARIO( "Constrained executable process", "[execution][subprocess]" ) {
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&engine);
+      // the entry restrictions never hold again, so that the run continues until its end time
+      dataProvider->setEndTime(5);
       engine.run(std::move(scenario));
-      THEN( "The subprocess fails at its start event" ) {
+      THEN( "The subprocess is never entered" ) {
         auto subprocessLog = recorder.find(nlohmann::json{{"nodeId","Activity_1" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }});
-        REQUIRE( subprocessLog.size() == 6 );
+        REQUIRE( subprocessLog.size() == 2 );
         REQUIRE( subprocessLog[0]["state"] == "ARRIVED" );
         REQUIRE( subprocessLog[1]["state"] == "READY" );
-        REQUIRE( subprocessLog[2]["state"] == "ENTERED" );
-        REQUIRE( subprocessLog[3]["state"] == "BUSY" );
-        REQUIRE( subprocessLog[4]["state"] == "FAILING" );
-        REQUIRE( subprocessLog[5]["state"] == "FAILED" );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId","StartEvent_2" }}, nlohmann::json{{"event",nullptr },{"decision",nullptr }}).empty() );
       }
     }
 

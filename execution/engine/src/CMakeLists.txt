@@ -5,6 +5,8 @@ list(APPEND engine_SOURCES
   MessageDeliveryRequest.cpp
   Token.cpp
   ConditionalEventObserver.cpp
+  EntryObserver.cpp
+  DirectMessageObserver.cpp
   Environment.cpp
   Event.cpp
   events/TerminationEvent.cpp
@@ -37,8 +39,10 @@ list(APPEND engine_HEADERS
   DataUpdate.h
   Objective.h
   ConditionalEventObserver.h
+  EntryObserver.h
   DecisionRequest.h
   MessageDeliveryRequest.h
+  DirectMessageObserver.h
   Event.h
   events/TerminationEvent.h
   events/ClockTickEvent.h

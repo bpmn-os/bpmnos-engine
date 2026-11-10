@@ -40,6 +40,7 @@ private:
   friend class StateMachine;
   friend class Engine;
   friend class ConditionalEventObserver;
+  friend class EntryObserver;
 
 public:
   constexpr Type getObservableType() const override { return Type::Token; };
@@ -120,6 +121,7 @@ private:
   void releaseSequentialPerformer();
 
   bool entryIsFeasible() const; ///< Check restrictions within current and ancestor scopes
+  bool entryConditionHolds() const; ///< Check the entry restrictions on the status with the current time as timestamp, as they are checked on entry
   bool completionIsFeasible() const; ///< Check restrictions within current and ancestor scopes
 //  bool satisfiesInheritedRestrictions() const; ///< Check restrictions within ancestor scopes
 
@@ -155,7 +157,9 @@ private:
 
   void awaitReadyEvent(); ///< Wait for ready event for activities
 
-  void awaitEntryEvent(); ///< Wait for entry event for activities
+  void awaitEntry(); ///< Wait for the entry of an activity, decided for an activity within a sequential ad-hoc subprocess and taken as soon as the entry restrictions hold for any other
+  void awaitEntryEvent(); ///< Wait for the entry decision for an activity within a sequential ad-hoc subprocess
+  void awaitEntryCondition(); ///< Wait for the entry restrictions of an activity outside a sequential ad-hoc subprocess to hold
 
   void awaitChoiceEvent(); ///< Wait for choices to be made for decision tasks
   void awaitTaskCompletionEvent(); ///< Wait for completion event for tasks (except for decision tasks)

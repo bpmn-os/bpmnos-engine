@@ -1,11 +1,9 @@
 #include "GreedyController.h"
 #include "execution/engine/src/Engine.h"
 #include "GreedyDispatcher.h"
-#include "candidates/FirstFeasibleEntry.h"
 #include "candidates/FirstEnumeratedChoice.h"
 #include "candidates/FirstBisectionalChoice.h"
 #include "candidates/CompetingCandidates.h"
-#include "dispatcher/InstantDirectMessage.h"
 #include <iostream>
 
 using namespace BPMNOS::Execution;
@@ -14,11 +12,10 @@ GreedyController::GreedyController(std::shared_ptr<Evaluator> evaluator, Config 
   : config(config)
 {
   // Decisions come from Candidates collections, each owned by a generic GreedyDispatcher (templated on the
-  // collection type), tried in priority order. Entry and direct message delivery are unambiguous;
-  // the contested sequential-ad-hoc entries and message deliveries are merged into one reward-ordered
+  // collection type), tried in priority order. The engine itself enters the activities whose entry is not
+  // decided and delivers the directly addressed messages; choices, which compete with nothing, are made first,
+  // and the contested sequential-ad-hoc entries and message deliveries are merged into one reward-ordered
   // collection so their best feasible decision competes within the same list.
-  dispatchers.push_back( std::make_unique<GreedyDispatcher<FirstFeasibleEntry>>(evaluator) ); // non-sequential entries only (config.sequential=false)
-  dispatchers.push_back( std::make_unique<InstantDirectMessage>() );
   if ( config.bisection ) {
     dispatchers.push_back( std::make_unique<GreedyDispatcher<FirstBisectionalChoice>>(evaluator) );
   }

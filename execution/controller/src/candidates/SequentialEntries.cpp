@@ -2,6 +2,7 @@
 #include "execution/engine/src/Notifier.h"
 #include "execution/engine/src/SystemState.h"
 #include "execution/engine/src/DecisionRequest.h"
+#include "model/bpmnos/src/Model.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include <cassert>
 
@@ -24,11 +25,8 @@ void SequentialEntries::notice(const Observable* observable) {
   if ( observable->getObservableType() == Observable::Type::EntryRequest ) {
     assert( dynamic_cast<const DecisionRequest*>(observable) );
     auto request = static_cast<const DecisionRequest*>(observable);
-    assert( request->token->node->as<BPMN::FlowNode>()->parent );
-    if ( !request->token->node->as<BPMN::FlowNode>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-      // only entries of sequential ad-hoc subprocess children are handled here
-      return;
-    }
+    // the engine raises entry requests only for children of sequential ad-hoc subprocesses
+    assert( BPMNOS::Model::Model::isSequentialActivity(request->token->node) );
     auto decision = std::make_shared<EntryDecision>(request, evaluator.get());
     addDecision( request->token->weak_from_this(), request->weak_from_this(), decision );
   }

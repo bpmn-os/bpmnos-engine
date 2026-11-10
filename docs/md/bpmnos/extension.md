@@ -148,7 +148,7 @@ The operators of a regular task and of a @ref BPMN::SendTask "send task" are app
 The operators of a @ref BPMN::ReceiveTask "receive task" and of a @ref BPMNOS::Model::DecisionTask "decision task" are applied upon completion, after the message has been received or the choices have been made.
 The operators of a @ref BPMN::CatchEvent "catch event", start events included, are applied when the event is triggered, after the message or signal it receives has been taken; those of an untyped start event, which awaits no trigger, when it is passed.
 The operators of a @ref BPMN::ThrowEvent "throw event", end events included, are applied before the event throws, so that a message or signal it throws carries the values they produce; those of an untyped end event, which throws nothing, when it is reached.
-The entry restrictions of a scope are checked after the operators of its start event have been applied, so that they constrain the status those operators produce.
+The entry restrictions of a process or an event-subprocess are checked after the operators of its start event have been applied, so that they constrain the status those operators produce, the start event of an event-subprocess being the trigger by which it is entered. A subprocess is entered before its start event, as BPMN instantiates a subprocess when a token reaches it and gives its start event a token upon instantiation, so that its entry restrictions are checked on entry, before the operators of its start event, which constrain the status those operators produce only through the restrictions the start event checks on its completion, the full restrictions of the subprocess included.
 A scope is started as often as it is entered, so the operators of the start event of a looped or of a multi-instance subprocess are applied once per iteration and once per instance respectively.
 
 @attention Operators of an event must not modify the `timestamp` attribute, an event being instantaneous. The same holds for a @ref BPMN::SendTask "send task", a @ref BPMN::ReceiveTask "receive task" and a @ref BPMNOS::Model::DecisionTask "decision task", each of which completes upon an event of its own. Only a regular task may advance the timestamp, which is how its duration is modelled.
@@ -185,7 +185,7 @@ Objects are shared until they are written: a token copied at a gateway, a candid
 
 ## Choices
 @ref BPMNOS::Model::DecisionTask "Decision tasks" are represented by @ref XML::bpmn::tTask "task elements" with an additional field `bpmnos:type="Decision"`. 
-For these decision tasks, @ref BPMNOS::Model::Choice "choice" on the value fo one or more attributes can be made.
+For these decision tasks, a @ref BPMNOS::Model::Choice "choice" on the value of one or more attributes can be made. A choice is an assignment whose value is chosen within its condition rather than computed by an expression, and like an operator it may assign a status, data or global attribute, but not an object.
 Within a `<bpmnos:decisions>` container any number of `<bpmnos:decision>` elements can be provided to define the respective attributes as shown in the following example. 
 
 ```xml

@@ -11,7 +11,9 @@ namespace BPMNOS::Execution {
 /**
  * @brief A controller dispatching the first feasible decision in priority order.
  *
- * Holds a priority-ordered list of dispatchers and dispatches the first feasible decision they yield.
+ * Holds a priority-ordered list of dispatchers and dispatches the first feasible decision they yield: the
+ * choices first, which compete with nothing, then the entries of children of sequential ad-hoc subprocesses
+ * and the message deliveries that are not directly addressed, the others being taken by the engine.
  * Contested entries and message deliveries (which have no precedence over each other) are merged into a
  * single reward-ordered dispatcher, so their best feasible decision competes within the same list rather
  * than in a separate best-of-best stage.

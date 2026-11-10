@@ -293,6 +293,13 @@ bool Token::entryIsFeasible() const {
   return node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleEntry(status,*data);
 }
 
+bool Token::entryConditionHolds() const {
+  // the entry restrictions are checked on entry, when the timestamp is the current time
+  Status entryStatus = status;
+  entryStatus.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = owner->systemState->getTime();
+  return node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleEntry(entryStatus,*data);
+}
+
 bool Token::completionIsFeasible() const {
   assert( node->extensionElements->represents<BPMNOS::Model::ExtensionElements>() );
   return node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleCompletion(status,*data);
@@ -364,8 +371,7 @@ void Token::advanceToReady() {
 
   update(State::READY);
 
-//std::cerr << "->awaitEntryEvent" << std::endl;
-  awaitEntryEvent();
+  awaitEntry();
 }
 
 void Token::advanceToEntered() {
@@ -442,9 +448,10 @@ void Token::advanceToEntered() {
   }
 
 
-  // only check feasibility for tasks and ad-hoc subprocesses; the entry restrictions of a scope with a start
-  // event are checked against the status with which its start event completes, and the feasibility of all
-  // other tokens must have been validated before (also for newly created or merged tokens)
+  // only check feasibility for activities, which check their entry restrictions on entry, before anything
+  // happens inside them; the entry restrictions of a process are checked against the status with which its start
+  // event completes, and the feasibility of all other tokens must have been validated before (also for newly
+  // created or merged tokens)
   if ( node->represents<BPMN::Process>() ) {
     // tokens entering a process advance to busy state
     engine->commands.emplace_back(std::bind(&Token::advanceToBusy,this), this);
@@ -460,8 +467,10 @@ void Token::advanceToEntered() {
     }
 
 //std::cerr << "check restrictions: " << entryIsFeasible() << std::endl;
-    // check restrictions of a task or ad-hoc subprocess, which has no start event
-    if ( ( !activity->represents<BPMN::SubProcess>() || activity->represents<BPMN::AdHocSubProcess>() ) && !entryIsFeasible() ) {
+    // check entry restrictions after the boundary event tokens exist, so that an error boundary event catches the
+    // failure of an infeasible entry; a subprocess is entered before its start event, whose operators therefore
+    // do not affect whether the entry is feasible
+    if ( !entryIsFeasible() ) {
       engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
       return;
     }
@@ -785,8 +794,7 @@ void Token::advanceToCompleted() {
       !node->represents<BPMN::TypedStartEvent>() &&
       !completionIsFeasible()
     ) {
-      // the status the operators have produced must satisfy the restrictions; a start event checks the entry
-      // restrictions of its scope instead
+      // the status the operators have produced must satisfy the restrictions; a start event is checked below
       engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
       return;
     }
@@ -810,11 +818,15 @@ void Token::advanceToCompleted() {
     else if ( node->represents<BPMN::UntypedStartEvent>() ||
       ( node->represents<BPMN::TypedStartEvent>() && node->as<BPMN::FlowNode>()->parent->represents<BPMN::Process>() )
     ) {
-      // there is no pending scope to promote and no further instance to arm, so only the entry
-      // restrictions of the scope are checked, against the status the operators of its start event have just
-      // produced
-      auto extensionElements = node->as<BPMN::FlowNode>()->parent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
-      if ( !extensionElements->feasibleEntry(status,*data) ) {
+      // there is no pending scope to promote and no further instance to arm; the entry restrictions of a process
+      // are checked against the status the operators of its start event have just produced, whereas a subprocess
+      // has checked its entry restrictions on entry, before its start event, which therefore checks its own
+      // completion restrictions, including the full restrictions of the subprocess it inherits
+      auto scope = node->as<BPMN::FlowNode>()->parent;
+      bool feasible = scope->represents<BPMN::Process>() ?
+        scope->extensionElements->as<BPMNOS::Model::ExtensionElements>()->feasibleEntry(status,*data) :
+        completionIsFeasible();
+      if ( !feasible ) {
         engine->commands.emplace_back(std::bind(&Token::advanceToFailed,this), this);
       }
       else if ( node->as<BPMN::FlowNode>()->outgoing.empty() ) {
@@ -983,7 +995,7 @@ void Token::advanceFromCompleted() {
 
     if ( LOOP ) {
       update(State::READY);
-      awaitEntryEvent();
+      awaitEntry();
       return;
     }
   }
@@ -1278,22 +1290,37 @@ void Token::awaitReadyEvent() {
   systemState->tokensAwaitingReadyEvent.emplace_back(weak_from_this());
 }
 
+void Token::awaitEntry() {
+  if ( BPMNOS::Model::Model::isSequentialActivity(node) ) {
+    // the performer of the sequential ad-hoc subprocess decides which child it enters
+    awaitEntryEvent();
+  }
+  else {
+    // any other activity is entered as soon as its entry restrictions hold
+    awaitEntryCondition();
+  }
+}
+
+void Token::awaitEntryCondition() {
+  assert( !BPMNOS::Model::Model::isSequentialActivity(node) );
+  const_cast<Engine*>(owner->systemState->engine)->entryObserver.await(this);
+}
+
 void Token::awaitEntryEvent() {
 //std::cerr << "awaitEntryEvent" << std::endl;
+  assert( BPMNOS::Model::Model::isSequentialActivity(node) );
 
   auto systemState = const_cast<SystemState*>(owner->systemState);
-  if ( node->as<BPMN::FlowNode>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
-    auto tokenAtSequentialPerformer = getSequentialPerformerToken();
+  auto tokenAtSequentialPerformer = getSequentialPerformerToken();
 //std::cerr << "Token: " << tokenAtSequentialPerformer->jsonify() << "  pendingSequentialEntries add " << jsonify() << std::endl;
-    tokenAtSequentialPerformer->pendingSequentialEntries.emplace_back(weak_from_this());
-    
-    if ( tokenAtSequentialPerformer->performing ) {
+  tokenAtSequentialPerformer->pendingSequentialEntries.emplace_back(weak_from_this());
+
+  if ( tokenAtSequentialPerformer->performing ) {
 //std::cerr << "Token: Waiting for perfomer to become idle" << std::endl;
-      // defer decision request until performer becomes idle again
-      return;
-    }
+    // defer decision request until performer becomes idle again
+    return;
   }
-  
+
   decisionRequest = std::make_shared<DecisionRequest>( this, Observable::Type::EntryRequest );
   systemState->pendingEntryDecisions.emplace_back( weak_from_this(), decisionRequest );
 //std::cerr << "Token: Waiting for entry" << std::endl;

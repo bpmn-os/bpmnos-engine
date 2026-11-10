@@ -52,7 +52,7 @@ In either state, the token waits for a @ref BPMNOS::Execution::ReadyEvent "ready
 
 ## READY
 
-A token in  @ref BPMNOS::Execution::Token::State::READY "READY" state waits for an @ref BPMNOS::Execution::EntryEvent "entry event" indicating that a decision is made to start with the activity. 
+A token in  @ref BPMNOS::Execution::Token::State::READY "READY" state waits for an @ref BPMNOS::Execution::EntryEvent "entry event". For a child of a @ref BPMNOS::Model::SequentialAdHocSubProcess "sequential ad-hoc subprocess", the entry event indicates that its performer has decided to start with the activity. Any other activity is entered as soon as its entry restrictions hold on the status the token has with the current time as its timestamp, as a conditional event is triggered as soon as its condition holds; the engine then dispatches the entry event itself, and the token waits as long as the restrictions do not hold, until the end of the run if they never hold.
 When the event occurs the token state is updated to  @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED".
 
 ## ENTERED
@@ -74,7 +74,7 @@ If the token resides at a @ref BPMN::SendTask "send task", the operators are app
 
 A token at a @ref BPMN::ReceiveTask  "receive task" waits for a @ref BPMNOS::Execution::MessageDeliveryEvent "message delivery". When the message is delivered, the token holds the content object of the message. Thereafter, the @ref BPMNOS::Model::ExtensionElements::operators "operators" are applied, reading the content object, and  the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
 
-A token at a @ref BPMNOS::Model::DecisionTask  "decision task" waits for a @ref BPMNOS::Execution::ChoiceEvent "choice" to be made. When the choice is made, the @ref BPMNOS::Execution::Token::status "status" of the token is updated accordingly. Thereafter, the @ref BPMNOS::Model::ExtensionElements::operators "operators" are applied and  the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
+A token at a @ref BPMNOS::Model::DecisionTask  "decision task" waits for a @ref BPMNOS::Execution::ChoiceEvent "choice" to be made. When the choice is made, the chosen values are assigned to their attributes, which may be @ref BPMNOS::Execution::Token::status "status", data or global attributes, as for operators. Thereafter, the @ref BPMNOS::Model::ExtensionElements::operators "operators" are applied and  the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED".
 
 For any other task, the token waits for a @ref BPMNOS::Execution::CompletionEvent "completion event" before the state is changed to @ref BPMNOS::Execution::Token::State::COMPLETED "COMPLETED" state.
 

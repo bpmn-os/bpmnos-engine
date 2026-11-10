@@ -9,26 +9,20 @@
 namespace BPMNOS::Execution {
 
 /**
- * @brief Entry decision candidates dispatched greedily as the first feasible entry.
+ * @brief Entry decision candidates dispatched as the first feasible entry.
  *
- * Collects entry requests via notice; evaluateCandidates creates and evaluates the pending entry
- * decisions only until the first feasible one, which is then the front of the reward-ordered set.
- * If config.sequential is false (default), entries of SequentialAdHocSubProcess children are skipped
- * (left to a competing source) rather than considered here.
+ * Collects entry requests via notice, each of which is one of a child of a sequential ad-hoc subprocess,
+ * the engine itself entering any other activity; evaluateCandidates creates and evaluates the pending entry
+ * decisions only until the first feasible one, which is then the front of the reward-ordered set. Unlike
+ * SequentialEntries, it does not rank the candidates by their reward.
  */
 class FirstFeasibleEntry : public CachedCandidates< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > {
 public:
-  struct Config {
-    bool sequential = false; ///< If false, skip entries of SequentialAdHocSubProcess children.
-  };
-  static Config default_config() { return {}; }  // Work around for compiler bug see: https://stackoverflow.com/questions/53408962/try-to-understand-compiler-error-message-default-member-initializer-required-be/75691051#75691051
-
-  FirstFeasibleEntry(std::shared_ptr<Evaluator> evaluator, Config config = default_config());
+  FirstFeasibleEntry(std::shared_ptr<Evaluator> evaluator);
   void connect(Notifier* notifier) override;
   void notice(const Observable* observable) override;
 protected:
   void evaluateCandidates() override;
-  Config config;
 };
 
 } // namespace BPMNOS::Execution

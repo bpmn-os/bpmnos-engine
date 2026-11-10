@@ -46,8 +46,7 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       Execution::Engine engine(model);
       auto evaluator = std::make_shared<Execution::LocalEvaluator>();
       
-//      Execution::InstantEntry entryHandler;
-      Execution::GreedyDispatcher<Execution::FirstFeasibleEntry> entryHandler(evaluator);
+      // the engine enters the activities whose entry is not decided, the visits being chosen by their reward
       Execution::GreedyDispatcher<Execution::SequentialEntries> sequentialEntryHandler(evaluator);
       Execution::FirstMatchingMessageDelivery messageHandler;
       Execution::MyopicMessageTaskTerminator messageTaskTerminator;
@@ -55,7 +54,6 @@ SCENARIO( "Travelling salesperson problem", "[examples][travelling_salesperson_p
       
       sequentialEntryHandler.connect(&engine);
       messageHandler.connect(&engine);
-      entryHandler.connect(&engine);
 
       messageTaskTerminator.connect(&engine);
 

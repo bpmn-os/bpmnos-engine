@@ -1,27 +1,26 @@
-#include "InstantDirectMessage.h"
-#include "execution/engine/src/Mediator.h"
-#include "execution/engine/src/SystemState.h"
-#include "execution/engine/src/DecisionRequest.h"
-#include "execution/engine/src/events/MessageDeliveryEvent.h"
+#include "DirectMessageObserver.h"
+#include "Mediator.h"
+#include "SystemState.h"
+#include "DecisionRequest.h"
+#include "events/MessageDeliveryEvent.h"
 #include "model/bpmnos/src/extensionElements/MessageDefinition.h"
 #include <cassert>
 
 using namespace BPMNOS::Execution;
 
-InstantDirectMessage::InstantDirectMessage()
+DirectMessageObserver::DirectMessageObserver()
 {
 }
 
-void InstantDirectMessage::connect(Mediator* mediator) {
+void DirectMessageObserver::connect(Mediator* mediator) {
   mediator->addSubscriber(this,
     Execution::Observable::Type::MessageDeliveryRequest,
     Execution::Observable::Type::Message,
     Execution::Observable::Type::SystemState
   );
-  EventDispatcher::connect(mediator);
 }
 
-void InstantDirectMessage::notice(const Observable* observable) {
+void DirectMessageObserver::notice(const Observable* observable) {
   if ( observable->getObservableType() == Observable::Type::MessageDeliveryRequest ) {
     auto request = static_cast<const MessageDeliveryRequest*>(observable);
     assert( request->token->node->represents<BPMN::FlowNode>() );
@@ -88,7 +87,7 @@ void InstantDirectMessage::notice(const Observable* observable) {
   }
 }
 
-std::shared_ptr<Event> InstantDirectMessage::dispatchEvent( [[maybe_unused]] const SystemState* systemState ) {
+std::shared_ptr<Event> DirectMessageObserver::dispatchEvent() {
   for ( auto& [token_ptr, request_ptr, candidates ] : messageDeliveryRequests ) {
     if( auto token = token_ptr.lock() )  {
       if ( request_ptr.lock() )  {

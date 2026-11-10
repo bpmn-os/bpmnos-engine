@@ -11,8 +11,8 @@ namespace BPMNOS::Execution {
 /**
  * @brief Entry decision candidates for activities of a SequentialAdHocSubProcess, ranked by reward.
  *
- * Collects only entry requests of SequentialAdHocSubProcess children via notice (the remaining entries
- * are left to FirstFeasibleEntry); evaluateCandidates creates and evaluates all of them, so the front of
+ * Collects the entry requests via notice, each of which is one of a SequentialAdHocSubProcess child, the
+ * engine itself entering any other activity; evaluateCandidates creates and evaluates all of them, so the front of
  * the reward-ordered set is the best feasible sequential entry (best-of-all, for the competing layer).
  */
 class SequentialEntries : public CachedCandidates< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > {

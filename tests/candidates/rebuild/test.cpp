@@ -139,13 +139,11 @@ SCENARIO( "SequentialEntries rebuilds its candidates from a SystemState notice",
     auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
     auto scenario = dataProvider->createScenario();
 
-    // FirstFeasibleEntry (config.sequential=false) enters the ad-hoc subprocess but skips its sequential
-    // children, leaving their entries pending — InstantEntry would have entered them, so it cannot be used here.
+    // The engine enters the ad-hoc subprocess itself, its entry not being decided, while no entry handler
+    // enters its sequential children, so that their entries stay pending.
     Execution::Engine engine(model);
     auto evaluator = std::make_shared<Execution::LocalEvaluator>();
-    Execution::GreedyDispatcher<Execution::FirstFeasibleEntry> entryHandler(evaluator);
     Execution::SequentialEntries incremental(evaluator);
-    entryHandler.connect(&engine);
     incremental.connect(&engine);
     dataProvider->setEndTime(0);
     engine.run(std::move(scenario), 0);
@@ -175,16 +173,18 @@ SCENARIO( "SequentialEntries rebuilds its candidates from a SystemState notice",
 }
 
 SCENARIO( "FirstFeasibleEntry rebuilds its candidate from a SystemState notice", "[candidates][rebuild][entry]" ) {
-  const std::string modelFile = "tests/execution/decisiontask/DecisionTask_with_enumeration.bpmn";
-  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  const std::string modelFile = "examples/travelling_salesperson_problem/Travelling_salesperson_problem.bpmn";
+  const std::vector<std::string> folders = { "tests/examples/travelling_salesperson_problem" };
+  REQUIRE_NOTHROW( Model::Model(modelFile, folders) );
 
-  GIVEN( "A state at t=0 with an activity awaiting an entry decision (no entry handler)" ) {
+  GIVEN( "A TSP state at t=0 whose sequential ad-hoc children await an entry decision (no entry handler)" ) {
     std::string csv =
       "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
-      "Instance_1; Process_1;\n"
-      "Instance_1; Activity_1; x := 4\n"
+      "Instance1; TravellingSalesperson_Process; speed := 1\n"
+      "Instance1; TravellingSalesperson_Process; origin := \"Hamburg\"\n"
+      "Instance1; TravellingSalesperson_Process; locations := [\"Munich\",\"Berlin\",\"Cologne\"]\n"
     ;
-    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto model = std::make_shared<const Model::Model>(modelFile, folders);
     auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
     auto scenario = dataProvider->createScenario();
 
@@ -196,7 +196,7 @@ SCENARIO( "FirstFeasibleEntry rebuilds its candidate from a SystemState notice",
     engine.run(std::move(scenario), 0);
 
     const auto* systemState = engine.getSystemState();
-    REQUIRE( systemState->pendingEntryDecisions.count() == 1 );
+    REQUIRE( systemState->pendingEntryDecisions.count() >= 1 );
 
     WHEN( "A fresh FirstFeasibleEntry collection is rebuilt from the SystemState notice" ) {
       Execution::Notifier notifier;
@@ -207,7 +207,7 @@ SCENARIO( "FirstFeasibleEntry rebuilds its candidate from a SystemState notice",
       auto rebuiltCandidates = collect(rebuilt);
       auto incrementalCandidates = collect(incremental);
 
-      THEN( "It offers the single feasible entry, matching the incremental build" ) {
+      THEN( "It offers the first feasible entry, matching the incremental build" ) {
         REQUIRE( feasibleCount(rebuiltCandidates) == 1 );
         REQUIRE( signatures(rebuiltCandidates) == signatures(incrementalCandidates) );
       }

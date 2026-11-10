@@ -345,8 +345,9 @@ SCENARIO( "Operators of the start event of a subprocess in the evaluation of an 
     }
   }
 
-  GIVEN( "Two subprocesses after a parallel split whose start events raise the objective, one of them by an attribute" ) {
-    const std::string modelFile = "tests/execution/eventoperators/Start_event_operator_entry.bpmn";
+  GIVEN( "Two subprocesses of a sequential ad-hoc subprocess whose start events raise the objective, one of them by an attribute" ) {
+    // only the entry of a child of a sequential ad-hoc subprocess is a decision, which an evaluator evaluates
+    const std::string modelFile = "tests/execution/eventoperators/Start_event_operator_sequential_entry.bpmn";
     REQUIRE_NOTHROW( Model::Model(modelFile) );
     auto model = std::make_shared<const Model::Model>(modelFile);
     auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);

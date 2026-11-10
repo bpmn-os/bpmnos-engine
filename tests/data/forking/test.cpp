@@ -179,17 +179,16 @@ SCENARIO( "Forks of a stochastic run", "[data][forking]" ) {
     ;
     auto dataProvider = std::make_shared<Execution::StochasticDataProvider>(taskModel, csv, 7);
 
-    WHEN( "A run stops at time 0 with the token awaiting the decision to enter the task and is forked" ) {
-      // without an entry handler the token awaits the entry decision, and the run ends at time 0
+    WHEN( "A run stops at time 0 with the token awaiting entry to the task and is forked" ) {
+      // the engine enters the task in the round after it becomes ready, so that the run is advanced round by
+      // round until the token awaits entry
       Execution::Engine engine(taskModel);
-      dataProvider->setEndTime(0);
-      engine.run(dataProvider->createScenario());
-      REQUIRE_FALSE( engine.getSystemState()->pendingEntryDecisions.empty() );
-      dataProvider->setEndTime(std::numeric_limits<BPMNOS::number>::max());
+      engine.initialize(dataProvider->createScenario(), 0);
+      while ( engine.getSystemState()->tokensAwaitingEntry.empty() ) {
+        REQUIRE( engine.advance() );
+      }
 
       Execution::Engine forkEngine(taskModel);
-      Execution::InstantEntry entryHandler;
-      entryHandler.connect(&forkEngine);
       Execution::Recorder recorder;
       recorder.subscribe(&forkEngine);
       forkEngine.initializeSystemState(dataProvider->forkScenario(*engine.getSystemState()->scenario, 0), engine.getSystemState());

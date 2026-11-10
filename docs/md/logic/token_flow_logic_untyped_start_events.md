@@ -7,21 +7,21 @@ The state is then advanced to @ref BPMNOS::Execution::Token::State::BUSY "BUSY",
 
 Upon completion, the @ref BPMNOS::Model::ExtensionElements::operators "operators" of the start event are applied.
 
-After completion, the entry scope restrictions of the scope are checked.
+After completion, the start event of a process checks the entry restrictions of the process, whereas the start event of a subprocess, which has checked its entry restrictions on entry, checks its own completion restrictions, which include the full restrictions of the subprocess it inherits.
 If the restrictions are violated, the state is changed to @ref BPMNOS::Execution::Token::State::FAILED "FAILED".
 Otherwise, the token state is changed to @ref BPMNOS::Execution::Token::State::DEPARTED "DEPARTED" or @ref BPMNOS::Execution::Token::State::DONE "DONE".
 
 <pre class="mermaid">
 stateDiagram-v2
-    state feasibleEntry <<choice>>
+    state feasibility <<choice>>
     state departure <<choice>>
     [*] --> CREATED
     CREATED --> ENTERED
     ENTERED --> BUSY
     BUSY --> COMPLETED
-    COMPLETED --> feasibleEntry
-    feasibleEntry --> departure: [feasible]
-    feasibleEntry --> FAILED: [infeasible]
+    COMPLETED --> feasibility
+    feasibility --> departure: [feasible]
+    feasibility --> FAILED: [infeasible]
     departure --> DEPARTED: [outgoing sequence flow]
     departure --> DONE: [no outgoing sequence flow]
     DEPARTED --> [*]

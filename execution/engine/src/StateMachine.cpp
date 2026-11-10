@@ -197,6 +197,17 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
       const_cast<SystemState*>(systemState)->tokensAwaitingCondition[root->instance.value()].emplace_back(token);
     }
 
+    // Populate tokensAwaitingEntry; whether their entry restrictions hold is checked once the state is installed
+    if (
+      token->node->represents<BPMN::Activity>() &&
+      token->state == Token::State::READY &&
+      !token->node->as<BPMN::Activity>()->isForCompensation &&
+      !BPMNOS::Model::Model::isSequentialActivity(token->node)
+    ) {
+      assert(other->systemState->tokensAwaitingEntry.at(other->root->instance.value()).find(otherToken.get()) != other->systemState->tokensAwaitingEntry.at(other->root->instance.value()).end());
+      const_cast<SystemState*>(systemState)->tokensAwaitingEntry[root->instance.value()].emplace_back(token);
+    }
+
     // Populate tokensAwaitingReadyEvent
     // Multi-instance instance tokens may also sit in CREATED state (sequential copies awaiting
     // their predecessor), but they receive no ready event of their own and are instead
@@ -313,10 +324,7 @@ StateMachine::StateMachine(const SystemState* systemState, Token* parentToken, c
     }
 
     // Populate performing and pendingSequentialEntries for activities in SequentialAdHocSubProcess
-    if (
-      token->node->represents<BPMN::Activity>() &&
-      token->node->as<BPMN::FlowNode>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>()
-    ) {
+    if ( BPMNOS::Model::Model::isSequentialActivity(token->node) ) {
       Token* performerToken = token->getSequentialPerformerToken();
       Token* otherPerformerToken = otherToken->getSequentialPerformerToken();
 
@@ -606,7 +614,7 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
         // for sequential multi-instance activities only the first instance becomes ready immediately
         instanceToken->update(Token::State::READY);
 //std::cerr << "Token awaiting entry:" << instanceToken->jsonify() << std::endl;
-        instanceToken->awaitEntryEvent();
+        instanceToken->awaitEntry();
       }
       else {
         // subsequent instances remain in CREATED until their predecessor has completed
@@ -617,7 +625,7 @@ void StateMachine::createMultiInstanceActivityTokens(Token* token) {
       // for parallel multi-instance activities all instances become ready immediately
       instanceToken->update(Token::State::READY);
 //std::cerr << "Token awaiting entry:" << instanceToken->jsonify() << std::endl;
-      instanceToken->awaitEntryEvent();
+      instanceToken->awaitEntry();
     }
 
     tokenCopy = instanceToken;
@@ -657,7 +665,7 @@ void StateMachine::deleteMultiInstanceActivityToken(Token* token) {
       auto waitingToken = it->second;
       // successor leaves CREATED and becomes ready now that its predecessor has completed
       waitingToken->update(Token::State::READY);
-      waitingToken->awaitEntryEvent();
+      waitingToken->awaitEntry();
       tokenAwaitingMultiInstanceCompletion.erase(it);
     }
   }

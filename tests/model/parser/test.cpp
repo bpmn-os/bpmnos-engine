@@ -74,6 +74,13 @@ TEST_CASE( "Refuse a typed compensation activity", "[model][parser]" ) {
   );
 }
 
+TEST_CASE( "Refuse an entry guidance of an activity that is not a child of a sequential ad-hoc subprocess", "[model][parser]" ) {
+  REQUIRE_THROWS_WITH(
+    Model::Model(std::string("tests/model/parser/Entry_guidance_outside_adhoc_subprocess.bpmn")),
+    "Model: activity 'Activity_1' has an entry guidance but is not a child of a sequential ad-hoc subprocess"
+  );
+}
+
 TEST_CASE( "Refuse a gateway without incoming sequence flow", "[model][parser]" ) {
   REQUIRE_THROWS_WITH(
     Model::Model(std::string("tests/model/parser/Gateway_without_incoming_flow.bpmn")),

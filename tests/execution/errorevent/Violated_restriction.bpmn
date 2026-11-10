@@ -31,7 +31,7 @@
         <bpmn2:extensionElements>
           <bpmnos:status>
             <bpmnos:restrictions>
-              <bpmnos:restriction id="Restriction_1" expression="level &gt; 5" />
+              <bpmnos:restriction id="Restriction_1" scope="completion" expression="level &gt; 5" />
             </bpmnos:restrictions>
           </bpmnos:status>
         </bpmn2:extensionElements>

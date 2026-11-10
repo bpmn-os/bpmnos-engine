@@ -5,8 +5,11 @@
 #include "Objective.h"
 #include "DataUpdate.h"
 #include "ConditionalEventObserver.h"
+#include "EntryObserver.h"
+#include "DirectMessageObserver.h"
 #include "execution/controller/src/Decision.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
+#include "model/bpmnos/src/Model.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "execution/engine/src/events/TimerEvent.h"
@@ -26,6 +29,8 @@ Engine::Engine(std::shared_ptr<const BPMNOS::Model::Model> model)
   : model(std::move(model))
 {
   addSubscriber(&conditionalEventObserver, Observable::Type::DataUpdate);
+  addSubscriber(&entryObserver, Observable::Type::DataUpdate);
+  directMessageObserver.connect(this);
   environment.connect(this);
 }
 
@@ -96,6 +101,7 @@ void Engine::initialize(std::unique_ptr<Scenario> scenario, BPMNOS::number start
   environment.setScenario(std::move(scenario));
   commands.clear();
   conditionalEventObserver.connect( systemState.get() );
+  entryObserver.connect( systemState.get() );
   // announce the installed state so subscribers (cached candidate sources) reset for the new run
   notify( systemState.get() );
 
@@ -125,6 +131,7 @@ void Engine::initializeSystemState(std::unique_ptr<Scenario> scenario, const Sys
   // installing a new state resets the run state and binds the conditional-event observer to it
   commands.clear();
   conditionalEventObserver.connect( systemState.get() );
+  entryObserver.connect( systemState.get() );
   // announce the initialized state so subscribers can build their data structures
   notify( systemState.get() );
 }
@@ -167,9 +174,16 @@ bool Engine::advance() {
   // every enqueued command is executed by whoever enqueued it, so none is outstanding here
   assert(commands.empty());
 
-  // a round asks the environment for an event due at the current time, then the dispatchers of the
-  // controller, and, if neither supplies one, asks the environment to advance
+  // a round asks the environment for an event due at the current time, then the engine for an entry or a
+  // delivery that is not decided, then the dispatchers of the controller, and, if none supplies one, asks the
+  // environment to advance
   auto event = environment.dispatchEvent(systemState.get());
+  if ( !event ) {
+    event = entryObserver.dispatchEvent();
+  }
+  if ( !event ) {
+    event = directMessageObserver.dispatchEvent();
+  }
   if ( !event ) {
     event = fetchEvent(systemState.get());
   }
@@ -356,7 +370,7 @@ void Engine::process(const EntryEvent* event) {
   Token* token = const_cast<Token*>(token_ptr.get());
   token->decisionRequest.reset();
   token->status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
-  if ( token->node->as<BPMN::FlowNode>()->parent->represents<BPMNOS::Model::SequentialAdHocSubProcess>() ) {
+  if ( BPMNOS::Model::Model::isSequentialActivity(token->node) ) {
     token->occupySequentialPerformer();
   }
 

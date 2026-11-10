@@ -23,8 +23,8 @@ stateDiagram-v2
     ARRIVED/CREATED --> READY: ready event
     READY --> ENTERED: entry event
     ENTERED --> feasibleEntry
-    feasibleEntry --> BUSY: [not ad-hoc subprocess or feasible]
-    feasibleEntry --> FAILED: [ad-hoc subprocess and infeasible]
+    feasibleEntry --> BUSY: [feasible]
+    feasibleEntry --> FAILED: [infeasible]
     BUSY --> COMPLETED
     BUSY --> FAILING: failure
     COMPLETED --> feasibleCompletion
@@ -52,19 +52,19 @@ In either state, the token waits for a @ref BPMNOS::Execution::ReadyEvent "ready
 
 ## READY
 
-A token in  @ref BPMNOS::Execution::Token::State::READY "READY" state waits for an @ref BPMNOS::Execution::EntryEvent "entry event" indicating that a decision is made to start with the activity.
+A token in  @ref BPMNOS::Execution::Token::State::READY "READY" state waits for an @ref BPMNOS::Execution::EntryEvent "entry event". For a child of a @ref BPMNOS::Model::SequentialAdHocSubProcess "sequential ad-hoc subprocess", the entry event indicates that its performer has decided to start with the activity. Any other activity is entered as soon as its entry restrictions hold on the status the token has with the current time as its timestamp, as a conditional event is triggered as soon as its condition holds; the engine then dispatches the entry event itself, and the token waits as long as the restrictions do not hold, until the end of the run if they never hold.
 When the event occurs the token state is updated to  @ref BPMNOS::Execution::Token::State::ENTERED "ENTERED".
 
 ## ENTERED
 Upon entry, the initial assignment of @ref BPMNOS::Model::Attribute "attributes" are conducted in the order of attribute definitions.
-Then, for an ad-hoc subprocess, which has no start event, feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated, and if any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILED "FAILED". The entry restrictions of a subprocess with a start event are not checked upon entry but against the status with which its start event completes, that is, after the operators of the start event have been applied; if any of them is violated, the token at the start event fails, and the failure is handled as any failure within the subprocess.
+Then, a token is created at each @ref BPMN::BoundaryEvent "boundary event" (excluding @ref BPMN::CompensateBoundaryEvent "compensate boundary events"). These tokens inherit the @ref BPMNOS::Execution::Token::status "status attributes" of the (ad-hoc) subprocess token. The tokens at boundary events are created only if they do not exist yet, so that the re-entries of a @ref XML::bpmn::tStandardLoopCharacteristics "standard loop" keep the tokens created on the first entry, and for a multi-instance activity, whose tokens at boundary events belong to the main token, only the first instance to enter creates them.
+Then, feasibility of the @ref BPMNOS::Execution::Token::status "token status" is validated against the entry restrictions, before anything happens inside the (ad-hoc) subprocess, in particular before the operators of the start event of a subprocess are applied, since the subprocess is entered before its start event. If any of the @ref BPMNOS::Model::ExtensionElements::restrictions "restrictions" is violated, the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::FAILED "FAILED", the tokens at the boundary events existing already, so that an @ref BPMN::ErrorBoundaryEvent "error boundary event" may catch the failure.
 Otherwise,
-a token is created at the unique @ref BPMN::SubProcess::startEvent "start event" of the subprocess or each @ref BPMN::Process::startNodes "start node" of the ad-hoc subprocess,
-at the @ref BPMN::EventSubProcess::startEvent "start event" of each @ref BPMN::EventSubProcess "event subprocess" (excluding those having a @ref BPMN::CompensateStartEvent "compensate start event"), and
-at each @ref BPMN::BoundaryEvent "boundary event" (excluding @ref BPMN::CompensateBoundaryEvent "compensate boundary events").
-These tokens inherit the @ref BPMNOS::Execution::Token::status "status attributes" of the (ad-hoc) subprocess  token. The tokens at boundary events are created only if they do not exist yet, so that the re-entries of a @ref XML::bpmn::tStandardLoopCharacteristics "standard loop" keep the tokens created on the first entry, and for a multi-instance activity, whose tokens at boundary events belong to the main token, only the first instance to enter creates them.
-Furthermore,
+a token is created at the unique @ref BPMN::SubProcess::startEvent "start event" of the subprocess or each @ref BPMN::Process::startNodes "start node" of the ad-hoc subprocess, and
+at the @ref BPMN::EventSubProcess::startEvent "start event" of each @ref BPMN::EventSubProcess "event subprocess" (excluding those having a @ref BPMN::CompensateStartEvent "compensate start event"),
+these tokens inheriting the @ref BPMNOS::Execution::Token::status "status attributes" of the (ad-hoc) subprocess token, and
 the @ref BPMNOS::Execution::Token::state "token state" is updated to @ref BPMNOS::Execution::Token::State::BUSY "BUSY".
+The start event of a subprocess then checks its own completion restrictions, which include the full restrictions of the subprocess it inherits, against the status its operators produce; if any of them is violated, the token at the start event fails, and the failure is handled as any failure within the subprocess.
 
 @note @ref BPMN::SubProcess "Subprocesses" must have a unique @ref BPMN::UntypedStartEvent "blank start event", and a model containing a subprocess without one is rejected when it is read.
 @par

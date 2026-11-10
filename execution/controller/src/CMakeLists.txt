@@ -13,7 +13,6 @@ list(APPEND controller_SOURCES
   candidates/FirstEnumeratedChoice.cpp
   candidates/FirstBisectionalChoice.cpp
   dispatcher/InstantEntry.cpp
-  dispatcher/InstantDirectMessage.cpp
   dispatcher/FirstMatchingMessageDelivery.cpp
   dispatcher/RandomChoice.cpp
   dispatcher/MyopicDecisionTaskTerminator.cpp
@@ -41,7 +40,6 @@ list(APPEND controller_HEADERS
   candidates/FirstBisectionalChoice.h
   GreedyDispatcher.h
   dispatcher/InstantEntry.h
-  dispatcher/InstantDirectMessage.h
   dispatcher/FirstMatchingMessageDelivery.h
   dispatcher/RandomChoice.h
   dispatcher/MyopicDecisionTaskTerminator.h

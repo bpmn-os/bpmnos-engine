@@ -24,6 +24,8 @@
 #include "Signal.h"
 #include "SystemState.h"
 #include "ConditionalEventObserver.h"
+#include "EntryObserver.h"
+#include "DirectMessageObserver.h"
 #include "Environment.h"
 
 namespace BPMNOS::Execution {
@@ -241,6 +243,8 @@ protected:
 
   std::unique_ptr<SystemState> systemState;
   ConditionalEventObserver conditionalEventObserver;
+  EntryObserver entryObserver; ///< Enters the activities whose entry is not decided as soon as their entry restrictions hold
+  DirectMessageObserver directMessageObserver; ///< Delivers the directly addressed messages
   Environment environment;
   
 //  friend void Token::notify() const;

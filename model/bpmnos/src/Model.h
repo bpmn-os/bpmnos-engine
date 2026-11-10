@@ -98,6 +98,7 @@ public:
   std::vector<BPMN::MessageFlow*>& determineMessageFlows(BPMN::FlowNode* messageEvent, auto getMessageFlows);
   
   static bool hasSequentialPerformer(const std::vector< std::reference_wrapper<XML::bpmn::tResourceRole> >& resources);
+  static bool isSequentialActivity(const BPMN::Node* node); ///< Returns true if the node is an activity within a sequential ad-hoc subprocess, whose entry is decided by the performer of the subprocess.
   
   AttributeRegistry attributeRegistry; ///< Registry allowing to look up all status and data attributes by their names.
 

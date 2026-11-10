@@ -15,13 +15,16 @@ SCENARIO( "SystemState copy with token awaiting gateway activation", "[systemsta
     auto scenario = dataProvider->createScenario();
 
     Execution::Engine engine(model);
-    // No entry handler - task won't proceed, direct path token waits at gateway
+    // the token of the direct path waits at the gateway until the token at the task arrives, so that the run is
+    // advanced round by round until the token of the direct path waits
     Execution::Recorder recorder;
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
-    dataProvider->setEndTime(0);
-    engine.run(std::move(scenario), 0);
+    engine.initialize(std::move(scenario), 0);
+    while ( engine.getSystemState()->tokensAwaitingGatewayActivation.empty() ) {
+      REQUIRE( engine.advance() );
+    }
     const auto* originalState = engine.getSystemState();
 
     // Should have 1 token waiting at Gateway_2

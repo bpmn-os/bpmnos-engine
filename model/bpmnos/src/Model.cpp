@@ -260,7 +260,8 @@ std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* acti
   }
 
   if ( baseElement->as<BPMN::Activity>()->isForCompensation && baseElement->represents<BPMN::AdHocSubProcess>() ) {
-    // a compensation activity is a task or a subprocess with a start event, at which its entry restrictions are checked
+    // a compensation activity is performed without any decision, whereas the entries of the children of an ad-hoc
+    // subprocess are decided by its performer
     throw std::runtime_error("Model: compensation activity '" + baseElement->id + "' must not be an ad-hoc subprocess");
   }
 
@@ -276,6 +277,12 @@ std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* acti
 
   if ( baseElement->represents<BPMN::ReceiveTask>() && !extensionElements->messageDefinition ) {
     throw std::runtime_error("Model: No message defined for receive task '" + baseElement->id + "'");
+  }
+
+  if ( extensionElements->entryGuidance && !isSequentialActivity(baseElement.get()) ) {
+    // only the entry of a child of a sequential ad-hoc subprocess is decided, any other activity is entered as
+    // soon as its restrictions are satisfied, so that an entry guidance would have nothing to guide
+    throw std::runtime_error("Model: activity '" + baseElement->id + "' has an entry guidance but is not a child of a sequential ad-hoc subprocess");
   }
 
   if ( auto adHocSubProcess = baseElement->represents<SequentialAdHocSubProcess>();
@@ -748,6 +755,11 @@ void Model::createMessageCandidates( BPMN::Process* sendingProcess, BPMN::FlowNo
       recipientExtension->messageCandidates.push_back(throwingMessageEvent->as<BPMN::FlowNode>());
     }
   }
+}
+
+bool Model::isSequentialActivity(const BPMN::Node* node) {
+  auto flowNode = node->represents<BPMN::FlowNode>();
+  return flowNode && node->represents<BPMN::Activity>() && flowNode->parent && flowNode->parent->represents<SequentialAdHocSubProcess>();
 }
 
 bool Model::hasSequentialPerformer(const std::vector< std::reference_wrapper<XML::bpmn::tResourceRole> >& resources) {

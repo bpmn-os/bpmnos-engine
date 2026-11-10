@@ -8,6 +8,9 @@ namespace BPMNOS::Execution {
 
 /**
  * @brief Dispatches an entry event for the first token awaiting entry, without checking feasibility.
+ *
+ * Every token awaiting an entry decision is at a child of a sequential ad-hoc subprocess, the engine itself
+ * entering any other activity as soon as its entry restrictions hold.
  */
 class InstantEntry : public EventDispatcher {
 public:

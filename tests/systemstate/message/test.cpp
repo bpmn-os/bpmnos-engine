@@ -79,15 +79,17 @@ SCENARIO( "SystemState copy with delivered message in inbox", "[systemstate][mes
     auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
     auto scenario = dataProvider->createScenario();
 
+    // the engine delivers the directly addressed message in a round after it has reached the inbox of the
+    // recipient, so that the run is advanced round by round until it has reached the inbox
     Execution::Engine engine(model);
-    Execution::InstantEntry entryHandler;
-    entryHandler.connect(&engine);
     Execution::Recorder recorder;
 //    Execution::Recorder recorder(std::cerr);
     recorder.subscribe(&engine);
 
-    dataProvider->setEndTime(0);
-    engine.run(std::move(scenario), 0);
+    engine.initialize(std::move(scenario), 0);
+    while ( engine.getSystemState()->inbox.empty() ) {
+      REQUIRE( engine.advance() );
+    }
     const auto* originalState = engine.getSystemState();
 
     // Message delivered to recipient's inbox
@@ -248,9 +250,7 @@ SCENARIO( "SystemState copy with message directed to an instance not yet started
 
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
-    Execution::InstantDirectMessage messageHandler;
     entryHandler.connect(&engine);
-    messageHandler.connect(&engine);
 
     dataProvider->setEndTime(0);
     engine.run(std::move(scenario), 0);
@@ -264,9 +264,7 @@ SCENARIO( "SystemState copy with message directed to an instance not yet started
     WHEN( "The system state is installed in another engine and the run is resumed" ) {
       Execution::Engine resumed(model);
       Execution::InstantEntry resumedEntryHandler;
-      Execution::InstantDirectMessage resumedMessageHandler;
       resumedEntryHandler.connect(&resumed);
-      resumedMessageHandler.connect(&resumed);
       Execution::Recorder recorder;
 //      Execution::Recorder recorder(std::cerr);
       recorder.subscribe(&resumed);

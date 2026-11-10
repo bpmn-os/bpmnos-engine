@@ -15,19 +15,28 @@ SCENARIO( "SystemState copy for simple process", "[systemstate][process]" ) {
     auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
     auto scenario = dataProvider->createScenario();
 
+    // the engine enters the tasks itself in the round after they become ready, so that the run is advanced round
+    // by round until both await entry
+    auto awaitingEntry = [](const Execution::SystemState* systemState) {
+      size_t count = 0;
+      for ( auto& [instanceId, waitingTokens] : systemState->tokensAwaitingEntry ) {
+        count += waitingTokens.count();
+      }
+      return count;
+    };
     Execution::Engine engine(model);
-    Execution::InstantEntry entryHandler;
-//    entryHandler.connect(&engine); // disabled to stall process
     Execution::Recorder recorder;
 //   Execution::Recorder recorder(std::cerr);  // prints for debugging
     recorder.subscribe(&engine);
 
-    dataProvider->setEndTime(0);
-    engine.run(std::move(scenario), 0);
+    engine.initialize(std::move(scenario), 0);
+    while ( awaitingEntry(engine.getSystemState()) < 2 ) {
+      REQUIRE( engine.advance() );
+    }
     const auto* originalState= engine.getSystemState();
 
     REQUIRE( originalState->stateMachine->tokens.size() == 2 );
-    REQUIRE( originalState->pendingEntryDecisions.count() == 2 );
+    REQUIRE( awaitingEntry(originalState) == 2 );
 
     WHEN( "SystemState is copied" ) {
       auto scenarioCopy = dataProvider->createScenario();
@@ -55,8 +64,8 @@ SCENARIO( "SystemState copy for simple process", "[systemstate][process]" ) {
         REQUIRE( copiedState.stateMachine->ownedData.attributes.size() == originalState->stateMachine->ownedData.attributes.size() );
       }
 
-      THEN( "The copy has the same pending entry decisions" ) {
-        REQUIRE( copiedState.pendingEntryDecisions.count() == originalState->pendingEntryDecisions.count() );
+      THEN( "The copy has the same tokens awaiting entry" ) {
+        REQUIRE( awaitingEntry(&copiedState) == awaitingEntry(originalState) );
       }
     }
   }
@@ -108,7 +117,7 @@ SCENARIO( "Engine resume from stopped state", "[systemstate][process][resume]" )
   const std::string modelFile = "tests/systemstate/process/Simple_executable_process.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
-  GIVEN( "An instance that stops waiting for entry event" ) {
+  GIVEN( "An instance that stops with its task awaiting entry" ) {
     std::string csv =
       "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
       "Instance_1; Process_1; timestamp := 0\n"
@@ -117,35 +126,33 @@ SCENARIO( "Engine resume from stopped state", "[systemstate][process][resume]" )
     auto model = std::make_shared<const Model::Model>(modelFile);
     auto dataProvider = std::make_shared<Execution::StochasticDataProvider>(model, csv);
 
-    // First engine: NO entry handler
+    // First engine: advanced round by round until the task awaits entry, which the engine takes in the next round
     Execution::Engine engine1(model);
     Execution::Recorder recorder1;
     recorder1.subscribe(&engine1);
 
-    // Run with end time - will stop when task is waiting for entry event
-    dataProvider->setEndTime(10);
-    engine1.run(dataProvider->createScenario(), 0);
+    engine1.initialize(dataProvider->createScenario(), 0);
+    while ( engine1.getSystemState()->tokensAwaitingEntry.empty() ) {
+      REQUIRE( engine1.advance() );
+    }
 
-    REQUIRE( engine1.getSystemState()->getTime() == 10 );
+    REQUIRE( engine1.getSystemState()->getTime() == 0 );
 
-    // Token should be at READY state, waiting for entry event
+    // Token should be at READY state, awaiting entry
     auto activityLog1 = recorder1.find(nlohmann::json{{"nodeId","Activity_1"}}, nlohmann::json{{"event",nullptr},{"decision",nullptr}});
     REQUIRE( activityLog1.back()["state"] == "READY" );
 
-    WHEN( "A second engine resumes with entry handler and a fork of the scenario" ) {
+    WHEN( "A second engine resumes with a fork of the scenario" ) {
       // Fork the scenario of the first engine's run, which differs from it at the next point in time and
       // takes the first realization other than the one that run itself produced
       auto fork = dataProvider->forkScenario(*engine1.getSystemState()->scenario, 0);
 
-      // Second engine: has entry handler
+      // Second engine, which enters the task itself
       Execution::Engine engine2(model);
-      Execution::InstantEntry entryHandler2;
-      entryHandler2.connect(&engine2);
       Execution::Recorder recorder2;
       recorder2.subscribe(&engine2);
 
-      // Resume from a copy of the first engine's state with the fork, the end time being lifted
-      dataProvider->setEndTime(std::numeric_limits<BPMNOS::number>::max());
+      // Resume from a copy of the first engine's state with the fork
       engine2.initializeSystemState(std::move(fork), engine1.getSystemState());
       engine2.resume();
 

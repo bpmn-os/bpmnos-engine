@@ -237,27 +237,27 @@ SCENARIO( "A caller acting while the engine waits", "[data][provider]" ) {
   }
 }
 
-SCENARIO( "No clock tick before the first request to the controller after installing a system state", "[data][provider]" ) {
+SCENARIO( "No clock tick before the entry of a ready task after installing a system state", "[data][provider]" ) {
   auto model = std::make_shared<const Model::Model>("tests/execution/task/Task_with_linear_expression.bpmn");
 
-  GIVEN( "A system state in which a token awaits the decision to enter a task" ) {
+  GIVEN( "A system state in which a token awaits entry to a task" ) {
     std::string csv =
       "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
       "Instance_1; Process_1;\n"
     ;
 
-    // without an entry handler the token awaits the entry decision, and the run ends at time 0
+    // the engine enters the task in the round after it becomes ready, so that the run is advanced round by round
+    // until the token awaits entry
     auto sourceDataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
-    sourceDataProvider->setEndTime(0);
     Execution::Engine sourceEngine(model);
-    sourceEngine.run(sourceDataProvider->createScenario());
-    REQUIRE_FALSE( sourceEngine.getSystemState()->pendingEntryDecisions.empty() );
+    sourceEngine.initialize(sourceDataProvider->createScenario(), 0);
+    while ( sourceEngine.getSystemState()->tokensAwaitingEntry.empty() ) {
+      REQUIRE( sourceEngine.advance() );
+    }
 
     WHEN( "The system state is installed in an engine and the engine advances" ) {
       auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
       Execution::Engine engine(model);
-      Execution::InstantEntry entryHandler;
-      entryHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
       engine.initializeSystemState(dataProvider->createScenario(), sourceEngine.getSystemState());

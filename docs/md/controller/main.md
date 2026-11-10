@@ -21,10 +21,10 @@ Moreover, by connecting to the execution engine, the engine is enabled to @ref B
 
 ## Greedy controller
 
+A controller takes only decisions: the entries of children of sequential ad-hoc subprocesses, the choices at decision tasks, and the deliveries of messages that are not directly addressed. The engine itself enters any other activity as soon as its entry restrictions hold, through its @ref BPMNOS::Execution::EntryObserver "entry observer", and delivers a message whose sender explicitly addresses its recipient or whose recipient explicitly refers to its sender, through its @ref BPMNOS::Execution::DirectMessageObserver "direct message observer", consulting both before the controller. Neither is a decision, so that a controller receives no entry request of an activity outside a sequential ad-hoc subprocess. The @ref BPMNOS::Execution::InstantEntry "instant entry dispatcher", which enters the first child awaiting entry without checking feasibility, and the @ref BPMNOS::Execution::FirstFeasibleEntry "first feasible entry dispatcher", which enters the first feasible child without ranking the candidates by their reward, are available as policies for these entries.
+
 The @ref BPMNOS::Execution::GreedyController "greedy controller" is a @ref BPMNOS::Execution::Controller "controller" that holds a list of dispatchers that are consulted in the given order:
 
-- the @ref BPMNOS::Execution::FirstFeasibleEntry "entry dispatcher" evaluates the pending entry decisions (excluding those in a sequential ad-hoc subprocess) and dispatches the first feasible entry,
-- the @ref BPMNOS::Execution::InstantDirectMessage "direct message dispatcher" dispatches a message delivery without evaluation whenever the sender explicitly addresses its recipient or the recipient explicitly refers to the sender,
 - the @ref BPMNOS::Execution::FirstEnumeratedChoice "enumerated choice dispatcher" (, )or the @ref BPMNOS::Execution::FirstBisectionalChoice "bisectional choice dispatcher" when `config.bisection` is set) evaluates choices for decision tasks and as soon as feasible choices are found for a decision task, it dispatches the best evaluated choices for that task,
 - the @ref BPMNOS::Execution::CompetingCandidates "competing candidates dispatcher" evaluates message delivery decisions and entry decisions for activities within sequential ad-hoc subprocesses. It dispatches the best evaluated decision among all.
 
@@ -38,4 +38,4 @@ The @ref BPMNOS::Execution::Evaluator "evaluator" is responsible for determining
 The @ref BPMNOS::Execution::LocalEvaluator "Local evaluator" makes local observations to evaluate a decision.
 
 ### Guided evaluator
-The @ref BPMNOS::Execution::GuidedEvaluator "Guided evaluator" makes local observations and includes @ref BPMNOS::Model::Guidance "guidance" provided with the model to evaluate a decision. The attributes a guidance declares take only the values the model assigns to them, by expression or by the operators of the guidance, and a data provider rejects a value given for them in the data.
+The @ref BPMNOS::Execution::GuidedEvaluator "Guided evaluator" makes local observations and includes @ref BPMNOS::Model::Guidance "guidance" provided with the model to evaluate a decision. The attributes a guidance declares take only the values the model assigns to them, by expression or by the operators of the guidance, and a data provider rejects a value given for them in the data. An entry guidance may be given only for a child of a sequential ad-hoc subprocess, whose entry is decided by its performer; any other activity is entered as soon as its restrictions are satisfied, so that the model reader rejects an entry guidance given for it.

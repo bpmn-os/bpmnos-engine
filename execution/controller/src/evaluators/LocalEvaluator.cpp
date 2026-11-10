@@ -16,16 +16,19 @@ bool LocalEvaluator::updateValues(EntryDecision* decision, Status& status, Data&
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
 
-  if ( auto subProcess = token->node->represents<BPMN::SubProcess>(); subProcess && subProcess->startEvent ) {
-    // the operators of the start event are applied to the token at it, i.e. after the subprocess is entered,
-    // so that the entry restrictions of the subprocess constrain the status they produce
-    subProcess->startEvent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->applyOperators(status,data,*token->owner->systemState->scenario->dataProvider);
-  }
-
   if ( !extensionElements->feasibleEntry(status,data) ) {
     // entry would be infeasible
 //std::cerr << "Local evaluator: std::nullopt" << std::endl;
     return false;
+  }
+
+  if ( auto subProcess = token->node->represents<BPMN::SubProcess>(); subProcess && subProcess->startEvent ) {
+    // the operators of the start event are applied to the token at it, i.e. after the subprocess is entered, and
+    // the status they produce must satisfy the restrictions the start event checks on completion, which include
+    // the full restrictions of the subprocess
+    auto startEventExtensionElements = subProcess->startEvent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    startEventExtensionElements->applyOperators(status,data,*token->owner->systemState->scenario->dataProvider);
+    return startEventExtensionElements->feasibleCompletion(status,data);
   }
 
 
@@ -168,9 +171,10 @@ std::set<const BPMNOS::Model::Attribute*> LocalEvaluator::getDependencies(EntryD
   assert(extensionElements);
 
   if ( auto subProcess = token->node->represents<BPMN::SubProcess>(); subProcess && subProcess->startEvent ) {
-    // the operators of the start event are applied on entry
-    auto& startEventDependencies = subProcess->startEvent->extensionElements->as<BPMNOS::Model::ExtensionElements>()->operatorDependencies;
-    dependencies.insert(startEventDependencies.begin(), startEventDependencies.end());
+    // the operators of the start event are applied after entry, and its completion restrictions are checked
+    auto startEventExtensionElements = subProcess->startEvent->extensionElements->as<BPMNOS::Model::ExtensionElements>();
+    dependencies.insert(startEventExtensionElements->operatorDependencies.begin(), startEventExtensionElements->operatorDependencies.end());
+    dependencies.insert(startEventExtensionElements->completionDependencies.begin(), startEventExtensionElements->completionDependencies.end());
   }
 
   dependencies.insert(extensionElements->entryDependencies.begin(), extensionElements->entryDependencies.end());

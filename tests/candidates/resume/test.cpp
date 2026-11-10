@@ -301,9 +301,9 @@ SCENARIO( "The environment completes a task that was BUSY when the state was ins
   }
 }
 
-SCENARIO( "InstantDirectMessage delivers a directly-addressed message pending at install", "[candidates][resume][directmessage]" ) {
-  // A directly-addressed message (recipient specified on the throw, sender specified on the catch) is handled by
-  // InstantDirectMessage. Unlike the candidate sources, that dispatcher is stateful and — without rebuilding on a
+SCENARIO( "The engine delivers a directly-addressed message pending at install", "[candidates][resume][directmessage]" ) {
+  // A directly-addressed message (recipient specified on the throw, sender specified on the catch) is delivered by
+  // the engine itself. Its observer of directly-addressed messages is stateful and — without rebuilding on a
   // SystemState notice — would not learn of a receive request that was already pending when the state was
   // installed, so the message would never be delivered and the engine would clock-tick. This installs exactly
   // such a state (receiver waiting, message created) and asserts the resumed run delivers it.
@@ -320,14 +320,21 @@ SCENARIO( "InstantDirectMessage delivers a directly-addressed message pending at
     auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
     auto scenario = dataProvider->createScenario();
 
-    // No message handler: the throw creates the message and the catch event waits (delivery pending).
+    // The engine delivers the message in the round after the one in which the message exists and the catch event
+    // waits, so that the run is advanced round by round until both hold.
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     entryHandler.connect(&engine);
     Execution::Recorder buildRecorder;
     buildRecorder.subscribe(&engine);
     dataProvider->setEndTime(0);
-    engine.run(std::move(scenario), 0);
+    engine.initialize(std::move(scenario), 0);
+    while (
+      engine.getSystemState()->messages.empty() ||
+      buildRecorder.find(nlohmann::json{{"nodeId","MessageCatchEvent_2"},{"state","BUSY"}}).empty()
+    ) {
+      REQUIRE( engine.advance() );
+    }
 
     const auto* systemState = engine.getSystemState();
     // Precondition: the message exists and the receiver is waiting (BUSY), not yet delivered.
@@ -335,12 +342,10 @@ SCENARIO( "InstantDirectMessage delivers a directly-addressed message pending at
     REQUIRE( buildRecorder.find(nlohmann::json{{"nodeId","MessageCatchEvent_2"},{"state","BUSY"}}).size() == 1 );
     REQUIRE( buildRecorder.find(nlohmann::json{{"nodeId","MessageCatchEvent_2"},{"state","COMPLETED"}}).size() == 0 );
 
-    WHEN( "The state is installed into a fresh engine with an InstantDirectMessage handler and resumed" ) {
+    WHEN( "The state is installed into a fresh engine and resumed" ) {
       Execution::Engine resumed(model);
       Execution::InstantEntry resumedEntry;
-      Execution::InstantDirectMessage messageHandler;
       resumedEntry.connect(&resumed);
-      messageHandler.connect(&resumed);
       Execution::Recorder recorder;
       recorder.subscribe(&resumed);
 
