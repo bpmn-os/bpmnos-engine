@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['choice_0',['Choice',['../classBPMNOS_1_1Model_1_1Guidance.html#a746c1f40d7d6fcaecbb4becfcb27c16ca458b9dcc0921f46b1192427426d59c10',1,'BPMNOS::Model::Guidance']]],
+  ['choice_0',['Choice',['../classBPMNOS_1_1Model_1_1Guidance.html#a746c1f40d7d6fcaecbb4becfcb27c16ca458b9dcc0921f46b1192427426d59c10',1,'BPMNOS::Model::Guidance::Choice'],['../structBPMNOS_1_1Execution_1_1PlaybackController_1_1LoggedDecision.html#ae7c70a9cd3aaaf3936ba1d894bf75372a458b9dcc0921f46b1192427426d59c10',1,'BPMNOS::Execution::PlaybackController::LoggedDecision::Choice']]],
   ['choicerequest_1',['ChoiceRequest',['../structBPMNOS_1_1Execution_1_1Observable.html#a08cd1bc9081eb51f7fb6bb20578a355ea4419a9c7ead36d76c68e50064751d332',1,'BPMNOS::Execution::Observable']]],
   ['completed_2',['COMPLETED',['../classBPMNOS_1_1Execution_1_1Token.html#a635be14129b3dcfd2a8753cdc4f9e92da8f7afecbc8fbc4cd0f50a57d1172482e',1,'BPMNOS::Execution::Token::COMPLETED'],['../namespaceBPMNOS_1_1Execution.html#adb8bb72fa058d4b49ebdab0f8c795e48a8f7afecbc8fbc4cd0f50a57d1172482e',1,'BPMNOS::Execution::COMPLETED']]],
   ['completion_3',['COMPLETION',['../classBPMNOS_1_1Model_1_1Restriction.html#ac2f318e06dd124f14df0346511adb89da4fec6235a919d0dfc8b7cb60f68590ba',1,'BPMNOS::Model::Restriction']]],

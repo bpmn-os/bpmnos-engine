@@ -26,5 +26,6 @@ var searchData=
   ['attribute_23',['Attribute',['../classBPMNOS_1_1Model_1_1Attribute.html#ad855c1b6042d629e042714ae5a7919e1',1,'BPMNOS::Model::Attribute::Attribute(XML::bpmnos::tAttribute *attribute, Attribute::Category category, AttributeRegistry &amp;attributeRegistry)'],['../classBPMNOS_1_1Model_1_1Attribute.html#aa6adecd9f8fe29b904163f1490577ddc',1,'BPMNOS::Model::Attribute::Attribute(std::string &amp;name, const Schema &amp;schema, AttributeRegistry &amp;attributeRegistry)']]],
   ['attribute_24',['attribute',['../classXML_1_1bpmnos_1_1attribute.html#a9ef2f53ee4623c87f02697e1f42f1b6e',1,'XML::bpmnos::attribute']]],
   ['attributeregistry_25',['AttributeRegistry',['../classBPMNOS_1_1Model_1_1AttributeRegistry.html#a360cd626fbf1251df2b3de068cf1ac6e',1,'BPMNOS::Model::AttributeRegistry']]],
-  ['attributes_26',['attributes',['../classXML_1_1bpmnos_1_1attributes.html#a8ce6278a234f7d440bcec0fe135a679a',1,'XML::bpmnos::attributes']]]
+  ['attributes_26',['attributes',['../classXML_1_1bpmnos_1_1attributes.html#a8ce6278a234f7d440bcec0fe135a679a',1,'XML::bpmnos::attributes']]],
+  ['await_27',['await',['../classBPMNOS_1_1Execution_1_1EntryObserver.html#a2fa8c8c723f6edd2ce0be953b3328039',1,'BPMNOS::Execution::EntryObserver']]]
 ];

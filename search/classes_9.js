@@ -7,6 +7,7 @@ var searchData=
   ['linktargetevent_4',['LinkTargetEvent',['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1LinkTargetEvent.html',1,'BPMN']]],
   ['localevaluator_5',['LocalEvaluator',['../classBPMNOS_1_1Execution_1_1LocalEvaluator.html',1,'BPMNOS::Execution']]],
   ['location_6',['Location',['../structBPMNOS_1_1Object_1_1Location.html',1,'BPMNOS::Object']]],
-  ['lookuptable_7',['LookupTable',['../classBPMNOS_1_1Model_1_1LookupTable.html',1,'BPMNOS::Model']]],
-  ['loopcharacteristics_8',['loopCharacteristics',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1loopCharacteristics.html',1,'XML::bpmn::loopCharacteristics'],['../classXML_1_1bpmnos_1_1loopCharacteristics.html',1,'XML::bpmnos::loopCharacteristics']]]
+  ['loggeddecision_7',['LoggedDecision',['../structBPMNOS_1_1Execution_1_1PlaybackController_1_1LoggedDecision.html',1,'BPMNOS::Execution::PlaybackController']]],
+  ['lookuptable_8',['LookupTable',['../classBPMNOS_1_1Model_1_1LookupTable.html',1,'BPMNOS::Model']]],
+  ['loopcharacteristics_9',['loopCharacteristics',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1loopCharacteristics.html',1,'XML::bpmn::loopCharacteristics'],['../classXML_1_1bpmnos_1_1loopCharacteristics.html',1,'XML::bpmnos::loopCharacteristics']]]
 ];

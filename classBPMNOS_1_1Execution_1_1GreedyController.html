@@ -130,9 +130,9 @@ $(function(){initNavTree('classBPMNOS_1_1Execution_1_1GreedyController.html','',
 <p>A controller dispatching the first feasible decision in priority order.  
  <a href="#details">More...</a></p>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Holds a priority-ordered list of dispatchers and dispatches the first feasible decision they yield. Contested entries and message deliveries (which have no precedence over each other) are merged into a single reward-ordered dispatcher, so their best feasible decision competes within the same list rather than in a separate best-of-best stage. </p>
+<div class="textblock"><p>Holds a priority-ordered list of dispatchers and dispatches the first feasible decision they yield: the choices first, which compete with nothing, then the entries of children of sequential ad-hoc subprocesses and the message deliveries that are not directly addressed, the others being taken by the engine. Contested entries and message deliveries (which have no precedence over each other) are merged into a single reward-ordered dispatcher, so their best feasible decision competes within the same list rather than in a separate best-of-best stage. </p>
 
-<p class="definition">Definition at line <a class="el" href="GreedyController_8h_source.html#l00019">19</a> of file <a class="el" href="GreedyController_8h_source.html">GreedyController.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GreedyController_8h_source.html#l00022">22</a> of file <a class="el" href="GreedyController_8h_source.html">GreedyController.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="GreedyController_8h_source.html">GreedyController.h</a>&gt;</code></p>
 <div class="dynheader">
@@ -212,7 +212,7 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GreedyController_8cpp_source.html#l00013">13</a> of file <a class="el" href="GreedyController_8cpp_source.html">GreedyController.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GreedyController_8cpp_source.html#l00010">10</a> of file <a class="el" href="GreedyController_8cpp_source.html">GreedyController.cpp</a>.</p>
 
 </div>
 </div>
@@ -242,7 +242,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBPMNOS_1_1Execution_1_1Controller.html#adc20fead37df218262d0c0c857fa0913">BPMNOS::Execution::Controller</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GreedyController_8cpp_source.html#l00031">31</a> of file <a class="el" href="GreedyController_8cpp_source.html">GreedyController.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GreedyController_8cpp_source.html#l00022">22</a> of file <a class="el" href="GreedyController_8cpp_source.html">GreedyController.cpp</a>.</p>
 
 </div>
 </div>
@@ -269,7 +269,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GreedyController_8h_source.html#l00024">24</a> of file <a class="el" href="GreedyController_8h_source.html">GreedyController.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GreedyController_8h_source.html#l00027">27</a> of file <a class="el" href="GreedyController_8h_source.html">GreedyController.h</a>.</p>
 
 </div>
 </div>
@@ -298,7 +298,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Execution_1_1EventDispatcher.html#a24415427348e581c3633186127552805">BPMNOS::Execution::EventDispatcher</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="GreedyController_8cpp_source.html#l00038">38</a> of file <a class="el" href="GreedyController_8cpp_source.html">GreedyController.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GreedyController_8cpp_source.html#l00029">29</a> of file <a class="el" href="GreedyController_8cpp_source.html">GreedyController.cpp</a>.</p>
 
 </div>
 </div>
@@ -323,7 +323,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GreedyController_8h_source.html#l00030">30</a> of file <a class="el" href="GreedyController_8h_source.html">GreedyController.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GreedyController_8h_source.html#l00033">33</a> of file <a class="el" href="GreedyController_8h_source.html">GreedyController.h</a>.</p>
 
 </div>
 </div>
@@ -339,7 +339,7 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="GreedyController_8h_source.html#l00028">28</a> of file <a class="el" href="GreedyController_8h_source.html">GreedyController.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="GreedyController_8h_source.html#l00031">31</a> of file <a class="el" href="GreedyController_8h_source.html">GreedyController.h</a>.</p>
 
 </div>
 </div>

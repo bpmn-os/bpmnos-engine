@@ -14,7 +14,7 @@ var searchData=
   ['optionalinputrefs_11',['optionalInputRefs',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tInputSet.html#a8abd3fb0e67b8e3ecfd52e36acf4550e',1,'XML::bpmn::tInputSet']]],
   ['optionaloutputrefs_12',['optionalOutputRefs',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tOutputSet.html#ab04638f85f9bd169b4fb2fd16ee4179c',1,'XML::bpmn::tOutputSet']]],
   ['ordering_13',['ordering',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tAdHocSubProcess.html#ae23c5fdf78dfa0b786996324816a7420',1,'XML::bpmn::tAdHocSubProcess']]],
-  ['origin_14',['origin',['../classBPMNOS_1_1Execution_1_1Message.html#abc3b1786a82f2842620607ae71610acd',1,'BPMNOS::Execution::Message']]],
+  ['origin_14',['origin',['../structBPMNOS_1_1Execution_1_1PlaybackController_1_1LoggedDecision.html#a1b53ec24a93a7b027c28fa12ed7e4dfd',1,'BPMNOS::Execution::PlaybackController::LoggedDecision::origin'],['../classBPMNOS_1_1Execution_1_1Message.html#abc3b1786a82f2842620607ae71610acd',1,'BPMNOS::Execution::Message::origin']]],
   ['outbox_15',['outbox',['../classBPMNOS_1_1Execution_1_1SystemState.html#acbdb048e4a4a4a68de66f198cf033cfa',1,'BPMNOS::Execution::SystemState']]],
   ['outcome_16',['outcome',['../namespaceBPMNOS_1_1Execution.html#a9cbd31179ee05a68ce9fb58409d7d8b7',1,'BPMNOS::Execution']]],
   ['outerconversationnoderef_17',['outerConversationNodeRef',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tConversationAssociation.html#ae696676aee32383fec3da031bb4cd8bc',1,'XML::bpmn::tConversationAssociation']]],

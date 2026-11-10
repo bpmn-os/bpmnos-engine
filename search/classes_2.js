@@ -39,7 +39,7 @@ var searchData=
   ['conditionaleventdefinition_36',['conditionalEventDefinition',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1conditionalEventDefinition.html',1,'XML::bpmn']]],
   ['conditionaleventobserver_37',['ConditionalEventObserver',['../classBPMNOS_1_1Execution_1_1ConditionalEventObserver.html',1,'BPMNOS::Execution']]],
   ['conditionalstartevent_38',['ConditionalStartEvent',['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1ConditionalStartEvent.html',1,'BPMN']]],
-  ['config_39',['Config',['../structBPMNOS_1_1Execution_1_1FirstFeasibleEntry_1_1Config.html',1,'BPMNOS::Execution::FirstFeasibleEntry::Config'],['../structBPMNOS_1_1Execution_1_1GreedyController_1_1Config.html',1,'BPMNOS::Execution::GreedyController::Config'],['../structBPMNOS_1_1Execution_1_1Recorder_1_1Config.html',1,'BPMNOS::Execution::Recorder::Config']]],
+  ['config_39',['Config',['../structBPMNOS_1_1Execution_1_1GreedyController_1_1Config.html',1,'BPMNOS::Execution::GreedyController::Config'],['../structBPMNOS_1_1Execution_1_1Recorder_1_1Config.html',1,'BPMNOS::Execution::Recorder::Config']]],
   ['content_40',['Content',['../structBPMNOS_1_1Execution_1_1Content.html',1,'BPMNOS::Execution']]],
   ['controller_41',['Controller',['../classBPMNOS_1_1Execution_1_1Controller.html',1,'BPMNOS::Execution']]],
   ['conversationassociation_42',['conversationAssociation',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1conversationAssociation.html',1,'XML::bpmn']]],

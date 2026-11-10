@@ -1,10 +1,8 @@
 var dir_9ef4dec1ff8abaef197f163bf91a76ec =
 [
     [ "CompetingCandidates.h", "CompetingCandidates_8h.html", "CompetingCandidates_8h" ],
-    [ "FirstBisectionalChoice.cpp", "FirstBisectionalChoice_8cpp.html", null ],
-    [ "FirstBisectionalChoice.h", "FirstBisectionalChoice_8h.html", "FirstBisectionalChoice_8h" ],
-    [ "FirstEnumeratedChoice.cpp", "FirstEnumeratedChoice_8cpp.html", null ],
-    [ "FirstEnumeratedChoice.h", "FirstEnumeratedChoice_8h.html", "FirstEnumeratedChoice_8h" ],
+    [ "FirstChoice.cpp", "FirstChoice_8cpp.html", null ],
+    [ "FirstChoice.h", "FirstChoice_8h.html", "FirstChoice_8h" ],
     [ "FirstFeasibleEntry.cpp", "FirstFeasibleEntry_8cpp.html", null ],
     [ "FirstFeasibleEntry.h", "FirstFeasibleEntry_8h.html", "FirstFeasibleEntry_8h" ],
     [ "MessageDeliveries.cpp", "MessageDeliveries_8cpp.html", null ],

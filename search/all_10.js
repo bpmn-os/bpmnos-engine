@@ -61,7 +61,7 @@ var searchData=
   ['order_20process_20orderprocess_58',['Order process (OrderProcess)',['../job_shop_scheduling_problem.html#order-process-orderprocess',1,'']]],
   ['ordering_59',['ordering',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tAdHocSubProcess.html#ae23c5fdf78dfa0b786996324816a7420',1,'XML::bpmn::tAdHocSubProcess']]],
   ['orderprocess_60',['Order process (OrderProcess)',['../job_shop_scheduling_problem.html#order-process-orderprocess',1,'']]],
-  ['origin_61',['origin',['../classBPMNOS_1_1Execution_1_1Message.html#abc3b1786a82f2842620607ae71610acd',1,'BPMNOS::Execution::Message']]],
+  ['origin_61',['origin',['../structBPMNOS_1_1Execution_1_1PlaybackController_1_1LoggedDecision.html#a1b53ec24a93a7b027c28fa12ed7e4dfd',1,'BPMNOS::Execution::PlaybackController::LoggedDecision::origin'],['../classBPMNOS_1_1Execution_1_1Message.html#abc3b1786a82f2842620607ae71610acd',1,'BPMNOS::Execution::Message::origin']]],
   ['other_62',['OTHER',['../classBPMNOS_1_1Model_1_1Expression.html#a1c6c51e0e04397036812c3e83434344ea03570470bad94692ce93e32700d2e1cb',1,'BPMNOS::Model::Expression']]],
   ['outbox_63',['outbox',['../classBPMNOS_1_1Execution_1_1SystemState.html#acbdb048e4a4a4a68de66f198cf033cfa',1,'BPMNOS::Execution::SystemState']]],
   ['outcome_64',['Outcome',['../namespaceBPMNOS_1_1Execution.html#adb8bb72fa058d4b49ebdab0f8c795e48',1,'BPMNOS::Execution']]],

@@ -34,6 +34,7 @@ var classBPMNOS_1_1Execution_1_1Token =
     [ "waiting", "classBPMNOS_1_1Execution_1_1Token.html#ac44d9bb8d4817e2bba4c212b197559f7", null ],
     [ "ConditionalEventObserver", "classBPMNOS_1_1Execution_1_1Token.html#a87500327ae69187f741e942383b5bca8", null ],
     [ "Engine", "classBPMNOS_1_1Execution_1_1Token.html#a3e1914489e4bed4f9f23cdeab34a43dc", null ],
+    [ "EntryObserver", "classBPMNOS_1_1Execution_1_1Token.html#afbe9f18e48e3c4e5a34a85798d4c64d8", null ],
     [ "StateMachine", "classBPMNOS_1_1Execution_1_1Token.html#a97c30032fa6c28eaf8a40b6df6ea97ed", null ],
     [ "SystemState", "classBPMNOS_1_1Execution_1_1Token.html#ae76677096c6a3ad900e8b39056d5e44d", null ],
     [ "content", "classBPMNOS_1_1Execution_1_1Token.html#a6dea934c71051fddfe46a2683d73b89e", null ],

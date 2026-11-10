@@ -23,6 +23,7 @@ var classBPMNOS_1_1Model_1_1Model =
     [ "getGlobals", "classBPMNOS_1_1Model_1_1Model.html#a9292bb859700a7843ff7f3fc60db87b2", null ],
     [ "getInputSources", "classBPMNOS_1_1Model_1_1Model.html#af5608ee39fe6ec1f09dd86a9db0eb5dd", null ],
     [ "hasSequentialPerformer", "classBPMNOS_1_1Model_1_1Model.html#af21732ed60ae183c1d64350f1af177f8", null ],
+    [ "isSequentialActivity", "classBPMNOS_1_1Model_1_1Model.html#a99544665ade28318235ed765728f7bab", null ],
     [ "messageMayBeCaught", "classBPMNOS_1_1Model_1_1Model.html#a8290a950854e310e1d649f96bfe2bce2", null ],
     [ "messageMayBeThrown", "classBPMNOS_1_1Model_1_1Model.html#a72f6bbaafb8b9abeb752da5807a6ebc2", null ],
     [ "validateErrors", "classBPMNOS_1_1Model_1_1Model.html#aa41f46479dc7f8f23a170a63b27ad569", null ],

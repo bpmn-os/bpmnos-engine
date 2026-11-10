@@ -2,8 +2,6 @@ var dir_7e3c532cc1b140948a1c4d355c4d8520 =
 [
     [ "FirstMatchingMessageDelivery.cpp", "FirstMatchingMessageDelivery_8cpp.html", null ],
     [ "FirstMatchingMessageDelivery.h", "FirstMatchingMessageDelivery_8h.html", "FirstMatchingMessageDelivery_8h" ],
-    [ "InstantDirectMessage.cpp", "InstantDirectMessage_8cpp.html", null ],
-    [ "InstantDirectMessage.h", "InstantDirectMessage_8h.html", "InstantDirectMessage_8h" ],
     [ "InstantEntry.cpp", "InstantEntry_8cpp.html", null ],
     [ "InstantEntry.h", "InstantEntry_8h.html", "InstantEntry_8h" ],
     [ "MyopicDecisionTaskTerminator.cpp", "MyopicDecisionTaskTerminator_8cpp.html", null ],

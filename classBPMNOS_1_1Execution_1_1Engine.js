@@ -35,6 +35,8 @@ var classBPMNOS_1_1Execution_1_1Engine =
     [ "Token", "classBPMNOS_1_1Execution_1_1Engine.html#a48f5c1ca47af8dc65eca7e0274de96e2", null ],
     [ "commands", "classBPMNOS_1_1Execution_1_1Engine.html#a9730e2ab8656afa24dd85e5c37d45c31", null ],
     [ "conditionalEventObserver", "classBPMNOS_1_1Execution_1_1Engine.html#a56d3ab43b31ba1b4f666d0ccf1dbc908", null ],
+    [ "directMessageObserver", "classBPMNOS_1_1Execution_1_1Engine.html#a633ebb7393b2aa8d1dbcc764674522ee", null ],
+    [ "entryObserver", "classBPMNOS_1_1Execution_1_1Engine.html#a1835e1c5dd09b426b7bbdf7b4c6ebbb2", null ],
     [ "environment", "classBPMNOS_1_1Execution_1_1Engine.html#a4a7050860a704ef24e0a43bb90e8a0a3", null ],
     [ "model", "classBPMNOS_1_1Execution_1_1Engine.html#a5ee671f39a15e60e9c94c8e053c900c7", null ],
     [ "SLEEP", "classBPMNOS_1_1Execution_1_1Engine.html#a2b46b18fcebdf858c0875657ccc6985f", null ],

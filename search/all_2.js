@@ -109,5 +109,6 @@ var searchData=
   ['auto_5fset_2eh_106',['auto_set.h',['../auto__set_8h.html',1,'']]],
   ['auto_5fset_3c_20bpmnos_3a_3anumber_2c_20bpmnos_3a_3aexecution_3a_3aascending_2c_20std_3a_3aweak_5fptr_3c_20bpmnos_3a_3aexecution_3a_3atoken_20_3e_20_3e_107',['auto_set&lt; BPMNOS::number, BPMNOS::Execution::ascending, std::weak_ptr&lt; BPMNOS::Execution::Token &gt; &gt;',['../classBPMNOS_1_1Execution_1_1auto__set.html',1,'BPMNOS::Execution']]],
   ['auto_5fset_3c_20double_2c_20bpmnos_3a_3aexecution_3a_3adescending_2c_20weakptrs_2e_2e_2e_2c_20std_3a_3aweak_5fptr_3c_20bpmnos_3a_3aexecution_3a_3aevent_20_3e_2c_20std_3a_3aweak_5fptr_3c_20bpmnos_3a_3aexecution_3a_3aevaluation_20_3e_20_3e_108',['auto_set&lt; double, BPMNOS::Execution::descending, WeakPtrs..., std::weak_ptr&lt; BPMNOS::Execution::Event &gt;, std::weak_ptr&lt; BPMNOS::Execution::Evaluation &gt; &gt;',['../classBPMNOS_1_1Execution_1_1auto__set.html',1,'BPMNOS::Execution']]],
-  ['auto_5fset_3c_20v_2c_20compare_2c_20u_2e_2e_2e_20_3e_109',['auto_set&lt; V, Compare, U... &gt;',['../classBPMNOS_1_1Execution_1_1auto__set.html',1,'BPMNOS::Execution']]]
+  ['auto_5fset_3c_20v_2c_20compare_2c_20u_2e_2e_2e_20_3e_109',['auto_set&lt; V, Compare, U... &gt;',['../classBPMNOS_1_1Execution_1_1auto__set.html',1,'BPMNOS::Execution']]],
+  ['await_110',['await',['../classBPMNOS_1_1Execution_1_1EntryObserver.html#a2fa8c8c723f6edd2ce0be953b3328039',1,'BPMNOS::Execution::EntryObserver']]]
 ];

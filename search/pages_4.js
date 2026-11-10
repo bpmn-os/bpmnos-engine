@@ -32,7 +32,7 @@ var searchData=
   ['conditions_29',['Conditions',['../extension.html#conditions',1,'Conditions'],['../bin_packing_problem.html#conditions-1',1,'Conditions'],['../job_shop_scheduling_problem.html#conditions-2',1,'Conditions'],['../knapsack_problem.html#conditions-3',1,'Conditions']]],
   ['conductjobtask_30',['Task (ConductJobTask)',['../job_shop_scheduling_problem.html#task-conductjobtask',1,'']]],
   ['controller_31',['Controller',['../controller.html',1,'']]],
-  ['controller_32',['Greedy controller',['../controller.html#greedy-controller',1,'']]],
+  ['controller_32',['controller',['../controller.html#greedy-controller',1,'Greedy controller'],['../controller.html#playback-controller',1,'Playback controller']]],
   ['created_33',['CREATED',['../token_flow_logic_multi_instance_activities.html#arrived--created',1,'ARRIVED / CREATED'],['../token_flow_logic_subprocesses.html#arrived--created-1',1,'ARRIVED / CREATED'],['../token_flow_logic_tasks.html#arrived--created-2',1,'ARRIVED / CREATED'],['../token_flow_logic_processes.html#created',1,'CREATED']]],
   ['csv_20format_34',['CSV Format',['../bpmnos.html#csv-format',1,'CSV Format'],['../bpmnos.html#csv-format-1',1,'CSV Format'],['../bpmnos.html#csv-format-2',1,'CSV Format'],['../bpmnos.html#csv-format-3',1,'CSV Format']]],
   ['customer_20process_20customerprocess_35',['Customer process CustomerProcess',['../pickup_delivery_problem.html#customer-process-customerprocess',1,'Customer process (CustomerProcess)'],['../vehicle_routing_problem.html#customer-process-customerprocess-1',1,'Customer process (CustomerProcess)']]],

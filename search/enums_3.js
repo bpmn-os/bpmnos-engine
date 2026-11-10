@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['outcome_0',['Outcome',['../namespaceBPMNOS_1_1Execution.html#adb8bb72fa058d4b49ebdab0f8c795e48',1,'BPMNOS::Execution']]]
+  ['loopcharacteristics_0',['LoopCharacteristics',['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Activity.html#aed808ce1ea3f290572d3dea21e2bc009',1,'BPMN::Activity']]]
 ];

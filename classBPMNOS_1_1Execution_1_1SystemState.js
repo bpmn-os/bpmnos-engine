@@ -33,6 +33,7 @@ var classBPMNOS_1_1Execution_1_1SystemState =
     [ "tokensAwaitingBoundaryEvent", "classBPMNOS_1_1Execution_1_1SystemState.html#a71557ada638121d8d6b12d5e8de9a00e", null ],
     [ "tokensAwaitingCompletionEvent", "classBPMNOS_1_1Execution_1_1SystemState.html#a76046b4e81938664d333318bc02aae41", null ],
     [ "tokensAwaitingCondition", "classBPMNOS_1_1Execution_1_1SystemState.html#acba3afd3bbfa98cb276845ebb98bc709", null ],
+    [ "tokensAwaitingEntry", "classBPMNOS_1_1Execution_1_1SystemState.html#abb8fad0ef237e53fa1796ee7c09a3add", null ],
     [ "tokensAwaitingEvent", "classBPMNOS_1_1Execution_1_1SystemState.html#aacfe96143421595d6f175451b82b0860", null ],
     [ "tokensAwaitingGatewayActivation", "classBPMNOS_1_1Execution_1_1SystemState.html#ab28cd23c9f2f5a104c24e6dc59bbec06", null ],
     [ "tokensAwaitingReadyEvent", "classBPMNOS_1_1Execution_1_1SystemState.html#a96855141e7a80b056337252cc9b77714", null ],

@@ -1,5 +1,9 @@
 var NAVTREEINDEX2 =
 {
+"bin_packing_problem.html#data-16":[6,3,0,9,1],
+"bin_packing_problem.html#data-17":[6,3,0,10,1],
+"bin_packing_problem.html#data-18":[6,3,0,11,1],
+"bin_packing_problem.html#data-19":[6,3,0,12,1],
 "bin_packing_problem.html#data-20":[6,3,0,13,1],
 "bin_packing_problem.html#data-21":[6,3,0,14,1],
 "bin_packing_problem.html#data-22":[6,3,0,15,1],
@@ -245,9 +249,5 @@ var NAVTREEINDEX2 =
 "classBPMNOS_1_1Execution_1_1CompetingCandidates_1_1Iterator.html#a005266586ed350501b83be6c7138d316":[7,0,0,1,3,1,2],
 "classBPMNOS_1_1Execution_1_1CompetingCandidates_1_1Iterator.html#a005266586ed350501b83be6c7138d316":[7,2,1,2,3,1,2],
 "classBPMNOS_1_1Execution_1_1CompetingCandidates_1_1Iterator.html#a42d15ce2ec35386ffa6e94db04d42964":[7,0,0,1,3,1,1],
-"classBPMNOS_1_1Execution_1_1CompetingCandidates_1_1Iterator.html#a42d15ce2ec35386ffa6e94db04d42964":[7,2,1,2,3,1,1],
-"classBPMNOS_1_1Execution_1_1CompetingCandidates_1_1Iterator.html#a6be37e49a76c92fad4b8a5a6c9c5bfd3":[7,0,0,1,3,1,3],
-"classBPMNOS_1_1Execution_1_1CompetingCandidates_1_1Iterator.html#a6be37e49a76c92fad4b8a5a6c9c5bfd3":[7,2,1,2,3,1,3],
-"classBPMNOS_1_1Execution_1_1CompetingCandidates_1_1Iterator.html#ab4764443871333c6ffc821fe7b40da60":[7,0,0,1,3,1,0],
-"classBPMNOS_1_1Execution_1_1CompetingCandidates_1_1Iterator.html#ab4764443871333c6ffc821fe7b40da60":[7,2,1,2,3,1,0]
+"classBPMNOS_1_1Execution_1_1CompetingCandidates_1_1Iterator.html#a42d15ce2ec35386ffa6e94db04d42964":[7,2,1,2,3,1,1]
 };

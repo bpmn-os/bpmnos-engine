@@ -31,6 +31,7 @@ var NAVTREE =
     [ "Execution engine", "engine.html", null ],
     [ "Controller", "controller.html", [
       [ "Greedy controller", "controller.html#greedy-controller", null ],
+      [ "Playback controller", "controller.html#playback-controller", null ],
       [ "Evaluator", "controller.html#evaluator", [
         [ "Local evaluator", "controller.html#local-evaluator", null ],
         [ "Guided evaluator", "controller.html#guided-evaluator", null ]
@@ -54,23 +55,23 @@ var NAVTREEINDEX =
 [
 "AttributeRegistry_8cpp.html",
 "MessageDeliveries_8cpp_source.html",
-"bin_packing_problem.html#data-20",
-"classBPMNOS_1_1Execution_1_1ConditionalEventObserver.html",
-"classBPMNOS_1_1Execution_1_1FirstBisectionalChoice.html#a5d6fe7c104c88081dacb23d2c057207a",
-"classBPMNOS_1_1Execution_1_1Notifier.html",
-"classBPMNOS_1_1Execution_1_1StochasticDataProvider_1_1Scenario.html#ad4b63e0a5a21e7260aa7393cbe2b8089",
-"classBPMNOS_1_1InputEncoder.html#af9e7659e88deea1779f2e13e97359878",
-"classBPMNOS_1_1Model_1_1ExtensionElements.html#a88fdef6b724036f26f05caaf25c11575",
-"classBPMNOS_1_1Model_1_1Operator.html#a9ccc6d8d2ce5caa166cda20e78efaed8",
-"classXML_1_1bpmnos_1_1inputs.html#a18b014dbaf9996715836947e409c75fb",
-"classXML_1_1bpmnos_1_1tOperators.html#a5539345d915f80e5e4b7f94a8ac7731f",
-"extension.html#status-attributes",
-"namespaceBPMNOS.html#abd0d3034519d54779b4df3e9754cd681afa4467d81943477ed17abb224b8b8af4",
-"pickup_delivery_problem.html#status-106",
-"structBPMNOS_1_1Execution_1_1MessageDeliveryDecision.html#a4d9f4758796222838f0f3a6ca9132d22",
-"structBPMNOS_1_1Object.html#ade50b68f499087bc742a1c38381d3b46",
-"token_flow_logic_subprocesses.html#entered-1",
-"vehicle_routing_problem.html#endevent-endeventvehicle-1"
+"bin_packing_problem.html#data-16",
+"classBPMNOS_1_1Execution_1_1CompetingCandidates_1_1Iterator.html#a6be37e49a76c92fad4b8a5a6c9c5bfd3",
+"classBPMNOS_1_1Execution_1_1Evaluator.html#a5d1c73b6a8a233411aae7f772062a2d8",
+"classBPMNOS_1_1Execution_1_1MyopicDecisionTaskTerminator.html#a63c9f2e0247bc82089fab2a2e555734b",
+"classBPMNOS_1_1Execution_1_1StaticDataProvider.html#adab688dd39311e18a1dafa81f184f691",
+"classBPMNOS_1_1Execution_1_1auto__list.html#a33261dc93e32d376242b48255b457302",
+"classBPMNOS_1_1Model_1_1Expression.html#a8ec96159817b016a76fa22c31a02446c",
+"classBPMNOS_1_1Model_1_1Model.html#a701d9e7a7c06bbeb13a60ca192a24107",
+"classXML_1_1bpmnos_1_1attribute.html#a18b014dbaf9996715836947e409c75fb",
+"classXML_1_1bpmnos_1_1tInput.html#a433cb1dfc86da89ddf805071c393b61a",
+"earliest_arrival_problem.html#intermediatecatchevent-timerevent",
+"knapsack_problem.html#name-acceptance-1",
+"pickup_delivery_problem.html#globals-74",
+"structBPMNOS_1_1Execution_1_1Evaluation.html",
+"structBPMNOS_1_1Execution_1_1TimerEvent.html",
+"tDecision_8cpp.html",
+"truck_driver_scheduling_problem.html#sequenceflow-flow_12gilga"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

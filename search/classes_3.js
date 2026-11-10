@@ -21,5 +21,7 @@ var searchData=
   ['decisions_18',['decisions',['../classXML_1_1bpmnos_1_1decisions.html',1,'XML::bpmnos']]],
   ['decisiontask_19',['DecisionTask',['../classBPMNOS_1_1Model_1_1DecisionTask.html',1,'BPMNOS::Model']]],
   ['descending_20',['descending',['../structBPMNOS_1_1Execution_1_1descending.html',1,'BPMNOS::Execution']]],
-  ['dynamicdataprovider_21',['DynamicDataProvider',['../classBPMNOS_1_1Execution_1_1DynamicDataProvider.html',1,'BPMNOS::Execution']]]
+  ['deviation_21',['Deviation',['../structBPMNOS_1_1Execution_1_1PlaybackController_1_1Deviation.html',1,'BPMNOS::Execution::PlaybackController']]],
+  ['directmessageobserver_22',['DirectMessageObserver',['../classBPMNOS_1_1Execution_1_1DirectMessageObserver.html',1,'BPMNOS::Execution']]],
+  ['dynamicdataprovider_23',['DynamicDataProvider',['../classBPMNOS_1_1Execution_1_1DynamicDataProvider.html',1,'BPMNOS::Execution']]]
 ];

@@ -10,13 +10,13 @@ var hierarchy =
     [ "BPMNOS::Model::Choice", "classBPMNOS_1_1Model_1_1Choice.html", null ],
     [ "BPMNOS::Execution::Engine::Command", "classBPMNOS_1_1Execution_1_1Engine_1_1Command.html", null ],
     [ "BPMNOS::Execution::CompetingCandidates", "classBPMNOS_1_1Execution_1_1CompetingCandidates.html", null ],
-    [ "BPMNOS::Execution::FirstFeasibleEntry::Config", "structBPMNOS_1_1Execution_1_1FirstFeasibleEntry_1_1Config.html", null ],
     [ "BPMNOS::Execution::GreedyController::Config", "structBPMNOS_1_1Execution_1_1GreedyController_1_1Config.html", null ],
     [ "BPMNOS::Execution::Recorder::Config", "structBPMNOS_1_1Execution_1_1Recorder_1_1Config.html", null ],
     [ "BPMNOS::Execution::Content", "structBPMNOS_1_1Execution_1_1Content.html", null ],
     [ "BPMNOS::CSVReader", "classBPMNOS_1_1CSVReader.html", null ],
     [ "BPMNOS::Data", "structBPMNOS_1_1Data.html", null ],
     [ "BPMNOS::Execution::descending", "structBPMNOS_1_1Execution_1_1descending.html", null ],
+    [ "BPMNOS::Execution::PlaybackController::Deviation", "structBPMNOS_1_1Execution_1_1PlaybackController_1_1Deviation.html", null ],
     [ "BPMN::Element", "https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Element.html", [
       [ "BPMN::BaseElement", "https://bpmn-os.github.io/bpmnpp/classBPMN_1_1BaseElement.html", [
         [ "BPMN::Node", "https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Node.html", [
@@ -93,11 +93,11 @@ var hierarchy =
     ] ],
     [ "BPMNOS::Execution::EventDispatcher", "classBPMNOS_1_1Execution_1_1EventDispatcher.html", [
       [ "BPMNOS::Execution::Controller", "classBPMNOS_1_1Execution_1_1Controller.html", [
-        [ "BPMNOS::Execution::GreedyController", "classBPMNOS_1_1Execution_1_1GreedyController.html", null ]
+        [ "BPMNOS::Execution::GreedyController", "classBPMNOS_1_1Execution_1_1GreedyController.html", null ],
+        [ "BPMNOS::Execution::PlaybackController", "classBPMNOS_1_1Execution_1_1PlaybackController.html", null ]
       ] ],
       [ "BPMNOS::Execution::FirstMatchingMessageDelivery", "classBPMNOS_1_1Execution_1_1FirstMatchingMessageDelivery.html", null ],
       [ "BPMNOS::Execution::GreedyDispatcher< Candidates >", "classBPMNOS_1_1Execution_1_1GreedyDispatcher.html", null ],
-      [ "BPMNOS::Execution::InstantDirectMessage", "classBPMNOS_1_1Execution_1_1InstantDirectMessage.html", null ],
       [ "BPMNOS::Execution::InstantEntry", "classBPMNOS_1_1Execution_1_1InstantEntry.html", null ],
       [ "BPMNOS::Execution::MyopicDecisionTaskTerminator", "classBPMNOS_1_1Execution_1_1MyopicDecisionTaskTerminator.html", null ],
       [ "BPMNOS::Execution::MyopicMessageTaskTerminator", "classBPMNOS_1_1Execution_1_1MyopicMessageTaskTerminator.html", null ],
@@ -133,9 +133,11 @@ var hierarchy =
     [ "BPMNOS::Execution::auto_list&lt; U &gt;::iterator", "structBPMNOS_1_1Execution_1_1auto__list_1_1iterator.html", null ],
     [ "BPMNOS::Execution::auto_set&lt; V, Compare, U &gt;::iterator", "structBPMNOS_1_1Execution_1_1auto__set_1_1iterator.html", null ],
     [ "BPMNOS::Object::Location", "structBPMNOS_1_1Object_1_1Location.html", null ],
+    [ "BPMNOS::Execution::PlaybackController::LoggedDecision", "structBPMNOS_1_1Execution_1_1PlaybackController_1_1LoggedDecision.html", null ],
     [ "BPMNOS::Model::LookupTable", "classBPMNOS_1_1Model_1_1LookupTable.html", null ],
     [ "BPMNOS::ObjectInitializer::Member", "structBPMNOS_1_1ObjectInitializer_1_1Member.html", null ],
     [ "BPMNOS::Model::MessageDefinition", "classBPMNOS_1_1Model_1_1MessageDefinition.html", null ],
+    [ "BPMNOS::Execution::PlaybackController::Mismatch", "structBPMNOS_1_1Execution_1_1PlaybackController_1_1Mismatch.html", null ],
     [ "BPMN::Model", "https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Model.html", [
       [ "BPMNOS::Model::Model", "classBPMNOS_1_1Model_1_1Model.html", null ]
     ] ],
@@ -169,15 +171,15 @@ var hierarchy =
         [ "BPMNOS::Execution::CachedCandidates< WeakPtrs >", "classBPMNOS_1_1Execution_1_1CachedCandidates.html", null ]
       ] ],
       [ "BPMNOS::Execution::Candidates< std::weak_ptr< const Token >, std::weak_ptr< const DecisionRequest > >", "classBPMNOS_1_1Execution_1_1Candidates.html", [
-        [ "BPMNOS::Execution::FirstBisectionalChoice", "classBPMNOS_1_1Execution_1_1FirstBisectionalChoice.html", null ],
-        [ "BPMNOS::Execution::FirstEnumeratedChoice", "classBPMNOS_1_1Execution_1_1FirstEnumeratedChoice.html", null ]
+        [ "BPMNOS::Execution::FirstChoice", "classBPMNOS_1_1Execution_1_1FirstChoice.html", null ]
       ] ],
       [ "BPMNOS::Execution::Candidates< WeakPtrs >", "classBPMNOS_1_1Execution_1_1Candidates.html", null ],
       [ "BPMNOS::Execution::ConditionalEventObserver", "classBPMNOS_1_1Execution_1_1ConditionalEventObserver.html", null ],
       [ "BPMNOS::Execution::Controller", "classBPMNOS_1_1Execution_1_1Controller.html", null ],
+      [ "BPMNOS::Execution::DirectMessageObserver", "classBPMNOS_1_1Execution_1_1DirectMessageObserver.html", null ],
+      [ "BPMNOS::Execution::EntryObserver", "classBPMNOS_1_1Execution_1_1EntryObserver.html", null ],
       [ "BPMNOS::Execution::Environment", "classBPMNOS_1_1Execution_1_1Environment.html", null ],
       [ "BPMNOS::Execution::FirstMatchingMessageDelivery", "classBPMNOS_1_1Execution_1_1FirstMatchingMessageDelivery.html", null ],
-      [ "BPMNOS::Execution::InstantDirectMessage", "classBPMNOS_1_1Execution_1_1InstantDirectMessage.html", null ],
       [ "BPMNOS::Execution::MyopicMessageTaskTerminator", "classBPMNOS_1_1Execution_1_1MyopicMessageTaskTerminator.html", null ],
       [ "BPMNOS::Execution::OutcomeSentinel", "classBPMNOS_1_1Execution_1_1OutcomeSentinel.html", null ],
       [ "BPMNOS::Execution::Recorder", "classBPMNOS_1_1Execution_1_1Recorder.html", null ]

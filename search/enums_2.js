@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['loopcharacteristics_0',['LoopCharacteristics',['https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Activity.html#aed808ce1ea3f290572d3dea21e2bc009',1,'BPMN::Activity']]]
+  ['kind_0',['Kind',['../structBPMNOS_1_1Execution_1_1PlaybackController_1_1LoggedDecision.html#ae7c70a9cd3aaaf3936ba1d894bf75372',1,'BPMNOS::Execution::PlaybackController::LoggedDecision']]]
 ];
