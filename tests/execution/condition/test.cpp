@@ -276,3 +276,50 @@ SCENARIO( "Conditions stated by a node other than a conditional event", "[execut
     }
   }
 }
+
+SCENARIO( "Condition on a data attribute chosen at a decision task without operators", "[execution][condition]" ) {
+  const std::string modelFile = "tests/execution/condition/Choice_on_data.bpmn";
+  REQUIRE_NOTHROW( Model::Model(modelFile) );
+  GIVEN( "A single instance whose decision task chooses the level a conditional event waits for" ) {
+    std::string csv =
+      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+      "Instance_1; Process_1;\n"
+    ;
+    auto model = std::make_shared<const Model::Model>(modelFile);
+    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
+
+    // the choice is played back, so that its value is the one stated
+    auto choose = [&](int level) {
+      auto log = nlohmann::ordered_json::array();
+      log.push_back( nlohmann::ordered_json{{"event", {{"decision","choice"},{"processId","Process_1"},{"instanceId","Instance_1"},{"nodeId","Activity_1"},{"choices", {{"level", level}}}}}} );
+      return log;
+    };
+
+    WHEN( "The level the conditional event waits for is chosen" ) {
+      Execution::Engine engine(model);
+      Execution::PlaybackController controller(choose(2));
+      controller.connect(&engine);
+      Execution::Recorder recorder;
+      recorder.subscribe(&engine);
+      engine.run(dataProvider->createScenario());
+      THEN( "The data update of the choice triggers the conditional event" ) {
+        REQUIRE( controller.isComplete() );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId","ConditionalEvent_2"},{"state", "COMPLETED"}}).size() == 1 );
+      }
+    }
+
+    WHEN( "Another level is chosen" ) {
+      Execution::Engine engine(model);
+      Execution::PlaybackController controller(choose(1));
+      controller.connect(&engine);
+      Execution::Recorder recorder;
+      recorder.subscribe(&engine);
+      engine.run(dataProvider->createScenario());
+      THEN( "The conditional event is not triggered" ) {
+        REQUIRE( controller.isComplete() );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state", "COMPLETED"}}).size() == 1 );
+        REQUIRE( recorder.find(nlohmann::json{{"nodeId","ConditionalEvent_2"},{"state", "COMPLETED"}}).empty() );
+      }
+    }
+  }
+}

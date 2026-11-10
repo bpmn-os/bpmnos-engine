@@ -1449,13 +1449,16 @@ void Token::applyOperators(const BPMNOS::Model::ExtensionElements& extensionElem
     }
   }
 
-  if ( extensionElements.operators.empty() ) {
+  if ( !extensionElements.operators.empty() ) {
+    const_cast<Engine*>(owner->systemState->engine)->addToObjective( extensionElements.applyOperators(status, *data, *owner->systemState->scenario->dataProvider, content ? &content->object : nullptr) );
+  }
+  else if ( extensionElements.dataUpdate.attributes.empty() ) {
+    // neither operators nor choices have written a data or global attribute
     return;
   }
 
-  const_cast<Engine*>(owner->systemState->engine)->addToObjective( extensionElements.applyOperators(status, *data, *owner->systemState->scenario->dataProvider, content ? &content->object : nullptr) );
-
-  // notify about data update
+  // notify about data update, which also reports the data or global attributes the choices of a decision task
+  // have written, whether or not the decision task has operators
   // the observers decide by the index of each attribute whether it concerns this instance or all of them
   owner->systemState->engine->notify( DataUpdate( owner->root->instance.value(), extensionElements.dataUpdate.attributes ) );
 }
