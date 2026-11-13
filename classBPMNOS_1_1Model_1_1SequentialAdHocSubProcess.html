@@ -131,9 +131,9 @@ $(function(){initNavTree('classBPMNOS_1_1Model_1_1SequentialAdHocSubProcess.html
  <a href="#details">More...</a></p>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Activities within an instance of the SequentialAdHocSubProcess class must not be executed in parallel. The sequential execution of such activities is linked to a performer guaranteeing that at most one child activity of any sequential adhoc subprocess linked to this performer is executed at any point time.</p>
-<p>The performer relevant for a sequential adhoc subprocess can be specified by adding a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tPerformer.html">XML::bpmn::tPerformer</a> element with <span class="tt">name</span> being "Sequential" to the adhoc subprocess or an ancestor in the XML tree (with no other sequential adhoc subprocess between). If no such performer is provided, the adhoc subprocess is assumed to have its own performer. </p>
+<p>The performer relevant for a sequential adhoc subprocess must be specified by adding a <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tPerformer.html">XML::bpmn::tPerformer</a> element with <span class="tt">name</span> being "Sequential" to the adhoc subprocess or an ancestor in the XML tree (with no other sequential adhoc subprocess between). If no such performer is provided, an error is thrown. </p>
 
-<p class="definition">Definition at line <a class="el" href="SequentialAdHocSubProcess_8h_source.html#l00026">26</a> of file <a class="el" href="SequentialAdHocSubProcess_8h_source.html">SequentialAdHocSubProcess.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SequentialAdHocSubProcess_8h_source.html#l00025">25</a> of file <a class="el" href="SequentialAdHocSubProcess_8h_source.html">SequentialAdHocSubProcess.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="SequentialAdHocSubProcess_8h_source.html">SequentialAdHocSubProcess.h</a>&gt;</code></p>
 <div class="dynheader">
@@ -271,7 +271,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SequentialAdHocSubProcess_8h_source.html#l00027">27</a> of file <a class="el" href="SequentialAdHocSubProcess_8h_source.html">SequentialAdHocSubProcess.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SequentialAdHocSubProcess_8h_source.html#l00026">26</a> of file <a class="el" href="SequentialAdHocSubProcess_8h_source.html">SequentialAdHocSubProcess.h</a>.</p>
 
 </div>
 </div>
@@ -288,7 +288,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="SequentialAdHocSubProcess_8h_source.html#l00030">30</a> of file <a class="el" href="SequentialAdHocSubProcess_8h_source.html">SequentialAdHocSubProcess.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="SequentialAdHocSubProcess_8h_source.html#l00029">29</a> of file <a class="el" href="SequentialAdHocSubProcess_8h_source.html">SequentialAdHocSubProcess.h</a>.</p>
 
 </div>
 </div>
