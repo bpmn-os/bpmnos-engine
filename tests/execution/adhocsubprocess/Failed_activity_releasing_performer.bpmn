@@ -15,6 +15,7 @@
     <bpmn2:adHocSubProcess id="AdHocSubProcess_1" ordering="Sequential">
       <bpmn2:incoming>Flow_1tewvpd</bpmn2:incoming>
       <bpmn2:outgoing>Flow_1p03802</bpmn2:outgoing>
+      <bpmn2:performer name="Sequential" />
       <bpmn2:task id="Activity_1">
         <bpmn2:extensionElements>
           <bpmnos:status>

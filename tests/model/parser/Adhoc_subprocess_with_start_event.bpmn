@@ -14,6 +14,7 @@
     <bpmn2:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="AdHocSubProcess_1" />
     <bpmn2:adHocSubProcess id="AdHocSubProcess_1" ordering="Sequential">
       <bpmn2:incoming>Flow_1</bpmn2:incoming>
+      <bpmn2:performer name="Sequential" />
       <bpmn2:startEvent id="StartEvent_2" />
     </bpmn2:adHocSubProcess>
     <bpmn2:dataObject id="DataObject_1">

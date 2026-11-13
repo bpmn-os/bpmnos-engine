@@ -15,7 +15,9 @@
     <bpmn2:endEvent id="EndEvent_1">
       <bpmn2:incoming>Flow_1</bpmn2:incoming>
     </bpmn2:endEvent>
-    <bpmn2:adHocSubProcess id="CompensationActivity_1" isForCompensation="true" ordering="Sequential" />
+    <bpmn2:adHocSubProcess id="CompensationActivity_1" isForCompensation="true" ordering="Sequential">
+      <bpmn2:performer name="Sequential" />
+    </bpmn2:adHocSubProcess>
     <bpmn2:dataObject id="DataObject_1">
       <bpmn2:extensionElements>
         <bpmnos:attributes>

@@ -17,11 +17,10 @@ namespace BPMNOS::Model {
  * any sequential adhoc subprocess linked to this performer is executed at any
  * point time.
  *
- * The performer relevant for a sequential adhoc subprocess can be specified
+ * The performer relevant for a sequential adhoc subprocess must be specified
  * by adding a @ref XML::bpmn::tPerformer element with `name` being "Sequential" 
  * to the adhoc subprocess or an ancestor in the XML tree  (with no other sequential
- * adhoc subprocess between). If no such performer is provided, the adhoc subprocess
- * is assumed to have its own performer.
+ * adhoc subprocess between). If no such performer is provided, an error is thrown.
  */
 class SequentialAdHocSubProcess : public BPMN::AdHocSubProcess {
   friend class Model;

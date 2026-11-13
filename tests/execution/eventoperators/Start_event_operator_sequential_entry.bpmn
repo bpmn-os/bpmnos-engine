@@ -24,6 +24,7 @@
     <bpmn2:adHocSubProcess id="AdHocSubProcess_1" ordering="Sequential">
       <bpmn2:incoming>Flow_1</bpmn2:incoming>
       <bpmn2:outgoing>Flow_2</bpmn2:outgoing>
+      <bpmn2:performer name="Sequential" />
       <bpmn2:subProcess id="SubProcess_A">
         <bpmn2:startEvent id="StartEvent_A">
           <bpmn2:extensionElements>

@@ -7,20 +7,26 @@ SequentialAdHocSubProcess::SequentialAdHocSubProcess(XML::bpmn::tAdHocSubProcess
   : BPMN::Node(adHocSubProcess)
   , BPMN::FlowNode(adHocSubProcess,parent)
   , BPMN::AdHocSubProcess(adHocSubProcess,parent)
-  , performer(this)
+  , performer(nullptr)
 {
   if ( !isSequential ) {
     throw std::runtime_error("SequentialAdHocSubProcess: ordering not set to 'Sequential'");
   }
 
-  // determine sequential performer 
+  // determine sequential performer, the nearest node declaring it
   BPMN::Node* node = this;
-  while ( node->represents<BPMN::ChildNode>() ) {
-    if ( auto activity = node->represents<BPMN::Activity>() ) {
-      if ( BPMNOS::Model::Model::hasSequentialPerformer( activity->element->resourceRole ) ) {
-        performer = activity;
-        break;
+  while ( true ) {
+    if ( auto activity = node->represents<BPMN::Activity>();
+      activity && BPMNOS::Model::Model::hasSequentialPerformer( activity->element->resourceRole )
+    ) {
+      performer = activity;
+      break;
+    }
+    if ( auto process = node->represents<BPMN::Process>() ) {
+      if ( BPMNOS::Model::Model::hasSequentialPerformer( process->element->resourceRole ) ) {
+        performer = process;
       }
+      break;
     }
     node = node->as<BPMN::ChildNode>()->parent;
     if ( node->represents<SequentialAdHocSubProcess>() ) {
@@ -29,10 +35,8 @@ SequentialAdHocSubProcess::SequentialAdHocSubProcess(XML::bpmn::tAdHocSubProcess
     }
   }
 
-  if ( auto process = node->represents<BPMN::Process>() ) {
-    if ( BPMNOS::Model::Model::hasSequentialPerformer( process->element->resourceRole ) ) {
-      performer = process;
-    }
+  if ( !performer ) {
+    throw std::runtime_error("SequentialAdHocSubProcess: no performer provided for '" + id + "'");
   }
 }
 

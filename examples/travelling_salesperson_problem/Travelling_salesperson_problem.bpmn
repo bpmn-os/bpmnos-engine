@@ -19,6 +19,7 @@
       </bpmn2:extensionElements>
       <bpmn2:incoming>Flow_1yl6zen</bpmn2:incoming>
       <bpmn2:outgoing>Flow_18lg9pv</bpmn2:outgoing>
+      <bpmn2:performer name="Sequential" />
       <bpmn2:task id="VisitLocation" name="Visit location">
         <bpmn2:extensionElements>
           <bpmnos:status>

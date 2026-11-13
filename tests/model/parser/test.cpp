@@ -102,6 +102,13 @@ TEST_CASE( "Refuse an ad-hoc subprocess with a start event", "[model][parser]" )
   );
 }
 
+TEST_CASE( "Refuse an ad-hoc subprocess without a performer", "[model][parser]" ) {
+  REQUIRE_THROWS_WITH(
+    Model::Model(std::string("tests/model/parser/Adhoc_subprocess_without_performer.bpmn")),
+    "SequentialAdHocSubProcess: no performer provided for 'AdHocSubProcess_1'"
+  );
+}
+
 TEST_CASE( "Refuse a signal event without a signal definition", "[model][parser]" ) {
   REQUIRE_THROWS_WITH(
     Model::Model(std::string("tests/model/parser/Signal_without_definition.bpmn")),

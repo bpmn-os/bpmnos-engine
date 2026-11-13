@@ -285,13 +285,6 @@ std::unique_ptr<BPMN::FlowNode> Model::createActivity(XML::bpmn::tActivity* acti
     throw std::runtime_error("Model: activity '" + baseElement->id + "' has an entry guidance but is not a child of a sequential ad-hoc subprocess");
   }
 
-  if ( auto adHocSubProcess = baseElement->represents<SequentialAdHocSubProcess>();
-    adHocSubProcess && adHocSubProcess->performer == adHocSubProcess
-  ) {
-    // set flag in case performer is not explicitly provided
-    extensionElements->as<BPMNOS::Model::ExtensionElements>()->hasSequentialPerformer = true;
-  }
-
   // bind attributes, restrictions, and operators to all activities
   return bind<BPMN::FlowNode>( std::move(baseElement), std::move(extensionElements) );;
 }
