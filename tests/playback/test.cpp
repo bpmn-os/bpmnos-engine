@@ -279,6 +279,28 @@ SCENARIO( "Playback of logs recorded by the greedy controller", "[playback]" ) {
         REQUIRE( playedObjective == objective );
       }
     }
+
+    WHEN( "A log states every visit at the start, although each follows the travel to the one before" ) {
+      auto early = nlohmann::ordered_json::array();
+      early.push_back( nlohmann::ordered_json{{"event", {{"event","clocktick"},{"time",0}}}} );
+      size_t visits = 0;
+      for ( auto& record : log ) {
+        if ( record.contains("event") && record["event"].contains("decision") ) {
+          early.push_back(record);
+          visits++;
+        }
+      }
+      REQUIRE( visits > 1 );
+      Execution::PlaybackController controller(early);
+      runPlayback(model, dataProvider, controller);
+      THEN( "Every visit is dispatched, and those the run cannot take at the start are reported as deviations" ) {
+        REQUIRE( controller.isComplete() );
+        REQUIRE( !controller.getDeviations().empty() );
+        for ( auto& deviation : controller.getDeviations() ) {
+          REQUIRE( deviation.time > BPMNOS::number(0) );
+        }
+      }
+    }
   }
 
   GIVEN( "A decision task, whose choice is decided" ) {
@@ -311,17 +333,41 @@ SCENARIO( "Playback of logs recorded by the greedy controller", "[playback]" ) {
       }
     }
 
-    WHEN( "A log states the choice at a time between two clock ticks" ) {
-      auto offGrid = nlohmann::ordered_json::array();
-      offGrid.push_back( nlohmann::ordered_json{{"event", {{"event","clocktick"},{"time",0.5}}}} );
-      offGrid.push_back( choice );
-      Execution::PlaybackController controller(offGrid);
-      runPlayback(model, dataProvider, controller);
-      THEN( "The choice is dispatched at the first clock tick after its time and the deviation is reported" ) {
+    WHEN( "A log states the choice slightly before a clock tick, as a solver may state it" ) {
+      auto inexact = nlohmann::ordered_json::array();
+      inexact.push_back( nlohmann::ordered_json{{"event", {{"event","clocktick"},{"time",0.999979}}}} );
+      inexact.push_back( choice );
+      Execution::PlaybackController controller(inexact);
+      Execution::Engine engine(model);
+      controller.connect(&engine);
+      Execution::Recorder recorder;
+      recorder.subscribe(&engine);
+      engine.run(dataProvider->createScenario());
+      auto completed = recorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state","COMPLETED"}});
+      THEN( "The choice is made at that clock tick and no deviation is reported" ) {
         REQUIRE( controller.isComplete() );
-        REQUIRE( controller.getDeviations().size() == 1 );
-        REQUIRE( controller.getDeviations().front().time == BPMNOS::number(1) );
-        REQUIRE( controller.jsonify()["deviations"][0]["dispatchedAt"] == 1.0 );
+        REQUIRE( completed.size() == 1 );
+        REQUIRE( completed[0]["status"]["timestamp"] == 1 );
+        REQUIRE( controller.getDeviations().empty() );
+      }
+    }
+
+    WHEN( "A log states the choice slightly after a clock tick, as a solver may state it" ) {
+      auto inexact = nlohmann::ordered_json::array();
+      inexact.push_back( nlohmann::ordered_json{{"event", {{"event","clocktick"},{"time",1.000021}}}} );
+      inexact.push_back( choice );
+      Execution::PlaybackController controller(inexact);
+      Execution::Engine engine(model);
+      controller.connect(&engine);
+      Execution::Recorder recorder;
+      recorder.subscribe(&engine);
+      engine.run(dataProvider->createScenario());
+      auto completed = recorder.find(nlohmann::json{{"nodeId","Activity_1"},{"state","COMPLETED"}});
+      THEN( "The choice is made at that clock tick rather than the next and no deviation is reported" ) {
+        REQUIRE( controller.isComplete() );
+        REQUIRE( completed.size() == 1 );
+        REQUIRE( completed[0]["status"]["timestamp"] == 1 );
+        REQUIRE( controller.getDeviations().empty() );
       }
     }
 

@@ -11,10 +11,12 @@
 #include "execution/engine/src/DecisionRequest.h"
 #include "execution/engine/src/MessageDeliveryRequest.h"
 #include "execution/engine/src/events/TerminationEvent.h"
+#include "execution/engine/src/events/ClockTickEvent.h"
 #include "model/bpmnos/src/Model.h"
 #include "model/bpmnos/src/SequentialAdHocSubProcess.h"
 #include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 #include <algorithm>
+#include <cmath>
 #include <limits>
 #include <stdexcept>
 #include <unordered_set>
@@ -99,7 +101,6 @@ PlaybackController::PlaybackController(const nlohmann::ordered_json& log, std::s
     }
   }
   dispatched.assign(sequence.size(), false);
-  due.assign(sequence.size(), std::nullopt);
 }
 
 const std::map< BPMNOS::number, std::vector<PlaybackController::LoggedDecision> >& PlaybackController::getDecisions() const {
@@ -316,17 +317,30 @@ std::shared_ptr<Event> PlaybackController::dispatchEvent(const SystemState* syst
     return nullptr;
   }
   auto now = systemState->getTime();
+  if ( now == std::numeric_limits<BPMNOS::number>::lowest() ) {
+    // the run has not started
+    return nullptr;
+  }
 
-  // a decision becomes due at the first time reached that is not earlier than its own time
-  for ( size_t i = 0; i < sequence.size() && sequence[i]->time <= now; i++ ) {
-    if ( !dispatched[i] && !due[i].has_value() ) {
-      due[i] = now;
+  if ( scheduled.empty() && !sequence.empty() ) {
+    // The run starts at the time of the first fetch and reaches the times a whole number of clock ticks after
+    // it, so that the time of a decision, as a solver may state it inexactly, is rounded to the nearest of
+    // them, a time before the start of the run and a decision without a time being scheduled at the start.
+    scheduled.reserve(sequence.size());
+    for ( auto decision : sequence ) {
+      if ( decision->time <= now ) {
+        scheduled.push_back(now);
+      }
+      else {
+        auto ticks = std::round( (double)(decision->time - now) / (double)ClockTickEvent::clockTick );
+        scheduled.push_back( now + BPMNOS::number(ticks * (double)ClockTickEvent::clockTick) );
+      }
     }
   }
 
   // performers whose next entry is listed before the entry considered
   std::unordered_set<std::string> busyPerformers;
-  for ( size_t i = 0; i < sequence.size() && due[i].has_value(); i++ ) {
+  for ( size_t i = 0; i < sequence.size() && scheduled[i] <= now; i++ ) {
     if ( dispatched[i] ) {
       continue;
     }
@@ -367,8 +381,8 @@ std::shared_ptr<Event> PlaybackController::dispatchEvent(const SystemState* syst
 
     dispatched[i] = true;
     dispatchedCount++;
-    if ( decision.time != std::numeric_limits<BPMNOS::number>::lowest() && now > decision.time ) {
-      // the run does not reach the time of the decision
+    if ( decision.time != std::numeric_limits<BPMNOS::number>::lowest() && now > scheduled[i] ) {
+      // the decision is not dispatched at the time it is scheduled at
       deviations.push_back( Deviation{ &decision, now } );
     }
     return event;

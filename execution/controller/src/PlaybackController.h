@@ -28,8 +28,11 @@ namespace BPMNOS::Execution {
  * the first clock tick to the time the run starts. The engine carries out everything that is not a decision
  * itself, so that a log recorded by the engine and a log stating its decisions alone are played back alike.
  *
- * A decision is due once the run has reached its time, and a decision without a time, before the first clock
- * tick, from the start of the run. At every fetch, the controller dispatches the first due decision, in the order of
+ * The run reaches the times a whole number of clock ticks after its start, and a decision is scheduled at the
+ * nearest of them to its time, so that a time a solver states inexactly, slightly above or below a time the run
+ * reaches, is that time; a decision whose time lies before the start of the run, and a decision without a time,
+ * before the first clock tick, are scheduled at the start. A decision is due once the run has reached the time it
+ * is scheduled at. At every fetch, the controller dispatches the first due decision, in the order of
  * the log, whose request is pending, matched by process, instance and node, and for a message delivery by a
  * message among the candidates of the request agreeing with the origin, the header and the content the log
  * states. An entry waits while an entry listed before it for the same performer, the performer node of the
@@ -37,7 +40,7 @@ namespace BPMNOS::Execution {
  * activities within the performer, has not been dispatched, so that the order of the entries of every performer is
  * kept. Every other decision is dispatched as soon as its request is pending. A decision is evaluated by the
  * evaluator given before it is dispatched, which records its reward, and waits while it is infeasible. A decision dispatched later
- * than its time is reported as a deviation. A decision whose request never becomes pending is not dispatched, so
+ * than the time it is scheduled at is reported as a deviation. A decision whose request never becomes pending is not dispatched, so
  * that the run continues until it ends otherwise and the playback is incomplete.
  *
  * The playback stops at the first mismatch, by a termination event: a choice lacking the value of a choice
@@ -61,7 +64,7 @@ public:
     std::optional<std::string> sender; ///< The instance sending the message, for a message delivery stating it
   };
   /**
-   * @brief A decision dispatched later than its time, the time not being one the run reaches.
+   * @brief A decision dispatched later than the time it is scheduled at.
    */
   struct Deviation {
     const LoggedDecision* decision;
@@ -108,7 +111,7 @@ protected:
   std::map< BPMNOS::number, std::vector<LoggedDecision> > decisions;
   std::vector<const LoggedDecision*> sequence; ///< The decisions ordered by their time, and within it by the log
   std::vector<bool> dispatched; ///< Whether the decision at the same position of the sequence has been dispatched
-  std::vector< std::optional<BPMNOS::number> > due; ///< The time at which the decision at the same position of the sequence became due, its time having been reached
+  std::vector<BPMNOS::number> scheduled; ///< The time the decision at the same position of the sequence is scheduled at, its time rounded to the nearest time the run reaches, determined when the run starts
   size_t dispatchedCount = 0;
   std::vector<Deviation> deviations;
   std::optional<Mismatch> mismatch;
