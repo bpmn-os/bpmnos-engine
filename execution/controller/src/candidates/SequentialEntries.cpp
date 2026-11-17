@@ -46,7 +46,6 @@ void SequentialEntries::notice(const Observable* observable) {
 }
 
 void SequentialEntries::evaluateCandidates() {
-  advanceTime(systemState->currentTime);
   evaluateDecisions(
     [this]( std::weak_ptr<const Token> token_ptr, std::weak_ptr<const DecisionRequest> request_ptr, std::shared_ptr<Decision> decision ) -> std::shared_ptr<Event> {
       decision->evaluate();

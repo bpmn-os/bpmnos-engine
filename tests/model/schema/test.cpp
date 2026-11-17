@@ -18,6 +18,13 @@ struct Declarations {
 std::unique_ptr<Model::Model> modelWith(const Declarations& declarations) {
   std::string xml = R"(<?xml version="1.0" encoding="UTF-8"?>
 <bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmnos="https://bpmnos.telematique.eu" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn2:dataStore id="DataStore_Globals" name="Globals">
+    <bpmn2:extensionElements>
+      <bpmnos:attributes>
+        <bpmnos:attribute id="Time" type="decimal" name="time" />
+      </bpmnos:attributes>
+    </bpmn2:extensionElements>
+  </bpmn2:dataStore>
   <bpmn2:process id="Process_1" isExecutable="true">
     <bpmn2:extensionElements>
       <bpmnos:status>
@@ -300,18 +307,19 @@ TEST_CASE( "Number objects separately from scalar attributes", "[model][schema]"
   declarations.subProcessData = attribute("Grid", "grid", "boolean[3][4]");
   auto model = modelWith(declarations);
 
-  // the scalar globals precede the instance, the global object being numbered separately
-  REQUIRE( model->attributes.size() == 2 );
+  // the scalar globals, the time first, precede the instance, the global object being numbered separately
+  REQUIRE( model->attributes.size() == 3 );
   REQUIRE( model->objects.size() == 1 );
-  REQUIRE( model->instanceIndex == 2 );
+  REQUIRE( model->instanceIndex == 3 );
 
   auto& process = model->processes.front();
   auto processExtension = process->extensionElements->as<Model::ExtensionElements>();
   auto& registry = processExtension->attributeRegistry;
-  REQUIRE( registry["budget"]->index == 0 );
-  REQUIRE( registry["limit"]->index == 1 );
-  REQUIRE( registry["instance"]->index == 2 );
-  REQUIRE( registry["y"]->index == 3 );
+  REQUIRE( registry["time"]->index == 0 );
+  REQUIRE( registry["budget"]->index == 1 );
+  REQUIRE( registry["limit"]->index == 2 );
+  REQUIRE( registry["instance"]->index == 3 );
+  REQUIRE( registry["y"]->index == 4 );
   REQUIRE( registry["timestamp"]->index == 0 );
   REQUIRE( registry["x"]->index == 1 );
 
@@ -334,7 +342,7 @@ TEST_CASE( "Number objects separately from scalar attributes", "[model][schema]"
   auto subProcess = process->find_all([](const BPMN::Node* node) { return node->id == "SubProcess_1"; }).front();
   auto subProcessExtension = subProcess->extensionElements->as<Model::ExtensionElements>();
   REQUIRE( subProcessExtension->attributeRegistry["grid"]->index == 2 );
-  REQUIRE( subProcessExtension->attributeRegistry["z"]->index == 4 );
+  REQUIRE( subProcessExtension->attributeRegistry["z"]->index == 5 );
   REQUIRE( subProcessExtension->dataObjects.size() == 1 );
   REQUIRE( subProcessExtension->data.size() == 1 );
 }

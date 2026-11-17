@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bpmnos="https://bpmnos.telematique.eu" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+  <bpmn2:dataStore id="DataStore_Globals" name="Globals">
+    <bpmn2:extensionElements>
+      <bpmnos:attributes>
+        <bpmnos:attribute id="Time" type="decimal" name="time" />
+      </bpmnos:attributes>
+    </bpmn2:extensionElements>
+  </bpmn2:dataStore>
   <bpmn2:process id="Process_1" isExecutable="true">
     <bpmn2:extensionElements>
       <bpmnos:status>
@@ -21,7 +28,7 @@
           <bpmnos:status>
             <bpmnos:operators>
               <bpmnos:operator id="Operator_0c2jbu1" expression="x += 1" />
-              <bpmnos:operator id="Operator_0c2jbu2" expression="timestamp += 1" />
+              <bpmnos:operator id="Operator_0c2jbu2" expression="timestamp := time + 1" />
             </bpmnos:operators>
           </bpmnos:status>
         </bpmn2:extensionElements>
@@ -31,7 +38,7 @@
           <bpmnos:status>
             <bpmnos:operators>
               <bpmnos:operator id="Operator_0m3ruea" expression="x += 1" />
-              <bpmnos:operator id="Operator_0m3rueb" expression="timestamp += 1" />
+              <bpmnos:operator id="Operator_0m3rueb" expression="timestamp := time + 1" />
             </bpmnos:operators>
           </bpmnos:status>
         </bpmn2:extensionElements>

@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bpmnos="https://bpmnos.telematique.eu" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+  <bpmn2:dataStore id="DataStore_Globals" name="Globals">
+    <bpmn2:extensionElements>
+      <bpmnos:attributes>
+        <bpmnos:attribute id="Time" type="decimal" name="time" />
+      </bpmnos:attributes>
+    </bpmn2:extensionElements>
+  </bpmn2:dataStore>
   <bpmn2:collaboration id="VehicleRoutingProblem">
     <bpmn2:participant id="Participant_0es96as" name="Customer process" processRef="CustomerProcess" />
     <bpmn2:participant id="Participant_0cq61mf" name="Vehicle process" processRef="VehicleProcess" />
@@ -82,7 +89,7 @@
       <bpmn2:extensionElements>
         <bpmnos:status>
           <bpmnos:operators>
-            <bpmnos:operator id="Operator_2q512kt" expression="timestamp += handling_duration" />
+            <bpmnos:operator id="Operator_2q512kt" expression="timestamp := time + handling_duration" />
           </bpmnos:operators>
         </bpmnos:status>
       </bpmn2:extensionElements>
@@ -151,7 +158,7 @@
               <bpmnos:restriction id="Restriction_1hjnnka" scope="entry" expression="requests_made == requests_expected" />
             </bpmnos:restrictions>
             <bpmnos:operators>
-              <bpmnos:operator id="Operator_3fddcqg" expression="timestamp += duration" />
+              <bpmnos:operator id="Operator_3fddcqg" expression="timestamp := time + duration" />
               <bpmnos:operator id="Operator_22uvufq" expression="accumulated_costs += costs + overtime_penalty * max{0, timestamp - latest_availability}" />
               <bpmnos:operator id="Operator_0q6fg6j" expression="location := depot" />
             </bpmnos:operators>
@@ -218,7 +225,7 @@
                   <bpmnos:attribute id="TripDuration" type="decimal" name="duration := duration(location,customer_location)" />
                 </bpmnos:attributes>
                 <bpmnos:operators>
-                  <bpmnos:operator id="Operator_1gtrgqi" expression="timestamp += duration" />
+                  <bpmnos:operator id="Operator_1gtrgqi" expression="timestamp := time + duration" />
                   <bpmnos:operator id="Operator_2prbur9" expression="accumulated_costs += costs + lateness_penalty * max{0, timestamp - latest_visit}" />
                   <bpmnos:operator id="Operator_139nh6c" expression="location := customer_location" />
                   <bpmnos:operator id="Operator_2rhlm19" expression="pending -= 1" />

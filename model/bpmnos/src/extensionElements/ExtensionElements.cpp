@@ -340,6 +340,11 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
       }
       else if ( parameter.name.value.value == "index" ) {
         loopIndex = std::make_unique<Parameter>(&parameter,attributeRegistry);
+        if ( auto indexAttribute = loopIndex.value()->expression ? loopIndex.value()->expression->isAttribute() : nullptr;
+          indexAttribute && indexAttribute->category == Attribute::Category::DATA && !indexAttribute->isObject() && indexAttribute->index == Index::Time
+        ) {
+          throw std::runtime_error("ExtensionElements: the time must not be the loop index of '" + (std::string)baseElement->id.value().get().value + "'");
+        }
       }
       else if ( parameter.name.value.value == "condition" ) {
         loopCondition = std::make_unique<Parameter>(&parameter,attributeRegistry);

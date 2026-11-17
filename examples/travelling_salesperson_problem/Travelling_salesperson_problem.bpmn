@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bpmnos="https://bpmnos.telematique.eu" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+  <bpmn2:dataStore id="DataStore_Globals" name="Globals">
+    <bpmn2:extensionElements>
+      <bpmnos:attributes>
+        <bpmnos:attribute id="Time" type="decimal" name="time" />
+      </bpmnos:attributes>
+    </bpmn2:extensionElements>
+  </bpmn2:dataStore>
   <bpmn2:process id="TravellingSalesperson_Process" name="Travelling salesperson problem" isExecutable="true">
     <bpmn2:extensionElements>
       <bpmnos:status>
@@ -32,7 +39,7 @@
               <bpmnos:operator id="OperatorLocation" expression="location := locations[index]" />
               <bpmnos:operator id="OperatorDistance" expression="distance := distance(current_location,location)" />
               <bpmnos:operator id="Operator_06serru" expression="current_location := location" />
-              <bpmnos:operator id="Operator_0lkr11q" expression="timestamp += distance / speed" />
+              <bpmnos:operator id="Operator_0lkr11q" expression="timestamp := time + distance / speed" />
             </bpmnos:operators>
           </bpmnos:status>
           <bpmnos:loopCharacteristics>
@@ -52,7 +59,7 @@
           </bpmnos:attributes>
           <bpmnos:operators>
             <bpmnos:operator id="Operator_1q37okk" expression="current_location := origin" />
-            <bpmnos:operator id="Operator_1d4gdm5" expression="timestamp += distance / speed" />
+            <bpmnos:operator id="Operator_1d4gdm5" expression="timestamp := time + distance / speed" />
           </bpmnos:operators>
         </bpmnos:status>
       </bpmn2:extensionElements>

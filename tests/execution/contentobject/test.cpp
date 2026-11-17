@@ -24,6 +24,13 @@ std::string operatorsOf(const std::string& id, const std::vector<std::string>& e
 std::string exchangeModel(const std::string& element, const std::string& name, const std::vector<std::string>& thrown, const std::vector<std::string>& caught) {
   std::string xml = R"xml(<?xml version="1.0" encoding="UTF-8"?>
 <bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmnos="https://bpmnos.telematique.eu" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn2:dataStore id="DataStore_Globals" name="Globals">
+    <bpmn2:extensionElements>
+      <bpmnos:attributes>
+        <bpmnos:attribute id="Time" type="decimal" name="time" />
+      </bpmnos:attributes>
+    </bpmn2:extensionElements>
+  </bpmn2:dataStore>
   <bpmn2:process id="Thrower" isExecutable="true">
     <bpmn2:extensionElements>
       <bpmnos:status>

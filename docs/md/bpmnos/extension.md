@@ -38,11 +38,11 @@ An attribute whose type is not a single scalar type is an object, i.e. an array 
 <bpmnos:attribute id="Facilities" name="facilities" type="{ cost: decimal, flags: boolean[] }[]" />
 ```
 
-Objects may be declared as global, data and status attributes. They are numbered separately from the scalar attributes, so that the index of a scalar attribute never depends on the objects declared: the global objects come first, and the objects a scope declares follow those of its enclosing scopes. An object cannot be the attribute of a choice, cannot carry the objective, and is neither the instance nor the timestamp.
+Objects may be declared as global, data and status attributes. They are numbered separately from the scalar attributes, so that the index of a scalar attribute never depends on the objects declared: the global objects come first, and the objects a scope declares follow those of its enclosing scopes. An object cannot be the attribute of a choice, cannot carry the objective, and is neither the instance, the timestamp nor the time.
 
 An object may be initialised by a literal, `name="depot := { x := 0.0, y := 0.0 }"`, which every instance shares, or by an assignment computed when its scope is created, such as `name="destinations := destinations(location)"` with a lookup returning an array; the instance data may then give it no value, and a global object may only be initialised by a literal. Otherwise an object takes the value the instance data gives it or undefined values, its sizes coming from its type, from the size declarations of the instance data, and from its value, as described for the @ref BPMNOS::Execution::StaticDataProvider "static data provider". An object is created with the status or data it belongs to: a global object with the global state machine, a data object with the state machine of its scope, and a status object with the status of the token entering its scope, from which it is removed when the scope is left.
 
-An expression reads an object through an access path, in which every index, counting from one, takes the next dimension and a field follows once every dimension is indexed: `facilities[i].cost`, `grid[i][j]` and `depot.x` read values, whereas `facilities.cost` is refused, since `facilities` is an array. A path used as a value must address a scalar value. An array of scalar values with a single dimension, named by an attribute or addressed by a path such as `location`, `facilities[i].flags` or `grid[i]`, may be aggregated, `sum(grid[2])`, tested for membership, `3 in location`, and iterated in an aggregation, `min{ d | d in departures, d >= timestamp }`; an object is never used as a value. The aggregation `aggr{ expression | i in m..n, j in X, conditions }` aggregates the values of the expression for every value of its iterators satisfying the conditions, as in `sum{ facilities[i].cost | i in 1..size(facilities), facilities[i].flags[1] }` or `sum{ flow[i][j] * distance[location[i]][location[j]] | i in 1..n, j in 1..n }`. `size` gives the length of any array, arrays of objects and arrays with several dimensions included, its undefined elements counted, whereas `count` gives the number of the defined values of an array of scalar values. Aggregators and membership skip undefined values, and a condition of an aggregation whose value is undefined is not satisfied. An undefined value read as a value outside an aggregation, or used as an index, makes the expression undefined, and an index outside the size of its dimension is an error.
+An expression reads an object through an access path, in which every index, counting from one, takes the next dimension and a field follows once every dimension is indexed: `facilities[i].cost`, `grid[i][j]` and `depot.x` read values, whereas `facilities.cost` is refused, since `facilities` is an array. A path used as a value must address a scalar value. An array of scalar values with a single dimension, named by an attribute or addressed by a path such as `location`, `facilities[i].flags` or `grid[i]`, may be aggregated, `sum(grid[2])`, tested for membership, `3 in location`, and iterated in an aggregation, `min{ d | d in departures, d >= time }`; an object is never used as a value. The aggregation `aggr{ expression | i in m..n, j in X, conditions }` aggregates the values of the expression for every value of its iterators satisfying the conditions, as in `sum{ facilities[i].cost | i in 1..size(facilities), facilities[i].flags[1] }` or `sum{ flow[i][j] * distance[location[i]][location[j]] | i in 1..n, j in 1..n }`. `size` gives the length of any array, arrays of objects and arrays with several dimensions included, its undefined elements counted, whereas `count` gives the number of the defined values of an array of scalar values. Aggregators and membership skip undefined values, and a condition of an aggregation whose value is undefined is not satisfied. An undefined value read as a value outside an aggregation, or used as an index, makes the expression undefined, and an index outside the size of its dimension is an error.
 
 
 ### Global attributes
@@ -52,6 +52,7 @@ Global attributes can be defined for a @ref XML::bpmn::tDataStore "data store el
 <bpmn2:dataStore id="DataStore_1">
   <bpmn2:extensionElements>
     <bpmnos:attributes>
+      <bpmnos:attribute id="Time" name="time" type="decimal" />
       <bpmnos:attribute id="Makespan" name="makespan := 0" type="decimal" objective="minimize" weight="1" />
     </bpmnos:attributes>
   </bpmn2:extensionElements>
@@ -60,7 +61,7 @@ Global attributes can be defined for a @ref XML::bpmn::tDataStore "data store el
 
 The objective value of a run is held by the @ref BPMNOS::Execution::SystemState "system state" and is not an attribute. It is the sum of the values of all weighted attributes multiplied by their weights: a global or data attribute contributes from its creation on and by every change of its value, and a status attribute contributes with its final value when its scope ends. Every change of the objective is announced by the @ref BPMNOS::Execution::Objective "objective" notification.
 
-Global attributes are visible to every process of a model, whether or not a process refers to the data store declaring them. They are data attributes held by the global state machine of a run, which holds the token of every process instance, and every scope inherits them as the first part of its data: the global attributes have the indices below the number of global attributes, the instance attribute every process declares first has that number as its index, and the further data attributes of a scope follow the data of its enclosing scopes. A write to a global attribute concerns every instance, a write to any other data attribute only the instance it belongs to.
+Global attributes are visible to every process of a model, whether or not a process refers to the data store declaring them. They are data attributes held by the global state machine of a run, which holds the token of every process instance, and every scope inherits them as the first part of its data: the global attributes have the indices below the number of global attributes, the instance attribute every process declares first has that number as its index, and the further data attributes of a scope follow the data of its enclosing scopes. The first global attribute is the time, described under the default attributes. A write to a global attribute concerns every instance, a write to any other data attribute only the instance it belongs to.
 
 @note Modifying global attribute values may lead to race conditions.
 
@@ -95,6 +96,24 @@ Status attributes can be defined for a @ref XML::bpmn::tProcess "process element
 ```
 
 Status attributes are attached to @ref BPMNOS::Execution::Token "tokens" moving through a process model. Their lifetime is restricted to the node that they are defined for and they are dynamically added and removed to the token status.
+
+### Default attributes
+
+Every model declares three attributes that the engine relies on, each identified by its identifier. A data store declares the global attribute with the identifier `Time` as the first global attribute of the model, at index zero among the data attributes, which holds the current time of a run:
+
+```xml
+<bpmn2:dataStore id="DataStore_Globals" name="Globals">
+  <bpmn2:extensionElements>
+    <bpmnos:attributes>
+      <bpmnos:attribute id="Time" name="time" type="decimal" />
+    </bpmnos:attributes>
+  </bpmn2:extensionElements>
+</bpmn2:dataStore>
+```
+
+Every process declares the data attribute with the identifier `Instance`, which holds the identifier of its instance, as its first data attribute, and the status attribute with the identifier `Timestamp` as its first status attribute. A model whose first global attribute is not `Time` is refused, as is a process whose first data attribute is not `Instance`. The engine alone writes the time, at every @ref BPMNOS::Execution::ClockTickEvent "clock tick", so that a model initialising it, an operator assigning it, a choice of it, a loop index stored in it and instance data giving it a value are refused.
+
+The timestamp of a token is the time of its latest change of state. The engine sets it to the value of `time` whenever the token changes its state and whenever an entry, a choice or a message delivery is decided for it, and a controller evaluating a decision sets it likewise. Only in the busy state of a task may the timestamp be ahead of `time`: the operators of the task may set it to the expected completion time, for instance by `timestamp := time + duration`, and the task completes when `time` reaches it. An expression referring to the current time therefore reads `time` and not `timestamp`. The update of `time` at a clock tick is a @ref BPMNOS::Execution::DataUpdate "data update" like any other, so that the restrictions of a token awaiting entry, the conditions of a conditional event and the evaluations of pending decisions are reconsidered at a clock tick if and only if they read `time`; no clock tick changes the timestamp of a token.
 
 ## Restrictions
 
@@ -134,7 +153,7 @@ Gatekeeper restrictions can be added to a @ref XML::bpmn::tSequenceFlow "sequenc
 ```
 
 ### Conditions
-The conditions of a @ref BPMN::ConditionalCatchEvent "conditional event", start, intermediate or boundary, are restrictions placed directly in its extension elements, as for a sequence flow; the event is triggered when all of them are satisfied, and a condition must not read the timestamp. Restrictions placed directly in the extension elements of any other node are refused, the restrictions of a node belonging to its status.
+The conditions of a @ref BPMN::ConditionalCatchEvent "conditional event", start, intermediate or boundary, are restrictions placed directly in its extension elements, as for a sequence flow; the event is triggered when all of them are satisfied, and a condition must not read the timestamp. A condition reading `time` is checked at every clock tick. Restrictions placed directly in the extension elements of any other node are refused, the restrictions of a node belonging to its status.
 
 ## Operators
 @ref BPMNOS::Model::Operator "operators" can be used to modify attribute values.
@@ -304,7 +323,7 @@ The trigger for a @ref BPMN::TimerCatchEvent "timer event" can be specified by p
 ```xml
 <bpmn2:extensionElements>
   <bpmnos:timer>
-    <bpmnos:parameter name="trigger" value="timestamp + 5" />
+    <bpmnos:parameter name="trigger" value="time + 5" />
   </bpmnos:timer>
 </bpmn2:extensionElements>
 ```

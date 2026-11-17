@@ -9,19 +9,16 @@
 #include <algorithm>
 #include <cassert>
 #include <iterator>
-#include <limits>
 
 using namespace BPMNOS::Execution;
 
 EntryObserver::EntryObserver()
   : systemState(nullptr)
-  , time(std::numeric_limits<BPMNOS::number>::lowest())
 {
 }
 
 void EntryObserver::connect(SystemState* systemState) {
   this->systemState = systemState;
-  time = systemState->getTime();
   candidates.clear();
   // the tokens awaiting entry in an installed state are checked again, since the engine whose state was copied
   // need not have checked them before the copy was made
@@ -70,31 +67,8 @@ void EntryObserver::schedule(const std::vector<const BPMNOS::Model::Attribute*>&
   }
 }
 
-bool EntryObserver::isTimeDependent(const Token* token) {
-  auto& dependencies = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->entryDependencies;
-  return std::ranges::any_of(dependencies, [](const BPMNOS::Model::Attribute* attribute) {
-    return
-      attribute->category == BPMNOS::Model::Attribute::Category::STATUS &&
-      !attribute->isObject() &&
-      attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp
-    ;
-  });
-}
-
 std::shared_ptr<Event> EntryObserver::dispatchEvent() {
   assert( systemState );
-
-  if ( systemState->getTime() != time ) {
-    // time has advanced, so that restrictions depending on the timestamp may hold now
-    time = systemState->getTime();
-    for ( auto& [instanceId,waitingTokens] : systemState->tokensAwaitingEntry ) {
-      for ( auto& [token_ptr] : waitingTokens ) {
-        if ( auto token = token_ptr.lock(); token && isTimeDependent(token.get()) ) {
-          candidates.emplace_back(token_ptr);
-        }
-      }
-    }
-  }
 
   auto it = candidates.begin();
   while ( it != candidates.end() ) {

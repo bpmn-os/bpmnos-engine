@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bpmnos="https://bpmnos.telematique.eu" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+  <bpmn2:dataStore id="DataStore_Globals" name="Globals">
+    <bpmn2:extensionElements>
+      <bpmnos:attributes>
+        <bpmnos:attribute id="Time" type="decimal" name="time" />
+      </bpmnos:attributes>
+    </bpmn2:extensionElements>
+  </bpmn2:dataStore>
   <bpmn2:process id="TruckDriverProcess" name="U.S. Truck driver process" isExecutable="true">
     <bpmn2:extensionElements>
       <bpmnos:status>
@@ -57,7 +64,7 @@
               <bpmnos:attribute id="Lateness" type="decimal" name="lateness := max{0,timestamp - latest_visit}" objective="minimize" weight="1" />
             </bpmnos:attributes>
             <bpmnos:operators>
-              <bpmnos:operator id="Operator_3i531ul" expression="timestamp += service_time" />
+              <bpmnos:operator id="Operator_3i531ul" expression="timestamp := time + service_time" />
             </bpmnos:operators>
           </bpmnos:status>
         </bpmn2:extensionElements>
@@ -86,7 +93,7 @@
           <bpmn2:extensionElements>
             <bpmnos:status>
               <bpmnos:operators>
-                <bpmnos:operator id="Operator_2ih0qpu" expression="timestamp += duration" />
+                <bpmnos:operator id="Operator_2ih0qpu" expression="timestamp := time + duration" />
                 <bpmnos:operator id="Operator_1v9kqtd" expression="last_break := timestamp" />
               </bpmnos:operators>
             </bpmnos:status>
@@ -98,7 +105,7 @@
           <bpmn2:extensionElements>
             <bpmnos:status>
               <bpmnos:operators>
-                <bpmnos:operator id="Operator_0tuoo7c" expression="timestamp += duration" />
+                <bpmnos:operator id="Operator_0tuoo7c" expression="timestamp := time + duration" />
                 <bpmnos:operator id="Operator_2vvafdb" expression="last_rest := timestamp" />
                 <bpmnos:operator id="Operator_1frp5g3" expression="last_break := timestamp" />
                 <bpmnos:operator id="Operator_0o9q9mr" expression="driving_since_rest := 0" />
@@ -112,8 +119,8 @@
           <bpmn2:extensionElements>
             <bpmnos:status>
               <bpmnos:restrictions>
-                <bpmnos:restriction id="Restriction_00240vk" scope="completion" expression="( wait_type == &#34;rest&#34; ) || ( timestamp + min_rest_duration &#62; earliest_visit)" />
-                <bpmnos:restriction id="Restriction_27imf7e" scope="completion" expression="( wait_type != &#34;wait&#34; ) || ( timestamp + min_break_duration &#62; earliest_visit)" />
+                <bpmnos:restriction id="Restriction_00240vk" scope="completion" expression="( wait_type == &#34;rest&#34; ) || ( time + min_rest_duration &#62; earliest_visit)" />
+                <bpmnos:restriction id="Restriction_27imf7e" scope="completion" expression="( wait_type != &#34;wait&#34; ) || ( time + min_break_duration &#62; earliest_visit)" />
               </bpmnos:restrictions>
               <bpmnos:decisions>
                 <bpmnos:decision id="Decision_0udt1qg" condition="wait_type in [&#34;wait&#34;, &#34;break&#34;, &#34;rest&#34;]" />
@@ -174,7 +181,7 @@
                 <bpmnos:restriction id="Restriction_0bk1998" scope="completion" expression="duration &#60; min_rest_duration" />
               </bpmnos:restrictions>
               <bpmnos:decisions>
-                <bpmnos:decision id="Decision_1k9jgn5" condition="max{ earliest_visit - timestamp - delta + 1, min_break_duration} &#60;= duration &#60;= max{min_break_duration, latest_visit - timestamp}, delta | duration" />
+                <bpmnos:decision id="Decision_1k9jgn5" condition="max{ earliest_visit - time - delta + 1, min_break_duration} &#60;= duration &#60;= max{min_break_duration, latest_visit - time}, delta | duration" />
               </bpmnos:decisions>
             </bpmnos:status>
             <bpmnos:guidance type="choice">
@@ -190,7 +197,7 @@
           <bpmn2:extensionElements>
             <bpmnos:status>
               <bpmnos:decisions>
-                <bpmnos:decision id="Decision_0cnh1uk" condition="max{ earliest_visit - timestamp - delta + 1, min_rest_duration} &#60;= duration &#60;= max{min_rest_duration, latest_visit - timestamp}, delta | duration" />
+                <bpmnos:decision id="Decision_0cnh1uk" condition="max{ earliest_visit - time - delta + 1, min_rest_duration} &#60;= duration &#60;= max{min_rest_duration, latest_visit - time}, delta | duration" />
               </bpmnos:decisions>
             </bpmnos:status>
             <bpmnos:guidance type="choice">
@@ -222,7 +229,7 @@
       <bpmn2:sequenceFlow id="Flow_12gilga" name="too early" sourceRef="WaitBeforeVisitGateway" targetRef="WaitActivity">
         <bpmn2:extensionElements>
           <bpmnos:restrictions>
-            <bpmnos:restriction id="Restriction_1a83q9b" expression="timestamp &#60; earliest_visit" />
+            <bpmnos:restriction id="Restriction_1a83q9b" expression="time &#60; earliest_visit" />
           </bpmnos:restrictions>
         </bpmn2:extensionElements>
       </bpmn2:sequenceFlow>
@@ -235,7 +242,7 @@
       <bpmn2:sequenceFlow id="Flow_14ovnm9" name="not too early" sourceRef="WaitBeforeVisitGateway" targetRef="VisitGateway">
         <bpmn2:extensionElements>
           <bpmnos:restrictions>
-            <bpmnos:restriction id="Restriction_3lfp9vl" expression="timestamp &#62;= earliest_visit" />
+            <bpmnos:restriction id="Restriction_3lfp9vl" expression="time &#62;= earliest_visit" />
           </bpmnos:restrictions>
         </bpmn2:extensionElements>
       </bpmn2:sequenceFlow>
@@ -266,7 +273,7 @@
                 <bpmnos:attribute id="DriveDuration" type="decimal" name="duration := max{ 0, min{ remaining_driving_time, max_driving_since_rest - driving_since_rest, max_elapsed_since_rest - (timestamp - last_rest ), max_elapsed_since_break - (timestamp - last_break) } }" />
               </bpmnos:attributes>
               <bpmnos:operators>
-                <bpmnos:operator id="Operator_2lnpndi" expression="timestamp += duration" />
+                <bpmnos:operator id="Operator_2lnpndi" expression="timestamp := time + duration" />
                 <bpmnos:operator id="Operator_2b2lsd5" expression="driving_since_rest += duration" />
                 <bpmnos:operator id="Operator_1ub09t4" expression="remaining_driving_time -= duration" />
                 <bpmnos:operator id="Operator_2lf74hv" expression="loop := (remaining_driving_time &#62; 0)" />
@@ -299,7 +306,7 @@
             <bpmn2:extensionElements>
               <bpmnos:status>
                 <bpmnos:restrictions>
-                  <bpmnos:restriction id="Restriction_3ngmssf" scope="completion" expression="( offduty_type == &#34;rest&#34; ) || ( (driving_since_rest &#60; max_driving_since_rest) &#38;&#38;  ( timestamp + min_break_duration &#60; last_rest + max_elapsed_since_rest ) )" />
+                  <bpmnos:restriction id="Restriction_3ngmssf" scope="completion" expression="( offduty_type == &#34;rest&#34; ) || ( (driving_since_rest &#60; max_driving_since_rest) &#38;&#38;  ( time + min_break_duration &#60; last_rest + max_elapsed_since_rest ) )" />
                 </bpmnos:restrictions>
                 <bpmnos:decisions>
                   <bpmnos:decision id="Decision_2hfddnu" condition="offduty_type in [&#34;break&#34;,&#34;rest&#34;]" />
@@ -318,7 +325,7 @@
             <bpmn2:extensionElements>
               <bpmnos:status>
                 <bpmnos:operators>
-                  <bpmnos:operator id="Operator_3midv9s" expression="timestamp += duration" />
+                  <bpmnos:operator id="Operator_3midv9s" expression="timestamp := time + duration" />
                   <bpmnos:operator id="Operator_2g12etq" expression="last_break := timestamp" />
                 </bpmnos:operators>
               </bpmnos:status>
@@ -330,7 +337,7 @@
             <bpmn2:extensionElements>
               <bpmnos:status>
                 <bpmnos:operators>
-                  <bpmnos:operator id="Operator_3fkas66" expression="timestamp += duration" />
+                  <bpmnos:operator id="Operator_3fkas66" expression="timestamp := time + duration" />
                   <bpmnos:operator id="Operator_0d2otbv" expression="last_rest := timestamp" />
                   <bpmnos:operator id="Operator_3fj94i1" expression="last_break := timestamp" />
                   <bpmnos:operator id="Operator_3ur69m9" expression="driving_since_rest := 0" />
@@ -373,7 +380,7 @@
                   <bpmnos:restriction id="Restriction_3sdqo4p" scope="completion" expression="duration &#60; min_rest_duration" />
                 </bpmnos:restrictions>
                 <bpmnos:decisions>
-                  <bpmnos:decision id="Decision_02uohv2" condition="min_break_duration &#60;= duration &#60;= max{min_break_duration, latest_visit - remaining_driving_time - timestamp}, delta | duration" />
+                  <bpmnos:decision id="Decision_02uohv2" condition="min_break_duration &#60;= duration &#60;= max{min_break_duration, latest_visit - remaining_driving_time - time}, delta | duration" />
                 </bpmnos:decisions>
               </bpmnos:status>
               <bpmnos:guidance type="choice">
@@ -389,7 +396,7 @@
             <bpmn2:extensionElements>
               <bpmnos:status>
                 <bpmnos:decisions>
-                  <bpmnos:decision id="Decision_0395q7p" condition="min_rest_duration &#60;= duration &#60;= max{min_rest_duration, latest_visit - remaining_driving_time - timestamp}, delta | duration" />
+                  <bpmnos:decision id="Decision_0395q7p" condition="min_rest_duration &#60;= duration &#60;= max{min_rest_duration, latest_visit - remaining_driving_time - time}, delta | duration" />
                 </bpmnos:decisions>
               </bpmnos:status>
               <bpmnos:guidance type="choice">

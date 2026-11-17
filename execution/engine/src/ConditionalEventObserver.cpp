@@ -1,5 +1,6 @@
 #include "ConditionalEventObserver.h"
 #include "DataUpdate.h"
+#include <cassert>
 #include "model/bpmnos/src/Model.h"
 #include "Engine.h"
 #include "SystemState.h"

@@ -2,16 +2,19 @@
 #include "Engine.h"
 #include "execution/data/src/DataProvider.h"
 #include "execution/utility/src/erase.h"
+#include "model/bpmnos/src/extensionElements/ExtensionElements.h"
 
 using namespace BPMNOS::Execution;
 
-SystemState::SystemState(const Engine* engine, const Scenario* scenario, BPMNOS::number currentTime)
+SystemState::SystemState(const Engine* engine, const Scenario* scenario, BPMNOS::number time)
   : engine(engine)
   , scenario(scenario)
-  , currentTime(currentTime)
   , objective(0)
   , stateMachine(std::make_shared<StateMachine>(this, scenario->dataProvider->getGlobals(*scenario)))
 {
+  // the time is a global attribute, which the data provider gives no value
+  stateMachine->ownedData.attributes[BPMNOS::Model::ExtensionElements::Index::Time] = time;
+
   // the values the globals are created with never pass through setValue, so the objective is seeded with
   // them here; no change is notified, the run not having begun and no token being able to observe it
   auto& globals = stateMachine->ownedData;
@@ -25,7 +28,6 @@ SystemState::SystemState(const Engine* engine, const Scenario* scenario, BPMNOS:
 SystemState::SystemState(const Engine* engine, const Scenario* scenario, const SystemState* other)
   : engine(engine)
   , scenario(scenario)
-  , currentTime(other->currentTime)
   , objective(other->objective)
   , instantiationCounter(other->instantiationCounter)
 {
@@ -121,7 +123,7 @@ SystemState::~SystemState() {
 }
 
 BPMNOS::number SystemState::getTime() const {
-  return currentTime;
+  return stateMachine->ownedData.attributes[BPMNOS::Model::ExtensionElements::Index::Time].value();
 }
 
 BPMNOS::number SystemState::getObjective() const {
@@ -129,7 +131,7 @@ BPMNOS::number SystemState::getObjective() const {
 }
 
 void SystemState::increaseTimeTo(BPMNOS::number time) {
-  assert(time > currentTime);
-  currentTime = time;
+  assert(time > getTime());
+  stateMachine->ownedData.attributes[BPMNOS::Model::ExtensionElements::Index::Time] = time;
 }
 

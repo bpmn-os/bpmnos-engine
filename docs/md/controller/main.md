@@ -13,7 +13,7 @@ A controller has to @ref BPMNOS::Execution::Controller::connect "connect" to an 
   - @ref BPMNOS::Execution::Observable::Type::EntryRequest  "enter a node",
   - @ref BPMNOS::Execution::Observable::Type::ChoiceRequest "make a choice", or to
   - @ref BPMNOS::Execution::Observable::Type::MessageDeliveryRequest"deliver a message",
-- @ref BPMNOS::Execution::DataUpdate "updates of data attribute values or global attribute values",
+- @ref BPMNOS::Execution::DataUpdate "updates of data attribute values or global attribute values", the update of the global attribute `time` at every clock tick included,
 - @ref BPMNOS::Execution::SequentialPerformerUpdate "sequential performers becoming busy or idle", and
 - @ref BPMNOS::Execution::Message "messages sent".
 

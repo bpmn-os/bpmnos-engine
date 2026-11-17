@@ -4,6 +4,7 @@
 #include "model/utility/src/CSVReader.h"
 #include "model/utility/src/ObjectRegistry.h"
 #include "model/utility/src/InputEncoder.h"
+#include "model/utility/src/Keywords.h"
 #include <algorithm>
 #include <ranges>
 #include <stdexcept>
@@ -88,6 +89,10 @@ InstanceDataReader::InstanceDataReader(const BPMNOS::Model::Model* model, const 
     if ( instanceIdentifier.empty() ) {
       throw std::runtime_error("InstanceDataReader: instance required for node '" + nodeId + "'");
     }
+    // the indices of false and true in the string registry name no instance, so that a notification may name none
+    if ( instanceIdentifier == BPMNOS::Keyword::False || instanceIdentifier == BPMNOS::Keyword::True ) {
+      throw std::runtime_error("InstanceDataReader: illegal instance identifier '" + instanceIdentifier + "'");
+    }
 
     row.instanceId = (size_t)BPMNOS::to_number(instanceIdentifier, STRING);
     row.node = findNode(nodeId);
@@ -151,6 +156,9 @@ std::pair<const BPMNOS::Model::Attribute*, std::string> InstanceDataReader::look
   }
 
   auto attribute = extensionElements->attributeRegistry[attributeName];
+  if ( attribute->category == BPMNOS::Model::Attribute::Category::DATA && !attribute->isObject() && attribute->index == BPMNOS::Model::ExtensionElements::Index::Time ) {
+    throw std::runtime_error("InstanceDataReader: the time is maintained by the engine and must not be given");
+  }
   if ( !std::holds_alternative<std::monostate>(attribute->initialization) ) {
     throw std::runtime_error("InstanceDataReader: attribute '" + attributeName + "' is assigned by the model and must not be given");
   }
@@ -397,6 +405,9 @@ void InstanceDataReader::evaluateGlobal(const std::string& initialization, const
   }
   if ( !attribute ) {
     throw std::runtime_error("InstanceDataReader: unknown global attribute '" + attributeName + "'");
+  }
+  if ( attribute->index == BPMNOS::Model::ExtensionElements::Index::Time ) {
+    throw std::runtime_error("InstanceDataReader: the time is maintained by the engine and must not be given");
   }
   if ( !std::holds_alternative<std::monostate>(attribute->initialization) ) {
     throw std::runtime_error("InstanceDataReader: global attribute '" + attributeName + "' is assigned by the model and must not be given");

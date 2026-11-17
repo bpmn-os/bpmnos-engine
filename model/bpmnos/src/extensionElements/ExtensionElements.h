@@ -30,9 +30,10 @@ public:
   AttributeRegistry attributeRegistry; ///< Registry allowing to look up all status and data attributes by their names.
   const BPMN::Scope* parent;
 
-  /// Index of the timestamp among the status attributes.
+  /// Index of the timestamp among the status attributes and of the time among the data attributes.
   struct Index {
     static constexpr size_t Timestamp = 0; 
+    static constexpr size_t Time = 0; 
   };
   /// Position of the instance among the data attributes a process declares; its index in the data of every
   /// scope is @ref BPMNOS::Model::Model::instanceIndex.

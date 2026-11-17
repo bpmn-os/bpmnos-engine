@@ -72,7 +72,7 @@ The static data provider uses a CSV file with three columns:
 INSTANCE_ID; NODE_ID; INITIALIZATION
 ```
 
-- **INSTANCE_ID**: The instance identifier (string). Leave empty for global attributes.
+- **INSTANCE_ID**: The instance identifier (string), which must be neither `false` nor `true`. Leave empty for global attributes.
 - **NODE_ID**: The BPMN node ID (process, activity, subprocess, etc.). Leave empty for global attributes.
 - **INITIALIZATION**: An assignment expression in the format `attribute := expression`.
 
@@ -116,7 +116,7 @@ The content object of a message, error or escalation, named after it, is declare
 
 ### Global Attributes
 
-Global attributes are specified with empty INSTANCE_ID and NODE_ID:
+Global attributes are specified with empty INSTANCE_ID and NODE_ID. The global attribute `time` is maintained by the engine and takes no value from the instance data:
 
 ```plaintext
 INSTANCE_ID; NODE_ID; INITIALIZATION
@@ -181,7 +181,7 @@ The dynamic data provider uses a CSV file with four columns:
 INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE
 ```
 
-- **INSTANCE_ID**: The instance identifier (string). Leave empty for global attributes.
+- **INSTANCE_ID**: The instance identifier (string), which must be neither `false` nor `true`. Leave empty for global attributes.
 - **NODE_ID**: The BPMN node ID (process, activity, subprocess, etc.). Leave empty for global attributes.
 - **INITIALIZATION**: An assignment expression in the format `attribute := expression`.
 - **DISCLOSURE**: The time at which this attribute value becomes known (constant expression). Leave empty for immediate disclosure (time 0).
@@ -215,7 +215,7 @@ Instance_2; Process_1; priority := 3; 20
 
 ### Global Attributes
 
-Global attributes are specified with empty INSTANCE_ID and NODE_ID:
+Global attributes are specified with empty INSTANCE_ID and NODE_ID. The global attribute `time` is maintained by the engine and takes no value from the instance data:
 
 ```plaintext
 INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE
@@ -248,7 +248,7 @@ The stochastic data provider uses a CSV file with up to six columns:
 INSTANCE_ID; NODE_ID; INITIALIZATION; DISCLOSURE; READY; COMPLETION
 ```
 
-- **INSTANCE_ID**: The instance identifier (string). Leave empty for global attributes.
+- **INSTANCE_ID**: The instance identifier (string), which must be neither `false` nor `true`. Leave empty for global attributes.
 - **NODE_ID**: The BPMN node ID (process, activity, subprocess, etc.). Leave empty for global attributes.
 - **INITIALIZATION**: An assignment expression in the format `attribute := expression`. Evaluated at parse time. May contain random functions and can reference any attributes previously parse-time evaluated in earlier CSV rows.
 - **DISCLOSURE**: The time at which this attribute value becomes known. Leave empty for immediate disclosure.

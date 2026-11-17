@@ -14,7 +14,6 @@ template <typename... WeakPtrs>
 CachedCandidates<WeakPtrs...>::CachedCandidates(std::shared_ptr<Evaluator> evaluator)
   : Candidates<WeakPtrs...>(std::move(evaluator))
 {
-  timestamp = std::numeric_limits<BPMNOS::number>::lowest();
 }
 
 template <typename... WeakPtrs>
@@ -56,20 +55,11 @@ void CachedCandidates<WeakPtrs...>::addEvaluation(WeakPtrs... weak_ptrs, std::sh
   this->candidates.emplace( (reward.has_value() ? (double)reward.value() : -std::numeric_limits<double>::infinity() ), weak_ptrs..., decision->weak_from_this(), decision->evaluation);
 
   // weak-index the evaluation for invalidation; invariant decisions never invalidate, so they need no index
-  if ( decision->timeDependent && decision->dataDependencies.empty() ) {
-    timeDependentEvaluations.emplace_back(weak_ptrs..., decision );
-  }
-  else if ( !decision->timeDependent && decision->dataDependencies.size() ) {
+  if ( decision->dataDependencies.size() ) {
     auto token = decision->token.lock();
     assert( token );
     BPMNOS::number instanceId = token->owner->root->instance.value();
     dataDependentEvaluations[(long unsigned int)instanceId].emplace_back(weak_ptrs..., decision );
-  }
-  else if ( decision->timeDependent && decision->dataDependencies.size() ) {
-    auto token = decision->token.lock();
-    assert( token );
-    BPMNOS::number instanceId = token->owner->root->instance.value();
-    timeAndDataDependentEvaluations[(long unsigned int)instanceId].emplace_back(weak_ptrs..., decision );
   }
 }
 
@@ -152,45 +142,12 @@ template <typename... WeakPtrs>
 void CachedCandidates<WeakPtrs...>::clear() {
   this->clearDecisions();   // base: the owning `decisions` and the reward-ordered `candidates`
   candidatesWithoutEvaluations.clear();
-  timeDependentEvaluations.clear();
   dataDependentEvaluations.clear();
-  timeAndDataDependentEvaluations.clear();
 }
 
 template <typename... WeakPtrs>
 void CachedCandidates<WeakPtrs...>::dataUpdate(const DataUpdate* update) {
   removeDependentEvaluations(update,dataDependentEvaluations,candidatesWithoutEvaluations);
-  removeDependentEvaluations(update,timeAndDataDependentEvaluations,candidatesWithoutEvaluations);
-}
-
-template <typename... WeakPtrs>
-void CachedCandidates<WeakPtrs...>::advanceTime(BPMNOS::number currentTime) {
-  if ( currentTime > timestamp ) {
-    timestamp = currentTime;
-    clockTick();
-  }
-}
-
-template <typename... WeakPtrs>
-void CachedCandidates<WeakPtrs...>::clockTick() {
-  for ( auto& decisionTuple : timeDependentEvaluations ) {
-    if ( auto decision = std::get<sizeof...(WeakPtrs)>(decisionTuple).lock() ) {
-      decision->evaluation.reset(); // drops the candidate; re-queues the decision for re-evaluation
-      std::apply([this](auto&&... args) { this->candidatesWithoutEvaluations.emplace_back(std::forward<decltype(args)>(args)...); }, decisionTuple);
-    }
-  }
-
-  timeDependentEvaluations.clear();
-
-  for ( auto& evaluations : timeAndDataDependentEvaluations.evaluations ) {
-    for ( auto& decisionTuple : evaluations ) {
-      if ( auto decision = std::get<sizeof...(WeakPtrs)>(decisionTuple).lock() ) {
-        decision->evaluation.reset();
-        std::apply([this](auto&&... args) { this->candidatesWithoutEvaluations.emplace_back(std::forward<decltype(args)>(args)...); }, decisionTuple);
-      }
-    }
-  }
-  timeAndDataDependentEvaluations.clear();
 }
 
 template class BPMNOS::Execution::CachedCandidates< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> >;

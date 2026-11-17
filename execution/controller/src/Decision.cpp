@@ -6,7 +6,6 @@ using namespace BPMNOS::Execution;
 
 Decision::Decision(const DecisionRequest* request, Evaluator* evaluator)
   : request(request->weak_from_this())
-  , timeDependent(false)
   , evaluator(evaluator)
 {
 }
@@ -18,14 +17,10 @@ bool Decision::expired() const {
 }
 
 void Decision::determineDependencies(const std::set<const BPMNOS::Model::Attribute*>& dependencies) {
+  // an evaluation depending on time depends on the global attribute `time`, which is a data attribute like any other
   for ( auto attribute : dependencies ) {
-    if ( attribute->category != BPMNOS::Model::Attribute::Category::STATUS ) {
-      if (  !attribute->isImmutable ) {
-        dataDependencies.insert(attribute);
-      }
-    }
-    else if ( !attribute->isObject() && attribute->index == BPMNOS::Model::ExtensionElements::Index::Timestamp ) {
-      timeDependent = true;
+    if ( attribute->category != BPMNOS::Model::Attribute::Category::STATUS && !attribute->isImmutable ) {
+      dataDependencies.insert(attribute);
     }
   }
 }

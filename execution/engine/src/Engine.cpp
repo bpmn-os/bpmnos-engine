@@ -324,7 +324,7 @@ void Engine::process(const ReadyEvent* event) {
 
   auto& status = const_cast<ReadyEvent*>(event)->statusAttributes;
   token->status = std::move(status);
-  token->status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
+  token->status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->getTime();
 
   if ( token->node->represents<BPMN::Process>() ) {
     // the token at a process starts the instance: the data owned by the state machine of the instance is
@@ -369,7 +369,7 @@ void Engine::process(const EntryEvent* event) {
   assert( token_ptr );
   Token* token = const_cast<Token*>(token_ptr.get());
   token->decisionRequest.reset();
-  token->status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
+  token->status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->getTime();
   if ( BPMNOS::Model::Model::isSequentialActivity(token->node) ) {
     token->occupySequentialPerformer();
   }
@@ -391,7 +391,7 @@ void Engine::process(const ChoiceEvent* event) {
   assert( token_ptr );
   Token* token = const_cast<Token*>(token_ptr.get());
   token->decisionRequest.reset();
-  token->status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
+  token->status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->getTime();
   assert( token->node->represents<BPMNOS::Model::DecisionTask>() );
 
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
@@ -430,7 +430,7 @@ void Engine::process(const MessageDeliveryEvent* event) {
   assert( token_ptr );
   Token* token = const_cast<Token*>(token_ptr.get());
   token->decisionRequest.reset();
-  token->status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->currentTime;
+  token->status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = systemState->getTime();
   assert( token->node->represents<BPMN::FlowNode>() );
 
   auto message_ptr = event->message.lock();
@@ -470,6 +470,10 @@ void Engine::process([[maybe_unused]] const ClockTickEvent* event) {
 //std::cerr << "ClockTickEvent " << std::endl;
   systemState->increaseTimeTo(event->time);
 
+  // the time is a global attribute, whose update concerns every instance and is written by none
+  std::vector<const BPMNOS::Model::Attribute*> updatedAttributes = { getModel()->attributes[BPMNOS::Model::ExtensionElements::Index::Time].get() };
+  notify( DataUpdate( 0, updatedAttributes ) );
+
   // trigger tokens awaiting timer
   while ( !systemState->tokensAwaitingTimer.empty() ) {
     auto it = systemState->tokensAwaitingTimer.begin();
@@ -492,7 +496,7 @@ void Engine::process([[maybe_unused]] const TerminationEvent* event) {
 
 
 BPMNOS::number Engine::getCurrentTime() const {
-  return systemState->currentTime;
+  return systemState->getTime();
 }
 
 const SystemState* Engine::getSystemState() const {

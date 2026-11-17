@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bpmnos="https://bpmnos.telematique.eu" id="sample-diagram" targetNamespace="http://bpmn.io/schema/bpmn" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+  <bpmn2:dataStore id="DataStore_Globals" name="Globals">
+    <bpmn2:extensionElements>
+      <bpmnos:attributes>
+        <bpmnos:attribute id="Time" type="decimal" name="time" />
+      </bpmnos:attributes>
+    </bpmn2:extensionElements>
+  </bpmn2:dataStore>
   <bpmn2:process id="EarliestArrival_Process" isExecutable="true">
     <bpmn2:extensionElements>
       <bpmnos:status>
@@ -55,12 +62,12 @@
               <bpmnos:attribute id="Attribute_265dljm" type="decimal[]" name="departures" />
             </bpmnos:attributes>
             <bpmnos:restrictions>
-              <bpmnos:restriction id="Restriction_2pi7p4k" scope="completion" expression="departure &#62;= timestamp" />
+              <bpmnos:restriction id="Restriction_2pi7p4k" scope="completion" expression="departure &#62;= time" />
             </bpmnos:restrictions>
             <bpmnos:operators>
               <bpmnos:operator id="Operator_1a0ojnh" expression="next_location := destinations[index]" />
               <bpmnos:operator id="Operator_2geg86m" expression="departures := departures(current_location,next_location)" />
-              <bpmnos:operator id="Operator_332go68" expression="departure := min{ d | d in departures, d &#62;= timestamp }" />
+              <bpmnos:operator id="Operator_332go68" expression="departure := min{ d | d in departures, d &#62;= time }" />
               <bpmnos:operator id="Operator_3ndqeio" expression="duration := durations(current_location,next_location)" />
             </bpmnos:operators>
             <bpmnos:decisions>
@@ -72,7 +79,7 @@
               <bpmnos:attribute id="Attribute_144235o" type="decimal" name="heuristic" objective="minimize" weight="1" />
             </bpmnos:attributes>
             <bpmnos:operators>
-              <bpmnos:operator id="Operator_3267jc2" expression="heuristic := departure - timestamp + duration + heuristic(next_location)" />
+              <bpmnos:operator id="Operator_3267jc2" expression="heuristic := departure - time + duration + heuristic(next_location)" />
             </bpmnos:operators>
           </bpmnos:guidance>
         </bpmn2:extensionElements>
@@ -83,7 +90,7 @@
         <bpmn2:extensionElements>
           <bpmnos:status>
             <bpmnos:operators>
-              <bpmnos:operator id="Operator_25d7p3p" expression="timestamp += duration" />
+              <bpmnos:operator id="Operator_25d7p3p" expression="timestamp := time + duration" />
               <bpmnos:operator id="Operator_37ibeme" expression="current_location := next_location" />
             </bpmnos:operators>
           </bpmnos:status>

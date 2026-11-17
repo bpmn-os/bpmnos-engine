@@ -30,8 +30,7 @@ public:
     return evaluation ? evaluation->value : std::nullopt;
   }
 
-  bool timeDependent;
-  std::set<const BPMNOS::Model::Attribute*> dataDependencies;
+  std::set<const BPMNOS::Model::Attribute*> dataDependencies; ///< The data and global attributes, the time included, that the evaluation depends on
 protected:
   void determineDependencies(const std::set<const BPMNOS::Model::Attribute*>& dependencies);
   Evaluator* evaluator;

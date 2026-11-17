@@ -40,7 +40,7 @@ public:
   void createDataStores() override;
 
   void createInputs();        ///< Create the inputs the data stores declare, and register each by its name.
-  void createGlobals();       ///< Create the global attributes the data stores declare, the objective first.
+  void createGlobals();       ///< Create the global attributes the data stores declare, the time first.
 
   /// @brief Returns the file names of the inputs declared by the given model.
   /// @param root The parsed BPMN model tree.
@@ -110,7 +110,7 @@ public:
 
   std::vector< std::unique_ptr<LookupTable> > lookupTables; ///< Vector containing the lookup tables the inputs of type `lookup` provide.
   std::vector< std::unique_ptr<Input> > inputs; ///< Vector containing the inputs declared in the model.
-  std::vector< std::unique_ptr<Attribute> > attributes; ///< Vector containing the scalar global attributes declared for the model.
+  std::vector< std::unique_ptr<Attribute> > attributes; ///< Vector containing the scalar global attributes declared for the model, the time first.
   std::vector< std::unique_ptr<Attribute> > objects; ///< Vector containing the global objects declared for the model.
 
   /// The index of the instance in the data of every scope: the global attributes are the data attributes with

@@ -33,9 +33,9 @@ public:
    *
    * @param engine The engine that will execute this state
    * @param scenario The scenario of the run, whose data provider supplies the global values
-   * @param currentTime The initial simulation time (default: 0)
+   * @param time The initial value of the global attribute `time` (default: 0)
    */
-  SystemState(const Engine* engine, const Scenario* scenario, BPMNOS::number currentTime = 0);
+  SystemState(const Engine* engine, const Scenario* scenario, BPMNOS::number time = 0);
 
   /**
    * @brief Copy constructor for cloning a SystemState to a different Engine/Scenario.
@@ -58,12 +58,7 @@ public:
   const Scenario* scenario;
 
   /**
-   * @brief Timestamp holding the point in time that the engine is in (this is usually representing now).
-   */
-  BPMNOS::number currentTime;
-
-  /**
-   * @brief Function returning the current time.
+   * @brief Function returning the current time, the value of the global attribute `time`.
    */
   BPMNOS::number getTime() const;
 
@@ -163,6 +158,7 @@ private:
   SystemState() = delete;
 
 
+  /// Sets the global attribute `time` to a later time.
   void increaseTimeTo(BPMNOS::number time);
   std::unordered_map< const BPMN::Process*, size_t > instantiationCounter; ///< Counter of the instances created for each process, used to disambiguate the identifier of an instance created by a trigger
 };

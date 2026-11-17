@@ -23,7 +23,7 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category cat
 {
 //std::cerr << "Attribute: " << name << std::endl;
   if ( isObject() ) {
-    if ( id == Keyword::Instance || id == Keyword::Timestamp ) {
+    if ( id == Keyword::Instance || id == Keyword::Timestamp || id == Keyword::Time ) {
       throw std::runtime_error("Attribute: '" + id + "' must not be an object");
     }
   }
@@ -46,6 +46,9 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category cat
   }
   if ( id == Keyword::Timestamp && index != ExtensionElements::Index::Timestamp ) {
     throw std::runtime_error("Attribute: timestamp must be first status attribute");
+  }
+  if ( id == Keyword::Time && ( category != Category::DATA || index != ExtensionElements::Index::Time ) ) {
+    throw std::runtime_error("Attribute: time must be first global attribute");
   }
   if ( auto expression = std::get_if< std::unique_ptr<const Expression> >(&initialization) ) {
     // expression requires pointer to target attribute
@@ -73,7 +76,8 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category cat
     weight = 0;
   }
   
-  isImmutable = (id != Keyword::Timestamp);
+  // the engine changes the timestamp and the time as the run proceeds
+  isImmutable = (id != Keyword::Timestamp && id != Keyword::Time);
 }
 
 Attribute::Attribute(std::string& name, const Schema& schema, AttributeRegistry& attributeRegistry)

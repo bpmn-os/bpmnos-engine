@@ -1,4 +1,5 @@
 #include "Choice.h"
+#include "ExtensionElements.h"
 #include <cmath>
 #include "model/utility/src/string_utility.h"
 #include "model/utility/src/InputEncoder.h"
@@ -66,6 +67,9 @@ Choice::Choice(XML::bpmnos::tDecision* decision, const AttributeRegistry& attrib
     throw std::runtime_error("Choice: no enumeration provided for string");
   }
 
+  if ( attribute->category == Attribute::Category::DATA && !attribute->isObject() && attribute->index == ExtensionElements::Index::Time ) {
+    throw std::runtime_error("Choice: the time must not be chosen");
+  }
   attribute->isImmutable = false;
 }
 

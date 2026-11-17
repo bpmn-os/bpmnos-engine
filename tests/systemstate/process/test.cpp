@@ -60,7 +60,7 @@ SCENARIO( "SystemState copy for simple process", "[systemstate][process]" ) {
 
 
       THEN( "The copy has the same numeric values" ) {
-        REQUIRE( copiedState.currentTime == originalState->currentTime );
+        REQUIRE( copiedState.getTime() == originalState->getTime() );
         REQUIRE( copiedState.stateMachine->ownedData.attributes.size() == originalState->stateMachine->ownedData.attributes.size() );
       }
 

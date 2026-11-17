@@ -22,8 +22,8 @@ struct Event;
  * and those inherited from the enclosing scopes, hold on the status the token has with the current time as its
  * timestamp, as a conditional event is triggered as soon as its condition holds. A token whose restrictions do not
  * hold waits among the tokens awaiting entry of the system state. It is checked again whenever a data update
- * concerns an attribute its restrictions depend on and, if they depend on the timestamp, whenever time advances.
- * A token whose restrictions never hold waits until the run ends.
+ * concerns an attribute its restrictions depend on, which includes the update of the global attribute `time` at
+ * every clock tick if they depend on it. A token whose restrictions never hold waits until the run ends.
  *
  * The observer supplies one entry event at a time, which the engine dispatches before the events of the
  * controller, so that the entry is notified and processed like any other event.
@@ -46,10 +46,8 @@ public:
   std::shared_ptr<Event> dispatchEvent();
 protected:
   SystemState* systemState;
-  BPMNOS::number time; ///< The time at which the tokens whose restrictions depend on the timestamp were last checked
   auto_list< std::weak_ptr<Token> > candidates; ///< Tokens awaiting entry to be checked at the next dispatch
   void schedule(const std::vector<const BPMNOS::Model::Attribute*>& attributes, auto_list< std::weak_ptr<Token> >& waitingTokens);
-  static bool isTimeDependent(const Token* token); ///< Returns true if the entry restrictions of the token depend on the timestamp
 };
 
 } // namespace BPMNOS::Execution

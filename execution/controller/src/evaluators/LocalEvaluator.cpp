@@ -101,7 +101,7 @@ std::shared_ptr<Evaluation> LocalEvaluator::evaluate(EntryDecision* decision) {
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
   Status status = token->status;
-  status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
+  status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->getTime();
   Data data(*token->data);
   double evaluation = (double)extensionElements->getObjective(status,data);
 //std::cerr << "Initial local evaluation at node " << token->node->id << ": " << evaluation << std::endl;
@@ -126,7 +126,7 @@ std::shared_ptr<Evaluation> LocalEvaluator::evaluate(ChoiceDecision* decision) {
 
   assert( dynamic_cast<const ChoiceEvent*>(decision) );
   Status status(token->status);
-  status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
+  status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->getTime();
   Data data(*token->data);
   // apply choices
   for (size_t i = 0; i < extensionElements->choices.size(); i++) {
@@ -149,7 +149,7 @@ std::shared_ptr<Evaluation> LocalEvaluator::evaluate(MessageDeliveryDecision* de
   auto extensionElements = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>();
   assert(extensionElements);
   Status status = token->status;
-  status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->currentTime;
+  status.attributes[BPMNOS::Model::ExtensionElements::Index::Timestamp] = token->owner->systemState->getTime();
   Data data(*token->data);
   double evaluation = (double)extensionElements->getObjective(status,data);
 

@@ -19,10 +19,11 @@ namespace BPMNOS::Execution {
 /**
  * @brief Abstract base class for cached local evaluations of candidate decisions of decision requests.
  *
- * Collects pending decisions and keeps each evaluation in the reward-ordered `candidates` list until a clock
- * tick or a relevant data update invalidates it, so unchanged decisions are not re-evaluated. The base owns
+ * Collects pending decisions and keeps each evaluation in the reward-ordered `candidates` list until a relevant
+ * data update invalidates it, so unchanged decisions are not re-evaluated. An evaluation depending on time depends
+ * on the global attribute `time`, whose update at every clock tick is a data update like any other. The base owns
  * every decision in `decisions`; the lists here hold only weak references that track which decisions await
- * evaluation and which must be re-evaluated when time or referenced data change. Concrete per-type sources
+ * evaluation and which must be re-evaluated when referenced data change. Concrete per-type sources
  * derive this and implement `evaluateCandidates` — collecting candidates via `notice`/`addDecision` and
  * evaluating them via `evaluateDecisions`/`addEvaluation`.
  */
@@ -38,20 +39,16 @@ public:
 
   /// Register a yet-unevaluated decision: take ownership in the base `decisions` and queue a weak reference for evaluation.
   void addDecision(WeakPtrs..., std::shared_ptr<Decision> decision);
-  /// List an already-owned, evaluated decision in the reward-ordered `candidates` and weak-index it under its dependency category.
+  /// List an already-owned, evaluated decision in the reward-ordered `candidates` and weak-index it if it has data dependencies.
   void addEvaluation(WeakPtrs..., std::shared_ptr<Decision> decision);
   /// Evaluate the pending decisions in turn (removing each); return the first event a callback dispatches, or nullptr.
   std::shared_ptr<Event> evaluateDecisions(const Evaluate& evaluate);
-  /// Advance to currentTime; if the clock ticked, re-issue the time-dependent decisions for re-evaluation.
-  void advanceTime(BPMNOS::number currentTime);
   /// Handle an observable: a DataUpdate invalidates the affected evaluations.
   void notice(const Observable* observable) override;
   /// Clear the cached decisions and their weak indexes; derived sources override to also clear what they own (calling this base first).
   virtual void clear();
 
 private:
-  BPMNOS::number timestamp; ///< Time of the most recent clock tick applied.
-  void clockTick(); ///< Re-issue the time-dependent decisions for re-evaluation.
   void dataUpdate(const DataUpdate* update);
   bool intersect(const std::vector<const BPMNOS::Model::Attribute*>& first, const std::set<const BPMNOS::Model::Attribute*>& second) const;
   void removeObsolete(const std::vector<const BPMNOS::Model::Attribute*>& attributes, auto_list< WeakPtrs..., std::weak_ptr<Decision> >& evaluation, auto_list< WeakPtrs..., std::weak_ptr<Decision> >& unevaluatedDecisions);
@@ -79,9 +76,7 @@ private:
   std::shared_ptr<Event> applyEvaluate(const Evaluate& evaluate, const std::tuple< WeakPtrs..., std::weak_ptr<Decision> >& tuple, std::shared_ptr<Decision> decision, std::index_sequence<I...>);
 
   auto_list< WeakPtrs..., std::weak_ptr<Decision> > candidatesWithoutEvaluations; ///< Weak index of decisions awaiting evaluation.
-  auto_list< WeakPtrs..., std::weak_ptr<Decision> > timeDependentEvaluations;     ///< Weak index of evaluated time-dependent decisions.
   InstanceEvaluations dataDependentEvaluations;        ///< Per-instance weak index of evaluated data-dependent decisions.
-  InstanceEvaluations timeAndDataDependentEvaluations; ///< Per-instance weak index of evaluated time-and-data-dependent decisions.
 };
 
 } // namespace BPMNOS::Execution

@@ -220,6 +220,13 @@ void Model::createGlobals() {
     }
     ( attribute->isObject() ? objects : attributes ).push_back( std::move(attribute) );
   }
+  // the time is the first global attribute, which the engine sets as the run proceeds
+  if ( attributes.empty() || attributes[ExtensionElements::Index::Time]->id != BPMNOS::Keyword::Time ) {
+    throw std::runtime_error("Model: time must be first global attribute");
+  }
+  if ( !std::holds_alternative<std::monostate>(attributes[ExtensionElements::Index::Time]->initialization) ) {
+    throw std::runtime_error("Model: time must not be initialised by the model");
+  }
   // the instance follows the scalar global attributes, objects being numbered separately
   instanceIndex = attributes.size();
 }

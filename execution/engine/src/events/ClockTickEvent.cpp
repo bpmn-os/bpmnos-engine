@@ -31,7 +31,7 @@ void ClockTickEvent::processBy(Engine* engine) const {
 
 bool ClockTickEvent::expired() const {
   // The tick is stale if live time already reached its scheduled time; processing would otherwise
-  // violate the strictly-monotonic time advance (SystemState::increaseTimeTo asserts time > currentTime).
+  // violate the strictly-monotonic time advance (SystemState::increaseTimeTo asserts that time increases).
   return time <= systemState->getTime();
 }
 

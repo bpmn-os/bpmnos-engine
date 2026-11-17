@@ -1,4 +1,5 @@
 #include "Operator.h"
+#include "ExtensionElements.h"
 #include "model/utility/src/InputEncoder.h"
 
 using namespace BPMNOS::Model;
@@ -10,6 +11,9 @@ Operator::Operator(XML::bpmnos::tOperator* operator_, const AttributeRegistry& a
   , attributeRegistry(attributeRegistry)
   , attribute(getAttribute())
 {
+  if ( attribute->category == Attribute::Category::DATA && !attribute->isObject() && attribute->index == ExtensionElements::Index::Time ) {
+    throw std::runtime_error("Operator: '" + id + "' must not assign the time");
+  }
   attribute->isImmutable = false;
 }
 
