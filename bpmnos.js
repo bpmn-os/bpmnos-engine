@@ -55,7 +55,8 @@ var bpmnos =
         [ "Objects", "extension.html#objects", null ],
         [ "Global attributes", "extension.html#global-attributes", null ],
         [ "Data attributes", "extension.html#data-attributes", null ],
-        [ "Status attributes", "extension.html#status-attributes", null ]
+        [ "Status attributes", "extension.html#status-attributes", null ],
+        [ "Default attributes", "extension.html#default-attributes", null ]
       ] ],
       [ "Restrictions", "extension.html#restrictions", [
         [ "Node restrictions", "extension.html#node-restrictions", null ],

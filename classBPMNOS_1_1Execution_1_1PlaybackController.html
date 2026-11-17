@@ -131,10 +131,10 @@ $(function(){initNavTree('classBPMNOS_1_1Execution_1_1PlaybackController.html','
  <a href="#details">More...</a></p>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The log is the JSON output of the engine, an array of records each tagged by its kind, of which the controller reads the clock ticks and the decisions and ignores every other record. A decision is a record tagged <span class="tt">event</span> whose object states its kind by the key <span class="tt">decision</span>: the entry of a child of a sequential ad-hoc subprocess, the choices made at a decision task, or the delivery of a message that is not directly addressed. Its reward is not read. A decision belongs to the time of the last clock tick before it, and a decision before the first clock tick to the time the run starts. The engine carries out everything that is not a decision itself, so that a log recorded by the engine and a log stating its decisions alone are played back alike.</p>
-<p>A decision is due once the run has reached its time, and a decision without a time, before the first clock tick, from the start of the run. At every fetch, the controller dispatches the first due decision, in the order of the log, whose request is pending, matched by process, instance and node, and for a message delivery by a message among the candidates of the request agreeing with the origin, the header and the content the log states. An entry waits while an entry listed before it for the same performer, the performer node of the sequential ad-hoc subprocess within the instance of the entry without the event subprocesses and multi-instance activities within the performer, has not been dispatched, so that the order of the entries of every performer is kept. Every other decision is dispatched as soon as its request is pending. A decision is evaluated by the evaluator given before it is dispatched, which records its reward, and waits while it is infeasible. A decision dispatched later than its time is reported as a deviation. A decision whose request never becomes pending is not dispatched, so that the run continues until it ends otherwise and the playback is incomplete.</p>
+<p>The run reaches the times a whole number of clock ticks after its start, and a decision is scheduled at the nearest of them to its time, so that a time a solver states inexactly, slightly above or below a time the run reaches, is that time; a decision whose time lies before the start of the run, and a decision without a time, before the first clock tick, are scheduled at the start. A decision is due once the run has reached the time it is scheduled at. At every fetch, the controller dispatches the first due decision, in the order of the log, whose request is pending, matched by process, instance and node, and for a message delivery by a message among the candidates of the request agreeing with the origin, the header and the content the log states. An entry waits while an entry listed before it for the same performer, the performer node of the sequential ad-hoc subprocess within the instance of the entry without the event subprocesses and multi-instance activities within the performer, has not been dispatched, so that the order of the entries of every performer is kept. Every other decision is dispatched as soon as its request is pending. A decision is evaluated by the evaluator given before it is dispatched, which records its reward, and waits while it is infeasible. A decision dispatched later than the time it is scheduled at is reported as a deviation. A decision whose request never becomes pending is not dispatched, so that the run continues until it ends otherwise and the playback is incomplete.</p>
 <p>The playback stops at the first mismatch, by a termination event: a choice lacking the value of a choice attribute, or an entry of an activity whose entry is not decided. </p>
 
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8h_source.html#l00046">46</a> of file <a class="el" href="PlaybackController_8h_source.html">PlaybackController.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8h_source.html#l00049">49</a> of file <a class="el" href="PlaybackController_8h_source.html">PlaybackController.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="PlaybackController_8h_source.html">PlaybackController.h</a>&gt;</code></p>
 <div class="dynheader">
@@ -148,7 +148,7 @@ Classes</h2></td></tr>
 <tr class="memitem:LoggedDecision" id="r_LoggedDecision"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Execution_1_1PlaybackController_1_1LoggedDecision.html">LoggedDecision</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A decision read from a log.  <a href="structBPMNOS_1_1Execution_1_1PlaybackController_1_1LoggedDecision.html#details">More...</a><br /></td></tr>
 <tr class="memitem:Deviation" id="r_Deviation"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Execution_1_1PlaybackController_1_1Deviation.html">Deviation</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A decision dispatched later than its time, the time not being one the run reaches.  <a href="structBPMNOS_1_1Execution_1_1PlaybackController_1_1Deviation.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A decision dispatched later than the time it is scheduled at.  <a href="structBPMNOS_1_1Execution_1_1PlaybackController_1_1Deviation.html#details">More...</a><br /></td></tr>
 <tr class="memitem:Mismatch" id="r_Mismatch"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBPMNOS_1_1Execution_1_1PlaybackController_1_1Mismatch.html">Mismatch</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The decision at which the playback stops.  <a href="structBPMNOS_1_1Execution_1_1PlaybackController_1_1Mismatch.html#details">More...</a><br /></td></tr>
 </table><table class="memberdecls">
@@ -214,8 +214,8 @@ Protected Attributes</h2></td></tr>
 <tr class="memdesc:a315ac2c8ea8bfb5440d1bb1b4dca2d3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">The decisions ordered by their time, and within it by the log.  <br /></td></tr>
 <tr class="memitem:abe937533156ebe5ac0aaaf4f633bae46" id="r_abe937533156ebe5ac0aaaf4f633bae46"><td class="memItemLeft" align="right" valign="top">std::vector&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abe937533156ebe5ac0aaaf4f633bae46">dispatched</a></td></tr>
 <tr class="memdesc:abe937533156ebe5ac0aaaf4f633bae46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the decision at the same position of the sequence has been dispatched.  <br /></td></tr>
-<tr class="memitem:a3f16893d454aa1712c35c36ae6d12401" id="r_a3f16893d454aa1712c35c36ae6d12401"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::optional&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3f16893d454aa1712c35c36ae6d12401">due</a></td></tr>
-<tr class="memdesc:a3f16893d454aa1712c35c36ae6d12401"><td class="mdescLeft">&#160;</td><td class="mdescRight">The time at which the decision at the same position of the sequence became due, its time having been reached.  <br /></td></tr>
+<tr class="memitem:a57df78a248c53709363b58e52b2bc9f4" id="r_a57df78a248c53709363b58e52b2bc9f4"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a57df78a248c53709363b58e52b2bc9f4">scheduled</a></td></tr>
+<tr class="memdesc:a57df78a248c53709363b58e52b2bc9f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">The time the decision at the same position of the sequence is scheduled at, its time rounded to the nearest time the run reaches, determined when the run starts.  <br /></td></tr>
 <tr class="memitem:a1a8f920c0f92727ab49a8608d48a27eb" id="r_a1a8f920c0f92727ab49a8608d48a27eb"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1a8f920c0f92727ab49a8608d48a27eb">dispatchedCount</a> = 0</td></tr>
 <tr class="memitem:a810cf35c345cef7ab13e9545b7921e7a" id="r_a810cf35c345cef7ab13e9545b7921e7a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structBPMNOS_1_1Execution_1_1PlaybackController_1_1Deviation.html">Deviation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a810cf35c345cef7ab13e9545b7921e7a">deviations</a></td></tr>
 <tr class="memitem:aae385fd859ab81e115731f906720614e" id="r_aae385fd859ab81e115731f906720614e"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structBPMNOS_1_1Execution_1_1PlaybackController_1_1Mismatch.html">Mismatch</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aae385fd859ab81e115731f906720614e">mismatch</a></td></tr>
@@ -257,7 +257,7 @@ Protected Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00024">24</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00026">26</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
 
 </div>
 </div>
@@ -289,7 +289,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00227">227</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00228">228</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
 
 </div>
 </div>
@@ -318,7 +318,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Execution_1_1EventDispatcher.html#a24415427348e581c3633186127552805">BPMNOS::Execution::EventDispatcher</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00314">314</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00315">315</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
 
 </div>
 </div>
@@ -349,7 +349,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00178">178</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00179">179</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
 
 </div>
 </div>
@@ -369,7 +369,7 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>The decisions before the first clock tick are found at the lowest representable time. </p>
 
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00105">105</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00106">106</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
 
 </div>
 </div>
@@ -388,7 +388,7 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00113">113</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00114">114</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
 
 </div>
 </div>
@@ -407,7 +407,7 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00109">109</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00110">110</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
 
 </div>
 </div>
@@ -426,7 +426,7 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00117">117</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00118">118</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
 
 </div>
 </div>
@@ -445,7 +445,7 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00121">121</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00122">122</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
 
 </div>
 </div>
@@ -464,7 +464,7 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00156">156</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00157">157</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
 
 </div>
 </div>
@@ -491,7 +491,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00125">125</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00126">126</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
 
 </div>
 </div>
@@ -527,7 +527,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00194">194</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00195">195</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
 
 </div>
 </div>
@@ -563,7 +563,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00221">221</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8cpp_source.html#l00222">222</a> of file <a class="el" href="PlaybackController_8cpp_source.html">PlaybackController.cpp</a>.</p>
 
 </div>
 </div>
@@ -588,7 +588,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8h_source.html#l00108">108</a> of file <a class="el" href="PlaybackController_8h_source.html">PlaybackController.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8h_source.html#l00111">111</a> of file <a class="el" href="PlaybackController_8h_source.html">PlaybackController.h</a>.</p>
 
 </div>
 </div>
@@ -612,7 +612,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8h_source.html#l00113">113</a> of file <a class="el" href="PlaybackController_8h_source.html">PlaybackController.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8h_source.html#l00116">116</a> of file <a class="el" href="PlaybackController_8h_source.html">PlaybackController.h</a>.</p>
 
 </div>
 </div>
@@ -636,7 +636,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8h_source.html#l00110">110</a> of file <a class="el" href="PlaybackController_8h_source.html">PlaybackController.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8h_source.html#l00113">113</a> of file <a class="el" href="PlaybackController_8h_source.html">PlaybackController.h</a>.</p>
 
 </div>
 </div>
@@ -660,31 +660,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8h_source.html#l00112">112</a> of file <a class="el" href="PlaybackController_8h_source.html">PlaybackController.h</a>.</p>
-
-</div>
-</div>
-<a id="a3f16893d454aa1712c35c36ae6d12401" name="a3f16893d454aa1712c35c36ae6d12401"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3f16893d454aa1712c35c36ae6d12401">&#9670;&#160;</a></span>due</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; std::optional&lt;<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&gt; &gt; BPMNOS::Execution::PlaybackController::due</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8h_source.html#l00111">111</a> of file <a class="el" href="PlaybackController_8h_source.html">PlaybackController.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8h_source.html#l00115">115</a> of file <a class="el" href="PlaybackController_8h_source.html">PlaybackController.h</a>.</p>
 
 </div>
 </div>
@@ -708,7 +684,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8h_source.html#l00107">107</a> of file <a class="el" href="PlaybackController_8h_source.html">PlaybackController.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8h_source.html#l00110">110</a> of file <a class="el" href="PlaybackController_8h_source.html">PlaybackController.h</a>.</p>
 
 </div>
 </div>
@@ -732,7 +708,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8h_source.html#l00114">114</a> of file <a class="el" href="PlaybackController_8h_source.html">PlaybackController.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8h_source.html#l00117">117</a> of file <a class="el" href="PlaybackController_8h_source.html">PlaybackController.h</a>.</p>
 
 </div>
 </div>
@@ -756,7 +732,31 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8h_source.html#l00115">115</a> of file <a class="el" href="PlaybackController_8h_source.html">PlaybackController.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8h_source.html#l00118">118</a> of file <a class="el" href="PlaybackController_8h_source.html">PlaybackController.h</a>.</p>
+
+</div>
+</div>
+<a id="a57df78a248c53709363b58e52b2bc9f4" name="a57df78a248c53709363b58e52b2bc9f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57df78a248c53709363b58e52b2bc9f4">&#9670;&#160;</a></span>scheduled</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&gt; BPMNOS::Execution::PlaybackController::scheduled</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8h_source.html#l00114">114</a> of file <a class="el" href="PlaybackController_8h_source.html">PlaybackController.h</a>.</p>
 
 </div>
 </div>
@@ -780,7 +780,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="PlaybackController_8h_source.html#l00109">109</a> of file <a class="el" href="PlaybackController_8h_source.html">PlaybackController.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="PlaybackController_8h_source.html#l00112">112</a> of file <a class="el" href="PlaybackController_8h_source.html">PlaybackController.h</a>.</p>
 
 </div>
 </div>

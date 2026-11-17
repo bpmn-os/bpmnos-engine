@@ -83,7 +83,7 @@
 <text xml:space="preserve" text-anchor="start" x="197" y="-308.75" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
 <text xml:space="preserve" text-anchor="start" x="209.25" y="-308.75" font-family="Helvetica,sans-Serif" font-size="10.00">dispatched</text>
 <text xml:space="preserve" text-anchor="start" x="197" y="-292" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="209.25" y="-292" font-family="Helvetica,sans-Serif" font-size="10.00">due</text>
+<text xml:space="preserve" text-anchor="start" x="209.25" y="-292" font-family="Helvetica,sans-Serif" font-size="10.00">scheduled</text>
 <text xml:space="preserve" text-anchor="start" x="197" y="-275.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
 <text xml:space="preserve" text-anchor="start" x="209.25" y="-275.25" font-family="Helvetica,sans-Serif" font-size="10.00">dispatchedCount</text>
 <text xml:space="preserve" text-anchor="start" x="197" y="-258.5" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>

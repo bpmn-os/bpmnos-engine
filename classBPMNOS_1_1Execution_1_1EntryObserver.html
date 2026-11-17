@@ -130,7 +130,7 @@ $(function(){initNavTree('classBPMNOS_1_1Execution_1_1EntryObserver.html','','cl
 <p>Enters the tokens at activities whose entry is not decided as soon as their entry restrictions hold.  
  <a href="#details">More...</a></p>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Only the entry of an activity within a sequential ad-hoc subprocess is decided, by the performer of the subprocess. Any other activity is entered as soon as the entry restrictions, those of scope <span class="tt">entry</span> or <span class="tt">full</span> and those inherited from the enclosing scopes, hold on the status the token has with the current time as its timestamp, as a conditional event is triggered as soon as its condition holds. A token whose restrictions do not hold waits among the tokens awaiting entry of the system state. It is checked again whenever a data update concerns an attribute its restrictions depend on and, if they depend on the timestamp, whenever time advances. A token whose restrictions never hold waits until the run ends.</p>
+<div class="textblock"><p>Only the entry of an activity within a sequential ad-hoc subprocess is decided, by the performer of the subprocess. Any other activity is entered as soon as the entry restrictions, those of scope <span class="tt">entry</span> or <span class="tt">full</span> and those inherited from the enclosing scopes, hold on the status the token has with the current time as its timestamp, as a conditional event is triggered as soon as its condition holds. A token whose restrictions do not hold waits among the tokens awaiting entry of the system state. It is checked again whenever a data update concerns an attribute its restrictions depend on, which includes the update of the global attribute <span class="tt">time</span> at every clock tick if they depend on it. A token whose restrictions never hold waits until the run ends.</p>
 <p>The observer supplies one entry event at a time, which the engine dispatches before the events of the controller, so that the entry is notified and processed like any other event. </p>
 
 <p class="definition">Definition at line <a class="el" href="EntryObserver_8h_source.html#l00031">31</a> of file <a class="el" href="EntryObserver_8h_source.html">EntryObserver.h</a>.</p>
@@ -139,7 +139,7 @@ $(function(){initNavTree('classBPMNOS_1_1Execution_1_1EntryObserver.html','','cl
 <div class="dynheader">
 Inheritance diagram for BPMNOS::Execution::EntryObserver:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1EntryObserver__inherit__graph.svg" width="163" height="439"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1EntryObserver__inherit__graph.svg" width="158" height="394"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
@@ -159,16 +159,9 @@ Public Member Functions</h2></td></tr>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:aef49a35b0c7ebc35661fb1a96c9722af" id="r_aef49a35b0c7ebc35661fb1a96c9722af"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aef49a35b0c7ebc35661fb1a96c9722af">schedule</a> (const std::vector&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> * &gt; &amp;attributes, <a class="el" href="classBPMNOS_1_1Execution_1_1auto__list.html">auto_list</a>&lt; std::weak_ptr&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> &gt; &gt; &amp;waitingTokens)</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 id="header-pro-static-methods" class="groupheader"><a id="pro-static-methods" name="pro-static-methods"></a>
-Static Protected Member Functions</h2></td></tr>
-<tr class="memitem:a84af7b9d19add5814a2470eec60e354d" id="r_a84af7b9d19add5814a2470eec60e354d"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a84af7b9d19add5814a2470eec60e354d">isTimeDependent</a> (const <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> *token)</td></tr>
-<tr class="memdesc:a84af7b9d19add5814a2470eec60e354d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the entry restrictions of the token depend on the timestamp.  <br /></td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a6abaac4b872932be0e6500e4833cbf50" id="r_a6abaac4b872932be0e6500e4833cbf50"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1Execution_1_1SystemState.html">SystemState</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6abaac4b872932be0e6500e4833cbf50">systemState</a></td></tr>
-<tr class="memitem:a7128b6c43816b1b16f47706900847f77" id="r_a7128b6c43816b1b16f47706900847f77"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7128b6c43816b1b16f47706900847f77">time</a></td></tr>
-<tr class="memdesc:a7128b6c43816b1b16f47706900847f77"><td class="mdescLeft">&#160;</td><td class="mdescRight">The time at which the tokens whose restrictions depend on the timestamp were last checked.  <br /></td></tr>
 <tr class="memitem:a3eb8a2e0181d5256b7783dfb08dff258" id="r_a3eb8a2e0181d5256b7783dfb08dff258"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1Execution_1_1auto__list.html">auto_list</a>&lt; std::weak_ptr&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3eb8a2e0181d5256b7783dfb08dff258">candidates</a></td></tr>
 <tr class="memdesc:a3eb8a2e0181d5256b7783dfb08dff258"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tokens awaiting entry to be checked at the next dispatch.  <br /></td></tr>
 </table>
@@ -188,7 +181,7 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EntryObserver_8cpp_source.html#l00016">16</a> of file <a class="el" href="EntryObserver_8cpp_source.html">EntryObserver.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EntryObserver_8cpp_source.html#l00015">15</a> of file <a class="el" href="EntryObserver_8cpp_source.html">EntryObserver.cpp</a>.</p>
 
 </div>
 </div>
@@ -208,7 +201,7 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EntryObserver_8cpp_source.html#l00035">35</a> of file <a class="el" href="EntryObserver_8cpp_source.html">EntryObserver.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EntryObserver_8cpp_source.html#l00032">32</a> of file <a class="el" href="EntryObserver_8cpp_source.html">EntryObserver.cpp</a>.</p>
 
 </div>
 </div>
@@ -227,7 +220,7 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EntryObserver_8cpp_source.html#l00022">22</a> of file <a class="el" href="EntryObserver_8cpp_source.html">EntryObserver.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EntryObserver_8cpp_source.html#l00020">20</a> of file <a class="el" href="EntryObserver_8cpp_source.html">EntryObserver.cpp</a>.</p>
 
 </div>
 </div>
@@ -246,34 +239,7 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EntryObserver_8cpp_source.html#l00084">84</a> of file <a class="el" href="EntryObserver_8cpp_source.html">EntryObserver.cpp</a>.</p>
-
-</div>
-</div>
-<a id="a84af7b9d19add5814a2470eec60e354d" name="a84af7b9d19add5814a2470eec60e354d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a84af7b9d19add5814a2470eec60e354d">&#9670;&#160;</a></span>isTimeDependent()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool EntryObserver::isTimeDependent </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> *</td>          <td class="paramname"><span class="paramname"><em>token</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel static">static</span><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="EntryObserver_8cpp_source.html#l00073">73</a> of file <a class="el" href="EntryObserver_8cpp_source.html">EntryObserver.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EntryObserver_8cpp_source.html#l00070">70</a> of file <a class="el" href="EntryObserver_8cpp_source.html">EntryObserver.cpp</a>.</p>
 
 </div>
 </div>
@@ -302,7 +268,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Execution_1_1Observer.html#abad9b0df1066c6d65efa8040a71d903b">BPMNOS::Execution::Observer</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="EntryObserver_8cpp_source.html#l00042">42</a> of file <a class="el" href="EntryObserver_8cpp_source.html">EntryObserver.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EntryObserver_8cpp_source.html#l00039">39</a> of file <a class="el" href="EntryObserver_8cpp_source.html">EntryObserver.cpp</a>.</p>
 
 </div>
 </div>
@@ -333,7 +299,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EntryObserver_8cpp_source.html#l00062">62</a> of file <a class="el" href="EntryObserver_8cpp_source.html">EntryObserver.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EntryObserver_8cpp_source.html#l00059">59</a> of file <a class="el" href="EntryObserver_8cpp_source.html">EntryObserver.cpp</a>.</p>
 
 </div>
 </div>
@@ -358,7 +324,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="EntryObserver_8h_source.html#l00050">50</a> of file <a class="el" href="EntryObserver_8h_source.html">EntryObserver.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="EntryObserver_8h_source.html#l00049">49</a> of file <a class="el" href="EntryObserver_8h_source.html">EntryObserver.h</a>.</p>
 
 </div>
 </div>
@@ -383,30 +349,6 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="EntryObserver_8h_source.html#l00048">48</a> of file <a class="el" href="EntryObserver_8h_source.html">EntryObserver.h</a>.</p>
-
-</div>
-</div>
-<a id="a7128b6c43816b1b16f47706900847f77" name="a7128b6c43816b1b16f47706900847f77"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7128b6c43816b1b16f47706900847f77">&#9670;&#160;</a></span>time</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> BPMNOS::Execution::EntryObserver::time</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="EntryObserver_8h_source.html#l00049">49</a> of file <a class="el" href="EntryObserver_8h_source.html">EntryObserver.h</a>.</p>
 
 </div>
 </div>

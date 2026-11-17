@@ -161,6 +161,17 @@ Owned (1)</summary>
 </ul>
 <p></p>
 </details>
+<h2 class="doxsection"><a class="anchor" id="globals-31"></a>
+Globals</h2>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>time</b> (from <span class="tt">DataStore_Globals</span>)</li>
+</ul>
+<p></p>
+</details>
 <h2 class="doxsection"><a class="anchor" id="inputs-2"></a>
 Inputs</h2>
 <ul>
@@ -196,6 +207,17 @@ Inherited (1)</summary>
 <p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3 class="doxsection"><a class="anchor" id="globals-32"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>time</b> (from <span class="tt">DataStore_Globals</span>)</li>
 </ul>
 <p></p>
 </details>
@@ -241,6 +263,17 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
+<h3 class="doxsection"><a class="anchor" id="globals-33"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>time</b> (from <span class="tt">DataStore_Globals</span>)</li>
+</ul>
+<p></p>
+</details>
 <h3 class="doxsection"><a class="anchor" id="loop"></a>
 Loop</h3>
 <ul>
@@ -280,6 +313,17 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
+<h3 class="doxsection"><a class="anchor" id="globals-34"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>time</b> (from <span class="tt">DataStore_Globals</span>)</li>
+</ul>
+<p></p>
+</details>
 <h3 class="doxsection"><a class="anchor" id="operators-7"></a>
 Operators</h3>
 <ul>
@@ -316,6 +360,17 @@ Inherited (1)</summary>
 <p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3 class="doxsection"><a class="anchor" id="globals-35"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>time</b> (from <span class="tt">DataStore_Globals</span>)</li>
 </ul>
 <p></p>
 </details>
@@ -363,6 +418,17 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
+<h3 class="doxsection"><a class="anchor" id="globals-36"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>time</b> (from <span class="tt">DataStore_Globals</span>)</li>
+</ul>
+<p></p>
+</details>
 <h3 class="doxsection"><a class="anchor" id="choices-1"></a>
 Choices</h3>
 <ul>
@@ -373,7 +439,7 @@ Operators</h3>
 <ul>
 <li><span class="tt">next_location := destinations[index]</span></li>
 <li><span class="tt">departures := departures(current_location,next_location)</span></li>
-<li><span class="tt">departure := min{ d | d in departures, d &gt;= timestamp }</span></li>
+<li><span class="tt">departure := min{ d | d in departures, d &gt;= time }</span></li>
 <li><span class="tt">duration := durations(current_location,next_location)</span></li>
 </ul>
 <h3 class="doxsection"><a class="anchor" id="completion-restrictions-15"></a>
@@ -383,7 +449,7 @@ Completion restrictions</h3>
 Owned (1)</summary>
 <p></p>
 <ul>
-<li><span class="tt">departure &gt;= timestamp</span></li>
+<li><span class="tt">departure &gt;= time</span></li>
 </ul>
 <p></p>
 </details>
@@ -400,7 +466,7 @@ Attributes</h4>
 <h4 class="doxsection"><a class="anchor" id="operators-9"></a>
 Operators</h4>
 <ul>
-<li><span class="tt">heuristic := departure - timestamp + duration + heuristic(next_location)</span></li>
+<li><span class="tt">heuristic := departure - time + duration + heuristic(next_location)</span></li>
 </ul>
 <h2 class="doxsection"><a class="anchor" id="task-travel"></a>
 Task (Travel)</h2>
@@ -436,10 +502,21 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
+<h3 class="doxsection"><a class="anchor" id="globals-37"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>time</b> (from <span class="tt">DataStore_Globals</span>)</li>
+</ul>
+<p></p>
+</details>
 <h3 class="doxsection"><a class="anchor" id="operators-10"></a>
 Operators</h3>
 <ul>
-<li><span class="tt">timestamp += duration</span></li>
+<li><span class="tt">timestamp := time + duration</span></li>
 <li><span class="tt">current_location := next_location</span></li>
 </ul>
 <h2 class="doxsection"><a class="anchor" id="intermediatecatchevent-timerevent"></a>
@@ -473,6 +550,17 @@ Inherited (1)</summary>
 <p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3 class="doxsection"><a class="anchor" id="globals-38"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>time</b> (from <span class="tt">DataStore_Globals</span>)</li>
 </ul>
 <p></p>
 </details>
@@ -511,6 +599,17 @@ Inherited (1)</summary>
 </ul>
 <p></p>
 </details>
+<h3 class="doxsection"><a class="anchor" id="globals-39"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>time</b> (from <span class="tt">DataStore_Globals</span>)</li>
+</ul>
+<p></p>
+</details>
 <h2 class="doxsection"><a class="anchor" id="datastorereference-datastorereference_0myx9a2"></a>
 DataStoreReference (DataStoreReference_0myx9a2)</h2>
 <h3 class="doxsection"><a class="anchor" id="status-38"></a>
@@ -538,6 +637,17 @@ Inherited (1)</summary>
 <p></p>
 <ul>
 <li><em>string:</em> <b>instance</b> (from <a class="el" href="#process-earliestarrival_process">`EarliestArrival_Process`</a>)</li>
+</ul>
+<p></p>
+</details>
+<h3 class="doxsection"><a class="anchor" id="globals-40"></a>
+Globals</h3>
+<details >
+<summary >
+Inherited (1)</summary>
+<p></p>
+<ul>
+<li><em>decimal:</em> <b>time</b> (from <span class="tt">DataStore_Globals</span>)</li>
 </ul>
 <p></p>
 </details>

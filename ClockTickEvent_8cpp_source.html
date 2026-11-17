@@ -166,7 +166,7 @@ $(function(){initNavTree('ClockTickEvent_8cpp_source.html','',''); });
 <div class="foldopen" id="foldopen00032" data-start="{" data-end="}">
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structBPMNOS_1_1Execution_1_1ClockTickEvent.html#abba291ddeba5a9fde398a740ae2ed232">   32</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="structBPMNOS_1_1Execution_1_1ClockTickEvent.html#abba291ddeba5a9fde398a740ae2ed232">ClockTickEvent::expired</a>()<span class="keyword"> const </span>{</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>  <span class="comment">// The tick is stale if live time already reached its scheduled time; processing would otherwise</span></div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>  <span class="comment">// violate the strictly-monotonic time advance (SystemState::increaseTimeTo asserts time &gt; currentTime).</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>  <span class="comment">// violate the strictly-monotonic time advance (SystemState::increaseTimeTo asserts that time increases).</span></div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>  <span class="keywordflow">return</span> <a class="code hl_variable" href="structBPMNOS_1_1Execution_1_1ClockTickEvent.html#a7dc1fa2665b0003947c73e9acab50cfd">time</a> &lt;= <a class="code hl_variable" href="structBPMNOS_1_1Execution_1_1ClockTickEvent.html#a9c29d99657aa832947aa460eebd0ad59">systemState</a>-&gt;getTime();</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}</div>
 </div>
