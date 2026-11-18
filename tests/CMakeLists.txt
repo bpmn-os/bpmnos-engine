@@ -30,6 +30,7 @@ list(APPEND tests_SOURCES
   model/lookuptable/test.cpp
   model/inputs/test.cpp
   model/definitions/test.cpp
+  model/deferral/test.cpp
   data/reader/test.cpp
   data/staticprovider/test.cpp
   data/expectedvalueprovider/test.cpp

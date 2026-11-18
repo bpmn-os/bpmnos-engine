@@ -97,6 +97,7 @@ public:
   std::optional< std::unique_ptr<Parameter> > loopMaximum;  ///< Maximum number of iterations of a standard loop (requires loopIndex).
   
   bool hasSequentialPerformer; ///< Boolean indicating whether element has a performer with name "Sequential".
+  std::unique_ptr<Deferral> performerDeferral; ///< The deferral of the entries of the sequential activities of the performer the element declares, stated in the extension elements of its performer element, nullptr if none.
 
   template <typename DataType>
   bool feasibleEntry(const BPMNOS::Status& status, const DataType& data) const;

@@ -10,6 +10,7 @@
 #include "Parameter.h"
 #include "Restriction.h"
 #include "Operator.h"
+#include "Deferral.h"
 #include "model/bpmnos/src/xml/bpmnos/tGuidance.h"
 
 namespace BPMNOS::Model {
@@ -26,6 +27,7 @@ public:
   std::vector< std::unique_ptr<Attribute> > attributes;
   std::vector< std::unique_ptr<Restriction> > restrictions;
   std::vector< std::unique_ptr<Operator> > operators;
+  std::unique_ptr<Deferral> deferral; ///< The deferral of the decision point the guidance belongs to, nullptr if none; a message or a choice guidance only
   
   std::set<const Attribute*> dependencies;
 

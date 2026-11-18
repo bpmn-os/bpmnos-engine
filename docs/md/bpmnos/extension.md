@@ -221,6 +221,28 @@ Each condition constrains the values that may be chosen for the specified attrib
 
 How a controller finds a value the choice allows is its policy and not part of the model. The collection of @ref BPMNOS::Execution::Choices "choices" of the greedy controller counts the values a choice allows, the step of a decimal attribute without a step being the precision of numbers, and given a threshold k it searches a choice allowing at least k values by bisection, which suits a large range, and evaluates every value of any other choice, which suits a small set such as the indices of a list. Without a threshold, it enumerates every choice with a step and bisects a choice of a decimal attribute without a step, whose values are too many to be enumerated. The choices of a decision task with several choices are enumerated jointly, so that none of them may be of a decimal attribute without a step, whose values cannot be enumerated. The @ref BPMNOS::Execution::RandomChoice "random choice dispatcher" draws a value of the interval of a decimal attribute without a step, and a dispatcher may as well compute the value, such as an economic order quantity.
 
+## Deferrals
+
+A @ref BPMNOS::Model::Deferral "deferral" permits a controller to defer the decisions of a decision point: the entries of the sequential activities of a performer, the deliveries of messages to a catch event, or the choice of a decision task. It is stated by an element `deferral` whose attribute `condition` is a boolean expression deciding whether deferring is allowed, evaluated on the token of the decision point, and whose optional parameters named `observable` each name a data or global attribute, `time` included, whose update ends a deferral.
+
+```xml
+<bpmnos:deferral condition="task_requests &lt; tasks">
+  <bpmnos:parameter name="observable" value="price" />
+</bpmnos:deferral>
+```
+
+The deferral of a catch event stands in its message guidance and the deferral of a decision task in its choice guidance. The deferral of the entries of the sequential activities of a performer stands directly in the extension elements of its `performer` element named "Sequential", and is read with the attributes of the node declaring the performer, on whose token it is evaluated:
+
+```xml
+<bpmn2:performer name="Sequential">
+  <bpmn2:extensionElements>
+    <bpmnos:deferral condition="task_requests &lt; tasks" />
+  </bpmn2:extensionElements>
+</bpmn2:performer>
+```
+
+A guidance and a performer state at most one deferral, several conditions being combined into one expression and several observed attributes being stated as several parameters. An entry guidance states no deferral, since the entries of a performer are deferred together. A condition that is an assignment, a parameter of another name, an observed attribute not in scope, an observed status attribute, and an observed data attribute that no operator or choice of the model writes are refused when the model is read, the last since its update could never come. A decision point without a deferral is never deferred, so that a model stating none behaves as before.
+
 ## Messages
 @ref BPMNOS::Model::MessageDefinition "Messages" can be used to exchange information by delivering a content object from one process to another. 
 

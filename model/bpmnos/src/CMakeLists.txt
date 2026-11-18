@@ -13,6 +13,7 @@ set(bpmn_SOURCES
   extensionElements/Parameter.cpp
   extensionElements/Expression.cpp
   extensionElements/Restriction.cpp
+  extensionElements/Deferral.cpp
   extensionElements/Operator.cpp
   extensionElements/Choice.cpp
   extensionElements/Guidance.cpp
@@ -36,6 +37,7 @@ set(bpmn_HEADERS
   extensionElements/Parameter.h
   extensionElements/Expression.h
   extensionElements/Restriction.h
+  extensionElements/Deferral.h
   extensionElements/Operator.h
   extensionElements/Choice.h
   extensionElements/Guidance.h

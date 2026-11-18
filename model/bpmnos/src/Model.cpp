@@ -465,6 +465,7 @@ void Model::createMessageFlows() {
   validateSignals();
   validateErrors();
   validateEscalations();
+  validateDeferrals();
 
   // the predecessors of a converging inclusive gateway are the flow nodes from which one of its incoming
   // sequence flows can be reached without visiting the gateway, the model being acyclic
@@ -483,6 +484,32 @@ void Model::createMessageFlows() {
           if ( sequenceFlow->source != gateway && nodes.insert(sequenceFlow->source).second ) {
             pending.push_back(sequenceFlow->source);
           }
+        }
+      }
+    }
+  }
+}
+
+void Model::validateDeferrals() {
+  auto validate = [](const Deferral* deferral, const BPMN::Node* node) {
+    for ( auto attribute : deferral->observables ) {
+      if ( attribute->isImmutable ) {
+        throw std::runtime_error("Model: observable '" + attribute->name + "' of the deferral at '" + node->id + "' is never updated");
+      }
+    }
+  };
+  for ( auto& process : processes ) {
+    auto nodes = process->find_all(
+      [](const BPMN::Node* node) { return node->extensionElements && node->extensionElements->represents<ExtensionElements>(); }
+    );
+    for ( auto node : nodes ) {
+      auto extensionElements = node->extensionElements->as<ExtensionElements>();
+      if ( extensionElements->performerDeferral ) {
+        validate(extensionElements->performerDeferral.get(), node);
+      }
+      for ( auto guidance : { &extensionElements->choiceGuidance, &extensionElements->messageDeliveryGuidance } ) {
+        if ( guidance->has_value() && guidance->value()->deferral ) {
+          validate(guidance->value()->deferral.get(), node);
         }
       }
     }

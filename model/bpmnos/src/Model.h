@@ -91,6 +91,9 @@ public:
 
   /// @brief Validates that every thrower and catcher of an escalation stating its name agree on its type.
   void validateEscalations();
+  /// @brief Refuses an observed attribute of a deferral that is never updated, which is known only once every operator
+  /// and choice of the model is read.
+  void validateDeferrals();
 
   bool messageMayBeCaught( BPMN::Process* sendingProcess, BPMN::FlowNode* throwingMessageEvent, BPMN::Process* receivingProcess, BPMN::FlowNode* catchingMessageEvent );
   bool messageMayBeThrown( BPMN::Process* sendingProcess, BPMN::FlowNode* throwingMessageEvent, BPMN::Process* receivingProcess, BPMN::FlowNode* catchingMessageEvent );

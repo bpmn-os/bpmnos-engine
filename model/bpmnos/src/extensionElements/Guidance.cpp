@@ -4,6 +4,7 @@
 #include "model/bpmnos/src/xml/bpmnos/tRestriction.h"
 #include "model/bpmnos/src/xml/bpmnos/tOperators.h"
 #include "model/bpmnos/src/xml/bpmnos/tOperator.h"
+#include "model/bpmnos/src/xml/bpmnos/tDeferral.h"
 #include "model/utility/src/Keywords.h"
 //#include <iostream>
 
@@ -71,6 +72,23 @@ Guidance::Guidance(XML::bpmnos::tGuidance* guidance, const AttributeRegistry& at
       }
     }
   }    
+  // add the deferral, which is read in the scope of the node and not of the attributes of the guidance, since it is
+  // evaluated on the token of the decision point, to which the guidance has not been applied
+  auto deferrals = guidance->getChildren<XML::bpmnos::tDeferral>();
+  if ( deferrals.size() > 1 ) {
+    throw std::runtime_error("Guidance: more than one deferral");
+  }
+  if ( deferrals.size() == 1 ) {
+    if ( type == Type::Entry ) {
+      throw std::runtime_error("Guidance: the deferral of entries is stated at the performer, not in an entry guidance");
+    }
+    try {
+      deferral = std::make_unique<Deferral>(&deferrals.front().get(), attributeRegistry);
+    }
+    catch ( const std::exception &error ){
+      throw std::runtime_error("Guidance: illegal deferral\n" + std::string(error.what()) );
+    }
+  }
 }
 
 template <typename DataType>

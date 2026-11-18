@@ -19,6 +19,15 @@
       <xsd:element ref="attributes" minOccurs="0" maxOccurs="1"/>
       <xsd:element ref="operators" minOccurs="0" maxOccurs="1"/>
       <xsd:element ref="restrictions" minOccurs="0" maxOccurs="1"/>
+      <xsd:element ref="deferral" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="deferral" type="tDeferral"/>
+  <xsd:complexType name="tDeferral">
+    <xsd:attribute name="condition" type="xsd:string" use="required"/>
+    <xsd:sequence>
+      <xsd:element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
 
