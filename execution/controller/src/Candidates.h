@@ -11,6 +11,7 @@
 #include "execution/engine/src/Observer.h"
 #include "execution/engine/src/Observable.h"
 #include "Decision.h"
+#include "Deferrals.h"
 
 namespace BPMNOS::Execution {
 
@@ -26,7 +27,10 @@ class Notifier;
  * implements evaluateCandidates and decides how many to create — a first-feasible one only the first feasible, a
  * best-of-all one all of them.
  *
- * WeakPtrs... are the candidate's weak identifiers, e.g. < std::weak_ptr<const Token>,
+ * A collection constructed with the deferrals of a decision maker passes over the candidates of deferred tokens when
+ * iterated, so that a dispatcher never meets them; a collection constructed without behaves as if nothing is deferred.
+ *
+ * WeakPtrs... are the candidate's weak identifiers, the first being the token, e.g. < std::weak_ptr<const Token>,
  * std::weak_ptr<const DecisionRequest> > (and a std::weak_ptr<const Message> for message delivery).
  */
 template <typename... WeakPtrs>
@@ -35,6 +39,8 @@ public:
   /// The evaluator every candidate of this collection is evaluated through, owned here because this is
   /// where it is read: the collection builds its decisions with it and holds it for as long as it may.
   Candidates(std::shared_ptr<Evaluator> evaluator) : evaluator(std::move(evaluator)) {}
+  /// The deferrals are those of the decision maker the collection serves, which they outlive.
+  Candidates(std::shared_ptr<Evaluator> evaluator, const Deferrals& deferrals) : evaluator(std::move(evaluator)), deferrals(&deferrals) {}
   virtual ~Candidates() = default;
 
   /// Subscriptions are made by the specializations; the base does nothing.
@@ -47,9 +53,37 @@ public:
     }
   }
 
+  using CandidateSet = auto_set< double, descending, WeakPtrs..., std::weak_ptr<Event>, std::weak_ptr<Evaluation> >;
+
+  /// Iterator over the reward-ordered candidates, passing over those of deferred tokens.
+  class iterator {
+  public:
+    using Underlying = typename CandidateSet::iterator;
+    iterator(Underlying current, Underlying last, const Deferrals* deferrals) : current(current), last(last), deferrals(deferrals) { skipDeferred(); }
+    iterator& operator++() { ++current; skipDeferred(); return *this; }
+    auto operator*() const { return *current; }
+    bool operator!=(const iterator& other) const { return current != other.current; }
+  private:
+    Underlying current;
+    Underlying last;
+    const Deferrals* deferrals;
+    void skipDeferred() {
+      if ( !deferrals ) {
+        return;
+      }
+      while ( current != last ) {
+        auto token = std::get<1>(*current).lock();
+        if ( !token || !deferrals->isDeferred(token.get()) ) {
+          return;
+        }
+        ++current;
+      }
+    }
+  };
+
   /// Evaluation is lazy — iterating triggers it.
-  auto begin() { evaluateCandidates(); return candidates.begin(); }
-  auto end() { return candidates.end(); }
+  iterator begin() { evaluateCandidates(); return iterator(candidates.begin(), candidates.end(), deferrals); }
+  iterator end() { return iterator(candidates.end(), candidates.end(), deferrals); }
 
 protected:
   /// Specialization hook: produce the candidates for the current `systemState`.
@@ -77,7 +111,8 @@ protected:
 
   std::shared_ptr<Evaluator> evaluator; ///< Evaluates every candidate; owned here, so a decision built with it is never built through a dangling one.
   const SystemState* systemState = nullptr; ///< Per-run system state (bound by notice).
-  auto_set< double, descending, WeakPtrs..., std::weak_ptr<Event>, std::weak_ptr<Evaluation> > candidates; ///< Reward-ordered candidate decisions, descending (best first; infeasible last); holds only weak references.
+  const Deferrals* deferrals = nullptr; ///< The deferrals of the decision maker, nullptr if the collection was constructed without
+  CandidateSet candidates; ///< Reward-ordered candidate decisions, descending (best first; infeasible last); holds only weak references.
   auto_list< WeakPtrs..., std::shared_ptr<Decision> > decisions; ///< Sole owner of the decisions referenced by `candidates`.
 };
 

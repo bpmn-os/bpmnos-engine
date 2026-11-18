@@ -38,6 +38,12 @@ public:
    * decimal attribute without a step are searched by bisection
    */
   Choices(std::shared_ptr<Evaluator> evaluator, std::optional<size_t> bisect = std::nullopt);
+  /**
+   * @param evaluator The evaluator evaluating every alternative
+   * @param deferrals The deferrals of the decision maker, whose deferred requests are searched once their deferral ends
+   * @param bisect The least number of values of a choice searched by bisection, as above
+   */
+  Choices(std::shared_ptr<Evaluator> evaluator, const Deferrals& deferrals, std::optional<size_t> bisect = std::nullopt);
   void connect(Notifier* notifier) override;
   void notice(const Observable* observable) override;
   /// Clears the cache together with the requests awaiting a search.

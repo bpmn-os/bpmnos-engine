@@ -6,8 +6,8 @@ list(APPEND controller_SOURCES
   Evaluator.cpp
   evaluators/LocalEvaluator.cpp
   evaluators/GuidedEvaluator.cpp
-  CachedCandidates.cpp
   Deferrals.cpp
+  CachedCandidates.cpp
   candidates/SequentialEntries.cpp
   candidates/MessageDeliveries.cpp
   candidates/Choices.cpp
@@ -30,9 +30,9 @@ list(APPEND controller_HEADERS
   Evaluator.h
   evaluators/LocalEvaluator.h
   evaluators/GuidedEvaluator.h
+  Deferrals.h
   Candidates.h
   CachedCandidates.h
-  Deferrals.h
   candidates/SequentialEntries.h
   candidates/MessageDeliveries.h
   candidates/Choices.h

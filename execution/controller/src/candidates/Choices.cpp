@@ -21,6 +21,12 @@ Choices::Choices(std::shared_ptr<Evaluator> evaluator, std::optional<size_t> bis
 {
 }
 
+Choices::Choices(std::shared_ptr<Evaluator> evaluator, const Deferrals& deferrals, std::optional<size_t> bisect)
+  : CachedCandidates(std::move(evaluator), deferrals)
+  , bisect(bisect)
+{
+}
+
 void Choices::connect(Notifier* notifier) {
   notifier->addSubscriber(this,
     Observable::Type::ChoiceRequest,
@@ -83,11 +89,18 @@ void Choices::evaluateCandidates() {
       return nullptr;
     }
   );
-  // the requests are searched in the order in which they arose
-  for ( auto it = requestsToSearch.begin(); it != requestsToSearch.end(); it = requestsToSearch.erase(it) ) {
+  // the requests are searched in the order in which they arose, a request of a deferred token once its deferral ends
+  for ( auto it = requestsToSearch.begin(); it != requestsToSearch.end(); ) {
+    if ( deferrals ) {
+      if ( auto token = std::get<0>(*it).lock(); token && deferrals->isDeferred(token.get()) ) {
+        ++it;
+        continue;
+      }
+    }
     auto request = std::get<1>(*it).lock();
     assert( request );
     search(request);
+    it = requestsToSearch.erase(it);
   }
 }
 

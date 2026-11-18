@@ -21,6 +21,8 @@ namespace BPMNOS::Execution {
 class MessageDeliveries : public CachedCandidates< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::weak_ptr<const Message> > {
 public:
   MessageDeliveries(std::shared_ptr<Evaluator> evaluator);
+  /// The candidates of tokens deferred by the given deferrals are neither evaluated nor yielded while deferred.
+  MessageDeliveries(std::shared_ptr<Evaluator> evaluator, const Deferrals& deferrals);
   void connect(Notifier* notifier) override;
   void notice(const Observable* observable) override;
   void clear() override;

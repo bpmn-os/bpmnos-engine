@@ -17,6 +17,12 @@ CachedCandidates<WeakPtrs...>::CachedCandidates(std::shared_ptr<Evaluator> evalu
 }
 
 template <typename... WeakPtrs>
+CachedCandidates<WeakPtrs...>::CachedCandidates(std::shared_ptr<Evaluator> evaluator, const Deferrals& deferrals)
+  : Candidates<WeakPtrs...>(std::move(evaluator), deferrals)
+{
+}
+
+template <typename... WeakPtrs>
 void CachedCandidates<WeakPtrs...>::addDecision(WeakPtrs... weak_ptrs, std::shared_ptr<Decision> decision) {
   candidatesWithoutEvaluations.emplace_back(weak_ptrs..., decision); // weak index of the pending decision
   Candidates<WeakPtrs...>::addDecision(weak_ptrs..., std::move(decision)); // base takes ownership (and prunes the expired front)
@@ -32,6 +38,13 @@ template <typename... WeakPtrs>
 std::shared_ptr<Event> CachedCandidates<WeakPtrs...>::evaluateDecisions(const Evaluate& evaluate) {
   for ( auto it = candidatesWithoutEvaluations.begin(); it != candidatesWithoutEvaluations.end(); ) {
     auto decisionTuple = *it; // copy the weak identifiers before erasing
+    // a decision of a deferred token, which cannot be dispatched, is evaluated in the first round after the deferral ends
+    if ( this->deferrals ) {
+      if ( auto token = std::get<0>(decisionTuple).lock(); token && this->deferrals->isDeferred(token.get()) ) {
+        ++it;
+        continue;
+      }
+    }
     it = candidatesWithoutEvaluations.erase(it);
     auto decision = std::get<sizeof...(WeakPtrs)>(decisionTuple).lock();
     if ( !decision ) {

@@ -13,6 +13,11 @@ SequentialEntries::SequentialEntries(std::shared_ptr<Evaluator> evaluator)
 {
 }
 
+SequentialEntries::SequentialEntries(std::shared_ptr<Evaluator> evaluator, const Deferrals& deferrals)
+  : CachedCandidates(std::move(evaluator), deferrals)
+{
+}
+
 void SequentialEntries::connect(Notifier* notifier) {
   notifier->addSubscriber(this,
     Observable::Type::EntryRequest,

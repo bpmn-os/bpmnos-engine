@@ -5,6 +5,7 @@
 #include <optional>
 #include "Controller.h"
 #include "Evaluator.h"
+#include "Deferrals.h"
 #include "execution/engine/src/Mediator.h"
 
 namespace BPMNOS::Execution {
@@ -26,6 +27,13 @@ public:
   static Config default_config() { return {}; }  // Work around for compiler bug see: https://stackoverflow.com/questions/53408962/try-to-understand-compiler-error-message-default-member-initializer-required-be/75691051#75691051
   /// The evaluator is handed to the candidates the dispatchers own, which keep it; the controller does not.
   GreedyController(std::shared_ptr<Evaluator> evaluator, Config config = default_config());
+  /**
+   * @brief Constructs a greedy controller withholding the candidates of the decision points deferred by the given
+   * deferrals, which are subscribed to the controller and outlive it.
+   *
+   * The controller places no deferral itself; the deferrals are placed by the decision maker holding them.
+   */
+  GreedyController(std::shared_ptr<Evaluator> evaluator, Deferrals& deferrals, Config config = default_config());
   void connect(Mediator* mediator) override;
   std::vector< std::unique_ptr<EventDispatcher> > dispatchers;   ///< The dispatchers whose best decisions are compared, a tie going to the one listed first.
 protected:

@@ -33,6 +33,8 @@ class CachedCandidates : public Candidates<WeakPtrs...> {
 public:
   /// Takes the evaluator only to forward it to the base, which owns it.
   CachedCandidates(std::shared_ptr<Evaluator> evaluator);
+  /// Takes the deferrals of the decision maker to forward them to the base as well.
+  CachedCandidates(std::shared_ptr<Evaluator> evaluator, const Deferrals& deferrals);
 
   /// Callback evaluating one pending decision; returns an event to dispatch (stopping the evaluation) or nullptr to continue.
   using Evaluate = std::function< std::shared_ptr<Event>(WeakPtrs..., std::shared_ptr<Decision>) >;
@@ -41,7 +43,8 @@ public:
   void addDecision(WeakPtrs..., std::shared_ptr<Decision> decision);
   /// List an already-owned, evaluated decision in the reward-ordered `candidates` and weak-index it if it has data dependencies.
   void addEvaluation(WeakPtrs..., std::shared_ptr<Decision> decision);
-  /// Evaluate the pending decisions in turn (removing each); return the first event a callback dispatches, or nullptr.
+  /// Evaluate the pending decisions in turn (removing each), leaving those of deferred tokens pending until their deferral
+  /// ends; return the first event a callback dispatches, or nullptr.
   std::shared_ptr<Event> evaluateDecisions(const Evaluate& evaluate);
   /// Handle an observable: a DataUpdate invalidates the affected evaluations.
   void notice(const Observable* observable) override;

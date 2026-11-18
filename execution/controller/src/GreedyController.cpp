@@ -21,6 +21,17 @@ GreedyController::GreedyController(std::shared_ptr<Evaluator> evaluator, Config 
   dispatchers.push_back( std::make_unique<GreedyDispatcher<MessageDeliveries>>(evaluator) );
 }
 
+GreedyController::GreedyController(std::shared_ptr<Evaluator> evaluator, Deferrals& deferrals, Config config)
+  : config(config)
+{
+  // the collections pass over the candidates of deferred decision points, and the deferrals end at the
+  // reconsiderations the controller forwards to them
+  dispatchers.push_back( std::make_unique<GreedyDispatcher<Choices>>(evaluator, deferrals, config.bisect) );
+  dispatchers.push_back( std::make_unique<GreedyDispatcher<SequentialEntries>>(evaluator, deferrals) );
+  dispatchers.push_back( std::make_unique<GreedyDispatcher<MessageDeliveries>>(evaluator, deferrals) );
+  deferrals.connect(this);
+}
+
 void GreedyController::connect(Mediator* mediator) {
   for ( auto& eventDispatcher : dispatchers ) {
     eventDispatcher->connect(this);

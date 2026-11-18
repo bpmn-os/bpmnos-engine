@@ -18,6 +18,8 @@ namespace BPMNOS::Execution {
 class SequentialEntries : public CachedCandidates< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> > {
 public:
   SequentialEntries(std::shared_ptr<Evaluator> evaluator);
+  /// The candidates of tokens deferred by the given deferrals are neither evaluated nor yielded while deferred.
+  SequentialEntries(std::shared_ptr<Evaluator> evaluator, const Deferrals& deferrals);
   void connect(Notifier* notifier) override;
   void notice(const Observable* observable) override;
 protected:

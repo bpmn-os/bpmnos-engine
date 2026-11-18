@@ -13,6 +13,11 @@ MessageDeliveries::MessageDeliveries(std::shared_ptr<Evaluator> evaluator)
 {
 }
 
+MessageDeliveries::MessageDeliveries(std::shared_ptr<Evaluator> evaluator, const Deferrals& deferrals)
+  : CachedCandidates(std::move(evaluator), deferrals)
+{
+}
+
 void MessageDeliveries::connect(Notifier* notifier) {
   notifier->addSubscriber(this,
     Observable::Type::MessageDeliveryRequest,

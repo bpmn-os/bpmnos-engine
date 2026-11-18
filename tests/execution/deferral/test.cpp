@@ -147,3 +147,120 @@ SCENARIO( "Deferring the entries of a performer", "[controller][deferral]" ) {
     }
   }
 }
+
+namespace {
+
+/// Returns the number of tokens of the instance awaiting a decision of the given pending list.
+template <typename PendingList>
+size_t pendingOf(const PendingList& pending, const std::string& instance) {
+  size_t count = 0;
+  for ( auto& [token_ptr, request_ptr] : pending ) {
+    if ( auto token = token_ptr.lock(); token && token->owner->root->instance.value() == BPMNOS::to_number(instance, STRING) ) {
+      count++;
+    }
+  }
+  return count;
+}
+
+/// A decision maker deferring the performer of the tasks of an instance at every entry request of these tasks before the
+/// given time, the deferral being placed after a request has ended the previous one.
+struct DeferringEntries : Execution::Observer {
+  Execution::Deferrals& deferrals;
+  BPMNOS::number instance;
+  BPMNOS::number until;
+
+  DeferringEntries(Execution::Deferrals& deferrals, const std::string& instance, BPMNOS::number until)
+    : deferrals(deferrals)
+    , instance(BPMNOS::to_number(instance, STRING))
+    , until(until)
+  {
+  }
+
+  void notice(const Execution::Observable* observable) override {
+    auto token = static_cast<const Execution::DecisionRequest*>(observable)->token;
+    if ( token->owner->root->instance.value() == instance && token->owner->systemState->getTime() < until ) {
+      deferrals.defer(token);
+    }
+  }
+};
+
+} // namespace
+
+SCENARIO( "A greedy controller withholds the candidates of deferred entries", "[controller][deferral][greedy]" ) {
+  auto model = modelWith(R"(<bpmnos:deferral condition="time &lt; 3" />)");
+  auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model,
+    "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+    "Instance_1; Process_1; timestamp := 0\n"
+    "Instance_2; Process_1; timestamp := 0\n"
+  );
+  Execution::Deferrals deferrals;
+  Execution::GreedyController controller(std::make_shared<Execution::LocalEvaluator>(), deferrals);
+  Execution::Engine engine(model);
+  controller.connect(&engine);
+  // subscribed after the controller, so that the deferral is placed after the deferrals have noticed the request,
+  // which ends the deferral placed at an earlier request of the same performer
+  DeferringEntries deferring(deferrals, "Instance_1", BPMNOS::number(3));
+  engine.addSubscriber(&deferring, Execution::Observable::Type::EntryRequest);
+  engine.initialize(dataProvider->createScenario(), 0);
+
+  THEN( "The deferred tasks await entry while the deferral holds, the other instance proceeding" ) {
+    while ( engine.getSystemState()->getTime() < 3 ) {
+      // at time 0 the tasks become ready one after the other
+      if ( engine.getSystemState()->getTime() >= 1 ) {
+        REQUIRE( pendingOf(engine.getSystemState()->pendingEntryDecisions, "Instance_1") == 2 );
+        REQUIRE( pendingOf(engine.getSystemState()->pendingEntryDecisions, "Instance_2") == 0 );
+      }
+      REQUIRE( engine.advance() );
+    }
+    AND_THEN( "A task of the deferred instance is entered once the condition no longer holds" ) {
+      while ( pendingOf(engine.getSystemState()->pendingEntryDecisions, "Instance_1") == 2 ) {
+        REQUIRE( engine.advance() );
+      }
+      REQUIRE( engine.getSystemState()->getTime() == 3 );
+    }
+  }
+}
+
+SCENARIO( "A greedy controller withholds the candidates of a deferred choice", "[controller][deferral][greedy]" ) {
+  std::ifstream file("tests/execution/decisiontask/DecisionTask_with_enumeration.bpmn");
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+  std::string xml = buffer.str();
+  // the choice guidance of the decision task states a deferral holding before time 3
+  auto position = xml.find("</bpmnos:status>", xml.find("Decision_27n2nne"));
+  REQUIRE( position != std::string::npos );
+  position += std::string("</bpmnos:status>").size();
+  xml.insert(position, R"(<bpmnos:guidance type="choice"><bpmnos:deferral condition="time &lt; 3" /></bpmnos:guidance>)");
+  auto root = XML::XMLObject::createFromString(xml);
+  REQUIRE( root );
+  auto model = std::make_shared<const Model::Model>(std::unique_ptr<XML::XMLObject>(root), std::unordered_map<std::string, std::string>{});
+
+  auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model,
+    "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
+    "Instance_1; Process_1;\n"
+    "Instance_1; Activity_1; x := -2\n"
+  );
+  Execution::Deferrals deferrals;
+  Execution::GreedyController controller(std::make_shared<Execution::LocalEvaluator>(), deferrals);
+  Execution::Engine engine(model);
+  controller.connect(&engine);
+  engine.initialize(dataProvider->createScenario(), 0);
+
+  while ( engine.getSystemState()->pendingChoiceDecisions.count() == 0 ) {
+    REQUIRE( engine.advance() );
+  }
+  for ( auto& [token_ptr, request_ptr] : engine.getSystemState()->pendingChoiceDecisions ) {
+    deferrals.defer(token_ptr.lock().get());
+  }
+
+  THEN( "The choice is made at the clock tick at which the condition no longer holds" ) {
+    while ( engine.getSystemState()->getTime() < 3 ) {
+      REQUIRE( engine.getSystemState()->pendingChoiceDecisions.count() == 1 );
+      REQUIRE( engine.advance() );
+    }
+    while ( engine.getSystemState()->pendingChoiceDecisions.count() == 1 ) {
+      REQUIRE( engine.advance() );
+    }
+    REQUIRE( engine.getSystemState()->getTime() == 3 );
+  }
+}
