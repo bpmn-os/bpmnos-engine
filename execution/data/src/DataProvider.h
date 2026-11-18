@@ -76,6 +76,16 @@ public:
    */
   virtual BPMNOS::number getEarliestInstantiationTime(const Scenario& scenario) const = 0;
 
+  /**
+   * @brief Method returning true while the data provider expects further data to supply for the scenario beyond the
+   * events of the existing instances, such as an instance not yet instantiated or a signal still to raise.
+   *
+   * The events of the existing instances show in the system state as tokens awaiting them. The method states an
+   * expectation, not a fact: a data provider whose scenario holds every instance knows what is still to come, whereas
+   * a data provider drawing its data from outside the run can only state whether it expects more.
+   */
+  virtual bool expectsData(const Scenario& scenario) const = 0;
+
   const std::chrono::milliseconds clockTickDuration; ///< Wall-clock time between two clock ticks, zero advancing time at once and the maximum never
 
   /**

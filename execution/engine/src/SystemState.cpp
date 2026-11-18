@@ -126,6 +126,10 @@ BPMNOS::number SystemState::getTime() const {
   return stateMachine->ownedData.attributes[BPMNOS::Model::ExtensionElements::Index::Time].value();
 }
 
+bool SystemState::isAwaitingEvents() const {
+  return !tokensAwaitingTimer.empty() || !tokensAwaitingReadyEvent.empty() || !tokensAwaitingCompletionEvent.empty();
+}
+
 BPMNOS::number SystemState::getObjective() const {
   return objective;
 }

@@ -129,6 +129,7 @@ TEST_CASE( "Deferrals are read at a performer, in a choice guidance and in a mes
     auto& deferral = processExtension->performerDeferral;
     REQUIRE( deferral );
     REQUIRE( deferral->observables.empty() );
+    REQUIRE( !deferral->timeDependent );
     REQUIRE( deferral->condition.inputs.contains(registry["count"]) );
 
     BPMNOS::Status status(registry.statusAttributes.size());
@@ -145,6 +146,7 @@ TEST_CASE( "Deferrals are read at a performer, in a choice guidance and in a mes
     auto& deferral = guidance.value()->deferral;
     REQUIRE( deferral );
     REQUIRE( deferral->observables == std::vector<const Model::Attribute*>{ registry["count"], registry["time"] } );
+    REQUIRE( deferral->timeDependent );
   }
 
   SECTION( "The deferral of a message guidance is read" ) {
@@ -152,6 +154,16 @@ TEST_CASE( "Deferrals are read at a performer, in a choice guidance and in a mes
     REQUIRE( guidance.has_value() );
     REQUIRE( guidance.value()->deferral );
   }
+}
+
+TEST_CASE( "A deferral depends on time if its condition reads time or time is observed", "[model][deferral]" ) {
+  auto timeDependence = [](const std::string& deferral) {
+    auto model = modelWith({ .performer = "", .choice = deferral, .message = "", .entry = "" });
+    return extensionElementsOf(*model, "Choice_1")->choiceGuidance.value()->deferral->timeDependent;
+  };
+  REQUIRE( timeDependence(R"(<bpmnos:deferral condition="time &lt; 10" />)") );
+  REQUIRE( timeDependence(R"(<bpmnos:deferral condition="count &lt; 3"><bpmnos:parameter name="observable" value="time" /></bpmnos:deferral>)") );
+  REQUIRE( !timeDependence(R"(<bpmnos:deferral condition="count &lt; 3"><bpmnos:parameter name="observable" value="count" /></bpmnos:deferral>)") );
 }
 
 TEST_CASE( "A model without deferrals permits none", "[model][deferral]" ) {

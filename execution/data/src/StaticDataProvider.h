@@ -80,6 +80,11 @@ public:
   void advance(const SystemState* systemState, Execution::Scenario& scenario, EventQueue& queue) const override;
   BPMNOS::Data getGlobals(const Execution::Scenario& scenario) const override;
   BPMNOS::number getEarliestInstantiationTime(const Execution::Scenario& scenario) const override;
+  /**
+   * @brief Method returning true while an instance of the scenario is not yet instantiated, whether or not it is
+   * disclosed, which is the case while the time at which it becomes known lies after the current time of the scenario.
+   */
+  bool expectsData(const Execution::Scenario& scenario) const override;
 
 protected:
   /**

@@ -29,6 +29,7 @@ public:
 
   const Expression condition; ///< The condition under which deferring is allowed, whose inputs are the attributes it reads
   std::vector<const Attribute*> observables; ///< The attributes whose update ends a deferral, in the order stated
+  const bool timeDependent; ///< True if the condition reads `time` or `time` is observed, so that the passage of time alone may end a deferral
 
   /**
    * @brief Returns true if the condition holds for the given status and data.

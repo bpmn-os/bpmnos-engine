@@ -63,6 +63,14 @@ public:
   BPMNOS::number getTime() const;
 
   /**
+   * @brief Returns true if a token awaits a timer, a ready event or a completion event.
+   *
+   * Each of these events occurs unless it is cancelled, and its cancellation is itself the consequence of an event
+   * advancing the system state, so that an event advancing the system state is certain to come.
+   */
+  bool isAwaitingEvents() const;
+
+  /**
    * @brief Returns the value of the objective global attribute maintained by the run.
    *
    * The objective is updated whenever a weighted data or global attribute is written, and when status

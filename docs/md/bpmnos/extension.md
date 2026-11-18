@@ -241,7 +241,7 @@ The deferral of a catch event stands in its message guidance and the deferral of
 </bpmn2:performer>
 ```
 
-A guidance and a performer state at most one deferral, several conditions being combined into one expression and several observed attributes being stated as several parameters. An entry guidance states no deferral, since the entries of a performer are deferred together. A condition that is an assignment, a parameter of another name, an observed attribute not in scope, an observed status attribute, and an observed data attribute that no operator or choice of the model writes are refused when the model is read, the last since its update could never come. A decision point without a deferral is never deferred, so that a model stating none behaves as before.
+A guidance and a performer state at most one deferral, several conditions being combined into one expression and several observed attributes being stated as several parameters. An entry guidance states no deferral, since the entries of a performer are deferred together. A condition that is an assignment, a parameter of another name, an observed attribute not in scope, an observed status attribute, and an observed data attribute that no operator or choice of the model writes are refused when the model is read, the last since its update could never come. A deferral whose condition reads `time` or which observes `time` is time dependent, since the passage of time alone may end it. A decision point without a deferral is never deferred, so that a model stating none behaves as before.
 
 ## Messages
 @ref BPMNOS::Model::MessageDefinition "Messages" can be used to exchange information by delivering a content object from one process to another. 

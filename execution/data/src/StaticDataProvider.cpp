@@ -12,6 +12,7 @@
 #include "model/bpmnos/src/extensionElements/Expression.h"
 #include "model/utility/src/ObjectRegistry.h"
 #include "model/utility/src/StringRegistry.h"
+#include <algorithm>
 #include <cmath>
 #include <stdexcept>
 
@@ -181,6 +182,14 @@ BPMNOS::number StaticDataProvider::getEarliestInstantiationTime(const Execution:
     earliestInstantiationTime = std::min(earliestInstantiationTime, getProcessReadyTime(static_cast<const Scenario&>(scenario), instance.id));
   }
   return earliestInstantiationTime;
+}
+
+bool StaticDataProvider::expectsData(const Execution::Scenario& executionScenario) const {
+  auto& scenario = static_cast<const Scenario&>(executionScenario);
+  // an instance is instantiated when the clock reaches the time at which it becomes known
+  return std::ranges::any_of(instances, [this, &scenario](const Instance& instance) {
+    return getKnownTime(scenario, instance.id) > scenario.time;
+  });
 }
 
 void StaticDataProvider::notice(const Observable* observable, Execution::Scenario& executionScenario, EventQueue& queue) const {

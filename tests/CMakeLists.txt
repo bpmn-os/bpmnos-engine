@@ -76,6 +76,7 @@ list(APPEND tests_SOURCES
   execution/data/test.cpp
   execution/collection/test.cpp
   systemstate/process/test.cpp
+  systemstate/awaiting/test.cpp
   systemstate/timer/test.cpp
   playback/test.cpp
   systemstate/signal/test.cpp

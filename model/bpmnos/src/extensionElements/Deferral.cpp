@@ -10,6 +10,7 @@ Deferral::Deferral(XML::bpmnos::tDeferral* deferral, const AttributeRegistry& at
   : element(deferral)
   , condition(Expression(InputEncoder(deferral->condition.value.value),attributeRegistry))
   , observables(getObservables(deferral,attributeRegistry))
+  , timeDependent(condition.inputs.contains(attributeRegistry["time"]) || std::ranges::contains(observables, attributeRegistry["time"]))
 {
   if ( condition.type == Expression::Type::ASSIGN || condition.type == Expression::Type::UNASSIGN ) {
     throw std::runtime_error("Deferral: illegal condition '" + condition.expression + "'");

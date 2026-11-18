@@ -305,6 +305,11 @@ public:
     return std::make_unique<Scenario>(std::static_pointer_cast<const ScriptedDataProvider>(shared_from_this()));
   }
 
+  bool expectsData(const Execution::Scenario& executionScenario) const override {
+    auto& scenario = static_cast<const Scenario&>(executionScenario);
+    return !scenario.instantiated || !scenario.signalRaised;
+  }
+
   void notice(const Execution::Observable* observable, Execution::Scenario& scenario, [[maybe_unused]] Execution::EventQueue& queue) const override {
     if ( observable->getObservableType() == Execution::Observable::Type::Token ) {
       auto token = static_cast<const Execution::Token*>(observable);
