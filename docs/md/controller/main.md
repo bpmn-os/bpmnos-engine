@@ -33,6 +33,14 @@ Each dispatcher yields the best feasible decision of its collection, and the con
 
 All evaluations are conducted by an @ref BPMNOS::Execution::Evaluator "evaluator".
 
+## Deferrals
+
+A decision maker may defer the decisions of a decision point for which the model states a deferral, as described for the extension elements. The @ref BPMNOS::Execution::Deferrals "deferrals" of a decision maker hold its deferred decision points, each represented by its token: the performer token for the entries of the sequential activities of a performer, the token at a catch event for the delivery of a message, and the token at a decision task for its choice. A token awaiting entry at a sequential activity represents the decision point of its performer, and any other token its own. @ref BPMNOS::Execution::Deferrals::defer "defer" defers the decision point of a token together with its pending requests, for a performer the entry requests of every token awaiting entry at it, and @ref BPMNOS::Execution::Deferrals::isDeferred "isDeferred" tells whether the decision point of a token is deferred, at a single check while nothing is deferred.
+
+A deferral is offered only where its condition holds, evaluated on the token of the decision point, and where it is admissible, which @ref BPMNOS::Execution::Deferrals::isAdmissible "isAdmissible" tells: a deferral is admissible if it depends on time, if the system state awaits an event, or if the data provider of the scenario expects data, since otherwise no reconsideration could come.
+
+The deferrals are an observer, which a decision maker connects to the notifications it receives. A deferral ends at its first reconsideration, which reaches the deferrals as a notification: a request arriving at the decision point, a message created which may be delivered to a deferred catch event, a data update naming one of its observed attributes, a data update touching an attribute its condition reads after which the condition no longer holds, and a clock tick at which it is no longer admissible. A data update concerns the deferrals of the instance that wrote it, and every deferral if a global attribute is written. A deferral whose requests have all expired, the decision having been taken by another decision maker or the token having been withdrawn, withholds nothing and is removed when next met. An installed system state ends every deferral, since none of the deferred tokens exists in it.
+
 ## Playback controller
 
 The @ref BPMNOS::Execution::PlaybackController "playback controller" plays back the decisions of a log. The log is the JSON output of the engine, an array of records each tagged by its kind, as `bpmnos-greedy` writes it with `--json`, of which the controller reads the clock ticks and the decisions and ignores every other record. A decision is a record tagged `event` whose object states its kind by the key `decision`:

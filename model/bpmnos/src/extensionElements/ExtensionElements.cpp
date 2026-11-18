@@ -148,6 +148,36 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     }
   }
 
+  // the deferral of the entries of the sequential activities of the performer the node declares, stated in the
+  // extension elements of its performer element and evaluated on the performer token with the attributes of the node,
+  // which is read whether or not the node has extension elements of its own
+  auto readPerformerDeferral = [this, baseElement](const std::vector< std::reference_wrapper<XML::bpmn::tResourceRole> >& resources) {
+    for ( auto& resource : resources ) {
+      auto performer = resource.get().get<XML::bpmn::tPerformer>();
+      if ( !performer || !performer->name.has_value() || performer->name.value().get().value.value != "Sequential" || !performer->extensionElements.has_value() ) {
+        continue;
+      }
+      auto deferrals = performer->extensionElements->get().getChildren<XML::bpmnos::tDeferral>();
+      if ( deferrals.size() > 1 ) {
+        throw std::runtime_error("ExtensionElements: more than one deferral at the performer of '" + (std::string)baseElement->id.value().get().value + "'");
+      }
+      if ( deferrals.size() == 1 ) {
+        try {
+          performerDeferral = std::make_unique<Deferral>(&deferrals.front().get(), attributeRegistry);
+        }
+        catch ( const std::exception& error ) {
+          throw std::runtime_error("ExtensionElements: illegal deferral at the performer of '" + (std::string)baseElement->id.value().get().value + "'\n" + error.what());
+        }
+      }
+    }
+  };
+  if ( auto process = baseElement->is<XML::bpmn::tProcess>() ) {
+    readPerformerDeferral( process->resourceRole );
+  }
+  else if ( auto activity = baseElement->is<XML::bpmn::tActivity>() ) {
+    readPerformerDeferral( activity->resourceRole );
+  }
+
   if ( !element ) return;
 
   // add message definition
@@ -355,34 +385,11 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
     }
   }
 
-  // the deferral of the entries of the sequential activities of the performer the node declares, stated in the
-  // extension elements of its performer element and evaluated on the performer token with the attributes of the node
-  auto readPerformer = [this, baseElement](const std::vector< std::reference_wrapper<XML::bpmn::tResourceRole> >& resources) {
-    hasSequentialPerformer = BPMNOS::Model::Model::hasSequentialPerformer( resources );
-    for ( auto& resource : resources ) {
-      auto performer = resource.get().get<XML::bpmn::tPerformer>();
-      if ( !performer || !performer->name.has_value() || performer->name.value().get().value.value != "Sequential" || !performer->extensionElements.has_value() ) {
-        continue;
-      }
-      auto deferrals = performer->extensionElements->get().getChildren<XML::bpmnos::tDeferral>();
-      if ( deferrals.size() > 1 ) {
-        throw std::runtime_error("ExtensionElements: more than one deferral at the performer of '" + (std::string)baseElement->id.value().get().value + "'");
-      }
-      if ( deferrals.size() == 1 ) {
-        try {
-          performerDeferral = std::make_unique<Deferral>(&deferrals.front().get(), attributeRegistry);
-        }
-        catch ( const std::exception& error ) {
-          throw std::runtime_error("ExtensionElements: illegal deferral at the performer of '" + (std::string)baseElement->id.value().get().value + "'\n" + error.what());
-        }
-      }
-    }
-  };
   if ( auto process = baseElement->is<XML::bpmn::tProcess>() ) {
-    readPerformer( process->resourceRole );
+    hasSequentialPerformer = BPMNOS::Model::Model::hasSequentialPerformer( process->resourceRole );
   }
   else if ( auto activity = baseElement->is<XML::bpmn::tActivity>() ) {
-    readPerformer( activity->resourceRole );
+    hasSequentialPerformer = BPMNOS::Model::Model::hasSequentialPerformer( activity->resourceRole );
   }
   
   // add all guidances
