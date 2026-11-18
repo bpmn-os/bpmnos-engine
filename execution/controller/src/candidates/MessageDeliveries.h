@@ -16,7 +16,7 @@ namespace BPMNOS::Execution {
  * A message delivery request can be fulfilled by a created @ref Message whose origin is an admissible
  * sender and whose header matches the recipient header. notice collects the matching request/message
  * pairs; evaluateCandidates evaluates each (after updating the recipient's status with the message), so
- * the front of the reward-ordered set is the best feasible delivery (best-of-all, for the competing layer).
+ * the front of the reward-ordered set is the best feasible delivery (best-of-all, compared by the controller with the best of the other collections).
  */
 class MessageDeliveries : public CachedCandidates< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest>, std::weak_ptr<const Message> > {
 public:

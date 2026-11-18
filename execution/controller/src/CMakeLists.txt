@@ -7,10 +7,9 @@ list(APPEND controller_SOURCES
   evaluators/LocalEvaluator.cpp
   evaluators/GuidedEvaluator.cpp
   CachedCandidates.cpp
-  candidates/FirstFeasibleEntry.cpp
   candidates/SequentialEntries.cpp
   candidates/MessageDeliveries.cpp
-  candidates/FirstChoice.cpp
+  candidates/Choices.cpp
   dispatcher/InstantEntry.cpp
   dispatcher/FirstMatchingMessageDelivery.cpp
   dispatcher/RandomChoice.cpp
@@ -32,11 +31,9 @@ list(APPEND controller_HEADERS
   evaluators/GuidedEvaluator.h
   Candidates.h
   CachedCandidates.h
-  candidates/FirstFeasibleEntry.h
   candidates/SequentialEntries.h
   candidates/MessageDeliveries.h
-  candidates/CompetingCandidates.h
-  candidates/FirstChoice.h
+  candidates/Choices.h
   GreedyDispatcher.h
   dispatcher/InstantEntry.h
   dispatcher/FirstMatchingMessageDelivery.h

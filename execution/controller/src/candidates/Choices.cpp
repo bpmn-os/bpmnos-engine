@@ -1,8 +1,11 @@
-#include "FirstChoice.h"
+#include "Choices.h"
 #include "execution/engine/src/Notifier.h"
 #include "execution/engine/src/SystemState.h"
+#include "execution/engine/src/DataUpdate.h"
 #include "model/bpmnos/src/DecisionTask.h"
 #include "model/bpmnos/src/extensionElements/Attribute.h"
+#include "model/bpmnos/src/extensionElements/ExtensionElements.h"
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <stdexcept>
@@ -12,32 +15,121 @@
 
 using namespace BPMNOS::Execution;
 
-FirstChoice::FirstChoice(std::shared_ptr<Evaluator> evaluator, std::optional<size_t> bisect)
-  : Candidates(std::move(evaluator))
+Choices::Choices(std::shared_ptr<Evaluator> evaluator, std::optional<size_t> bisect)
+  : CachedCandidates(std::move(evaluator))
   , bisect(bisect)
 {
 }
 
-void FirstChoice::connect(Notifier* notifier) {
-  notifier->addSubscriber(this, Observable::Type::SystemState);
+void Choices::connect(Notifier* notifier) {
+  notifier->addSubscriber(this,
+    Observable::Type::ChoiceRequest,
+    Observable::Type::DataUpdate,
+    Observable::Type::SystemState
+  );
 }
 
-void FirstChoice::evaluateCandidates() {
-  // stateless: recompute from scratch; determineBestChoices populates `candidates` with the considered request's
-  // evaluated alternatives, so stop at the first feasible request
-  this->clearDecisions();
-  for ( [[maybe_unused]] auto& [ pendingToken, pendingRequest ] : systemState->pendingChoiceDecisions ) {
-    if ( auto request = pendingRequest.lock() ) {
-      if ( determineBestChoices( request ) ) {
-        return;
+void Choices::notice(const Observable* observable) {
+  if ( observable->getObservableType() == Observable::Type::ChoiceRequest ) {
+    assert( dynamic_cast<const DecisionRequest*>(observable) );
+    auto request = static_cast<const DecisionRequest*>(observable);
+    queueSearch( request->token->weak_from_this(), request->weak_from_this() );
+  }
+  else if ( observable->getObservableType() == Observable::Type::SystemState ) {
+    clear();   // start from a clean cache, then rebuild from the installed state
+    systemState = static_cast<const SystemState*>(observable);
+    // search the choice requests a freshly installed (e.g. resumed) state lists as pending
+    for ( auto& [ token_ptr, request_ptr ] : systemState->pendingChoiceDecisions ) {
+      queueSearch( token_ptr, request_ptr );
+    }
+  }
+  else {
+    if ( observable->getObservableType() == Observable::Type::DataUpdate ) {
+      // a request whose search yielded no alternative holds no decision a data update could invalidate, and is
+      // searched again when the update touches an attribute its choices depend on, for the instance of its token or,
+      // for a global attribute, for every instance
+      auto update = static_cast<const DataUpdate*>(observable);
+      for ( auto it = requestsWithoutAlternatives.begin(); it != requestsWithoutAlternatives.end(); ) {
+        auto token = std::get<0>(*it).lock();
+        assert( token );
+        auto& dependencies = token->node->extensionElements->as<BPMNOS::Model::ExtensionElements>()->choiceDependencies;
+        bool concerned = std::ranges::any_of(update->attributes, [&](const BPMNOS::Model::Attribute* attribute) {
+          return dependencies.contains(attribute) && ( attribute->isGlobal || token->owner->root->instance.value() == update->instanceId );
+        });
+        if ( concerned ) {
+          queueSearch( std::get<0>(*it), std::get<1>(*it) );
+          it = requestsWithoutAlternatives.erase(it);
+        }
+        else {
+          ++it;
+        }
       }
+    }
+    CachedCandidates::notice(observable);
+  }
+}
+
+void Choices::clear() {
+  CachedCandidates::clear();
+  requestsToSearch.clear();
+  requestsWithoutAlternatives.clear();
+}
+
+void Choices::evaluateCandidates() {
+  // a decision invalidated by a data update has its request searched anew rather than being evaluated alone
+  evaluateDecisions(
+    [this]( std::weak_ptr<const Token> token_ptr, std::weak_ptr<const DecisionRequest> request_ptr, [[maybe_unused]] std::shared_ptr<Decision> decision ) -> std::shared_ptr<Event> {
+      queueSearch( token_ptr, request_ptr );
+      return nullptr;
+    }
+  );
+  // the requests are searched in the order in which they arose
+  for ( auto it = requestsToSearch.begin(); it != requestsToSearch.end(); it = requestsToSearch.erase(it) ) {
+    auto request = std::get<1>(*it).lock();
+    assert( request );
+    search(request);
+  }
+}
+
+void Choices::queueSearch(std::weak_ptr<const Token> token_ptr, std::weak_ptr<const DecisionRequest> request_ptr) {
+  auto request = request_ptr.lock();
+  if ( !request || requestsToSearch.find(request.get()) != requestsToSearch.end() ) {
+    return;
+  }
+  requestsToSearch.emplace_back( std::move(token_ptr), std::move(request_ptr) );
+}
+
+void Choices::dropDecisions(const DecisionRequest* request) {
+  // the candidates and the indexes for invalidation hold weak references only, so that they drop with the decisions
+  for ( auto it = decisions.begin(); it != decisions.end(); ) {
+    if ( std::get<1>(*it).lock().get() == request ) {
+      it = decisions.erase(it);
+    }
+    else {
+      ++it;
     }
   }
 }
 
-std::shared_ptr<Decision> FirstChoice::determineBestChoices(std::shared_ptr<const DecisionRequest> request) {
-  this->clearDecisions();
+void Choices::search(std::shared_ptr<const DecisionRequest> request) {
+  dropDecisions(request.get());
+  requestsWithoutAlternatives.remove(request.get());
+  alternatives = 0;
+  determineBestChoices(request);
+  if ( alternatives == 0 ) {
+    requestsWithoutAlternatives.emplace_back( request->token->weak_from_this(), request->weak_from_this() );
+  }
+}
 
+void Choices::addAlternative(std::shared_ptr<ChoiceDecision> decision) {
+  // owned by the base without being queued for evaluation, since it is evaluated already, and listed as a candidate
+  // indexed for invalidation by its dependencies
+  Candidates< std::weak_ptr<const Token>, std::weak_ptr<const DecisionRequest> >::addDecision( token_ptr, request_ptr, decision );
+  addEvaluation( token_ptr, request_ptr, decision );
+  alternatives++;
+}
+
+std::shared_ptr<Decision> Choices::determineBestChoices(std::shared_ptr<const DecisionRequest> request) {
   auto token = request->token;
   assert( token->node->represents<BPMN::FlowNode>() );
   assert( token->node->represents<BPMNOS::Model::DecisionTask>() );
@@ -61,7 +153,7 @@ std::shared_ptr<Decision> FirstChoice::determineBestChoices(std::shared_ptr<cons
   }
   else {
     if ( !choice->lowerBound || !choice->upperBound ) {
-      throw std::runtime_error("FirstChoice: choice of attribute '" + choice->attribute->name + "' requires an enumeration or bounds");
+      throw std::runtime_error("Choices: choice of attribute '" + choice->attribute->name + "' requires an enumeration or bounds");
     }
     auto [LB, UB] = choice->getBounds(token->status, *token->data);
     // the step of a decimal attribute without a step is the precision of numbers
@@ -69,11 +161,11 @@ std::shared_ptr<Decision> FirstChoice::determineBestChoices(std::shared_ptr<cons
     if ( choice->multipleOf ) {
       auto discretizer = choice->multipleOf->execute(token->status, *token->data);
       if ( !discretizer.has_value() ) {
-        throw std::runtime_error("FirstChoice: cannot determine step for '" + choice->multipleOf->expression + "'");
+        throw std::runtime_error("Choices: cannot determine step for '" + choice->multipleOf->expression + "'");
       }
       step = std::abs(discretizer.value());
       if ( !(step > 0.0) ) {
-        throw std::runtime_error("FirstChoice: step for '" + choice->multipleOf->expression + "' is not positive");
+        throw std::runtime_error("Choices: step for '" + choice->multipleOf->expression + "' is not positive");
       }
     }
     // the multiples are counted from zero, as by Choice::getEnumeration
@@ -90,7 +182,7 @@ std::shared_ptr<Decision> FirstChoice::determineBestChoices(std::shared_ptr<cons
       count = 0;
     }
     else if ( lastMultiple - firstMultiple + 1.0 >= (double)std::numeric_limits<size_t>::max() ) {
-      throw std::runtime_error("FirstChoice: choice of attribute '" + choice->attribute->name + "' allows too many values");
+      throw std::runtime_error("Choices: choice of attribute '" + choice->attribute->name + "' allows too many values");
     }
     else {
       count = (size_t)(lastMultiple - firstMultiple + 1.0);
@@ -107,12 +199,12 @@ std::shared_ptr<Decision> FirstChoice::determineBestChoices(std::shared_ptr<cons
   return bestEnumeratedChoice();
 }
 
-BPMNOS::number FirstChoice::value(size_t index) const {
+BPMNOS::number Choices::value(size_t index) const {
   assert( index < count );
   return bounded ? BPMNOS::number((firstMultiple + (double)index) * step) : enumeration[index];
 }
 
-std::shared_ptr<Decision> FirstChoice::bestEnumeratedChoices(std::shared_ptr<const DecisionRequest> request) {
+std::shared_ptr<Decision> Choices::bestEnumeratedChoices(std::shared_ptr<const DecisionRequest> request) {
   auto token = request->token;
   auto decisionTask = token->node->as<BPMNOS::Model::DecisionTask>();
 
@@ -125,13 +217,13 @@ std::shared_ptr<Decision> FirstChoice::bestEnumeratedChoices(std::shared_ptr<con
     if ( reward.has_value() && ( !bestDecision || reward.value() > bestDecision->reward().value() ) ) {
       bestDecision = decision;
     }
-    // add every alternative to the reward-ordered candidates (infeasible last), taking ownership
-    this->addCandidate( token_ptr, request_ptr, std::move(decision) );
+    // every alternative is a candidate (infeasible last)
+    addAlternative(decision);
   }
   return bestDecision;
 }
 
-std::shared_ptr<Decision> FirstChoice::bestEnumeratedChoice() {
+std::shared_ptr<Decision> Choices::bestEnumeratedChoice() {
   std::shared_ptr<Decision> bestDecision = nullptr;
   for ( size_t index = 0; index < count; index++ ) {
     auto candidate = evaluate(index);
@@ -142,17 +234,17 @@ std::shared_ptr<Decision> FirstChoice::bestEnumeratedChoice() {
   return bestDecision;
 }
 
-FirstChoice::Candidate FirstChoice::evaluate(size_t index) {
+Choices::Candidate Choices::evaluate(size_t index) {
   auto request = request_ptr.lock();
   assert( request );
   auto decision = std::make_shared<ChoiceDecision>(request.get(), std::vector<number>{ value(index) }, evaluator.get());
   decision->evaluate();
-  // add this sampled alternative to the reward-ordered candidates, taking ownership; keep the local for the result
-  this->addCandidate( token_ptr, request_ptr, decision );
+  // this sampled alternative is a candidate; keep the local for the result
+  addAlternative(decision);
   return { index, decision };
 }
 
-std::tuple<size_t, FirstChoice::Candidate, size_t> FirstChoice::findFeasible(size_t first, size_t last) {
+std::tuple<size_t, Choices::Candidate, size_t> Choices::findFeasible(size_t first, size_t last) {
   const size_t npos = std::numeric_limits<size_t>::max();
   if ( first > last ) return { npos, { npos, nullptr }, npos };
 
@@ -181,7 +273,7 @@ std::tuple<size_t, FirstChoice::Candidate, size_t> FirstChoice::findFeasible(siz
   return { npos, { npos, nullptr }, npos };
 }
 
-void FirstChoice::findBetweenFeasibleAndFeasible(Candidate left, Candidate right) {
+void Choices::findBetweenFeasibleAndFeasible(Candidate left, Candidate right) {
   if ( right.index <= left.index + 1 ) return;
 
   size_t mid = left.index + (right.index - left.index) / 2;
@@ -211,7 +303,7 @@ void FirstChoice::findBetweenFeasibleAndFeasible(Candidate left, Candidate right
   }
 }
 
-void FirstChoice::findBetweenFeasibleAndInfeasible(Candidate feasible, size_t infeasibleIndex) {
+void Choices::findBetweenFeasibleAndInfeasible(Candidate feasible, size_t infeasibleIndex) {
   while ( infeasibleIndex > feasible.index + 1 ) {
     size_t mid = feasible.index + (infeasibleIndex - feasible.index + 1) / 2;
     auto candidate = evaluate(mid);
@@ -232,7 +324,7 @@ void FirstChoice::findBetweenFeasibleAndInfeasible(Candidate feasible, size_t in
   }
 }
 
-void FirstChoice::findBetweenInfeasibleAndFeasible(size_t infeasibleIndex, Candidate feasible) {
+void Choices::findBetweenInfeasibleAndFeasible(size_t infeasibleIndex, Candidate feasible) {
   while ( feasible.index > infeasibleIndex + 1 ) {
     size_t mid = infeasibleIndex + (feasible.index - infeasibleIndex) / 2;
     auto candidate = evaluate(mid);
@@ -253,7 +345,7 @@ void FirstChoice::findBetweenInfeasibleAndFeasible(size_t infeasibleIndex, Candi
   }
 }
 
-std::shared_ptr<Decision> FirstChoice::discreteBisection() {
+std::shared_ptr<Decision> Choices::discreteBisection() {
   const size_t npos = std::numeric_limits<size_t>::max();
   best = { npos, nullptr };
 

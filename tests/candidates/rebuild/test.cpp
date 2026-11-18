@@ -70,59 +70,6 @@ SCENARIO( "MessageDeliveries rebuilds its candidates from a SystemState notice",
   }
 }
 
-SCENARIO( "CompetingCandidates rebuilds its merged candidates from a SystemState notice", "[candidates][rebuild][competing]" ) {
-  const std::string modelFile = "examples/job_shop_scheduling_problem/Job_shop_scheduling_problem.bpmn";
-  REQUIRE_NOTHROW( Model::Model(modelFile) );
-
-  GIVEN( "A job-shop state at t=0 with three pending message deliveries and no pending sequential entries" ) {
-    std::string csv =
-      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
-      "Machine1; MachineProcess; jobs := 2\n"
-      "Machine2; MachineProcess; jobs := 3\n"
-      "Machine3; MachineProcess; jobs := 3\n"
-      "Order1; OrderProcess; machines := [\"Machine1\",\"Machine2\",\"Machine3\"]\n"
-      "Order1; OrderProcess; durations := [3.0,2.0,2.0]\n"
-      "Order2; OrderProcess; machines := [\"Machine1\",\"Machine3\",\"Machine2\"]\n"
-      "Order2; OrderProcess; durations := [2.0,1.0,4.0]\n"
-      "Order3; OrderProcess; machines := [\"Machine2\",\"Machine3\"]\n"
-      "Order3; OrderProcess; durations := [4.0,3.0]\n"
-    ;
-    auto model = std::make_shared<const Model::Model>(modelFile);
-    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
-    auto scenario = dataProvider->createScenario();
-
-    Execution::Engine engine(model);
-    Execution::InstantEntry entryHandler;
-    auto evaluator = std::make_shared<Execution::LocalEvaluator>();
-    Execution::CompetingCandidates incremental(evaluator);
-    entryHandler.connect(&engine);
-    incremental.connect(&engine);
-    dataProvider->setEndTime(0);
-    engine.run(std::move(scenario), 0);
-
-    const auto* systemState = engine.getSystemState();
-
-    WHEN( "A fresh CompetingCandidates collection is rebuilt from the SystemState notice" ) {
-      Execution::Notifier notifier;
-      Execution::CompetingCandidates rebuilt(evaluator);
-      rebuilt.connect(&notifier);
-      notifier.notify(systemState);
-
-      auto rebuiltCandidates = collectCompeting(rebuilt);
-      auto incrementalCandidates = collectCompeting(incremental);
-
-      THEN( "The merge offers the three message deliveries (sequential-entry side empty here)" ) {
-        REQUIRE( feasibleCount(rebuiltCandidates) == 3 );
-        REQUIRE( rebuiltCandidates.size() == 3 );
-      }
-      AND_THEN( "The rebuilt merge equals the incrementally built merge and is reward-ordered" ) {
-        REQUIRE( signatures(rebuiltCandidates) == signatures(incrementalCandidates) );
-        REQUIRE( rewardDescending(rebuiltCandidates) );
-      }
-    }
-  }
-}
-
 SCENARIO( "SequentialEntries rebuilds its candidates from a SystemState notice", "[candidates][rebuild][sequential]" ) {
   const std::string modelFile = "examples/travelling_salesperson_problem/Travelling_salesperson_problem.bpmn";
   const std::vector<std::string> folders = { "tests/examples/travelling_salesperson_problem" };
@@ -172,50 +119,7 @@ SCENARIO( "SequentialEntries rebuilds its candidates from a SystemState notice",
   }
 }
 
-SCENARIO( "FirstFeasibleEntry rebuilds its candidate from a SystemState notice", "[candidates][rebuild][entry]" ) {
-  const std::string modelFile = "examples/travelling_salesperson_problem/Travelling_salesperson_problem.bpmn";
-  const std::vector<std::string> folders = { "tests/examples/travelling_salesperson_problem" };
-  REQUIRE_NOTHROW( Model::Model(modelFile, folders) );
-
-  GIVEN( "A TSP state at t=0 whose sequential ad-hoc children await an entry decision (no entry handler)" ) {
-    std::string csv =
-      "INSTANCE_ID; NODE_ID; INITIALIZATION\n"
-      "Instance1; TravellingSalesperson_Process; speed := 1\n"
-      "Instance1; TravellingSalesperson_Process; origin := \"Hamburg\"\n"
-      "Instance1; TravellingSalesperson_Process; locations := [\"Munich\",\"Berlin\",\"Cologne\"]\n"
-    ;
-    auto model = std::make_shared<const Model::Model>(modelFile, folders);
-    auto dataProvider = std::make_shared<Execution::StaticDataProvider>(model, csv);
-    auto scenario = dataProvider->createScenario();
-
-    Execution::Engine engine(model);
-    auto evaluator = std::make_shared<Execution::LocalEvaluator>();
-    Execution::FirstFeasibleEntry incremental(evaluator);
-    incremental.connect(&engine);
-    dataProvider->setEndTime(0);
-    engine.run(std::move(scenario), 0);
-
-    const auto* systemState = engine.getSystemState();
-    REQUIRE( systemState->pendingEntryDecisions.count() >= 1 );
-
-    WHEN( "A fresh FirstFeasibleEntry collection is rebuilt from the SystemState notice" ) {
-      Execution::Notifier notifier;
-      Execution::FirstFeasibleEntry rebuilt(evaluator);
-      rebuilt.connect(&notifier);
-      notifier.notify(systemState);
-
-      auto rebuiltCandidates = collect(rebuilt);
-      auto incrementalCandidates = collect(incremental);
-
-      THEN( "It offers the first feasible entry, matching the incremental build" ) {
-        REQUIRE( feasibleCount(rebuiltCandidates) == 1 );
-        REQUIRE( signatures(rebuiltCandidates) == signatures(incrementalCandidates) );
-      }
-    }
-  }
-}
-
-SCENARIO( "FirstChoice rebuilds its enumerated candidates from a SystemState notice", "[candidates][rebuild][choice]" ) {
+SCENARIO( "Choices rebuilds its enumerated candidates from a SystemState notice", "[candidates][rebuild][choice]" ) {
   const std::string modelFile = "tests/execution/decisiontask/DecisionTask_with_enumeration.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
@@ -232,7 +136,7 @@ SCENARIO( "FirstChoice rebuilds its enumerated candidates from a SystemState not
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     auto evaluator = std::make_shared<Execution::LocalEvaluator>();
-    Execution::FirstChoice incremental(evaluator);
+    Execution::Choices incremental(evaluator);
     entryHandler.connect(&engine);
     incremental.connect(&engine);
     dataProvider->setEndTime(0);
@@ -241,9 +145,9 @@ SCENARIO( "FirstChoice rebuilds its enumerated candidates from a SystemState not
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->pendingChoiceDecisions.count() == 1 );
 
-    WHEN( "A fresh FirstChoice collection is rebuilt from the SystemState notice" ) {
+    WHEN( "A fresh Choices collection is rebuilt from the SystemState notice" ) {
       Execution::Notifier notifier;
-      Execution::FirstChoice rebuilt(evaluator);
+      Execution::Choices rebuilt(evaluator);
       rebuilt.connect(&notifier);
       notifier.notify(systemState);
 
@@ -259,7 +163,7 @@ SCENARIO( "FirstChoice rebuilds its enumerated candidates from a SystemState not
   }
 }
 
-SCENARIO( "FirstChoice rebuilds its bisected candidates from a SystemState notice", "[candidates][rebuild][choice][bisection]" ) {
+SCENARIO( "Choices rebuilds its bisected candidates from a SystemState notice", "[candidates][rebuild][choice][bisection]" ) {
   const std::string modelFile = "tests/execution/decisiontask/DecisionTask_with_bounds.bpmn";
   REQUIRE_NOTHROW( Model::Model(modelFile) );
 
@@ -276,7 +180,7 @@ SCENARIO( "FirstChoice rebuilds its bisected candidates from a SystemState notic
     Execution::Engine engine(model);
     Execution::InstantEntry entryHandler;
     auto evaluator = std::make_shared<Execution::LocalEvaluator>();
-    Execution::FirstChoice incremental(evaluator, 2);
+    Execution::Choices incremental(evaluator, 2);
     entryHandler.connect(&engine);
     incremental.connect(&engine);
     dataProvider->setEndTime(0);
@@ -285,9 +189,9 @@ SCENARIO( "FirstChoice rebuilds its bisected candidates from a SystemState notic
     const auto* systemState = engine.getSystemState();
     REQUIRE( systemState->pendingChoiceDecisions.count() == 1 );
 
-    WHEN( "A fresh FirstChoice collection with the same threshold is rebuilt from the SystemState notice" ) {
+    WHEN( "A fresh Choices collection with the same threshold is rebuilt from the SystemState notice" ) {
       Execution::Notifier notifier;
-      Execution::FirstChoice rebuilt(evaluator, 2);
+      Execution::Choices rebuilt(evaluator, 2);
       rebuilt.connect(&notifier);
       notifier.notify(systemState);
 
@@ -301,11 +205,11 @@ SCENARIO( "FirstChoice rebuilds its bisected candidates from a SystemState notic
       }
     }
 
-    WHEN( "FirstChoice collections with thresholds above and up to the number of values are rebuilt" ) {
+    WHEN( "Choices collections with thresholds above and up to the number of values are rebuilt" ) {
       // the choice -2 < choice <= 5 of an integer attribute allows the seven values from -1 to 5
       Execution::Notifier notifier;
-      Execution::FirstChoice enumerating(evaluator, 10);
-      Execution::FirstChoice bisecting(evaluator, 7);
+      Execution::Choices enumerating(evaluator, 10);
+      Execution::Choices bisecting(evaluator, 7);
       enumerating.connect(&notifier);
       bisecting.connect(&notifier);
       notifier.notify(systemState);

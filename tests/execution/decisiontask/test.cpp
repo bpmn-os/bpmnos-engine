@@ -19,7 +19,7 @@ SCENARIO( "Decision task with enumeration", "[execution][decisiontask]" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       auto evaluator = std::make_shared<Execution::LocalEvaluator>();
-      Execution::GreedyDispatcher<Execution::FirstChoice> choiceHandler(evaluator);
+      Execution::GreedyDispatcher<Execution::Choices> choiceHandler(evaluator);
       entryHandler.connect(&engine);
       choiceHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -51,7 +51,7 @@ SCENARIO( "Decision task with enumeration", "[execution][decisiontask]" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       auto evaluator = std::make_shared<Execution::LocalEvaluator>();
-      Execution::GreedyDispatcher<Execution::FirstChoice> choiceHandler(evaluator);
+      Execution::GreedyDispatcher<Execution::Choices> choiceHandler(evaluator);
       entryHandler.connect(&engine);
       choiceHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -86,7 +86,7 @@ SCENARIO( "Decision task with bounds", "[execution][decisiontask]" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       auto evaluator = std::make_shared<Execution::LocalEvaluator>();
-      Execution::GreedyDispatcher<Execution::FirstChoice> choiceHandler(evaluator);
+      Execution::GreedyDispatcher<Execution::Choices> choiceHandler(evaluator);
       entryHandler.connect(&engine);
       choiceHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -118,7 +118,7 @@ SCENARIO( "Decision task with bounds", "[execution][decisiontask]" ) {
       Execution::Engine engine(model);
       Execution::InstantEntry entryHandler;
       auto evaluator = std::make_shared<Execution::LocalEvaluator>();
-      Execution::GreedyDispatcher<Execution::FirstChoice> choiceHandler(evaluator);
+      Execution::GreedyDispatcher<Execution::Choices> choiceHandler(evaluator);
       entryHandler.connect(&engine);
       choiceHandler.connect(&engine);
       Execution::Recorder recorder;
@@ -171,7 +171,7 @@ SCENARIO( "Decision task with continuous bounds", "[execution][decisiontask]" ) 
     WHEN( "The engine is started with the first choice dispatcher without a threshold" ) {
       Execution::Engine engine(model);
       auto evaluator = std::make_shared<Execution::LocalEvaluator>();
-      Execution::GreedyDispatcher<Execution::FirstChoice> choiceHandler(evaluator);
+      Execution::GreedyDispatcher<Execution::Choices> choiceHandler(evaluator);
       choiceHandler.connect(&engine);
       Execution::Recorder recorder;
       recorder.subscribe(&engine);
