@@ -2,7 +2,9 @@ var classBPMNOS_1_1Execution_1_1Deferrals =
 [
     [ "Entry", "classBPMNOS_1_1Execution_1_1Deferrals.html#ada0b3c8d26102f4f17a21060661a20b0", null ],
     [ "connect", "classBPMNOS_1_1Execution_1_1Deferrals.html#af66fa9cd777fd3a040fa6c02c7e90121", null ],
+    [ "decisionPoint", "classBPMNOS_1_1Execution_1_1Deferrals.html#a28f06999597a2bfe5ac843ed54d5c315", null ],
     [ "defer", "classBPMNOS_1_1Execution_1_1Deferrals.html#a72a9097043c6605695ef813a39b5bb81", null ],
+    [ "deferralOf", "classBPMNOS_1_1Execution_1_1Deferrals.html#a7ce16f6675b4e021b17e800b54f73285", null ],
     [ "getDeferrals", "classBPMNOS_1_1Execution_1_1Deferrals.html#a21730d11d89c183fda44fe68cbca828c", null ],
     [ "isAdmissible", "classBPMNOS_1_1Execution_1_1Deferrals.html#a1cc2fc86bd2affeae954cc8bce788d70", null ],
     [ "isDeferred", "classBPMNOS_1_1Execution_1_1Deferrals.html#a1d31777effd69c4c5df76043bfef76be", null ],

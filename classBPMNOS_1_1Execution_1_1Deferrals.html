@@ -140,7 +140,7 @@ $(function(){initNavTree('classBPMNOS_1_1Execution_1_1Deferrals.html','','classB
 <div class="dynheader">
 Inheritance diagram for BPMNOS::Execution::Deferrals:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1Deferrals__inherit__graph.svg" width="158" height="372"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1Deferrals__inherit__graph.svg" width="158" height="416"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
@@ -162,6 +162,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a21730d11d89c183fda44fe68cbca828c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the deferred decision points by their tokens.  <br /></td></tr>
 <tr class="inherit_header pub_methods_classBPMNOS_1_1Execution_1_1Observer"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classBPMNOS_1_1Execution_1_1Observer')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classBPMNOS_1_1Execution_1_1Observer.html">BPMNOS::Execution::Observer</a></td></tr>
 <tr class="memitem:ad693c7067f849b46756ade408803771e inherit pub_methods_classBPMNOS_1_1Execution_1_1Observer" id="r_ad693c7067f849b46756ade408803771e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Observer.html#ad693c7067f849b46756ade408803771e">~Observer</a> ()=default</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a28f06999597a2bfe5ac843ed54d5c315" id="r_a28f06999597a2bfe5ac843ed54d5c315"><td class="memItemLeft" align="right" valign="top">static const <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a28f06999597a2bfe5ac843ed54d5c315">decisionPoint</a> (const <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> *token)</td></tr>
+<tr class="memdesc:a28f06999597a2bfe5ac843ed54d5c315"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the token representing the decision point of the token: the performer token for a token awaiting entry at a sequential activity, and the token itself otherwise.  <br /></td></tr>
+<tr class="memitem:a7ce16f6675b4e021b17e800b54f73285" id="r_a7ce16f6675b4e021b17e800b54f73285"><td class="memItemLeft" align="right" valign="top">static const <a class="el" href="classBPMNOS_1_1Model_1_1Deferral.html">BPMNOS::Model::Deferral</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7ce16f6675b4e021b17e800b54f73285">deferralOf</a> (const <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> *token)</td></tr>
+<tr class="memdesc:a7ce16f6675b4e021b17e800b54f73285"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the deferral the model states for the decision point represented by the token, nullptr if none: that of the choice guidance for a token holding a choice request, that of the message guidance for a token holding a delivery request, and that of the performer otherwise.  <br /></td></tr>
 </table>
 <a name="doc-typedef-members" id="doc-typedef-members"></a><h2 id="header-doc-typedef-members" class="groupheader">Member Typedef Documentation</h2>
 <a id="ada0b3c8d26102f4f17a21060661a20b0" name="ada0b3c8d26102f4f17a21060661a20b0"></a>
@@ -200,6 +207,33 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a28f06999597a2bfe5ac843ed54d5c315" name="a28f06999597a2bfe5ac843ed54d5c315"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28f06999597a2bfe5ac843ed54d5c315">&#9670;&#160;</a></span>decisionPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> * Deferrals::decisionPoint </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> *</td>          <td class="paramname"><span class="paramname"><em>token</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Deferrals_8cpp_source.html#l00148">148</a> of file <a class="el" href="Deferrals_8cpp_source.html">Deferrals.cpp</a>.</p>
+
+</div>
+</div>
 <a id="a72a9097043c6605695ef813a39b5bb81" name="a72a9097043c6605695ef813a39b5bb81"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a72a9097043c6605695ef813a39b5bb81">&#9670;&#160;</a></span>defer()</h2>
 
@@ -222,6 +256,33 @@ Public Member Functions</h2></td></tr>
 </dl>
 
 <p class="definition">Definition at line <a class="el" href="Deferrals_8cpp_source.html#l00055">55</a> of file <a class="el" href="Deferrals_8cpp_source.html">Deferrals.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a7ce16f6675b4e021b17e800b54f73285" name="a7ce16f6675b4e021b17e800b54f73285"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ce16f6675b4e021b17e800b54f73285">&#9670;&#160;</a></span>deferralOf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classBPMNOS_1_1Model_1_1Deferral.html">BPMNOS::Model::Deferral</a> * Deferrals::deferralOf </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> *</td>          <td class="paramname"><span class="paramname"><em>token</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Deferrals_8cpp_source.html#l00156">156</a> of file <a class="el" href="Deferrals_8cpp_source.html">Deferrals.cpp</a>.</p>
 
 </div>
 </div>

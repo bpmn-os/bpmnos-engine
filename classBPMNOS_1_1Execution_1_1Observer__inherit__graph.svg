@@ -204,25 +204,29 @@
 <g id="Node000014" class="node">
 <title>Node14</title>
 <g id="a_Node000014"><a xlink:href="classBPMNOS_1_1Execution_1_1Deferrals.html" target="_top" xlink:title="The deferred decision points of a decision maker, each held back until a reconsideration.">
-<polygon fill="white" stroke="none" points="1006.62,-850.88 896.62,-850.88 896.62,-700.12 1006.62,-700.12 1006.62,-850.88"/>
-<text xml:space="preserve" text-anchor="start" x="900.62" y="-837.38" font-family="Helvetica,sans-Serif" font-size="10.00">BPMNOS::Execution::</text>
-<text xml:space="preserve" text-anchor="start" x="929.12" y="-824.62" font-family="Helvetica,sans-Serif" font-size="10.00">Deferrals</text>
-<text xml:space="preserve" text-anchor="start" x="950.12" y="-807.88" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
-<text xml:space="preserve" text-anchor="start" x="905.62" y="-791.12" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="922.88" y="-791.12" font-family="Helvetica,sans-Serif" font-size="10.00">connect()</text>
-<text xml:space="preserve" text-anchor="start" x="905.62" y="-774.38" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="922.88" y="-774.38" font-family="Helvetica,sans-Serif" font-size="10.00">notice()</text>
-<text xml:space="preserve" text-anchor="start" x="905.62" y="-757.62" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="922.88" y="-757.62" font-family="Helvetica,sans-Serif" font-size="10.00">defer()</text>
-<text xml:space="preserve" text-anchor="start" x="905.62" y="-740.88" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="922.88" y="-740.88" font-family="Helvetica,sans-Serif" font-size="10.00">isDeferred()</text>
-<text xml:space="preserve" text-anchor="start" x="905.62" y="-724.12" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="922.88" y="-724.12" font-family="Helvetica,sans-Serif" font-size="10.00">isAdmissible()</text>
-<text xml:space="preserve" text-anchor="start" x="905.62" y="-707.38" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="922.88" y="-707.38" font-family="Helvetica,sans-Serif" font-size="10.00">getDeferrals()</text>
+<polygon fill="white" stroke="none" points="1006.62,-867.62 896.62,-867.62 896.62,-683.38 1006.62,-683.38 1006.62,-867.62"/>
+<text xml:space="preserve" text-anchor="start" x="900.62" y="-854.12" font-family="Helvetica,sans-Serif" font-size="10.00">BPMNOS::Execution::</text>
+<text xml:space="preserve" text-anchor="start" x="929.12" y="-841.38" font-family="Helvetica,sans-Serif" font-size="10.00">Deferrals</text>
+<text xml:space="preserve" text-anchor="start" x="950.12" y="-824.62" font-family="Helvetica,sans-Serif" font-size="10.00"> </text>
+<text xml:space="preserve" text-anchor="start" x="904.88" y="-807.88" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="921.38" y="-807.88" font-family="Helvetica,sans-Serif" font-size="10.00">connect()</text>
+<text xml:space="preserve" text-anchor="start" x="904.88" y="-791.12" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="921.38" y="-791.12" font-family="Helvetica,sans-Serif" font-size="10.00">notice()</text>
+<text xml:space="preserve" text-anchor="start" x="904.88" y="-774.38" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="921.38" y="-774.38" font-family="Helvetica,sans-Serif" font-size="10.00">defer()</text>
+<text xml:space="preserve" text-anchor="start" x="904.88" y="-757.62" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="921.38" y="-757.62" font-family="Helvetica,sans-Serif" font-size="10.00">isDeferred()</text>
+<text xml:space="preserve" text-anchor="start" x="904.88" y="-740.88" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="921.38" y="-740.88" font-family="Helvetica,sans-Serif" font-size="10.00">isAdmissible()</text>
+<text xml:space="preserve" text-anchor="start" x="904.88" y="-724.12" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="921.38" y="-724.12" font-family="Helvetica,sans-Serif" font-size="10.00">getDeferrals()</text>
+<text xml:space="preserve" text-anchor="start" x="904.88" y="-707.38" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="921.38" y="-707.38" font-family="Helvetica,sans-Serif" font-size="10.00">decisionPoint()</text>
+<text xml:space="preserve" text-anchor="start" x="904.88" y="-690.62" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="921.38" y="-690.62" font-family="Helvetica,sans-Serif" font-size="10.00">deferralOf()</text>
+<polygon fill="#666666" stroke="#666666" points="896.62,-836.12 896.62,-836.12 1006.62,-836.12 1006.62,-836.12 896.62,-836.12"/>
 <polygon fill="#666666" stroke="#666666" points="896.62,-819.38 896.62,-819.38 1006.62,-819.38 1006.62,-819.38 896.62,-819.38"/>
-<polygon fill="#666666" stroke="#666666" points="896.62,-802.62 896.62,-802.62 1006.62,-802.62 1006.62,-802.62 896.62,-802.62"/>
-<polygon fill="none" stroke="#666666" points="896.62,-700.12 896.62,-850.88 1006.62,-850.88 1006.62,-700.12 896.62,-700.12"/>
+<polygon fill="none" stroke="#666666" points="896.62,-683.38 896.62,-867.62 1006.62,-867.62 1006.62,-683.38 896.62,-683.38"/>
 </a>
 </g>
 </g>
@@ -230,7 +234,7 @@
 <g id="edge13_Node000001_Node000014" class="edge">
 <title>Node1&#45;&gt;Node14</title>
 <g id="a_edge13_Node000001_Node000014"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1103.5,-982.22C1073.56,-969.88 1039.49,-951.63 1015.62,-926.25 995.78,-905.14 981.56,-876.92 971.65,-850.68"/>
+<path fill="none" stroke="#63b8ff" d="M1103.5,-982.22C1073.56,-969.88 1039.49,-951.63 1015.62,-926.25 999.94,-909.56 987.77,-888.45 978.47,-867.37"/>
 <polygon fill="none" stroke="#63b8ff" points="1101.9,-985.35 1112.49,-985.78 1104.48,-978.84 1101.9,-985.35"/>
 </a>
 </g>

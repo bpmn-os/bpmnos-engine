@@ -1,5 +1,9 @@
 var NAVTREEINDEX13 =
 {
+"job_shop_scheduling_problem.html#operators-12":[6,4,0,8,3],
+"job_shop_scheduling_problem.html#operators-13":[6,4,0,9,4],
+"job_shop_scheduling_problem.html#operators-14":[6,4,0,15,3],
+"job_shop_scheduling_problem.html#operators-15":[6,4,0,16,4],
 "job_shop_scheduling_problem.html#order-process-orderprocess":[6,4,0,2],
 "job_shop_scheduling_problem.html#receivetask-noticejobcompletiontask":[6,4,0,9],
 "job_shop_scheduling_problem.html#sendtask-sendjobtask":[6,4,0,8],
@@ -245,9 +249,5 @@ var NAVTREEINDEX13 =
 "namespaceXML.html#a38677cd8e74fc7c166311f92c73624b1":[7,2,3,13],
 "namespaceXML.html#a45367afdcd50efa1a3aa8a006fd2ec22":[7,2,3,18],
 "namespaceXML.html#a4c0f871c8deb7483a09975742ef4c598":[7,2,3,3],
-"namespaceXML.html#a4c0f871c8deb7483a09975742ef4c598":[7,2,3,4],
-"namespaceXML.html#a6ea460e6b5d34537e9042fad657714fa":[7,2,3,5],
-"namespaceXML.html#a6ea460e6b5d34537e9042fad657714fa":[7,2,3,6],
-"namespaceXML.html#a8c738f76831f9e08a8e852dd94fa1e44":[7,2,3,7],
-"namespaceXML.html#aa59ec4ada5c483ead6eb378ffdbe50a5":[7,2,3,15]
+"namespaceXML.html#a4c0f871c8deb7483a09975742ef4c598":[7,2,3,4]
 };
