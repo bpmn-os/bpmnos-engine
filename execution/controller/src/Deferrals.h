@@ -67,6 +67,19 @@ public:
   /// @brief Returns the deferred decision points by their tokens.
   const std::unordered_map< const Token*, Entry >& getDeferrals() const;
 
+  /**
+   * @brief Returns the token representing the decision point of the token: the performer token for a token awaiting
+   * entry at a sequential activity, and the token itself otherwise.
+   */
+  static const Token* decisionPoint(const Token* token);
+
+  /**
+   * @brief Returns the deferral the model states for the decision point represented by the token, nullptr if none: that
+   * of the choice guidance for a token holding a choice request, that of the message guidance for a token holding a
+   * delivery request, and that of the performer otherwise.
+   */
+  static const BPMNOS::Model::Deferral* deferralOf(const Token* token);
+
 private:
   std::unordered_map< const Token*, Entry > deferrals;
   const SystemState* systemState = nullptr;
@@ -75,10 +88,6 @@ private:
   void message(const Message* message);
   /// Returns true if a request of the entry has not expired, so that its token exists.
   static bool isAlive(const Entry& entry);
-  /// Returns the token representing the decision point of the token.
-  static const Token* decisionPoint(const Token* token);
-  /// Returns the deferral the model states for the decision point represented by the token, nullptr if none.
-  static const BPMNOS::Model::Deferral* deferralOf(const Token* token);
   /// Returns the instance of the token representing a decision point.
   static BPMNOS::number instanceOf(const Token* token);
 };
