@@ -6,6 +6,7 @@ var classBPMNOS_1_1Execution_1_1SystemState =
     [ "getObjective", "classBPMNOS_1_1Execution_1_1SystemState.html#abe8175c87106f4140bf82b2b3c9c19b2", null ],
     [ "getObservableType", "classBPMNOS_1_1Execution_1_1SystemState.html#a053f71e5ba28c94a1396f6bf91fd3cf3", null ],
     [ "getTime", "classBPMNOS_1_1Execution_1_1SystemState.html#a40d4ea48ee869f2996a0dc33f738546e", null ],
+    [ "isAwaitingEvents", "classBPMNOS_1_1Execution_1_1SystemState.html#adbb77035eb837fcf970d6bdbc2895402", null ],
     [ "ConditionalEventObserver", "classBPMNOS_1_1Execution_1_1SystemState.html#a87500327ae69187f741e942383b5bca8", null ],
     [ "Engine", "classBPMNOS_1_1Execution_1_1SystemState.html#a3e1914489e4bed4f9f23cdeab34a43dc", null ],
     [ "StateMachine", "classBPMNOS_1_1Execution_1_1SystemState.html#a97c30032fa6c28eaf8a40b6df6ea97ed", null ],

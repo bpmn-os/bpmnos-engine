@@ -26,6 +26,7 @@ var classBPMNOS_1_1Model_1_1Model =
     [ "isSequentialActivity", "classBPMNOS_1_1Model_1_1Model.html#a99544665ade28318235ed765728f7bab", null ],
     [ "messageMayBeCaught", "classBPMNOS_1_1Model_1_1Model.html#a8290a950854e310e1d649f96bfe2bce2", null ],
     [ "messageMayBeThrown", "classBPMNOS_1_1Model_1_1Model.html#a72f6bbaafb8b9abeb752da5807a6ebc2", null ],
+    [ "validateDeferrals", "classBPMNOS_1_1Model_1_1Model.html#acf80497e781c5bebe0d5e8b0e174b779", null ],
     [ "validateErrors", "classBPMNOS_1_1Model_1_1Model.html#aa41f46479dc7f8f23a170a63b27ad569", null ],
     [ "validateEscalations", "classBPMNOS_1_1Model_1_1Model.html#ad79c7ae4b7ea6ee0af471b533289bcc5", null ],
     [ "validateSignals", "classBPMNOS_1_1Model_1_1Model.html#ae3f18598d772c856b8783a8041dcaa84", null ],

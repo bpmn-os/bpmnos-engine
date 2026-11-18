@@ -67,6 +67,7 @@ var bpmnos =
         [ "Writing objects", "extension.html#writing-objects", null ]
       ] ],
       [ "Choices", "extension.html#choices", null ],
+      [ "Deferrals", "extension.html#deferrals", null ],
       [ "Messages", "extension.html#messages", null ],
       [ "Signals", "extension.html#signals", null ],
       [ "Errors and escalations", "extension.html#errors-and-escalations", null ],

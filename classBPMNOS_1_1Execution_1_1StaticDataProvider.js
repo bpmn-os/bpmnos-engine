@@ -8,6 +8,7 @@ var classBPMNOS_1_1Execution_1_1StaticDataProvider =
     [ "applyReadyValues", "classBPMNOS_1_1Execution_1_1StaticDataProvider.html#adab688dd39311e18a1dafa81f184f691", null ],
     [ "createScenario", "classBPMNOS_1_1Execution_1_1StaticDataProvider.html#aabaa62e42953224f0ff8a9cbc0d93778", null ],
     [ "dispatchEvent", "classBPMNOS_1_1Execution_1_1StaticDataProvider.html#aa857f9d6b24f8f173abe79a88457242c", null ],
+    [ "expectsData", "classBPMNOS_1_1Execution_1_1StaticDataProvider.html#a6b73c02b8ef31395613efa978de4642e", null ],
     [ "getActivityReadyTime", "classBPMNOS_1_1Execution_1_1StaticDataProvider.html#aa79134f3d04afde0eb29decdbb4aad6f", null ],
     [ "getCompletionStatus", "classBPMNOS_1_1Execution_1_1StaticDataProvider.html#aaa77e43f70b669e414d5a21b2cc14178", null ],
     [ "getEarliestInstantiationTime", "classBPMNOS_1_1Execution_1_1StaticDataProvider.html#ab396e9454acae83741f085e7b681e3b7", null ],

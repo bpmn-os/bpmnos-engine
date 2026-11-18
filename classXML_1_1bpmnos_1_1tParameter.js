@@ -1,6 +1,7 @@
 var classXML_1_1bpmnos_1_1tParameter =
 [
     [ "tParameter", "classXML_1_1bpmnos_1_1tParameter.html#a0e5f2c03befe3f097c3da1e839a22cb0", null ],
+    [ "tDeferral", "classXML_1_1bpmnos_1_1tParameter.html#aac26feedfa5e44ebba0cd2b8a089250b", null ],
     [ "tLoopCharacteristics", "classXML_1_1bpmnos_1_1tParameter.html#ad8f3ccb308b1d128d64b4b7b665c9fa0", null ],
     [ "tMessage", "classXML_1_1bpmnos_1_1tParameter.html#af7d37673b8a5261cc1bbfc723bcefa3b", null ],
     [ "tTimer", "classXML_1_1bpmnos_1_1tParameter.html#ac4b087274ee5d9b41290298efdff0ee1", null ],

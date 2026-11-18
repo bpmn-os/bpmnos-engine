@@ -175,6 +175,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aa41f46479dc7f8f23a170a63b27ad569"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates that every thrower and catcher of an error stating its name agree on its type.  <br /></td></tr>
 <tr class="memitem:ad79c7ae4b7ea6ee0af471b533289bcc5" id="r_ad79c7ae4b7ea6ee0af471b533289bcc5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad79c7ae4b7ea6ee0af471b533289bcc5">validateEscalations</a> ()</td></tr>
 <tr class="memdesc:ad79c7ae4b7ea6ee0af471b533289bcc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validates that every thrower and catcher of an escalation stating its name agree on its type.  <br /></td></tr>
+<tr class="memitem:acf80497e781c5bebe0d5e8b0e174b779" id="r_acf80497e781c5bebe0d5e8b0e174b779"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acf80497e781c5bebe0d5e8b0e174b779">validateDeferrals</a> ()</td></tr>
+<tr class="memdesc:acf80497e781c5bebe0d5e8b0e174b779"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refuses an observed attribute of a deferral that is never updated, which is known only once every operator and choice of the model is read.  <br /></td></tr>
 <tr class="memitem:a8290a950854e310e1d649f96bfe2bce2" id="r_a8290a950854e310e1d649f96bfe2bce2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8290a950854e310e1d649f96bfe2bce2">messageMayBeCaught</a> (<a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *sendingProcess, <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1FlowNode.html">BPMN::FlowNode</a> *throwingMessageEvent, <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *receivingProcess, <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1FlowNode.html">BPMN::FlowNode</a> *catchingMessageEvent)</td></tr>
 <tr class="memitem:a72f6bbaafb8b9abeb752da5807a6ebc2" id="r_a72f6bbaafb8b9abeb752da5807a6ebc2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a72f6bbaafb8b9abeb752da5807a6ebc2">messageMayBeThrown</a> (<a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *sendingProcess, <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1FlowNode.html">BPMN::FlowNode</a> *throwingMessageEvent, <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *receivingProcess, <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1FlowNode.html">BPMN::FlowNode</a> *catchingMessageEvent)</td></tr>
 <tr class="memitem:a1b13d1e260dddb088a56e4ad892088ba" id="r_a1b13d1e260dddb088a56e4ad892088ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1b13d1e260dddb088a56e4ad892088ba">createMessageCandidates</a> (<a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *sendingProcess, <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1FlowNode.html">BPMN::FlowNode</a> *throwingMessageEvent, <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Process.html">BPMN::Process</a> *receivingProcess, <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1FlowNode.html">BPMN::FlowNode</a> *catchingMessageEvent)</td></tr>
@@ -635,7 +637,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00713">713</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00740">740</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -815,7 +817,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00608">608</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00635">635</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -940,7 +942,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00765">765</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00792">792</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -967,7 +969,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00760">760</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00787">787</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -1000,7 +1002,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00629">629</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00656">656</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -1033,7 +1035,26 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00671">671</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00698">698</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+
+</div>
+</div>
+<a id="acf80497e781c5bebe0d5e8b0e174b779" name="acf80497e781c5bebe0d5e8b0e174b779"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf80497e781c5bebe0d5e8b0e174b779">&#9670;&#160;</a></span>validateDeferrals()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Model::validateDeferrals </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00493">493</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -1052,7 +1073,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00492">492</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00519">519</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -1071,7 +1092,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00511">511</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00538">538</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -1091,7 +1112,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>Called at the end of <a class="el" href="#a67dc72cb7893ac3c26d72514fd4c539f">createMessageFlows</a>, this being the first point at which every process has been read. </p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00530">530</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00557">557</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -1111,7 +1132,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>Called at the end of <a class="el" href="#a67dc72cb7893ac3c26d72514fd4c539f">createMessageFlows</a>, this being the first point at which every process has been read. A triggering message is matched by its name alone, so no other catching element may declare that name, neither side may declare header parameters, and the message must not be thrown within the process it instantiates. </p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00545">545</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8cpp_source.html#l00572">572</a> of file <a class="el" href="Model_8cpp_source.html">Model.cpp</a>.</p>
 
 </div>
 </div>
@@ -1128,7 +1149,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00103">103</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00106">106</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
 
 </div>
 </div>
@@ -1144,7 +1165,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00113">113</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00116">116</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
 
 </div>
 </div>
@@ -1160,7 +1181,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00109">109</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00112">112</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
 
 </div>
 </div>
@@ -1177,7 +1198,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>The input content a constructor was given, held until the data stores declaring the inputs exist. An input is declared by a data store, so what it is read from can only be resolved once the stores are created, which is after the constructor has run. </p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00108">108</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00111">111</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
 
 </div>
 </div>
@@ -1193,7 +1214,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00112">112</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00115">115</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
 
 </div>
 </div>
@@ -1210,7 +1231,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>The index of the instance in the data of every scope: the global attributes are the data attributes with indices below it, and every process declares the instance as its first data attribute, at this index. </p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00118">118</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00121">121</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
 
 </div>
 </div>
@@ -1242,7 +1263,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00111">111</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00114">114</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
 
 </div>
 </div>
@@ -1258,7 +1279,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00114">114</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00117">117</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
 
 </div>
 </div>
@@ -1275,7 +1296,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>The predecessors of a converging inclusive gateway are the flow nodes from which one of its incoming sequence flows can be reached without visiting the gateway. The gateway is activated once no other token of its scope is at a predecessor, the model being assumed acyclic. Other nodes have no entry. </p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00140">140</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00143">143</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
 
 </div>
 </div>
@@ -1292,7 +1313,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>The counterpart of <a class="el" href="#a830b287dadfc43a375479cf198afa3d0">processesTriggeredBySignal</a> for messages. A message instantiating a process names no recipient, the instance not existing before the message arrives, so it is matched by its name alone. The name is therefore declared by no catching element other than the start event, which <a class="el" href="#a67dc72cb7893ac3c26d72514fd4c539f">createMessageFlows</a> enforces once every process has been read. </p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00133">133</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00136">136</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
 
 </div>
 </div>
@@ -1309,7 +1330,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>The model-time counterpart of BPMNOS::Execution::SystemState::tokensAwaitingSignal: which tokens await a signal is run state and is held there, whereas which process a signal instantiates is fixed by the model and is held here. </p>
 
-<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00125">125</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="Model_8h_source.html#l00128">128</a> of file <a class="el" href="Model_8h_source.html">Model.h</a>.</p>
 
 </div>
 </div>

@@ -35,26 +35,28 @@
 <!-- Node7 -->
 <g id="Node000007" class="node">
 <title>Node7</title>
-<g id="a_Node000007"><a xlink:href="classBPMNOS_1_1Execution_1_1GreedyController.html" target="_top" xlink:title="A controller dispatching the first feasible decision in priority order.">
-<polygon fill="white" stroke="none" points="174.5,-268 63.5,-268 63.5,-134 174.5,-134 174.5,-268"/>
-<text xml:space="preserve" text-anchor="start" x="68" y="-254.5" font-family="Helvetica,sans-Serif" font-size="10.00">BPMNOS::Execution::</text>
-<text xml:space="preserve" text-anchor="start" x="77.38" y="-241.75" font-family="Helvetica,sans-Serif" font-size="10.00">GreedyController</text>
-<text xml:space="preserve" text-anchor="start" x="67.5" y="-225" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="79.75" y="-225" font-family="Helvetica,sans-Serif" font-size="10.00">dispatchers</text>
-<text xml:space="preserve" text-anchor="start" x="67.5" y="-208.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="79.75" y="-208.25" font-family="Helvetica,sans-Serif" font-size="10.00">config</text>
-<text xml:space="preserve" text-anchor="start" x="67.5" y="-191.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="79.75" y="-191.5" font-family="Helvetica,sans-Serif" font-size="10.00">GreedyController()</text>
-<text xml:space="preserve" text-anchor="start" x="67.5" y="-174.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="79.75" y="-174.75" font-family="Helvetica,sans-Serif" font-size="10.00">connect()</text>
-<text xml:space="preserve" text-anchor="start" x="67.5" y="-158" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="79.75" y="-158" font-family="Helvetica,sans-Serif" font-size="10.00">default_config()</text>
-<text xml:space="preserve" text-anchor="start" x="67.5" y="-141.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="79.75" y="-141.25" font-family="Helvetica,sans-Serif" font-size="10.00">dispatchEvent()</text>
-<polygon fill="#666666" stroke="#666666" points="63.5,-236.5 63.5,-236.5 174.5,-236.5 174.5,-236.5 63.5,-236.5"/>
-<polygon fill="#666666" stroke="#666666" points="63.5,-203 63.5,-203 77.75,-203 77.75,-203 63.5,-203"/>
-<polygon fill="#666666" stroke="#666666" points="77.75,-203 77.75,-203 174.5,-203 174.5,-203 77.75,-203"/>
-<polygon fill="none" stroke="#666666" points="63.5,-134 63.5,-268 174.5,-268 174.5,-134 63.5,-134"/>
+<g id="a_Node000007"><a xlink:href="classBPMNOS_1_1Execution_1_1GreedyController.html" target="_top" xlink:title="A controller dispatching the best feasible decision of all.">
+<polygon fill="white" stroke="none" points="174.5,-276.38 63.5,-276.38 63.5,-125.62 174.5,-125.62 174.5,-276.38"/>
+<text xml:space="preserve" text-anchor="start" x="68" y="-262.88" font-family="Helvetica,sans-Serif" font-size="10.00">BPMNOS::Execution::</text>
+<text xml:space="preserve" text-anchor="start" x="77.38" y="-250.12" font-family="Helvetica,sans-Serif" font-size="10.00">GreedyController</text>
+<text xml:space="preserve" text-anchor="start" x="67.5" y="-233.38" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="79.75" y="-233.38" font-family="Helvetica,sans-Serif" font-size="10.00">dispatchers</text>
+<text xml:space="preserve" text-anchor="start" x="67.5" y="-216.62" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="79.75" y="-216.62" font-family="Helvetica,sans-Serif" font-size="10.00">config</text>
+<text xml:space="preserve" text-anchor="start" x="67.5" y="-199.88" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="79.75" y="-199.88" font-family="Helvetica,sans-Serif" font-size="10.00">GreedyController()</text>
+<text xml:space="preserve" text-anchor="start" x="67.5" y="-183.12" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="79.75" y="-183.12" font-family="Helvetica,sans-Serif" font-size="10.00">GreedyController()</text>
+<text xml:space="preserve" text-anchor="start" x="67.5" y="-166.38" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="79.75" y="-166.38" font-family="Helvetica,sans-Serif" font-size="10.00">connect()</text>
+<text xml:space="preserve" text-anchor="start" x="67.5" y="-149.62" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="79.75" y="-149.62" font-family="Helvetica,sans-Serif" font-size="10.00">default_config()</text>
+<text xml:space="preserve" text-anchor="start" x="67.5" y="-132.88" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="79.75" y="-132.88" font-family="Helvetica,sans-Serif" font-size="10.00">dispatchEvent()</text>
+<polygon fill="#666666" stroke="#666666" points="63.5,-244.88 63.5,-244.88 174.5,-244.88 174.5,-244.88 63.5,-244.88"/>
+<polygon fill="#666666" stroke="#666666" points="63.5,-211.38 63.5,-211.38 77.75,-211.38 77.75,-211.38 63.5,-211.38"/>
+<polygon fill="#666666" stroke="#666666" points="77.75,-211.38 77.75,-211.38 174.5,-211.38 174.5,-211.38 77.75,-211.38"/>
+<polygon fill="none" stroke="#666666" points="63.5,-125.62 63.5,-276.38 174.5,-276.38 174.5,-125.62 63.5,-125.62"/>
 </a>
 </g>
 </g>
@@ -62,7 +64,7 @@
 <g id="edge6_Node000001_Node000007" class="edge">
 <title>Node1&#45;&gt;Node7</title>
 <g id="a_edge6_Node000001_Node000007"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M168.89,-426.87C157.97,-377.67 143.98,-314.58 133.59,-267.76"/>
+<path fill="none" stroke="#63b8ff" d="M168.9,-426.91C158.63,-380.62 145.63,-322.03 135.47,-276.25"/>
 <polygon fill="none" stroke="#63b8ff" points="165.47,-427.62 171.05,-436.62 172.3,-426.1 165.47,-427.62"/>
 </a>
 </g>

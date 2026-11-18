@@ -43,6 +43,7 @@ var classBPMNOS_1_1Model_1_1ExtensionElements =
     [ "operatorDependencies", "classBPMNOS_1_1Model_1_1ExtensionElements.html#a0c97f1bcf84411fb4bcd7d136817e891", null ],
     [ "operators", "classBPMNOS_1_1Model_1_1ExtensionElements.html#a03519651a03fbdd1680ec5aee033a479", null ],
     [ "parent", "classBPMNOS_1_1Model_1_1ExtensionElements.html#af1c176eecaaf99825575b157815d54b8", null ],
+    [ "performerDeferral", "classBPMNOS_1_1Model_1_1ExtensionElements.html#a203c4bc31d11bba8984ca1e695e96375", null ],
     [ "restrictions", "classBPMNOS_1_1Model_1_1ExtensionElements.html#ac44780683342f3c370799caad0b1f98f", null ],
     [ "signalDefinition", "classBPMNOS_1_1Model_1_1ExtensionElements.html#ac6c5910f6fa40111a761ade4e6a62ca3", null ],
     [ "statusObjects", "classBPMNOS_1_1Model_1_1ExtensionElements.html#accc3f937393617ab643659ab5e90ce52", null ],

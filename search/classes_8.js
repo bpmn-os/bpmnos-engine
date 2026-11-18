@@ -23,6 +23,5 @@ var searchData=
   ['is_5fweak_5fptr_20',['is_weak_ptr',['../structBPMNOS_1_1Execution_1_1is__weak__ptr.html',1,'BPMNOS::Execution']]],
   ['is_5fweak_5fptr_3c_20std_3a_3aweak_5fptr_3c_20t_20_3e_20_3e_21',['is_weak_ptr&lt; std::weak_ptr&lt; T &gt; &gt;',['../structBPMNOS_1_1Execution_1_1is__weak__ptr_3_01std_1_1weak__ptr_3_01T_01_4_01_4.html',1,'BPMNOS::Execution']]],
   ['itemdefinition_22',['itemDefinition',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1itemDefinition.html',1,'XML::bpmn']]],
-  ['iterator_23',['Iterator',['../classBPMNOS_1_1Execution_1_1CompetingCandidates_1_1Iterator.html',1,'BPMNOS::Execution::CompetingCandidates']]],
-  ['iterator_24',['iterator',['../structBPMNOS_1_1Execution_1_1auto__list_1_1iterator.html',1,'BPMNOS::Execution::auto_list&lt; U &gt;::iterator'],['../structBPMNOS_1_1Execution_1_1auto__set_1_1iterator.html',1,'BPMNOS::Execution::auto_set&lt; V, Compare, U &gt;::iterator']]]
+  ['iterator_23',['iterator',['../structBPMNOS_1_1Execution_1_1auto__list_1_1iterator.html',1,'BPMNOS::Execution::auto_list&lt; U &gt;::iterator'],['../structBPMNOS_1_1Execution_1_1auto__set_1_1iterator.html',1,'BPMNOS::Execution::auto_set&lt; V, Compare, U &gt;::iterator'],['../classBPMNOS_1_1Execution_1_1Candidates_1_1iterator.html',1,'BPMNOS::Execution::Candidates&lt; WeakPtrs &gt;::iterator']]]
 ];

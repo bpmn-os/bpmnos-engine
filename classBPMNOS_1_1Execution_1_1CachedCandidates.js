@@ -2,6 +2,7 @@ var classBPMNOS_1_1Execution_1_1CachedCandidates =
 [
     [ "Evaluate", "classBPMNOS_1_1Execution_1_1CachedCandidates.html#a94c5a81b73fad2451a6cc82ee9aa4456", null ],
     [ "CachedCandidates", "classBPMNOS_1_1Execution_1_1CachedCandidates.html#a44669a71e3c48fd77abc229585277df1", null ],
+    [ "CachedCandidates", "classBPMNOS_1_1Execution_1_1CachedCandidates.html#a23c637920edbc39a9f2a12e558d36184", null ],
     [ "addDecision", "classBPMNOS_1_1Execution_1_1CachedCandidates.html#ab7407ba68611fce8039952f3d7393f38", null ],
     [ "addEvaluation", "classBPMNOS_1_1Execution_1_1CachedCandidates.html#aecf87313eee20718eb09544d06a200c7", null ],
     [ "clear", "classBPMNOS_1_1Execution_1_1CachedCandidates.html#a5097e6d67125e2ca14794df3f790f829", null ],

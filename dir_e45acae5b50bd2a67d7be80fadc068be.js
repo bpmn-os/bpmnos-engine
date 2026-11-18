@@ -6,6 +6,8 @@ var dir_e45acae5b50bd2a67d7be80fadc068be =
     [ "AttributeRegistry.h", "AttributeRegistry_8h.html", "AttributeRegistry_8h" ],
     [ "Choice.cpp", "Choice_8cpp.html", "Choice_8cpp" ],
     [ "Choice.h", "Choice_8h.html", "Choice_8h" ],
+    [ "Deferral.cpp", "Deferral_8cpp.html", "Deferral_8cpp" ],
+    [ "Deferral.h", "Deferral_8h.html", "Deferral_8h" ],
     [ "ErrorDefinition.cpp", "ErrorDefinition_8cpp.html", null ],
     [ "ErrorDefinition.h", "ErrorDefinition_8h.html", "ErrorDefinition_8h" ],
     [ "EscalationDefinition.cpp", "EscalationDefinition_8cpp.html", null ],

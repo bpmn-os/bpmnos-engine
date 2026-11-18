@@ -246,26 +246,28 @@
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="classBPMNOS_1_1Execution_1_1GreedyController.html" target="_top" xlink:title="A controller dispatching the first feasible decision in priority order.">
-<polygon fill="white" stroke="none" points="111,-268 0,-268 0,-134 111,-134 111,-268"/>
-<text xml:space="preserve" text-anchor="start" x="4.5" y="-254.5" font-family="Helvetica,sans-Serif" font-size="10.00">BPMNOS::Execution::</text>
-<text xml:space="preserve" text-anchor="start" x="13.88" y="-241.75" font-family="Helvetica,sans-Serif" font-size="10.00">GreedyController</text>
-<text xml:space="preserve" text-anchor="start" x="4" y="-225" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-225" font-family="Helvetica,sans-Serif" font-size="10.00">dispatchers</text>
-<text xml:space="preserve" text-anchor="start" x="4" y="-208.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-208.25" font-family="Helvetica,sans-Serif" font-size="10.00">config</text>
-<text xml:space="preserve" text-anchor="start" x="4" y="-191.5" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-191.5" font-family="Helvetica,sans-Serif" font-size="10.00">GreedyController()</text>
-<text xml:space="preserve" text-anchor="start" x="4" y="-174.75" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-174.75" font-family="Helvetica,sans-Serif" font-size="10.00">connect()</text>
-<text xml:space="preserve" text-anchor="start" x="4" y="-158" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-158" font-family="Helvetica,sans-Serif" font-size="10.00">default_config()</text>
-<text xml:space="preserve" text-anchor="start" x="4" y="-141.25" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
-<text xml:space="preserve" text-anchor="start" x="16.25" y="-141.25" font-family="Helvetica,sans-Serif" font-size="10.00">dispatchEvent()</text>
-<polygon fill="#666666" stroke="#666666" points="0,-236.5 0,-236.5 111,-236.5 111,-236.5 0,-236.5"/>
-<polygon fill="#666666" stroke="#666666" points="0,-203 0,-203 14.25,-203 14.25,-203 0,-203"/>
-<polygon fill="#666666" stroke="#666666" points="14.25,-203 14.25,-203 111,-203 111,-203 14.25,-203"/>
-<polygon fill="none" stroke="#666666" points="0,-134 0,-268 111,-268 111,-134 0,-134"/>
+<g id="a_Node000003"><a xlink:href="classBPMNOS_1_1Execution_1_1GreedyController.html" target="_top" xlink:title="A controller dispatching the best feasible decision of all.">
+<polygon fill="white" stroke="none" points="111,-276.38 0,-276.38 0,-125.62 111,-125.62 111,-276.38"/>
+<text xml:space="preserve" text-anchor="start" x="4.5" y="-262.88" font-family="Helvetica,sans-Serif" font-size="10.00">BPMNOS::Execution::</text>
+<text xml:space="preserve" text-anchor="start" x="13.88" y="-250.12" font-family="Helvetica,sans-Serif" font-size="10.00">GreedyController</text>
+<text xml:space="preserve" text-anchor="start" x="4" y="-233.38" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-233.38" font-family="Helvetica,sans-Serif" font-size="10.00">dispatchers</text>
+<text xml:space="preserve" text-anchor="start" x="4" y="-216.62" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-216.62" font-family="Helvetica,sans-Serif" font-size="10.00">config</text>
+<text xml:space="preserve" text-anchor="start" x="4" y="-199.88" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-199.88" font-family="Helvetica,sans-Serif" font-size="10.00">GreedyController()</text>
+<text xml:space="preserve" text-anchor="start" x="4" y="-183.12" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-183.12" font-family="Helvetica,sans-Serif" font-size="10.00">GreedyController()</text>
+<text xml:space="preserve" text-anchor="start" x="4" y="-166.38" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-166.38" font-family="Helvetica,sans-Serif" font-size="10.00">connect()</text>
+<text xml:space="preserve" text-anchor="start" x="4" y="-149.62" font-family="Helvetica,sans-Serif" font-size="10.00">+</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-149.62" font-family="Helvetica,sans-Serif" font-size="10.00">default_config()</text>
+<text xml:space="preserve" text-anchor="start" x="4" y="-132.88" font-family="Helvetica,sans-Serif" font-size="10.00">#</text>
+<text xml:space="preserve" text-anchor="start" x="16.25" y="-132.88" font-family="Helvetica,sans-Serif" font-size="10.00">dispatchEvent()</text>
+<polygon fill="#666666" stroke="#666666" points="0,-244.88 0,-244.88 111,-244.88 111,-244.88 0,-244.88"/>
+<polygon fill="#666666" stroke="#666666" points="0,-211.38 0,-211.38 14.25,-211.38 14.25,-211.38 0,-211.38"/>
+<polygon fill="#666666" stroke="#666666" points="14.25,-211.38 14.25,-211.38 111,-211.38 111,-211.38 14.25,-211.38"/>
+<polygon fill="none" stroke="#666666" points="0,-125.62 0,-276.38 111,-276.38 111,-125.62 0,-125.62"/>
 </a>
 </g>
 </g>
@@ -273,7 +275,7 @@
 <g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
 <g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M105.39,-426.87C94.47,-377.67 80.48,-314.58 70.09,-267.76"/>
+<path fill="none" stroke="#63b8ff" d="M105.4,-426.91C95.13,-380.62 82.13,-322.03 71.97,-276.25"/>
 <polygon fill="none" stroke="#63b8ff" points="101.97,-427.62 107.55,-436.62 108.8,-426.1 101.97,-427.62"/>
 </a>
 </g>

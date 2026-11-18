@@ -238,6 +238,8 @@ Public Attributes</h2></td></tr>
 <tr class="memdesc:afe92aaa7c4a5cc1e3ab7b16e73264366"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of iterations of a standard loop (requires loopIndex).  <br /></td></tr>
 <tr class="memitem:ae04e1a65fe94b5e99e22dfda38073d6b" id="r_ae04e1a65fe94b5e99e22dfda38073d6b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae04e1a65fe94b5e99e22dfda38073d6b">hasSequentialPerformer</a></td></tr>
 <tr class="memdesc:ae04e1a65fe94b5e99e22dfda38073d6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boolean indicating whether element has a performer with name "Sequential".  <br /></td></tr>
+<tr class="memitem:a203c4bc31d11bba8984ca1e695e96375" id="r_a203c4bc31d11bba8984ca1e695e96375"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classBPMNOS_1_1Model_1_1Deferral.html">Deferral</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a203c4bc31d11bba8984ca1e695e96375">performerDeferral</a></td></tr>
+<tr class="memdesc:a203c4bc31d11bba8984ca1e695e96375"><td class="mdescLeft">&#160;</td><td class="mdescRight">The deferral of the entries of the sequential activities of the performer the element declares, stated in the extension elements of its performer element, nullptr if none.  <br /></td></tr>
 <tr class="memitem:a56b118d3de86fdb678be9e734a715874" id="r_a56b118d3de86fdb678be9e734a715874"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a56b118d3de86fdb678be9e734a715874">isInstantaneous</a></td></tr>
 <tr class="memdesc:a56b118d3de86fdb678be9e734a715874"><td class="mdescLeft">&#160;</td><td class="mdescRight">Boolean indicating whether operators may modify timestamp.  <br /></td></tr>
 <tr class="memitem:a605474d8d74cb7cb0f6880edf1e2c16e" id="r_a605474d8d74cb7cb0f6880edf1e2c16e"><td class="memItemLeft" align="right" valign="top">std::optional&lt; std::unique_ptr&lt; <a class="el" href="classBPMNOS_1_1Model_1_1Guidance.html">Guidance</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a605474d8d74cb7cb0f6880edf1e2c16e">messageDeliveryGuidance</a></td></tr>
@@ -314,7 +316,7 @@ template&lt;typename DataType&gt; </div>
 </div><div class="memdoc">
 <p>If the node states a message, signal, error or escalation, its content object, which the operators write or read, must be given; otherwise the content object given, if any, is not used. </p>
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00461">461</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00491">491</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
 
 </div>
 </div>
@@ -339,7 +341,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00388">388</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00418">418</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
 
 </div>
 </div>
@@ -364,7 +366,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00417">417</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00447">447</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
 
 </div>
 </div>
@@ -389,7 +391,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00401">401</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00431">431</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
 
 </div>
 </div>
@@ -414,7 +416,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00448">448</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00478">478</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
 
 </div>
 </div>
@@ -439,7 +441,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00508">508</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00538">538</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
 
 </div>
 </div>
@@ -458,7 +460,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00380">380</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00410">410</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
 
 </div>
 </div>
@@ -483,7 +485,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00484">484</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00514">514</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
 
 </div>
 </div>
@@ -508,7 +510,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00435">435</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00465">465</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
 
 </div>
 </div>
@@ -606,7 +608,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8h_source.html#l00132">132</a> of file <a class="el" href="ExtensionElements_8h_source.html">ExtensionElements.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8h_source.html#l00133">133</a> of file <a class="el" href="ExtensionElements_8h_source.html">ExtensionElements.h</a>.</p>
 
 </div>
 </div>
@@ -765,7 +767,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8h_source.html#l00131">131</a> of file <a class="el" href="ExtensionElements_8h_source.html">ExtensionElements.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8h_source.html#l00132">132</a> of file <a class="el" href="ExtensionElements_8h_source.html">ExtensionElements.h</a>.</p>
 
 </div>
 </div>
@@ -846,7 +848,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8h_source.html#l00113">113</a> of file <a class="el" href="ExtensionElements_8h_source.html">ExtensionElements.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8h_source.html#l00114">114</a> of file <a class="el" href="ExtensionElements_8h_source.html">ExtensionElements.h</a>.</p>
 
 </div>
 </div>
@@ -958,7 +960,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8h_source.html#l00130">130</a> of file <a class="el" href="ExtensionElements_8h_source.html">ExtensionElements.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8h_source.html#l00131">131</a> of file <a class="el" href="ExtensionElements_8h_source.html">ExtensionElements.h</a>.</p>
 
 </div>
 </div>
@@ -1007,6 +1009,22 @@ template&lt;typename DataType&gt; </div>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="ExtensionElements_8h_source.html#l00031">31</a> of file <a class="el" href="ExtensionElements_8h_source.html">ExtensionElements.h</a>.</p>
+
+</div>
+</div>
+<a id="a203c4bc31d11bba8984ca1e695e96375" name="a203c4bc31d11bba8984ca1e695e96375"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a203c4bc31d11bba8984ca1e695e96375">&#9670;&#160;</a></span>performerDeferral</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classBPMNOS_1_1Model_1_1Deferral.html">Deferral</a>&gt; BPMNOS::Model::ExtensionElements::performerDeferral</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8h_source.html#l00100">100</a> of file <a class="el" href="ExtensionElements_8h_source.html">ExtensionElements.h</a>.</p>
 
 </div>
 </div>

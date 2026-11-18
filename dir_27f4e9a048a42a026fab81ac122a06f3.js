@@ -11,6 +11,8 @@ var dir_27f4e9a048a42a026fab81ac122a06f3 =
     [ "Controller.h", "Controller_8h.html", "Controller_8h" ],
     [ "Decision.cpp", "Decision_8cpp.html", null ],
     [ "Decision.h", "Decision_8h.html", "Decision_8h" ],
+    [ "Deferrals.cpp", "Deferrals_8cpp.html", null ],
+    [ "Deferrals.h", "Deferrals_8h.html", "Deferrals_8h" ],
     [ "Evaluation.h", "Evaluation_8h.html", "Evaluation_8h" ],
     [ "Evaluator.cpp", "Evaluator_8cpp.html", null ],
     [ "Evaluator.h", "Evaluator_8h.html", "Evaluator_8h" ],

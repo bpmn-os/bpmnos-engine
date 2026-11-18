@@ -20,8 +20,11 @@ var searchData=
   ['decisionrequest_17',['DecisionRequest',['../structBPMNOS_1_1Execution_1_1DecisionRequest.html',1,'BPMNOS::Execution']]],
   ['decisions_18',['decisions',['../classXML_1_1bpmnos_1_1decisions.html',1,'XML::bpmnos']]],
   ['decisiontask_19',['DecisionTask',['../classBPMNOS_1_1Model_1_1DecisionTask.html',1,'BPMNOS::Model']]],
-  ['descending_20',['descending',['../structBPMNOS_1_1Execution_1_1descending.html',1,'BPMNOS::Execution']]],
-  ['deviation_21',['Deviation',['../structBPMNOS_1_1Execution_1_1PlaybackController_1_1Deviation.html',1,'BPMNOS::Execution::PlaybackController']]],
-  ['directmessageobserver_22',['DirectMessageObserver',['../classBPMNOS_1_1Execution_1_1DirectMessageObserver.html',1,'BPMNOS::Execution']]],
-  ['dynamicdataprovider_23',['DynamicDataProvider',['../classBPMNOS_1_1Execution_1_1DynamicDataProvider.html',1,'BPMNOS::Execution']]]
+  ['deferral_20',['Deferral',['../classBPMNOS_1_1Model_1_1Deferral.html',1,'BPMNOS::Model']]],
+  ['deferral_21',['deferral',['../classXML_1_1bpmnos_1_1deferral.html',1,'XML::bpmnos']]],
+  ['deferrals_22',['Deferrals',['../classBPMNOS_1_1Execution_1_1Deferrals.html',1,'BPMNOS::Execution']]],
+  ['descending_23',['descending',['../structBPMNOS_1_1Execution_1_1descending.html',1,'BPMNOS::Execution']]],
+  ['deviation_24',['Deviation',['../structBPMNOS_1_1Execution_1_1PlaybackController_1_1Deviation.html',1,'BPMNOS::Execution::PlaybackController']]],
+  ['directmessageobserver_25',['DirectMessageObserver',['../classBPMNOS_1_1Execution_1_1DirectMessageObserver.html',1,'BPMNOS::Execution']]],
+  ['dynamicdataprovider_26',['DynamicDataProvider',['../classBPMNOS_1_1Execution_1_1DynamicDataProvider.html',1,'BPMNOS::Execution']]]
 ];

@@ -11,6 +11,7 @@ var classBPMNOS_1_1Model_1_1Guidance =
     [ "restrictionsSatisfied", "classBPMNOS_1_1Model_1_1Guidance.html#adff2d4ceb1716dd19cd758ba41e46727", null ],
     [ "attributeRegistry", "classBPMNOS_1_1Model_1_1Guidance.html#a826c810bbae74f9d7dc79d2027168129", null ],
     [ "attributes", "classBPMNOS_1_1Model_1_1Guidance.html#a425927b893792db68cf6c2de162284a5", null ],
+    [ "deferral", "classBPMNOS_1_1Model_1_1Guidance.html#a1cf8a9b4e20d81f8e89418a2c0628601", null ],
     [ "dependencies", "classBPMNOS_1_1Model_1_1Guidance.html#ae47febb051aa5e3df9d40ea656cbe773", null ],
     [ "element", "classBPMNOS_1_1Model_1_1Guidance.html#aa9582dfb394b2a9ce3a9d27b59c69bf7", null ],
     [ "operators", "classBPMNOS_1_1Model_1_1Guidance.html#a77607caf1bc8ad574f997b99888da5e8", null ],

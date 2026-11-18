@@ -9,12 +9,12 @@ var hierarchy =
     [ "BPMNOS::Execution::auto_set&lt; V, Compare, U &gt;", "classBPMNOS_1_1Execution_1_1auto__set.html", null ],
     [ "BPMNOS::Model::Choice", "classBPMNOS_1_1Model_1_1Choice.html", null ],
     [ "BPMNOS::Execution::Engine::Command", "classBPMNOS_1_1Execution_1_1Engine_1_1Command.html", null ],
-    [ "BPMNOS::Execution::CompetingCandidates", "classBPMNOS_1_1Execution_1_1CompetingCandidates.html", null ],
     [ "BPMNOS::Execution::GreedyController::Config", "structBPMNOS_1_1Execution_1_1GreedyController_1_1Config.html", null ],
     [ "BPMNOS::Execution::Recorder::Config", "structBPMNOS_1_1Execution_1_1Recorder_1_1Config.html", null ],
     [ "BPMNOS::Execution::Content", "structBPMNOS_1_1Execution_1_1Content.html", null ],
     [ "BPMNOS::CSVReader", "classBPMNOS_1_1CSVReader.html", null ],
     [ "BPMNOS::Data", "structBPMNOS_1_1Data.html", null ],
+    [ "BPMNOS::Model::Deferral", "classBPMNOS_1_1Model_1_1Deferral.html", null ],
     [ "BPMNOS::Execution::descending", "structBPMNOS_1_1Execution_1_1descending.html", null ],
     [ "BPMNOS::Execution::PlaybackController::Deviation", "structBPMNOS_1_1Execution_1_1PlaybackController_1_1Deviation.html", null ],
     [ "BPMN::Element", "https://bpmn-os.github.io/bpmnpp/classBPMN_1_1Element.html", [
@@ -129,9 +129,9 @@ var hierarchy =
     [ "BPMNOS::Execution::StaticDataProvider::Instance", "structBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Instance.html", null ],
     [ "BPMNOS::Execution::InstanceDataReader", "classBPMNOS_1_1Execution_1_1InstanceDataReader.html", null ],
     [ "BPMNOS::Execution::InstanceValues", "classBPMNOS_1_1Execution_1_1InstanceValues.html", null ],
-    [ "BPMNOS::Execution::CompetingCandidates::Iterator", "classBPMNOS_1_1Execution_1_1CompetingCandidates_1_1Iterator.html", null ],
     [ "BPMNOS::Execution::auto_list&lt; U &gt;::iterator", "structBPMNOS_1_1Execution_1_1auto__list_1_1iterator.html", null ],
     [ "BPMNOS::Execution::auto_set&lt; V, Compare, U &gt;::iterator", "structBPMNOS_1_1Execution_1_1auto__set_1_1iterator.html", null ],
+    [ "BPMNOS::Execution::Candidates&lt; WeakPtrs &gt;::iterator", "classBPMNOS_1_1Execution_1_1Candidates_1_1iterator.html", null ],
     [ "BPMNOS::Object::Location", "structBPMNOS_1_1Object_1_1Location.html", null ],
     [ "BPMNOS::Execution::PlaybackController::LoggedDecision", "structBPMNOS_1_1Execution_1_1PlaybackController_1_1LoggedDecision.html", null ],
     [ "BPMNOS::Model::LookupTable", "classBPMNOS_1_1Model_1_1LookupTable.html", null ],
@@ -162,7 +162,7 @@ var hierarchy =
     [ "BPMNOS::Execution::Observer", "classBPMNOS_1_1Execution_1_1Observer.html", [
       [ "BPMNOS::Execution::Candidates< WeakPtrs... >", "classBPMNOS_1_1Execution_1_1Candidates.html", [
         [ "BPMNOS::Execution::CachedCandidates< std::weak_ptr< const Token >, std::weak_ptr< const DecisionRequest > >", "classBPMNOS_1_1Execution_1_1CachedCandidates.html", [
-          [ "BPMNOS::Execution::FirstFeasibleEntry", "classBPMNOS_1_1Execution_1_1FirstFeasibleEntry.html", null ],
+          [ "BPMNOS::Execution::Choices", "classBPMNOS_1_1Execution_1_1Choices.html", null ],
           [ "BPMNOS::Execution::SequentialEntries", "classBPMNOS_1_1Execution_1_1SequentialEntries.html", null ]
         ] ],
         [ "BPMNOS::Execution::CachedCandidates< std::weak_ptr< const Token >, std::weak_ptr< const DecisionRequest >, std::weak_ptr< const Message > >", "classBPMNOS_1_1Execution_1_1CachedCandidates.html", [
@@ -170,12 +170,10 @@ var hierarchy =
         ] ],
         [ "BPMNOS::Execution::CachedCandidates< WeakPtrs >", "classBPMNOS_1_1Execution_1_1CachedCandidates.html", null ]
       ] ],
-      [ "BPMNOS::Execution::Candidates< std::weak_ptr< const Token >, std::weak_ptr< const DecisionRequest > >", "classBPMNOS_1_1Execution_1_1Candidates.html", [
-        [ "BPMNOS::Execution::FirstChoice", "classBPMNOS_1_1Execution_1_1FirstChoice.html", null ]
-      ] ],
       [ "BPMNOS::Execution::Candidates< WeakPtrs >", "classBPMNOS_1_1Execution_1_1Candidates.html", null ],
       [ "BPMNOS::Execution::ConditionalEventObserver", "classBPMNOS_1_1Execution_1_1ConditionalEventObserver.html", null ],
       [ "BPMNOS::Execution::Controller", "classBPMNOS_1_1Execution_1_1Controller.html", null ],
+      [ "BPMNOS::Execution::Deferrals", "classBPMNOS_1_1Execution_1_1Deferrals.html", null ],
       [ "BPMNOS::Execution::DirectMessageObserver", "classBPMNOS_1_1Execution_1_1DirectMessageObserver.html", null ],
       [ "BPMNOS::Execution::EntryObserver", "classBPMNOS_1_1Execution_1_1EntryObserver.html", null ],
       [ "BPMNOS::Execution::Environment", "classBPMNOS_1_1Execution_1_1Environment.html", null ],
@@ -198,7 +196,6 @@ var hierarchy =
     [ "BPMNOS::Model::SchemaProvider", "classBPMNOS_1_1Model_1_1SchemaProvider.html", [
       [ "BPMNOS::Execution::DataProvider", "classBPMNOS_1_1Execution_1_1DataProvider.html", null ]
     ] ],
-    [ "BPMNOS::Execution::CompetingCandidates::Sentinel", "structBPMNOS_1_1Execution_1_1CompetingCandidates_1_1Sentinel.html", null ],
     [ "BPMNOS::SharedData", "structBPMNOS_1_1SharedData.html", null ],
     [ "BPMNOS::Model::SignalDefinition", "classBPMNOS_1_1Model_1_1SignalDefinition.html", null ],
     [ "BPMNOS::Status", "structBPMNOS_1_1Status.html", null ],
@@ -227,6 +224,9 @@ var hierarchy =
       ] ],
       [ "XML::bpmnos::tDecisions", "classXML_1_1bpmnos_1_1tDecisions.html", [
         [ "XML::bpmnos::decisions", "classXML_1_1bpmnos_1_1decisions.html", null ]
+      ] ],
+      [ "XML::bpmnos::tDeferral", "classXML_1_1bpmnos_1_1tDeferral.html", [
+        [ "XML::bpmnos::deferral", "classXML_1_1bpmnos_1_1deferral.html", null ]
       ] ],
       [ "XML::bpmnos::tError", "classXML_1_1bpmnos_1_1tError.html", [
         [ "XML::bpmnos::error", "classXML_1_1bpmnos_1_1error.html", null ]

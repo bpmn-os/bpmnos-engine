@@ -130,7 +130,7 @@ $(function(){initNavTree('classBPMNOS_1_1Execution_1_1MessageDeliveries.html',''
 <p>Message delivery decision candidates, ranked by reward.  
  <a href="#details">More...</a></p>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A message delivery request can be fulfilled by a created <a class="el" href="classBPMNOS_1_1Execution_1_1Message.html">Message</a> whose origin is an admissible sender and whose header matches the recipient header. notice collects the matching request/message pairs; evaluateCandidates evaluates each (after updating the recipient's status with the message), so the front of the reward-ordered set is the best feasible delivery (best-of-all, for the competing layer). </p>
+<div class="textblock"><p>A message delivery request can be fulfilled by a created <a class="el" href="classBPMNOS_1_1Execution_1_1Message.html">Message</a> whose origin is an admissible sender and whose header matches the recipient header. notice collects the matching request/message pairs; evaluateCandidates evaluates each (after updating the recipient's status with the message), so the front of the reward-ordered set is the best feasible delivery (best-of-all, compared by the controller with the best of the other collections). </p>
 
 <p class="definition">Definition at line <a class="el" href="MessageDeliveries_8h_source.html#l00021">21</a> of file <a class="el" href="MessageDeliveries_8h_source.html">MessageDeliveries.h</a>.</p>
 </div>
@@ -138,12 +138,14 @@ $(function(){initNavTree('classBPMNOS_1_1Execution_1_1MessageDeliveries.html',''
 <div class="dynheader">
 Inheritance diagram for BPMNOS::Execution::MessageDeliveries:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1MessageDeliveries__inherit__graph.svg" width="224" height="1072"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1MessageDeliveries__inherit__graph.svg" width="224" height="1116"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a61eb830224f28aedf5130682eaf23280" id="r_a61eb830224f28aedf5130682eaf23280"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a61eb830224f28aedf5130682eaf23280">MessageDeliveries</a> (std::shared_ptr&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1Evaluator.html">Evaluator</a> &gt; <a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#abf67ad86b7fd9b6f6b9182e2409de648">evaluator</a>)</td></tr>
+<tr class="memitem:a0fcfd4071cf3bc5fc3c94d9a1c11d5d0" id="r_a0fcfd4071cf3bc5fc3c94d9a1c11d5d0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0fcfd4071cf3bc5fc3c94d9a1c11d5d0">MessageDeliveries</a> (std::shared_ptr&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1Evaluator.html">Evaluator</a> &gt; <a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#abf67ad86b7fd9b6f6b9182e2409de648">evaluator</a>, const <a class="el" href="classBPMNOS_1_1Execution_1_1Deferrals.html">Deferrals</a> &amp;<a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#a5d5d2e90f9b17b6a78119fa238aa3227">deferrals</a>)</td></tr>
+<tr class="memdesc:a0fcfd4071cf3bc5fc3c94d9a1c11d5d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">The candidates of tokens deferred by the given deferrals are neither evaluated nor yielded while deferred.  <br /></td></tr>
 <tr class="memitem:a4f74f710ff546a3a8dbd50d4f6eab8f0" id="r_a4f74f710ff546a3a8dbd50d4f6eab8f0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4f74f710ff546a3a8dbd50d4f6eab8f0">connect</a> (<a class="el" href="classBPMNOS_1_1Execution_1_1Notifier.html">Notifier</a> *notifier) override</td></tr>
 <tr class="memdesc:a4f74f710ff546a3a8dbd50d4f6eab8f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Subscriptions are made by the specializations; the base does nothing.  <br /></td></tr>
 <tr class="memitem:a37db7d86ac38b2eba286cb26dfe310a4" id="r_a37db7d86ac38b2eba286cb26dfe310a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a37db7d86ac38b2eba286cb26dfe310a4">notice</a> (const <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html">Observable</a> *observable) override</td></tr>
@@ -158,13 +160,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aecf87313eee20718eb09544d06a200c7 inherit pub_methods_classBPMNOS_1_1Execution_1_1CachedCandidates" id="r_aecf87313eee20718eb09544d06a200c7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1CachedCandidates.html#aecf87313eee20718eb09544d06a200c7">addEvaluation</a> (WeakPtrs..., std::shared_ptr&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1Decision.html">Decision</a> &gt; decision)</td></tr>
 <tr class="memdesc:aecf87313eee20718eb09544d06a200c7 inherit pub_methods_classBPMNOS_1_1Execution_1_1CachedCandidates"><td class="mdescLeft">&#160;</td><td class="mdescRight">List an already-owned, evaluated decision in the reward-ordered <span class="tt">candidates</span> and weak-index it if it has data dependencies.  <br /></td></tr>
 <tr class="memitem:aa165d6fd5e44946b1d4d8a77c38a30d2 inherit pub_methods_classBPMNOS_1_1Execution_1_1CachedCandidates" id="r_aa165d6fd5e44946b1d4d8a77c38a30d2"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="structBPMNOS_1_1Execution_1_1Event.html">Event</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1CachedCandidates.html#aa165d6fd5e44946b1d4d8a77c38a30d2">evaluateDecisions</a> (const <a class="el" href="classBPMNOS_1_1Execution_1_1CachedCandidates.html#a94c5a81b73fad2451a6cc82ee9aa4456">Evaluate</a> &amp;evaluate)</td></tr>
-<tr class="memdesc:aa165d6fd5e44946b1d4d8a77c38a30d2 inherit pub_methods_classBPMNOS_1_1Execution_1_1CachedCandidates"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate the pending decisions in turn (removing each); return the first event a callback dispatches, or nullptr.  <br /></td></tr>
 <tr class="inherit_header pub_methods_classBPMNOS_1_1Execution_1_1Candidates"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classBPMNOS_1_1Execution_1_1Candidates')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html">BPMNOS::Execution::Candidates&lt; WeakPtrs... &gt;</a></td></tr>
 <tr class="memitem:a917ee88a5d167e5d22503343c7e83660 inherit pub_methods_classBPMNOS_1_1Execution_1_1Candidates" id="r_a917ee88a5d167e5d22503343c7e83660"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#a917ee88a5d167e5d22503343c7e83660">Candidates</a> (std::shared_ptr&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1Evaluator.html">Evaluator</a> &gt; <a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#abf67ad86b7fd9b6f6b9182e2409de648">evaluator</a>)</td></tr>
 <tr class="memitem:a88ed665d85399b5c67f768362bb892b9 inherit pub_methods_classBPMNOS_1_1Execution_1_1Candidates" id="r_a88ed665d85399b5c67f768362bb892b9"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#a88ed665d85399b5c67f768362bb892b9">~Candidates</a> ()=default</td></tr>
-<tr class="memitem:a42df47586be55c64023a5dc28a5f6ad6 inherit pub_methods_classBPMNOS_1_1Execution_1_1Candidates" id="r_a42df47586be55c64023a5dc28a5f6ad6"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#a42df47586be55c64023a5dc28a5f6ad6">begin</a> ()</td></tr>
-<tr class="memdesc:a42df47586be55c64023a5dc28a5f6ad6 inherit pub_methods_classBPMNOS_1_1Execution_1_1Candidates"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluation is lazy — iterating triggers it.  <br /></td></tr>
-<tr class="memitem:a9c6e5fca15e843e1a60e90f678cfe256 inherit pub_methods_classBPMNOS_1_1Execution_1_1Candidates" id="r_a9c6e5fca15e843e1a60e90f678cfe256"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#a9c6e5fca15e843e1a60e90f678cfe256">end</a> ()</td></tr>
+<tr class="memitem:af48874f376db8ab0d2e6bf93ed6829d1 inherit pub_methods_classBPMNOS_1_1Execution_1_1Candidates" id="r_af48874f376db8ab0d2e6bf93ed6829d1"><td class="memItemLeft" align="right" valign="top">iterator&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#af48874f376db8ab0d2e6bf93ed6829d1">begin</a> ()</td></tr>
+<tr class="memdesc:af48874f376db8ab0d2e6bf93ed6829d1 inherit pub_methods_classBPMNOS_1_1Execution_1_1Candidates"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluation is lazy — iterating triggers it.  <br /></td></tr>
+<tr class="memitem:a77fbea5f4215dc3f3b349c288ff1f0bc inherit pub_methods_classBPMNOS_1_1Execution_1_1Candidates" id="r_a77fbea5f4215dc3f3b349c288ff1f0bc"><td class="memItemLeft" align="right" valign="top">iterator&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#a77fbea5f4215dc3f3b349c288ff1f0bc">end</a> ()</td></tr>
 <tr class="inherit_header pub_methods_classBPMNOS_1_1Execution_1_1Observer"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classBPMNOS_1_1Execution_1_1Observer')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classBPMNOS_1_1Execution_1_1Observer.html">BPMNOS::Execution::Observer</a></td></tr>
 <tr class="memitem:ad693c7067f849b46756ade408803771e inherit pub_methods_classBPMNOS_1_1Execution_1_1Observer" id="r_ad693c7067f849b46756ade408803771e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Observer.html#ad693c7067f849b46756ade408803771e">~Observer</a> ()=default</td></tr>
 </table><table class="memberdecls">
@@ -185,19 +186,23 @@ Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_types_classBPMNOS_1_1Execution_1_1CachedCandidates"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_types_classBPMNOS_1_1Execution_1_1CachedCandidates')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Types inherited from <a class="el" href="classBPMNOS_1_1Execution_1_1CachedCandidates.html">BPMNOS::Execution::CachedCandidates&lt; std::weak_ptr&lt; const Token &gt;, std::weak_ptr&lt; const DecisionRequest &gt;, std::weak_ptr&lt; const Message &gt; &gt;</a></td></tr>
 <tr class="memitem:a94c5a81b73fad2451a6cc82ee9aa4456 inherit pub_types_classBPMNOS_1_1Execution_1_1CachedCandidates" id="r_a94c5a81b73fad2451a6cc82ee9aa4456"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1CachedCandidates.html#a94c5a81b73fad2451a6cc82ee9aa4456">Evaluate</a></td></tr>
 <tr class="memdesc:a94c5a81b73fad2451a6cc82ee9aa4456 inherit pub_types_classBPMNOS_1_1Execution_1_1CachedCandidates"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback evaluating one pending decision; returns an event to dispatch (stopping the evaluation) or nullptr to continue.  <br /></td></tr>
+<tr class="inherit_header pub_types_classBPMNOS_1_1Execution_1_1Candidates"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_types_classBPMNOS_1_1Execution_1_1Candidates')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Types inherited from <a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html">BPMNOS::Execution::Candidates&lt; WeakPtrs... &gt;</a></td></tr>
+<tr class="memitem:ac54a59d3baa5e6f2225dec9850c26fb7 inherit pub_types_classBPMNOS_1_1Execution_1_1Candidates" id="r_ac54a59d3baa5e6f2225dec9850c26fb7"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#ac54a59d3baa5e6f2225dec9850c26fb7">CandidateSet</a></td></tr>
 <tr class="inherit_header pro_attribs_classBPMNOS_1_1Execution_1_1Candidates"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classBPMNOS_1_1Execution_1_1Candidates')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html">BPMNOS::Execution::Candidates&lt; WeakPtrs... &gt;</a></td></tr>
 <tr class="memitem:abf67ad86b7fd9b6f6b9182e2409de648 inherit pro_attribs_classBPMNOS_1_1Execution_1_1Candidates" id="r_abf67ad86b7fd9b6f6b9182e2409de648"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1Evaluator.html">Evaluator</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#abf67ad86b7fd9b6f6b9182e2409de648">evaluator</a></td></tr>
 <tr class="memdesc:abf67ad86b7fd9b6f6b9182e2409de648 inherit pro_attribs_classBPMNOS_1_1Execution_1_1Candidates"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluates every candidate; owned here, so a decision built with it is never built through a dangling one.  <br /></td></tr>
 <tr class="memitem:add9eaa54e1680f4026abfc3823a3dfa6 inherit pro_attribs_classBPMNOS_1_1Execution_1_1Candidates" id="r_add9eaa54e1680f4026abfc3823a3dfa6"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classBPMNOS_1_1Execution_1_1SystemState.html">SystemState</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#add9eaa54e1680f4026abfc3823a3dfa6">systemState</a></td></tr>
 <tr class="memdesc:add9eaa54e1680f4026abfc3823a3dfa6 inherit pro_attribs_classBPMNOS_1_1Execution_1_1Candidates"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-run system state (bound by notice).  <br /></td></tr>
-<tr class="memitem:a9a01232dd0f812f036c210d8ae85565d inherit pro_attribs_classBPMNOS_1_1Execution_1_1Candidates" id="r_a9a01232dd0f812f036c210d8ae85565d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1Execution_1_1auto__set.html">auto_set</a>&lt; double, <a class="el" href="structBPMNOS_1_1Execution_1_1descending.html">descending</a>, WeakPtrs..., std::weak_ptr&lt; <a class="el" href="structBPMNOS_1_1Execution_1_1Event.html">Event</a> &gt;, std::weak_ptr&lt; <a class="el" href="structBPMNOS_1_1Execution_1_1Evaluation.html">Evaluation</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#a9a01232dd0f812f036c210d8ae85565d">candidates</a></td></tr>
-<tr class="memdesc:a9a01232dd0f812f036c210d8ae85565d inherit pro_attribs_classBPMNOS_1_1Execution_1_1Candidates"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reward-ordered candidate decisions, descending (best first; infeasible last); holds only weak references.  <br /></td></tr>
+<tr class="memitem:a5d5d2e90f9b17b6a78119fa238aa3227 inherit pro_attribs_classBPMNOS_1_1Execution_1_1Candidates" id="r_a5d5d2e90f9b17b6a78119fa238aa3227"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classBPMNOS_1_1Execution_1_1Deferrals.html">Deferrals</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#a5d5d2e90f9b17b6a78119fa238aa3227">deferrals</a></td></tr>
+<tr class="memdesc:a5d5d2e90f9b17b6a78119fa238aa3227 inherit pro_attribs_classBPMNOS_1_1Execution_1_1Candidates"><td class="mdescLeft">&#160;</td><td class="mdescRight">The deferrals of the decision maker, nullptr if the collection was constructed without.  <br /></td></tr>
+<tr class="memitem:a1e7a598497217d4b5bc4a7165d4b4784 inherit pro_attribs_classBPMNOS_1_1Execution_1_1Candidates" id="r_a1e7a598497217d4b5bc4a7165d4b4784"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#ac54a59d3baa5e6f2225dec9850c26fb7">CandidateSet</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#a1e7a598497217d4b5bc4a7165d4b4784">candidates</a></td></tr>
+<tr class="memdesc:a1e7a598497217d4b5bc4a7165d4b4784 inherit pro_attribs_classBPMNOS_1_1Execution_1_1Candidates"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reward-ordered candidate decisions, descending (best first; infeasible last); holds only weak references.  <br /></td></tr>
 <tr class="memitem:aa7f49b1e37902df64d4340d8faa6ecc8 inherit pro_attribs_classBPMNOS_1_1Execution_1_1Candidates" id="r_aa7f49b1e37902df64d4340d8faa6ecc8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classBPMNOS_1_1Execution_1_1auto__list.html">auto_list</a>&lt; WeakPtrs..., std::shared_ptr&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1Decision.html">Decision</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#aa7f49b1e37902df64d4340d8faa6ecc8">decisions</a></td></tr>
 <tr class="memdesc:aa7f49b1e37902df64d4340d8faa6ecc8 inherit pro_attribs_classBPMNOS_1_1Execution_1_1Candidates"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sole owner of the decisions referenced by <span class="tt">candidates</span>.  <br /></td></tr>
 </table>
 <a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a61eb830224f28aedf5130682eaf23280" name="a61eb830224f28aedf5130682eaf23280"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a61eb830224f28aedf5130682eaf23280">&#9670;&#160;</a></span>MessageDeliveries()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a61eb830224f28aedf5130682eaf23280">&#9670;&#160;</a></span>MessageDeliveries() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -212,6 +217,29 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="MessageDeliveries_8cpp_source.html#l00011">11</a> of file <a class="el" href="MessageDeliveries_8cpp_source.html">MessageDeliveries.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a0fcfd4071cf3bc5fc3c94d9a1c11d5d0" name="a0fcfd4071cf3bc5fc3c94d9a1c11d5d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0fcfd4071cf3bc5fc3c94d9a1c11d5d0">&#9670;&#160;</a></span>MessageDeliveries() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MessageDeliveries::MessageDeliveries </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classBPMNOS_1_1Execution_1_1Evaluator.html">Evaluator</a> &gt;</td>          <td class="paramname"><span class="paramname"><em>evaluator</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Execution_1_1Deferrals.html">Deferrals</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>deferrals</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="MessageDeliveries_8cpp_source.html#l00016">16</a> of file <a class="el" href="MessageDeliveries_8cpp_source.html">MessageDeliveries.cpp</a>.</p>
 
 </div>
 </div>
@@ -241,7 +269,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBPMNOS_1_1Execution_1_1CachedCandidates.html#a5097e6d67125e2ca14794df3f790f829">BPMNOS::Execution::CachedCandidates&lt; std::weak_ptr&lt; const Token &gt;, std::weak_ptr&lt; const DecisionRequest &gt;, std::weak_ptr&lt; const Message &gt; &gt;</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="MessageDeliveries_8cpp_source.html#l00025">25</a> of file <a class="el" href="MessageDeliveries_8cpp_source.html">MessageDeliveries.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MessageDeliveries_8cpp_source.html#l00030">30</a> of file <a class="el" href="MessageDeliveries_8cpp_source.html">MessageDeliveries.cpp</a>.</p>
 
 </div>
 </div>
@@ -270,7 +298,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#a5159342208cfd3301796af0df507b3f0">BPMNOS::Execution::Candidates&lt; WeakPtrs... &gt;</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="MessageDeliveries_8cpp_source.html#l00016">16</a> of file <a class="el" href="MessageDeliveries_8cpp_source.html">MessageDeliveries.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MessageDeliveries_8cpp_source.html#l00021">21</a> of file <a class="el" href="MessageDeliveries_8cpp_source.html">MessageDeliveries.cpp</a>.</p>
 
 </div>
 </div>
@@ -299,7 +327,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classBPMNOS_1_1Execution_1_1Candidates.html#a6ce656a07b149cee494ce9ad8bd0de1c">BPMNOS::Execution::Candidates&lt; WeakPtrs... &gt;</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="MessageDeliveries_8cpp_source.html#l00091">91</a> of file <a class="el" href="MessageDeliveries_8cpp_source.html">MessageDeliveries.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MessageDeliveries_8cpp_source.html#l00096">96</a> of file <a class="el" href="MessageDeliveries_8cpp_source.html">MessageDeliveries.cpp</a>.</p>
 
 </div>
 </div>
@@ -328,7 +356,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classBPMNOS_1_1Execution_1_1CachedCandidates.html#ac5fb0c0ae569844fdc922f1d19c0642d">BPMNOS::Execution::CachedCandidates&lt; std::weak_ptr&lt; const Token &gt;, std::weak_ptr&lt; const DecisionRequest &gt;, std::weak_ptr&lt; const Message &gt; &gt;</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="MessageDeliveries_8cpp_source.html#l00031">31</a> of file <a class="el" href="MessageDeliveries_8cpp_source.html">MessageDeliveries.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="MessageDeliveries_8cpp_source.html#l00036">36</a> of file <a class="el" href="MessageDeliveries_8cpp_source.html">MessageDeliveries.cpp</a>.</p>
 
 </div>
 </div>

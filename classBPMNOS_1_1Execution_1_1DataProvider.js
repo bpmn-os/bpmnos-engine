@@ -5,6 +5,7 @@ var classBPMNOS_1_1Execution_1_1DataProvider =
     [ "advance", "classBPMNOS_1_1Execution_1_1DataProvider.html#ad5cf7f81a28ab0266d0e2470940ca575", null ],
     [ "createScenario", "classBPMNOS_1_1Execution_1_1DataProvider.html#a753c7a8a2a753b88a1930b2cafdd2e94", null ],
     [ "dispatchEvent", "classBPMNOS_1_1Execution_1_1DataProvider.html#a883a1de9d004ec6887e4e70f440ba3c7", null ],
+    [ "expectsData", "classBPMNOS_1_1Execution_1_1DataProvider.html#a2ece56a28d48926a33ba499bf411f184", null ],
     [ "forkScenario", "classBPMNOS_1_1Execution_1_1DataProvider.html#a03351cb05ddb88de7c6f11fe242789a7", null ],
     [ "getDefaultContent", "classBPMNOS_1_1Execution_1_1DataProvider.html#a4b893ca233f9c1ea7da04b655e1b8bf5", null ],
     [ "getDefaultObject", "classBPMNOS_1_1Execution_1_1DataProvider.html#ae7fcd7e49e7a3960e34053cbb06afb28", null ],

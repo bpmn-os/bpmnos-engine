@@ -4,6 +4,7 @@ var namespaceBPMNOS_1_1Model =
     [ "Attribute", "classBPMNOS_1_1Model_1_1Attribute.html", "classBPMNOS_1_1Model_1_1Attribute" ],
     [ "AttributeRegistry", "classBPMNOS_1_1Model_1_1AttributeRegistry.html", "classBPMNOS_1_1Model_1_1AttributeRegistry" ],
     [ "Choice", "classBPMNOS_1_1Model_1_1Choice.html", "classBPMNOS_1_1Model_1_1Choice" ],
+    [ "Deferral", "classBPMNOS_1_1Model_1_1Deferral.html", "classBPMNOS_1_1Model_1_1Deferral" ],
     [ "ErrorDefinition", "classBPMNOS_1_1Model_1_1ErrorDefinition.html", "classBPMNOS_1_1Model_1_1ErrorDefinition" ],
     [ "EscalationDefinition", "classBPMNOS_1_1Model_1_1EscalationDefinition.html", "classBPMNOS_1_1Model_1_1EscalationDefinition" ],
     [ "Expression", "classBPMNOS_1_1Model_1_1Expression.html", "classBPMNOS_1_1Model_1_1Expression" ],
