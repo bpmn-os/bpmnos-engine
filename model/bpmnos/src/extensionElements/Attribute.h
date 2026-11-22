@@ -47,7 +47,7 @@ public:
  
   double weight; ///< Weight to be used for objective (assuming maximization). 
 
-  bool isImmutable; ///< Flag indicating whether attribute value may be changed by operator, choice, or intermediate catch event. 
+  bool isImmutable; ///< Flag indicating whether the attribute is declared immutable, so that it receives its value when the scope declaring it is initialised, by its initial value, the instance data or the operators of the start event of that scope, and nothing changes it afterwards. The instance is immutable whether or not it is declared so.
   bool isGlobal = false; ///< Flag indicating whether the attribute is global, i.e. declared by a data store, whether it is a scalar attribute or an object.
 private:
   std::variant<std::monostate, size_t, std::unique_ptr<const Expression>> getInitialization(std::string& input, AttributeRegistry& attributeRegistry);

@@ -63,6 +63,9 @@ Guidance::Guidance(XML::bpmnos::tGuidance* guidance, const AttributeRegistry& at
     for ( XML::bpmnos::tOperator& operator_ : guidance->operators.value().get().operator_ ) {
       try {
         operators.push_back(std::make_unique<Operator>(&operator_,this->attributeRegistry));
+        if ( operators.back()->attribute->isImmutable ) {
+          throw std::runtime_error("Operator: attribute '" + operators.back()->attribute->id + "' is immutable and must not be assigned");
+        }
         for ( auto input : operators.back()->expression.inputs ) {
           dependencies.insert(input);
         }

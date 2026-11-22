@@ -17,8 +17,9 @@ For each attribute the following fields can be provided
 - `id`: a unique identifier, 
 - `type`: the type of the attribute, a scalar type or the shape of an object as described below,
 - `name`: the name of the attribute and optionally, an initial assignment 
-- `objective`: an optional field indicating whether the attribute value contributes to a global objective which must be either `maximize` or `minimize`, and
-- `weight`: an optional decimal indicating a multiplier for the objective function which must be provided if `objective` is set.
+- `objective`: an optional field indicating whether the attribute value contributes to a global objective which must be either `maximize` or `minimize`,
+- `weight`: an optional decimal indicating a multiplier for the objective function which must be provided if `objective` is set, and
+- `immutable`: an optional boolean stating that the attribute is immutable, as described under immutable attributes, `false` if it is not given.
 
 The scalar types are `integer`, `decimal`, `boolean` and `string`; an array is an object, e.g. `string[]`. Only an attribute of type `boolean`, `integer` or `decimal` may contribute to the objective.
 
@@ -96,6 +97,16 @@ Status attributes can be defined for a @ref XML::bpmn::tProcess "process element
 ```
 
 Status attributes are attached to @ref BPMNOS::Execution::Token "tokens" moving through a process model. Their lifetime is restricted to the node that they are defined for and they are dynamically added and removed to the token status.
+
+### Immutable attributes
+
+An attribute declared immutable, `immutable="true"`, receives its value when the scope declaring it is initialised, and nothing changes it afterwards. The value is given by the initial value of the attribute, a literal or an expression, or by the instance data. For an attribute declared by a process, a subprocess or an event subprocess, the operators of the start event of that scope may set it as well, so that a process or an event subprocess started by a message or a signal may take its value from the content it catches. No other operator, no choice and no operator of a guidance assigns an immutable attribute, and a model in which one does is refused when it is read; this includes the start event of a nested scope setting an immutable attribute of an enclosing one and the start event of a process setting an immutable global attribute, a data store having no start event. A scope started more than once, as an instance of a multi-instance activity, an iteration of a loop or a trigger of an event subprocess is, is initialised anew every time it is started, and the operators of its start event belong to each of these initialisations. The engine increments the index of a standard loop at every iteration of the same activity, so that an immutable attribute must not be its loop index.
+
+```xml
+<bpmnos:attribute id="Doors" name="doors" type="integer" immutable="true" />
+```
+
+An attribute not declared immutable may be changed by the model and by the environment of a run, also if no operator or choice of the model writes it. The engine relies on the declaration where it avoids work: an evaluation of a decision does not depend on an immutable attribute, so that it is never invalidated by one, and an immutable attribute is never observed by a deferral, since its update could never come. The time and the timestamp, which the engine changes as a run proceeds, must not be declared immutable, and the instance is immutable whether or not it is declared so.
 
 ### Default attributes
 
@@ -241,7 +252,7 @@ The deferral of a catch event stands in its message guidance and the deferral of
 </bpmn2:performer>
 ```
 
-A guidance and a performer state at most one deferral, several conditions being combined into one expression and several observed attributes being stated as several parameters. An entry guidance states no deferral, since the entries of a performer are deferred together. A condition that is an assignment, a parameter of another name, an observed attribute not in scope, an observed status attribute, and an observed data attribute that no operator or choice of the model writes are refused when the model is read, the last since its update could never come. A decision point without a deferral is never deferred, so that a model stating none behaves as before.
+A guidance and a performer state at most one deferral, several conditions being combined into one expression and several observed attributes being stated as several parameters. An entry guidance states no deferral, since the entries of a performer are deferred together. A condition that is an assignment, a parameter of another name, an observed attribute not in scope, an observed status attribute, and an observed attribute declared immutable are refused when the model is read, the last since its update could never come. A decision point without a deferral is never deferred, so that a model stating none behaves as before.
 
 Whether a decision point is deferred is the choice of the controller, which may defer it whenever its condition holds and a deferral is admissible, as described for the @ref controller "controllers". While the decision point is deferred, its pending decisions are withheld from the controller, and the controller takes other decisions or lets time advance. A deferral is admissible only if a reconsideration can still come, that is if a token awaits a timer, a ready event or a completion event, if the data provider expects further data such as an instance not yet instantiated, or if the deferral is time dependent, since otherwise it would wait for nothing. A deferral ends at its first reconsideration: when a new candidate appears at its decision point, a new entry request at a performer or a new message which may be delivered to a catch event, when one of its observed attributes is updated, when an update of an attribute its condition reads leaves the condition false, when its pending decisions disappear, or when no reconsideration can come any more. A decision task gains no new candidate while its token waits, so that its deferral ends only by its condition, its observed attributes or time.
 

@@ -113,6 +113,13 @@ public:
   
   bool isInstantaneous; ///< Boolean indicating whether operators may modify timestamp.
 
+  /// @brief Returns true if the operators of the node take part in the initialisation of the attribute, which is the
+  /// case if and only if the node is the start event of the scope declaring the attribute, so that they may set the
+  /// attribute even if it is immutable.
+  ///
+  /// @param baseElement The XML element of the node, which @ref element, the extension elements of the node, is not.
+  bool initialises(XML::bpmn::tBaseElement* baseElement, const Attribute* attribute) const;
+
   /// @brief Method applying the operators and returning the change of the objective, the schema provider giving the
   /// effective schemas of the objects written.
   ///

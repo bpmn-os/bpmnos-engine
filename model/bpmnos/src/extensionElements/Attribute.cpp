@@ -76,8 +76,16 @@ Attribute::Attribute(XML::bpmnos::tAttribute* attribute, Attribute::Category cat
     weight = 0;
   }
   
-  // the engine changes the timestamp and the time as the run proceeds
-  isImmutable = (id != Keyword::Timestamp && id != Keyword::Time);
+  // an attribute declared immutable receives its value when the scope declaring it is initialised, and nothing
+  // changes it afterwards; the engine changes the timestamp and the time as the run proceeds, so that neither may
+  // be declared immutable, and nothing may change the instance, which is immutable whether or not it is declared so
+  isImmutable = attribute->immutable.has_value() && (bool)attribute->immutable->get().value;
+  if ( isImmutable && ( id == Keyword::Timestamp || id == Keyword::Time ) ) {
+    throw std::runtime_error("Attribute: '" + id + "' must not be immutable");
+  }
+  if ( id == Keyword::Instance ) {
+    isImmutable = true;
+  }
 }
 
 Attribute::Attribute(std::string& name, const Schema& schema, AttributeRegistry& attributeRegistry)

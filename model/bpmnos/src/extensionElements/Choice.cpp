@@ -70,7 +70,9 @@ Choice::Choice(XML::bpmnos::tDecision* decision, const AttributeRegistry& attrib
   if ( attribute->category == Attribute::Category::DATA && !attribute->isObject() && attribute->index == ExtensionElements::Index::Time ) {
     throw std::runtime_error("Choice: the time must not be chosen");
   }
-  attribute->isImmutable = false;
+  if ( attribute->isImmutable ) {
+    throw std::runtime_error("Choice: attribute '" + attribute->id + "' is immutable and must not be chosen");
+  }
 }
 
 void Choice::parseEnumeration(const std::string& input) {

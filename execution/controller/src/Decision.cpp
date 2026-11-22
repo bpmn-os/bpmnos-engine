@@ -17,7 +17,8 @@ bool Decision::expired() const {
 }
 
 void Decision::determineDependencies(const std::set<const BPMNOS::Model::Attribute*>& dependencies) {
-  // an evaluation depending on time depends on the global attribute `time`, which is a data attribute like any other
+  // an evaluation depending on time depends on the global attribute `time`, which is a data attribute like any other;
+  // an attribute declared immutable never changes, so that no evaluation needs to depend on it
   for ( auto attribute : dependencies ) {
     if ( attribute->category != BPMNOS::Model::Attribute::Category::STATUS && !attribute->isImmutable ) {
       dataDependencies.insert(attribute);

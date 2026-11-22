@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "ExtensionElements.h"
 #include "model/bpmnos/src/Model.h"
 #include "model/bpmnos/src/xml/bpmnos/tStatus.h"
@@ -271,6 +272,11 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
         if ( attribute->category == Attribute::Category::DATA && attribute->id == Keyword::Instance ) {
           throw std::runtime_error("ExtensionElements: operator '" + (std::string)operator_.id.value + "' modifies instance attribute.\n" );
         }
+        if ( attribute->isImmutable && !initialises(baseElement, attribute) ) {
+          // an immutable attribute receives its value when the scope declaring it is initialised, of which the
+          // operators of its start event are part, and nothing changes it afterwards
+          throw std::runtime_error("ExtensionElements: operator '" + (std::string)operator_.id.value + "' of '" + (std::string)baseElement->id.value().get().value + "' assigns immutable attribute '" + attribute->id + "'");
+        }
         
         for ( auto input : operators.back()->expression.inputs ) {
           // the content object is no attribute whose change could invalidate anything
@@ -375,6 +381,13 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
         ) {
           throw std::runtime_error("ExtensionElements: the time must not be the loop index of '" + (std::string)baseElement->id.value().get().value + "'");
         }
+        auto marker = baseElement->getChildren<XML::bpmn::tLoopCharacteristics>();
+        if ( auto indexAttribute = loopIndex.value()->expression ? loopIndex.value()->expression->isAttribute() : nullptr;
+          indexAttribute && indexAttribute->isImmutable && !marker.empty() && marker[0].get().is<XML::bpmn::tStandardLoopCharacteristics>()
+        ) {
+          // the engine increments the index of a standard loop at every iteration of the same activity
+          throw std::runtime_error("ExtensionElements: immutable attribute '" + indexAttribute->id + "' must not be the loop index of standard loop activity '" + (std::string)baseElement->id.value().get().value + "'");
+        }
       }
       else if ( parameter.name.value.value == "condition" ) {
         loopCondition = std::make_unique<Parameter>(&parameter,attributeRegistry);
@@ -405,6 +418,18 @@ ExtensionElements::ExtensionElements(XML::bpmn::tBaseElement* baseElement, const
       messageDeliveryGuidance = std::move(guidance);
     }
   }
+}
+
+bool ExtensionElements::initialises(XML::bpmn::tBaseElement* baseElement, const Attribute* attribute) const {
+  if ( !baseElement->is<XML::bpmn::tStartEvent>() || !parent || !parent->extensionElements ) {
+    return false;
+  }
+  // the attributes the scope declares are its own status and the data of the data objects within it
+  auto scope = parent->extensionElements->as<ExtensionElements>();
+  auto declares = [attribute](const std::vector< std::unique_ptr<Attribute> >& declared) {
+    return std::ranges::any_of(declared, [attribute](const std::unique_ptr<Attribute>& candidate) { return candidate.get() == attribute; });
+  };
+  return declares(scope->attributes) || declares(scope->statusObjects) || declares(scope->data) || declares(scope->dataObjects);
 }
 
 const MessageDefinition* ExtensionElements::getMessageDefinition() const {

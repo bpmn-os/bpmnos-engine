@@ -28,7 +28,7 @@ std::vector<const Attribute*> Deferral::getObservables(XML::bpmnos::tDeferral* d
       throw std::runtime_error("Deferral: observable without attribute");
     }
     // an observed attribute is a data or global attribute in the scope of the decision point; a status attribute never
-    // reaches a data update, and whether data is immutable is known only once the whole model is read
+    // reaches a data update, and an attribute declared immutable never changes, which the model refuses once it is read
     if ( !attributeRegistry.contains(name) ) {
       throw std::runtime_error("Deferral: observable '" + name + "' is no attribute in scope");
     }

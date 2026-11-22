@@ -494,7 +494,7 @@ void Model::validateDeferrals() {
   auto validate = [](const Deferral* deferral, const BPMN::Node* node) {
     for ( auto attribute : deferral->observables ) {
       if ( attribute->isImmutable ) {
-        throw std::runtime_error("Model: observable '" + attribute->name + "' of the deferral at '" + node->id + "' is never updated");
+        throw std::runtime_error("Model: observable '" + attribute->name + "' of the deferral at '" + node->id + "' is immutable");
       }
     }
   };

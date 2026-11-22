@@ -31,6 +31,7 @@ list(APPEND tests_SOURCES
   model/inputs/test.cpp
   model/definitions/test.cpp
   model/deferral/test.cpp
+  model/immutable/test.cpp
   data/reader/test.cpp
   data/staticprovider/test.cpp
   data/expectedvalueprovider/test.cpp

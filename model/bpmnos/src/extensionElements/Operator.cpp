@@ -14,7 +14,6 @@ Operator::Operator(XML::bpmnos::tOperator* operator_, const AttributeRegistry& a
   if ( attribute->category == Attribute::Category::DATA && !attribute->isObject() && attribute->index == ExtensionElements::Index::Time ) {
     throw std::runtime_error("Operator: '" + id + "' must not assign the time");
   }
-  attribute->isImmutable = false;
 }
 
 template <typename DataType>

@@ -12,7 +12,8 @@ struct Deferrals {
 
 /// Returns a model whose process declares the sequential performer of its ad-hoc subprocess, followed by a decision
 /// task and a receive task, with the given deferrals. The data attribute `count` is written by an operator, the data
-/// attribute `fixed` by none.
+/// attribute `fixed` is declared immutable, and the data attribute `free` is written by no operator but may be updated
+/// by the environment of a run.
 std::unique_ptr<Model::Model> modelWith(const Deferrals& deferrals) {
   std::string xml = R"(<?xml version="1.0" encoding="UTF-8"?>
 <bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmnos="https://bpmnos.telematique.eu" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
@@ -40,7 +41,8 @@ std::unique_ptr<Model::Model> modelWith(const Deferrals& deferrals) {
         <bpmnos:attributes>
           <bpmnos:attribute id="Instance" name="instance" type="string" />
           <bpmnos:attribute id="Count" name="count := 0" type="integer" />
-          <bpmnos:attribute id="Fixed" name="fixed := 1" type="integer" />
+          <bpmnos:attribute id="Fixed" name="fixed := 1" type="integer" immutable="true" />
+          <bpmnos:attribute id="Free" name="free := 1" type="integer" />
         </bpmnos:attributes>
       </bpmn2:extensionElements>
     </bpmn2:dataObject>
@@ -173,6 +175,10 @@ TEST_CASE( "A model without deferrals permits none", "[model][deferral]" ) {
   REQUIRE( !extensionElementsOf(*model, "Receive_1")->messageDeliveryGuidance.value()->deferral );
 }
 
+TEST_CASE( "An observed attribute that no operator writes is accepted unless it is immutable", "[model][deferral]" ) {
+  REQUIRE_NOTHROW( modelWith({ .performer = "", .choice = R"(<bpmnos:deferral condition="true"><bpmnos:parameter name="observable" value="free" /></bpmnos:deferral>)", .message = "", .entry = "" }) );
+}
+
 TEST_CASE( "Illegal deferrals are refused", "[model][deferral]" ) {
   SECTION( "Two deferrals in one guidance" ) {
     REQUIRE_THROWS( modelWith({ .performer = "", .choice = R"(<bpmnos:deferral condition="true" /><bpmnos:deferral condition="true" />)", .message = "", .entry = "" }) );
@@ -189,7 +195,7 @@ TEST_CASE( "Illegal deferrals are refused", "[model][deferral]" ) {
   SECTION( "An observed status attribute" ) {
     REQUIRE_THROWS( modelWith({ .performer = "", .choice = R"(<bpmnos:deferral condition="true"><bpmnos:parameter name="observable" value="timestamp" /></bpmnos:deferral>)", .message = "", .entry = "" }) );
   }
-  SECTION( "An observed attribute that is never updated" ) {
+  SECTION( "An observed attribute that is immutable" ) {
     REQUIRE_THROWS( modelWith({ .performer = "", .choice = R"(<bpmnos:deferral condition="true"><bpmnos:parameter name="observable" value="fixed" /></bpmnos:deferral>)", .message = "", .entry = "" }) );
   }
   SECTION( "A parameter other than an observable" ) {
