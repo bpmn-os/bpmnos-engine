@@ -107,6 +107,18 @@ protected:
   void applyReadyValues(StaticDataProvider::Scenario& scenario, const Token* token, InstanceValues& values) const override;
   BPMNOS::Status getCompletionStatus(StaticDataProvider::Scenario& scenario, const Token* token, BPMNOS::number earliest) const override;
 
+  /**
+   * @brief Method sampling the initializations of a scenario, keeping those of the original scenario of a
+   * fork disclosed before the spawn time.
+   *
+   * @ref createScenario and @ref forkScenario construct a scenario and sample it by this method. A derived data
+   * provider whose scenario derives from @ref Scenario constructs a scenario of its own type and samples it here, so
+   * that it overrides @ref createScenario and @ref forkScenario without losing the sampling: a run is created with
+   * no original scenario and the lowest number as its spawn time, and a fork with the scenario forked and the
+   * instant following the current time of that scenario.
+   */
+  void sample(Scenario& scenario, const Scenario* original, BPMNOS::number spawnTime) const;
+
 private:
   /**
    * @brief Initializer of an object of an instance, with its expression members compiled.
@@ -150,10 +162,6 @@ private:
   /// object initializer or a disclosure, that reads an attribute or object to which neither the global values, the
   /// model, nor a row of the instance read so far gives a value.
   void requireInitialised(const InstanceDataReader& reader, size_t instanceId, const BPMNOS::Model::Expression& expression, const std::string& text) const;
-
-  /// @brief Method sampling the initializations of a scenario, keeping those of the original scenario of a
-  /// fork disclosed before the spawn time.
-  void sample(Scenario& scenario, const Scenario* original, BPMNOS::number spawnTime) const;
 
   /// @brief Method computing a completion status by evaluating the completion expressions of an instance and a node on it,
   /// sampling it again while its timestamp precedes the given time if an expression assigns the timestamp,
