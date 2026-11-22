@@ -13,6 +13,7 @@
 #include "events/ErrorEvent.h"
 #include "events/InstantiationEvent.h"
 #include "events/SignalBroadcastEvent.h"
+#include "events/DataUpdateEvent.h"
 #include "events/ReadyEvent.h"
 #include "events/EntryEvent.h"
 #include "events/ChoiceEvent.h"
@@ -146,6 +147,7 @@ private:
 public:
   void process(const InstantiationEvent* event);
   void process(const SignalBroadcastEvent* event);
+  void process(const DataUpdateEvent* event);
   void process(const ReadyEvent* event);
   void process(const EntryEvent* event);
   void process(const ChoiceEvent* event);

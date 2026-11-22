@@ -316,6 +316,33 @@ void Engine::process(const SignalBroadcastEvent* event) {
   processCommands();
 }
 
+void Engine::process(const DataUpdateEvent* event) {
+  // an expired update is not dispatched, so that the state machine holding the data exists
+  auto stateMachine = event->owner();
+  assert( stateMachine );
+
+  // the values are written as an operator writes them, the status being of no concern to data
+  auto& attributeRegistry = getModel()->attributeRegistry;
+  BPMNOS::Status status;
+  std::vector<const BPMNOS::Model::Attribute*> updatedAttributes;
+  updatedAttributes.reserve(event->values.size() + event->objects.size());
+  for ( auto& [attribute, value] : event->values ) {
+    addToObjective( attributeRegistry.setValue(attribute, status, stateMachine->data, value) );
+    updatedAttributes.push_back(attribute);
+  }
+  for ( auto& [object, value] : event->objects ) {
+    attributeRegistry.setObject(object, status, stateMachine->data, value, *systemState->scenario->dataProvider);
+    updatedAttributes.push_back(object);
+  }
+
+  // the update is announced for the process instance, by which the observers file what depends on data, or for no
+  // instance if it writes global attributes, which concern every instance
+  BPMNOS::number instanceId = stateMachine->root ? stateMachine->root->instance.value() : BPMNOS::number(0);
+  notify( DataUpdate( instanceId, updatedAttributes ) );
+
+  processCommands();
+}
+
 void Engine::process(const ReadyEvent* event) {
   auto token_ptr = event->token.lock();
   assert( token_ptr );
