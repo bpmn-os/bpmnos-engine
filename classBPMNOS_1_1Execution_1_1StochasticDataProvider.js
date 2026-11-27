@@ -13,5 +13,6 @@ var classBPMNOS_1_1Execution_1_1StochasticDataProvider =
     [ "getProcessReadyTime", "classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#aa73b2c5f28f307b038088d9b254e4c10", null ],
     [ "getReadyTimestamp", "classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#af7cde54260f7425d42457dc341abac23", null ],
     [ "readValue", "classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#a2d6637ab67cd958ea09996f8a2c8c7a1", null ],
+    [ "sample", "classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#a76b800753753d858a2a8df4d283451ea", null ],
     [ "maxResamplingTries", "classBPMNOS_1_1Execution_1_1StochasticDataProvider.html#ab43f981afe6b4ed7e0b79e99d0d19630", null ]
 ];

@@ -139,7 +139,7 @@ $(function(){initNavTree('classBPMNOS_1_1Execution_1_1StochasticDataProvider.htm
 <div class="dynheader">
 Inheritance diagram for BPMNOS::Execution::StochasticDataProvider:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1StochasticDataProvider__inherit__graph.svg" width="459" height="2007"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Execution_1_1StochasticDataProvider__inherit__graph.svg" width="459" height="2030"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
@@ -212,6 +212,8 @@ Protected Member Functions</h2></td></tr>
 <tr class="memdesc:a58d51df23d1129b465b073bb6afc438b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method applying the ready values of a token over the initial values of the scope instance of the activity, when its ready event becomes due; a static data provider gives no ready values.  <br /></td></tr>
 <tr class="memitem:a88deb553fd93cd9ff730b1330f2da21e" id="r_a88deb553fd93cd9ff730b1330f2da21e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a88deb553fd93cd9ff730b1330f2da21e">getCompletionStatus</a> (<a class="el" href="classBPMNOS_1_1Execution_1_1StaticDataProvider_1_1Scenario.html">StaticDataProvider::Scenario</a> &amp;scenario, const <a class="el" href="classBPMNOS_1_1Execution_1_1Token.html">Token</a> *token, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> earliest) const override</td></tr>
 <tr class="memdesc:a88deb553fd93cd9ff730b1330f2da21e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method returning the status a busy task completes with at its timestamp, which is the status it became busy with.  <br /></td></tr>
+<tr class="memitem:a76b800753753d858a2a8df4d283451ea" id="r_a76b800753753d858a2a8df4d283451ea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a76b800753753d858a2a8df4d283451ea">sample</a> (<a class="el" href="classBPMNOS_1_1Execution_1_1StochasticDataProvider_1_1Scenario.html">Scenario</a> &amp;scenario, const <a class="el" href="classBPMNOS_1_1Execution_1_1StochasticDataProvider_1_1Scenario.html">Scenario</a> *original, <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a> spawnTime) const</td></tr>
+<tr class="memdesc:a76b800753753d858a2a8df4d283451ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method sampling the initializations of a scenario, keeping those of the original scenario of a fork disclosed before the spawn time.  <br /></td></tr>
 <tr class="inherit_header pro_methods_classBPMNOS_1_1Execution_1_1DynamicDataProvider"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classBPMNOS_1_1Execution_1_1DynamicDataProvider')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classBPMNOS_1_1Execution_1_1DynamicDataProvider.html">BPMNOS::Execution::DynamicDataProvider</a></td></tr>
 <tr class="memitem:a7936010f13f8b967e1b74856b6f75b70 inherit pro_methods_classBPMNOS_1_1Execution_1_1DynamicDataProvider" id="r_a7936010f13f8b967e1b74856b6f75b70"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classBPMNOS_1_1Execution_1_1DynamicDataProvider.html#a7936010f13f8b967e1b74856b6f75b70">DynamicDataProvider</a> (std::shared_ptr&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Model.html">BPMNOS::Model::Model</a> &gt; <a class="el" href="classBPMNOS_1_1Execution_1_1DataProvider.html#a1ee135e62b41f4990a3c0f5c45d15cd1">model</a>, std::chrono::milliseconds <a class="el" href="classBPMNOS_1_1Execution_1_1DataProvider.html#af7d70208bdffd442e2d2099edfd86e30">clockTickDuration</a>)</td></tr>
 <tr class="memdesc:a7936010f13f8b967e1b74856b6f75b70 inherit pro_methods_classBPMNOS_1_1Execution_1_1DynamicDataProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for a derived data provider, which reads the instance data itself.  <br /></td></tr>
@@ -684,6 +686,43 @@ Additional Inherited Members</h2></td></tr>
 <p>Reimplemented from <a class="el" href="classBPMNOS_1_1Execution_1_1DynamicDataProvider.html#a7a04544ff93b4314084d4d454ef661f5">BPMNOS::Execution::DynamicDataProvider</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00143">143</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a76b800753753d858a2a8df4d283451ea" name="a76b800753753d858a2a8df4d283451ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76b800753753d858a2a8df4d283451ea">&#9670;&#160;</a></span>sample()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void StochasticDataProvider::sample </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classBPMNOS_1_1Execution_1_1StochasticDataProvider_1_1Scenario.html">Scenario</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>scenario</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Execution_1_1StochasticDataProvider_1_1Scenario.html">Scenario</a> *</td>          <td class="paramname"><span class="paramname"><em>original</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a></td>          <td class="paramname"><span class="paramname"><em>spawnTime</em></span>&#160;) const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p><a class="el" href="#af1cb15ce7ebf375f28ca337b74e97e1c">createScenario</a> and <a class="el" href="#ab1b1a309ea678e2e7deb89354dcfa642">forkScenario</a> construct a scenario and sample it by this method. A derived data provider whose scenario derives from <a class="el" href="classBPMNOS_1_1Execution_1_1StochasticDataProvider_1_1Scenario.html">Scenario</a> constructs a scenario of its own type and samples it here, so that it overrides <a class="el" href="#af1cb15ce7ebf375f28ca337b74e97e1c">createScenario</a> and <a class="el" href="#ab1b1a309ea678e2e7deb89354dcfa642">forkScenario</a> without losing the sampling: a run is created with no original scenario and the lowest number as its spawn time, and a fork with the scenario forked and the instant following the current time of that scenario. </p>
+
+<p class="definition">Definition at line <a class="el" href="StochasticDataProvider_8cpp_source.html#l00239">239</a> of file <a class="el" href="StochasticDataProvider_8cpp_source.html">StochasticDataProvider.cpp</a>.</p>
 
 </div>
 </div>

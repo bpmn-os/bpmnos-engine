@@ -75,6 +75,7 @@ var annotated_dup =
         [ "ChoiceEvent", "structBPMNOS_1_1Execution_1_1ChoiceEvent.html", "structBPMNOS_1_1Execution_1_1ChoiceEvent" ],
         [ "ClockTickEvent", "structBPMNOS_1_1Execution_1_1ClockTickEvent.html", "structBPMNOS_1_1Execution_1_1ClockTickEvent" ],
         [ "CompletionEvent", "structBPMNOS_1_1Execution_1_1CompletionEvent.html", "structBPMNOS_1_1Execution_1_1CompletionEvent" ],
+        [ "DataUpdateEvent", "structBPMNOS_1_1Execution_1_1DataUpdateEvent.html", "structBPMNOS_1_1Execution_1_1DataUpdateEvent" ],
         [ "EntryEvent", "structBPMNOS_1_1Execution_1_1EntryEvent.html", "structBPMNOS_1_1Execution_1_1EntryEvent" ],
         [ "ErrorEvent", "structBPMNOS_1_1Execution_1_1ErrorEvent.html", "structBPMNOS_1_1Execution_1_1ErrorEvent" ],
         [ "InstantiationEvent", "structBPMNOS_1_1Execution_1_1InstantiationEvent.html", "structBPMNOS_1_1Execution_1_1InstantiationEvent" ],

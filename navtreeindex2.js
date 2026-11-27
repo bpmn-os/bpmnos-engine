@@ -1,5 +1,9 @@
 var NAVTREEINDEX2 =
 {
+"bin_packing_problem.html#completion-restrictions-12":[6,3,0,19,4],
+"bin_packing_problem.html#completion-restrictions-13":[6,3,0,20,4],
+"bin_packing_problem.html#completion-restrictions-14":[6,3,0,21,4],
+"bin_packing_problem.html#completion-restrictions-2":[6,3,0,9,5],
 "bin_packing_problem.html#completion-restrictions-3":[6,3,0,10,4],
 "bin_packing_problem.html#completion-restrictions-4":[6,3,0,11,4],
 "bin_packing_problem.html#completion-restrictions-5":[6,3,0,12,4],
@@ -245,9 +249,5 @@ var NAVTREEINDEX2 =
 "classBPMNOS_1_1Execution_1_1Candidates.html#aebc0cc7b8a299b74536090155d58b3ee":[7,0,0,1,2,5],
 "classBPMNOS_1_1Execution_1_1Candidates.html#aebc0cc7b8a299b74536090155d58b3ee":[7,2,1,2,2,5],
 "classBPMNOS_1_1Execution_1_1Candidates.html#af48874f376db8ab0d2e6bf93ed6829d1":[7,0,0,1,2,7],
-"classBPMNOS_1_1Execution_1_1Candidates.html#af48874f376db8ab0d2e6bf93ed6829d1":[7,2,1,2,2,7],
-"classBPMNOS_1_1Execution_1_1Candidates_1_1iterator.html":[7,0,0,1,2,0],
-"classBPMNOS_1_1Execution_1_1Candidates_1_1iterator.html":[7,2,1,2,2,0],
-"classBPMNOS_1_1Execution_1_1Candidates_1_1iterator.html#a910f89e3f23be54a8b0201a9d11057ff":[7,0,0,1,2,0,2],
-"classBPMNOS_1_1Execution_1_1Candidates_1_1iterator.html#a910f89e3f23be54a8b0201a9d11057ff":[7,2,1,2,2,0,2]
+"classBPMNOS_1_1Execution_1_1Candidates.html#af48874f376db8ab0d2e6bf93ed6829d1":[7,2,1,2,2,7]
 };

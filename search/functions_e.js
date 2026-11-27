@@ -24,5 +24,6 @@ var searchData=
   ['operator_5b_5d_21',['operator[]',['../classBPMNOS_1_1Model_1_1AttributeRegistry.html#a7a373180f7860254941e886df8bbe179',1,'BPMNOS::Model::AttributeRegistry::operator[]()'],['../structBPMNOS_1_1ObjectRegistry.html#ab93ca334ce19d1de202609cf672f85d0',1,'BPMNOS::ObjectRegistry::operator[]()'],['../structBPMNOS_1_1StringRegistry.html#ac2d782ca5cfa25b20b8c8c7b48be6b91',1,'BPMNOS::StringRegistry::operator[]()'],['../classBPMNOS_1_1tuple__map.html#a7eac90febff99b1386c20c52807f632d',1,'BPMNOS::tuple_map::operator[]()'],['../classBPMNOS_1_1vector__map.html#af571db48dfd2e6a5e8077f56da958e70',1,'BPMNOS::vector_map::operator[]()']]],
   ['operator_5f_22',['operator_',['../classXML_1_1bpmnos_1_1operator__.html#acdd1db3f2fce322a52112db7e7da69af',1,'XML::bpmnos::operator_']]],
   ['operators_23',['operators',['../classXML_1_1bpmnos_1_1operators.html#a50a9b243533d9b106122f0baad1cf155',1,'XML::bpmnos::operators']]],
-  ['outputset_24',['outputSet',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1outputSet.html#aea617ad1b95b44d668eb1907b5b9d87c',1,'XML::bpmn::outputSet']]]
+  ['outputset_24',['outputSet',['https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1outputSet.html#aea617ad1b95b44d668eb1907b5b9d87c',1,'XML::bpmn::outputSet']]],
+  ['owner_25',['owner',['../structBPMNOS_1_1Execution_1_1DataUpdateEvent.html#ad978d177f9db6706a9485220d7f37ea7',1,'BPMNOS::Execution::DataUpdateEvent']]]
 ];

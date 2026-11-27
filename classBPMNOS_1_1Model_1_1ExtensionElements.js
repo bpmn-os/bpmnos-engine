@@ -11,6 +11,7 @@ var classBPMNOS_1_1Model_1_1ExtensionElements =
     [ "getContributionsToObjective", "classBPMNOS_1_1Model_1_1ExtensionElements.html#a0d7ed175387c9771fe601e568eb4b561", null ],
     [ "getMessageDefinition", "classBPMNOS_1_1Model_1_1ExtensionElements.html#a58331c6c0439151d3b23f5ef0d93999e", null ],
     [ "getObjective", "classBPMNOS_1_1Model_1_1ExtensionElements.html#a55eebef10ee3d11f4b7ea0d3590292b1", null ],
+    [ "initialises", "classBPMNOS_1_1Model_1_1ExtensionElements.html#ae1e98ab6a2a6295e590c51096b2ca89b", null ],
     [ "satisfiesInheritedRestrictions", "classBPMNOS_1_1Model_1_1ExtensionElements.html#a502f39f16236c3fdaf7c5d8dddf9eeab", null ],
     [ "attributeRegistry", "classBPMNOS_1_1Model_1_1ExtensionElements.html#adb02c6f1b877f6dd0db72f11ad7334c0", null ],
     [ "attributes", "classBPMNOS_1_1Model_1_1ExtensionElements.html#a083722c21f21b6ea3523457e32554f48", null ],

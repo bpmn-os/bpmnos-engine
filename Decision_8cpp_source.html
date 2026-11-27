@@ -150,13 +150,14 @@ $(function(){initNavTree('Decision_8cpp_source.html','',''); });
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
 <div class="foldopen" id="foldopen00019" data-start="{" data-end="}">
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classBPMNOS_1_1Execution_1_1Decision.html#ab490adcd471963b392ef4b2acfa948ab">   19</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classBPMNOS_1_1Execution_1_1Decision.html#ab490adcd471963b392ef4b2acfa948ab">Decision::determineDependencies</a>(<span class="keyword">const</span> std::set&lt;const BPMNOS::Model::Attribute*&gt;&amp; dependencies) {</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>  <span class="comment">// an evaluation depending on time depends on the global attribute `time`, which is a data attribute like any other</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>  <span class="keywordflow">for</span> ( <span class="keyword">auto</span> attribute : dependencies ) {</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">if</span> ( attribute-&gt;category != <a class="code hl_enumvalue" href="classBPMNOS_1_1Model_1_1Attribute.html#aae591f2dba868c00d93ef926d42bf145a5f241c8c8f985b3c51e05d39cf030f4c">BPMNOS::Model::Attribute::Category::STATUS</a> &amp;&amp; !attribute-&gt;isImmutable ) {</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>      <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Decision.html#a995088ac001a4aed1436fc3044799cfa">dataDependencies</a>.insert(attribute);</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    }</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>  }</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>}</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>  <span class="comment">// an evaluation depending on time depends on the global attribute `time`, which is a data attribute like any other;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>  <span class="comment">// an attribute declared immutable never changes, so that no evaluation needs to depend on it</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>  <span class="keywordflow">for</span> ( <span class="keyword">auto</span> attribute : dependencies ) {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">if</span> ( attribute-&gt;category != <a class="code hl_enumvalue" href="classBPMNOS_1_1Model_1_1Attribute.html#aae591f2dba868c00d93ef926d42bf145a5f241c8c8f985b3c51e05d39cf030f4c">BPMNOS::Model::Attribute::Category::STATUS</a> &amp;&amp; !attribute-&gt;isImmutable ) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>      <a class="code hl_variable" href="classBPMNOS_1_1Execution_1_1Decision.html#a995088ac001a4aed1436fc3044799cfa">dataDependencies</a>.insert(attribute);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    }</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>  }</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}</div>
 </div>
 <div class="ttc" id="aDecisionRequest_8h_html"><div class="ttname"><a href="DecisionRequest_8h.html">DecisionRequest.h</a></div></div>
 <div class="ttc" id="aDecision_8h_html"><div class="ttname"><a href="Decision_8h.html">Decision.h</a></div></div>

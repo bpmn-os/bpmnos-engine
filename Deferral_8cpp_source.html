@@ -158,7 +158,7 @@ $(function(){initNavTree('Deferral_8cpp_source.html','',''); });
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>      throw std::runtime_error(<span class="stringliteral">&quot;Deferral: observable without attribute&quot;</span>);</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    }</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="comment">// an observed attribute is a data or global attribute in the scope of the decision point; a status attribute never</span></div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="comment">// reaches a data update, and whether data is immutable is known only once the whole model is read</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="comment">// reaches a data update, and an attribute declared immutable never changes, which the model refuses once it is read</span></div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    if ( !attributeRegistry.<a class="code hl_function" href="classBPMNOS_1_1Model_1_1AttributeRegistry.html#a1b0e0fbb6ea1f2b5179f41679d85043a">contains</a>(name) ) {</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>      throw std::runtime_error(<span class="stringliteral">&quot;Deferral: observable &#39;&quot;</span> + name + <span class="stringliteral">&quot;&#39; is no attribute in scope&quot;</span>);</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    }</div>

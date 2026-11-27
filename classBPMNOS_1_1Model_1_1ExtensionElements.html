@@ -137,7 +137,7 @@ $(function(){initNavTree('classBPMNOS_1_1Model_1_1ExtensionElements.html','','cl
 <div class="dynheader">
 Inheritance diagram for BPMNOS::Model::ExtensionElements:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Model_1_1ExtensionElements__inherit__graph.svg" width="242" height="922"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" loading="lazy" frameborder="0" src="classBPMNOS_1_1Model_1_1ExtensionElements__inherit__graph.svg" width="242" height="944"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
@@ -161,6 +161,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a502f39f16236c3fdaf7c5d8dddf9eeab template"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a502f39f16236c3fdaf7c5d8dddf9eeab">satisfiesInheritedRestrictions</a> (const <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, const DataType &amp;<a class="el" href="#ae727e94cbc223f6d362e119ab99d0b5f">data</a>) const</td></tr>
 <tr class="memitem:a0818a1f948eeb0323519c813cf56aa7c" id="r_a0818a1f948eeb0323519c813cf56aa7c"><td class="memTemplParams" colspan="2">template&lt;typename DataType&gt; </td></tr>
 <tr class="memitem:a0818a1f948eeb0323519c813cf56aa7c template"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0818a1f948eeb0323519c813cf56aa7c">fullScopeRestrictionsSatisfied</a> (const <a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, const DataType &amp;<a class="el" href="#ae727e94cbc223f6d362e119ab99d0b5f">data</a>) const</td></tr>
+<tr class="memitem:ae1e98ab6a2a6295e590c51096b2ca89b" id="r_ae1e98ab6a2a6295e590c51096b2ca89b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae1e98ab6a2a6295e590c51096b2ca89b">initialises</a> (<a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tBaseElement.html">XML::bpmn::tBaseElement</a> *<a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1ExtensionElements.html#a1090342629fc0b15005fe0a769ba294f">baseElement</a>, const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a> *attribute) const</td></tr>
+<tr class="memdesc:ae1e98ab6a2a6295e590c51096b2ca89b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns true if the operators of the node take part in the initialisation of the attribute, which is the case if and only if the node is the start event of the scope declaring the attribute, so that they may set the attribute even if it is immutable.  <br /></td></tr>
 <tr class="memitem:ae5e1ad6d4d45621a9fea68784a035091" id="r_ae5e1ad6d4d45621a9fea68784a035091"><td class="memTemplParams" colspan="2">template&lt;typename DataType&gt; </td></tr>
 <tr class="memitem:ae5e1ad6d4d45621a9fea68784a035091 template"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae5e1ad6d4d45621a9fea68784a035091">applyOperators</a> (<a class="el" href="structBPMNOS_1_1Status.html">BPMNOS::Status</a> &amp;status, DataType &amp;<a class="el" href="#ae727e94cbc223f6d362e119ab99d0b5f">data</a>, const <a class="el" href="classBPMNOS_1_1Model_1_1SchemaProvider.html">SchemaProvider</a> &amp;schemaProvider, std::shared_ptr&lt; const <a class="el" href="structBPMNOS_1_1Object.html">BPMNOS::Object</a> &gt; *contentObject=nullptr) const</td></tr>
 <tr class="memdesc:ae5e1ad6d4d45621a9fea68784a035091"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method applying the operators and returning the change of the objective, the schema provider giving the effective schemas of the objects written.  <br /></td></tr>
@@ -279,7 +281,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00025">25</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00026">26</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
 
 </div>
 </div>
@@ -316,7 +318,7 @@ template&lt;typename DataType&gt; </div>
 </div><div class="memdoc">
 <p>If the node states a message, signal, error or escalation, its content object, which the operators write or read, must be given; otherwise the content object given, if any, is not used. </p>
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00491">491</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00516">516</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
 
 </div>
 </div>
@@ -341,7 +343,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00418">418</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00443">443</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
 
 </div>
 </div>
@@ -366,7 +368,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00447">447</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00472">472</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
 
 </div>
 </div>
@@ -391,7 +393,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00431">431</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00456">456</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
 
 </div>
 </div>
@@ -416,7 +418,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00478">478</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00503">503</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
 
 </div>
 </div>
@@ -441,7 +443,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00538">538</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00563">563</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
 
 </div>
 </div>
@@ -460,7 +462,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00410">410</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00435">435</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
 
 </div>
 </div>
@@ -485,7 +487,36 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00514">514</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00539">539</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ae1e98ab6a2a6295e590c51096b2ca89b" name="ae1e98ab6a2a6295e590c51096b2ca89b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1e98ab6a2a6295e590c51096b2ca89b">&#9670;&#160;</a></span>initialises()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ExtensionElements::initialises </td>
+          <td>(</td>
+          <td class="paramtype"><a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classXML_1_1bpmn_1_1tBaseElement.html">XML::bpmn::tBaseElement</a> *</td>          <td class="paramname"><span class="paramname"><em>baseElement</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">Attribute</a> *</td>          <td class="paramname"><span class="paramname"><em>attribute</em></span>&#160;) const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">baseElement</td><td>The XML element of the node, which <a class="elRef" href="https://bpmn-os.github.io/bpmnpp/classBPMN_1_1ExtensionElements.html#aa50f154523b37259487a15a23bfb7c08">element</a>, the extension elements of the node, is not. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00423">423</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
 
 </div>
 </div>
@@ -510,7 +541,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00465">465</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8cpp_source.html#l00490">490</a> of file <a class="el" href="ExtensionElements_8cpp_source.html">ExtensionElements.cpp</a>.</p>
 
 </div>
 </div>
@@ -608,7 +639,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8h_source.html#l00133">133</a> of file <a class="el" href="ExtensionElements_8h_source.html">ExtensionElements.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8h_source.html#l00140">140</a> of file <a class="el" href="ExtensionElements_8h_source.html">ExtensionElements.h</a>.</p>
 
 </div>
 </div>
@@ -767,7 +798,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8h_source.html#l00132">132</a> of file <a class="el" href="ExtensionElements_8h_source.html">ExtensionElements.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8h_source.html#l00139">139</a> of file <a class="el" href="ExtensionElements_8h_source.html">ExtensionElements.h</a>.</p>
 
 </div>
 </div>
@@ -960,7 +991,7 @@ template&lt;typename DataType&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="ExtensionElements_8h_source.html#l00131">131</a> of file <a class="el" href="ExtensionElements_8h_source.html">ExtensionElements.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="ExtensionElements_8h_source.html#l00138">138</a> of file <a class="el" href="ExtensionElements_8h_source.html">ExtensionElements.h</a>.</p>
 
 </div>
 </div>

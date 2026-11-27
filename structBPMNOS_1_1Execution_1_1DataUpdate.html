@@ -127,12 +127,12 @@ $(function(){initNavTree('structBPMNOS_1_1Execution_1_1DataUpdate.html','','stru
 </div><!--header-->
 <div class="contents">
 
-<p>Notification that data attributes were written by a token of an instance, or that the engine advanced the time.  
+<p>Notification that data attributes were written by a token of an instance, by the environment of the run, or that the engine advanced the time.  
  <a href="#details">More...</a></p>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>A written attribute concerns that instance alone, unless it is a global attribute, whose index is below the instance index of the model and which concerns every instance; an observer decides this by the index of each attribute. The update of the time at a clock tick is written by no instance and names the instance 0, the index of <span class="tt">false</span> in the string registry, which no instance identifier may be. </p>
+<div class="textblock"><p>A written attribute concerns that instance alone, unless it is a global attribute, whose index is below the instance index of the model and which concerns every instance; an observer decides this by the index of each attribute. An update written by no instance names the instance 0, the index of <span class="tt">false</span> in the string registry, which no instance identifier may be: the update of the time at a clock tick, and the update of global attributes by the environment. An update of the data of an instance by the environment names the process instance, also where the data belongs to a scope within it, such as an event subprocess. </p>
 
-<p class="definition">Definition at line <a class="el" href="DataUpdate_8h_source.html#l00020">20</a> of file <a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DataUpdate_8h_source.html#l00022">22</a> of file <a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>&gt;</code></p>
 <div class="dynheader">
@@ -151,7 +151,7 @@ Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:abf08df996685d1600dd6b35a330f8efc" id="r_abf08df996685d1600dd6b35a330f8efc"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespaceBPMNOS.html#a6ba3ea22499481d120e383529198d598">BPMNOS::number</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abf08df996685d1600dd6b35a330f8efc">instanceId</a></td></tr>
-<tr class="memdesc:abf08df996685d1600dd6b35a330f8efc"><td class="mdescLeft">&#160;</td><td class="mdescRight">The instance whose token wrote the attributes, or 0 if the engine advanced the time.  <br /></td></tr>
+<tr class="memdesc:abf08df996685d1600dd6b35a330f8efc"><td class="mdescLeft">&#160;</td><td class="mdescRight">The process instance whose data was written, or 0 for global attributes written by no instance.  <br /></td></tr>
 <tr class="memitem:a7ba8e70055cd21caeb78780e2b914631" id="r_a7ba8e70055cd21caeb78780e2b914631"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; const <a class="el" href="classBPMNOS_1_1Model_1_1Attribute.html">BPMNOS::Model::Attribute</a> * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7ba8e70055cd21caeb78780e2b914631">attributes</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-inherited" class="groupheader"><a id="inherited" name="inherited"></a>
@@ -203,7 +203,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DataUpdate_8h_source.html#l00022">22</a> of file <a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DataUpdate_8h_source.html#l00024">24</a> of file <a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>.</p>
 
 </div>
 </div>
@@ -233,7 +233,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="structBPMNOS_1_1Execution_1_1Observable.html#ac4ef9f23fb39b38cf961872f741979b9">BPMNOS::Execution::Observable</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="DataUpdate_8h_source.html#l00021">21</a> of file <a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DataUpdate_8h_source.html#l00023">23</a> of file <a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>.</p>
 
 </div>
 </div>
@@ -250,7 +250,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DataUpdate_8h_source.html#l00024">24</a> of file <a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DataUpdate_8h_source.html#l00026">26</a> of file <a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>.</p>
 
 </div>
 </div>
@@ -266,7 +266,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="DataUpdate_8h_source.html#l00023">23</a> of file <a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="DataUpdate_8h_source.html#l00025">25</a> of file <a class="el" href="DataUpdate_8h_source.html">DataUpdate.h</a>.</p>
 
 </div>
 </div>

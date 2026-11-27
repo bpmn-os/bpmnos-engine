@@ -61,6 +61,7 @@ var hierarchy =
         ] ],
         [ "BPMNOS::Execution::ClockTickEvent", "structBPMNOS_1_1Execution_1_1ClockTickEvent.html", null ],
         [ "BPMNOS::Execution::CompletionEvent", "structBPMNOS_1_1Execution_1_1CompletionEvent.html", null ],
+        [ "BPMNOS::Execution::DataUpdateEvent", "structBPMNOS_1_1Execution_1_1DataUpdateEvent.html", null ],
         [ "BPMNOS::Execution::Decision", "classBPMNOS_1_1Execution_1_1Decision.html", [
           [ "BPMNOS::Execution::ChoiceDecision", "structBPMNOS_1_1Execution_1_1ChoiceDecision.html", null ],
           [ "BPMNOS::Execution::EntryDecision", "structBPMNOS_1_1Execution_1_1EntryDecision.html", null ],

@@ -6,6 +6,8 @@ var dir_cef7cc1b5996acb66953ea751453ae8c =
     [ "ClockTickEvent.h", "ClockTickEvent_8h.html", "ClockTickEvent_8h" ],
     [ "CompletionEvent.cpp", "CompletionEvent_8cpp.html", null ],
     [ "CompletionEvent.h", "CompletionEvent_8h.html", "CompletionEvent_8h" ],
+    [ "DataUpdateEvent.cpp", "DataUpdateEvent_8cpp.html", null ],
+    [ "DataUpdateEvent.h", "DataUpdateEvent_8h.html", "DataUpdateEvent_8h" ],
     [ "EntryEvent.cpp", "EntryEvent_8cpp.html", null ],
     [ "EntryEvent.h", "EntryEvent_8h.html", "EntryEvent_8h" ],
     [ "ErrorEvent.cpp", "ErrorEvent_8cpp.html", null ],
